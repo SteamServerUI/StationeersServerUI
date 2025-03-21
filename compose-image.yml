@@ -17,3 +17,5 @@ services:
     auth:
       username: $GITHUB_USERNAME
       password: $GITHUB_TOKEN
+
+#TODO: add resource limits and cpu core assignment
