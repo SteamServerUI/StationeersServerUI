@@ -1,78 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-       <meta charset="UTF-8">
-       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <title>Edit Configuration</title>
-       <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Configuration</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
-
 <body>
-       <header>
-              <img src="/static/stationeers.png" alt="Stationeers Banner" id="banner">
-       </header>
-       <main>
-              <h1>Edit Configuration</h1>
-              <form action="/saveconfig" method="post">
-                     <label for="exePath">Server Executable Path:</label><br>
-                     <input type="text" id="exePath" name="exePath" value="{{ExePath}}" readonly><br>
+    <header>
+        <img src="/static/stationeers.png" alt="Stationeers Banner" id="banner">
+    </header>
+    <main>
+        <h1>Server Configuration</h1>
+        <div class="form-container">
+            <form action="/saveconfig" method="post">
+                <div class="form-group">
+                    <label for="exePath">Server Executable Path:</label>
+                    <input type="text" id="exePath" name="exePath" value="{{ExePath}}" readonly>
+                    <div class="input-info">System path to server executable</div>
+                </div>
 
-                     <label for="StartLocalHost">Start Local Host:</label><br>
-                     <input type="text" id="StartLocalHost" name="StartLocalHost" value="{{StartLocalHost}}"
-                            pattern="^\S*$" title="No spaces allowed" required><br>
+                <div class="form-group">
+                    <label for="StartLocalHost">Start Local Host:</label>
+                    <input type="text" id="StartLocalHost" name="StartLocalHost" value="{{StartLocalHost}}"
+                            pattern="^\S*$" title="No spaces allowed" required>
+                    <div class="input-info">Set to "true" to listen only on local network</div>
+                </div>
 
-                     <label for="ServerVisible">Server Visible:</label><br>
-                     <input type="text" id="ServerVisible" name="ServerVisible" value="{{ServerVisible}}"
-                            pattern="^\S*$" title="No spaces allowed" required><br>
+                <div class="form-group">
+                    <label for="ServerVisible">Server Visible:</label>
+                    <input type="text" id="ServerVisible" name="ServerVisible" value="{{ServerVisible}}"
+                            pattern="^\S*$" title="No spaces allowed" required>
+                    <div class="input-info">Set to "true" to list server publicly</div>
+                </div>
 
-                     <label for="GamePort">Game Port:</label><br>
-                     <input type="text" id="GamePort" name="GamePort" value="{{GamePort}}" pattern="^\S*$"
-                            title="No spaces allowed" required><br>
+                <div class="form-group">
+                    <label for="GamePort">Game Port:</label>
+                    <input type="text" id="GamePort" name="GamePort" value="{{GamePort}}" pattern="^\S*$"
+                            title="No spaces allowed" required>
+                    <div class="input-info">Default: 27500</div>
+                </div>
 
-                     <label for="UpdatePort">Update Port:</label><br>
-                     <input type="text" id="UpdatePort" name="UpdatePort" value="{{UpdatePort}}" pattern="^\S*$"
-                            title="No spaces allowed" required><br>
+                <div class="form-group">
+                    <label for="UpdatePort">Update Port:</label>
+                    <input type="text" id="UpdatePort" name="UpdatePort" value="{{UpdatePort}}" pattern="^\S*$"
+                            title="No spaces allowed" required>
+                    <div class="input-info">Default: 27015</div>
+                </div>
 
-                     <label for="AutoSave">Auto Save:</label><br>
-                     <input type="text" id="AutoSave" name="AutoSave" value="{{AutoSave}}" pattern="^\S*$"
-                            title="No spaces allowed" required><br>
+                <div class="form-group">
+                    <label for="AutoSave">Auto Save:</label>
+                    <input type="text" id="AutoSave" name="AutoSave" value="{{AutoSave}}" pattern="^\S*$"
+                            title="No spaces allowed" required>
+                    <div class="input-info">Set to "true" to enable automatic saving</div>
+                </div>
 
-                     <label for="SaveInterval">Save Interval:</label><br>
-                     <input type="text" id="SaveInterval" name="SaveInterval" value="{{SaveInterval}}" pattern="^\S*$"
-                            title="No spaces allowed" required><br>
+                <div class="form-group">
+                    <label for="SaveInterval">Save Interval:</label>
+                    <input type="text" id="SaveInterval" name="SaveInterval" value="{{SaveInterval}}" pattern="^\S*$"
+                            title="No spaces allowed" required>
+                    <div class="input-info">Time in seconds between saves</div>
+                </div>
 
-                     <label for="LocalIpAddress">Local IP Address:</label><br>
-                     <input type="text" id="LocalIpAddress" name="LocalIpAddress" value="{{LocalIpAddress}}"
-                            pattern="^\S*$" title="No spaces allowed" required><br>
+                <div class="form-group">
+                    <label for="LocalIpAddress">Local IP Address:</label>
+                    <input type="text" id="LocalIpAddress" name="LocalIpAddress" value="{{LocalIpAddress}}"
+                            pattern="^\S*$" title="No spaces allowed" required>
+                    <div class="input-info">IP address to bind to</div>
+                </div>
 
-                     <label for="ServerPassword">Server Password:</label><br>
-                     <input type="text" id="ServerPassword" name="ServerPassword" value="{{ServerPassword}}"
-                            pattern="^\S*$" title="No spaces allowed"><br>
+                <div class="form-group password-field">
+                    <label for="ServerPassword">Server Password:</label>
+                    <input type="text" id="ServerPassword" name="ServerPassword" value="{{ServerPassword}}"
+                            pattern="^\S*$" title="No spaces allowed">
+                    <div class="input-info">Leave empty for no password</div>
+                </div>
 
-                     <label for="AdminPassword">Admin Password (inop with current Stationeers builds):</label><br>
-                     <input type="text" id="AdminPassword" name="AdminPassword" value="{{AdminPassword}}"
-                            pattern="^\S*$" title="No spaces allowed. Also, this Admin Pwd seems to not work any more with the Stationeers Dedicated Server. "><br>
+                <div class="form-group password-field">
+                    <label for="AdminPassword">Admin Password:</label>
+                    <input type="text" id="AdminPassword" name="AdminPassword" value="{{AdminPassword}}"
+                            pattern="^\S*$" title="No spaces allowed">
+                    <div class="input-info">Currently not functioning in recent Stationeers builds</div>
+                </div>
 
-                     <label for="ServerMaxPlayers">Server Max Players:</label><br>
-                     <input type="text" id="ServerMaxPlayers" name="ServerMaxPlayers" value="{{ServerMaxPlayers}}"
-                            pattern="^\S*$" title="No spaces allowed" required><br>
+                <div class="form-group">
+                    <label for="ServerMaxPlayers">Max Players:</label>
+                    <input type="text" id="ServerMaxPlayers" name="ServerMaxPlayers" value="{{ServerMaxPlayers}}"
+                            pattern="^\S*$" title="No spaces allowed" required>
+                    <div class="input-info">Maximum number of players allowed</div>
+                </div>
 
-                     <label for="ServerName">Server Name:</label><br>
-                     <input type="text" id="ServerName" name="ServerName" value="{{ServerName}}" pattern="^\S*$"
-                            title="No spaces allowed" required><br>
+                <div class="form-group">
+                    <label for="ServerName">Server Name:</label>
+                    <input type="text" id="ServerName" name="ServerName" value="{{ServerName}}" pattern="^\S*$"
+                            title="No spaces allowed" required>
+                    <div class="input-info">Name displayed in server list</div>
+                </div>
 
-                     <label for="AdditionalParams">Additional Parameters: (CustomParam1 Value1 CustomParam2
-                            Value2)</label><br>
-                     <input type="text" id="AdditionalParams" name="AdditionalParams" value="{{AdditionalParams}}"><br>
+                <div class="form-group">
+                    <label for="AdditionalParams">Additional Parameters:</label>
+                    <input type="text" id="AdditionalParams" name="AdditionalParams" value="{{AdditionalParams}}">
+                    <div class="input-info">Format: CustomParam1 Value1 CustomParam2 Value2</div>
+                </div>
 
-                     <label for="saveFileName">Save File Name:</label><br>
-                     <input type="text" id="saveFileName" name="saveFileName" value="{{SaveFileName}}" pattern="^\S*$"
-                            title="No spaces allowed" required><br><br>
+                <div class="form-group">
+                    <label for="saveFileName">Save File Name:</label>
+                    <input type="text" id="saveFileName" name="saveFileName" value="{{SaveFileName}}" pattern="^\S*$"
+                            title="No spaces allowed" required>
+                    <div class="input-info">Name of save file without extension</div>
+                </div>
 
-                     <input type="submit" value="Save">
-              </form>
-       </main>
+                <div class="form-actions">
+                    <input type="submit" value="Save Configuration">
+                    <button type="button" onclick="window.location.href = '/'">Back to Dashboard</button>
+                </div>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <div class="copyright">Copyright &copy; 2025 J. Langisch. Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.</div>
+    </footer>
 </body>
-
 </html>
