@@ -6,10 +6,11 @@ import (
 )
 
 func AddToLogBuffer(logMessage string) {
-	config.LogMessageBuffer += logMessage + "\n" // Add the log message to the buffer with a newline
-	checkForKeywords(logMessage)
-	// If the buffer exceeds the max size, send it to Discord
-	if len(config.LogMessageBuffer) >= config.MaxBufferSize {
+	config.LogMessageBuffer += logMessage + "\n"
+	if config.IsDiscordEnabled && config.DiscordSession != nil {
+		checkForKeywords(logMessage)
+	}
+	if len(config.LogMessageBuffer) >= config.MaxBufferSize && config.IsDiscordEnabled {
 		flushLogBufferToDiscord()
 	}
 }
