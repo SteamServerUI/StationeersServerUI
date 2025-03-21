@@ -16,6 +16,8 @@ COPY . .
 # Build the initial executable
 RUN echo "Building StationeersServerUI..." && go build -o StationeersServerUI ./build.go
 
+#TODO: Add cross compilation during build and split of into two images, one for windows and one for linux
+
 # Second stage: Bootstrap the server using a Debian slim image
 FROM golang:1.22.1 AS bootstrapper
 
@@ -106,3 +108,5 @@ ENTRYPOINT ["/app/StationeersServerControl"]
 
 # Provide default arguments to the entrypoint
 CMD []
+
+#TODO: Fix image to launch rocketstation_DedicatedServer.exe/.x84_64 with the right mono dependencies
