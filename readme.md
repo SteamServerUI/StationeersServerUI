@@ -40,7 +40,7 @@ Special thanks to @mitoskalandiel for adding Linux and Docker support!
     - [Web Interface](#web-interface)
       - [Discord Commands](#discord-commands)
   - [Running with Docker](#running-with-docker)
-    - [Building your own Docker Image (#building-your-own-docker-image--recommended)
+    - [Building your own Docker Image (#building-your-own-docker-image)
   - [Running with Docker Compose from your own image](#running-with-docker-compose-from-your-own-image)
   - [Using the Docker Image from GitHub Container Registry](#using-the-docker-image-from-github-container-registry)
   - [Using the Docker Image from GitHub Container Registry](#using-the-docker-image-from-github-container-registry-1)
