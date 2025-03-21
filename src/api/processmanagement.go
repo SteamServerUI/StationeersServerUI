@@ -12,6 +12,14 @@ import (
 	"syscall"
 )
 
+const (
+	colorReset  = "\033[0m"
+	colorGreen  = "\033[32m"
+	colorYellow = "\033[33m"
+	colorCyan   = "\033[36m"
+	colorBold   = "\033[1m"
+)
+
 func StartServer(w http.ResponseWriter, r *http.Request) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -30,7 +38,17 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	alwaysNeededParams := []string{"-batchmode", "1", "-nographics", "1", "-autostart", "1"}
 	args := append(append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings"), strings.Split(config.Server.Settings, " ")...)
 	cmd = exec.Command(config.Server.ExePath, args...)
-	fmt.Printf("Load command: %s %v\n", config.Server.ExePath, args)
+	exePath := colorGreen + colorBold + config.Server.ExePath + colorReset
+	fmt.Printf("\n%s%s=== GAMESERVER STARTING ===%s\n", colorCyan, colorBold, colorReset)
+	fmt.Printf("• Executable: %s\n", exePath)
+	fmt.Printf("• Parameters: ")
+
+	for i, arg := range args {
+		if i > 0 {
+			fmt.Printf("%s%s%s ", colorYellow, arg, colorReset)
+		}
+	}
+	fmt.Printf("\n\n")
 
 	// Capture stdout and stderr
 	stdout, err := cmd.StdoutPipe()
