@@ -40,7 +40,7 @@ Special thanks to @mitoskalandiel for adding Linux and Docker support!
     - [Web Interface](#web-interface)
       - [Discord Commands](#discord-commands)
   - [Running with Docker](#running-with-docker)
-    - [Building your own Docker Image  **\[RECOMMENDED\]**](#building-your-own-docker-image--recommended)
+    - [Building your own Docker Image (#building-your-own-docker-image--recommended)
   - [Running with Docker Compose from your own image](#running-with-docker-compose-from-your-own-image)
   - [Using the Docker Image from GitHub Container Registry](#using-the-docker-image-from-github-container-registry)
   - [Using the Docker Image from GitHub Container Registry](#using-the-docker-image-from-github-container-registry-1)
@@ -334,7 +334,12 @@ The bot can send notifications for the following events:
 
 ## Running with Docker
 
-### Building your own Docker Image  **\[RECOMMENDED\]**
+Depending on the size of your base, the complexity of systems
+and player handling, the stationeers server can eat up a whole lot of resources.
+
+Docker works for this gameserver, but the decicion where to run lies on you.
+
+### Building your own Docker Image
 
   To build the Docker image for the Stationeers Dedicated Server Control, follow these steps:
 
