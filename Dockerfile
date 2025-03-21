@@ -108,3 +108,5 @@ ENTRYPOINT ["/app/StationeersServerControl"]
 
 # Provide default arguments to the entrypoint
 CMD []
+
+#TODO: Fix image to launch rocketstation_DedicatedServer.exe/.x84_64 with the right mono dependencies
