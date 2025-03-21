@@ -11,10 +11,6 @@
 |:-----------:|:-------------:|:-----------------:|
 | ![UI Overview](media/UI-1.png) | ![Configuration](media/UI-2.png) | ![Backup Management](media/UI-3.png) |
 
-## Known Bug
-The Server config page got a rework. I broke the functionality doing this. Whoopsies. Please use Settings.xml in the main Server dir until I fix this issue. The SaveName on the Config Page still has to be specified for the backup system to work properly, and to be able to restore from Discord.
-OK Sorry guys I still haven't published the fix. I was working on it, I bet it is mostly finished but I didn't really need it and sadly did not finish. IF somebody wants to use this software - ping me, I will finish it for you!
-
 ## Introduction
 
 Stationeers Dedicated Server Control is a user-friendly, web-based tool for managing a Stationeers dedicated server. It features an intuitive retro computer-themed interface, allowing you to easily start and stop the server, view real-time server output, manage configurations, and handle backups—all from your web browser.
@@ -22,6 +18,8 @@ Stationeers Dedicated Server Control is a user-friendly, web-based tool for mana
 Additionally, it offers full Discord integration, enabling you and your community to monitor and manage the server directly from a Discord server. Features include real-time server status updates, console output, and the ability to start, stop, and restore backups via Discord commands.
 
 **Important:** For security reasons, do not expose this UI directly to the internet without a secure authentication mechanism. Do not port forward the UI directly.
+
+Special thanks to @mitoskalandiel for adding Linux and Docker support!
 
 ## Table of Contents
 
@@ -115,9 +113,135 @@ Only turn to this section when the magenta Text in the Console tells you to do s
 
 2. **Configure the Save File Name**
 
-   - In the web interface, click on the **Config** button.
-   - Enter the name of your save folder in the **Save File Name** field.
-   - You might restart the Software at this point to be sure, but it's technically not necessary.
+- In the web interface, click on the **Config** button.
+- Enter the name of your save folder in the **Save File Name** field.
+- More parameters can be added in the **Additional Parameters** field (see "Additional Parameters" section below).
+- You might restart the Software at this point to be sure, but it's technically not necessary.
+
+<details>
+<summary>[EXTEND]The following parameters can be added to the **Additional Parameters** field:</summary>
+
+- `get_Path`
+- `set_Path`
+- `Save`
+- `Load`
+- `Equals`
+- `GetHashCode`
+- `GetType`
+- `ToString`
+- `.ctor`
+- `Path`
+- `SettingsVersion`
+- `ShowFps`
+- `ShowLatency`
+- `AutoSave`
+- `SaveInterval`
+- `SavePath`
+- `HUDScale`
+- `TooltipOpacity`
+- `IngamePortrait`
+- `ExtendedTooltips`
+- `ChatFadeTimer`
+- `DayLength`
+- `LegacyInventory`
+- `ShowSlotToolTips`
+- `DeleteSkeletonOnDecay`
+- `Monitor`
+- `ScreenWidth`
+- `ScreenHeight`
+- `RefreshRate`
+- `GraphicQuality`
+- `TextureQuality`
+- `FullScreen`
+- `Vsync`
+- `Shadows`
+- `ShadowResolution`
+- `ShadowDistance`
+- `LightShadowDistance`
+- `RoomControlTickSpeed`
+- `ShadowNearPlaneOffset`
+- `ShadowCascades`
+- `ThingShadowMode`
+- `ThingShadowDistanceMultiplier`
+- `RenderDistance`
+- `WorldOrigin`
+- `Brightness`
+- `FieldOfView`
+- `ColorBlind`
+- `ParticleQuality`
+- `SoftParticles`
+- `EnvironmentElements`
+- `ExtendedTerrain`
+- `VolumeLight`
+- `PixelLightCount`
+- `MaxThingLights`
+- `Antialiasing`
+- `FrameLock`
+- `AtmosphericScattering`
+- `AmbientOcclusion`
+- `LensFlares`
+- `ChunkRenderDistance`
+- `MineableRenderDistance`
+- `DisableWaterVisualizer`
+- `Clouds`
+- `HelmetOverlay`
+- `WeatherEventQuality`
+- `MasterVolume`
+- `SoundVolume`
+- `VoiceNotificationVolume`
+- `MusicVolume`
+- `InterfaceVolume`
+- `VirtualVoices`
+- `RealVoices`
+- `UserSpeakerMode`
+- `ServerName`
+- `StartLocalHost`
+- `ServerVisible`
+- `ServerPassword`
+- `AdminPassword`
+- `ServerAuthSecret`
+- `ServerMaxPlayers`
+- `UpdatePort`
+- `GamePort`
+- `UPNPEnabled`
+- `UseSteamP2P`
+- `DisconnectTimeout`
+- `NetworkDebugFrequency`
+- `LocalIpAddress`
+- `AutoPauseServer`
+- `LanguageCode`
+- `VoiceLanguageCode`
+- `Voice`
+- `PopupChat`
+- `CameraSensitivity`
+- `KeyList`
+- `InvertMouse`
+- `InvertMouseWheelInventory`
+- `MenuLite`
+- `MouseWheelZoom`
+- `FirstRun`
+- `VoiceNotifications`
+- `CompletedTutorials`
+- `CompletedScenarios`
+- `DisplayHelperHints`
+- `AutoExpandHelperHints`
+- `VerticalMovementAxis`
+- `HorizontalMovementAxis`
+- `ForwardMovementAxis`
+- `VerticalLookAxis`
+- `HorizontalLookAxis`
+- `UseCustomWorkThreadsCount`
+- `MinWorkerThreads`
+- `MinCompletionPortThreads`
+- `MaxWorkerThreads`
+- `MaxCompletionPortThreads`
+- `CoroutineTimeBudget`
+- `SmoothTerrain`
+- `SmoothTerrainAngle`
+- `ConsoleBufferSize`
+- `LegacyCpu`
+</details>
+
 
 3. **Start the Server**
 
@@ -217,7 +341,7 @@ The bot can send notifications for the following events:
 1. **Clone the Repository**
 
    ```sh
-   git clone https://github.com/mitoskalandiel/StationeersServerUI.git
+   git clone https://github.com/jacksonthemaster/StationeersServerUI.git
    cd StationeersServerUI
    ```
 
@@ -276,7 +400,7 @@ services:
 1. **Clone the Repository**
 
    ```sh
-   git clone https://github.com/mitoskalandiel/StationeersServerUI.git
+   git clone https://github.com/jacksonthemaster/StationeersServerUI.git
    cd StationeersServerUI
    ```
 
