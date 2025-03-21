@@ -1,4 +1,4 @@
-# Stationeers Dedicated Server Control v2.4.1
+# Stationeers Dedicated Server Control v2.4.X
 
 ![Go](https://img.shields.io/badge/Go-1.22.1-blue)
 ![License](https://img.shields.io/github/license/jacksonthemaster/StationeersServerUI)
