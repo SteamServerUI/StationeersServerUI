@@ -79,6 +79,10 @@ func downloadAndExtractSteamCMD(downloadURL string, steamCMDDir string, extractF
 
 // setExecutablePermissions sets executable permissions for SteamCMD files.
 func setExecutablePermissions(steamCMDDir string) error {
+	if runtime.GOOS == "windows" {
+		logVerbose("✅ Skipping executable permissions on Windows.\n")
+		return nil
+	}
 	// List of files that need executable permissions
 	files := []string{
 		filepath.Join(steamCMDDir, "steamcmd.sh"),
@@ -98,7 +102,14 @@ func setExecutablePermissions(steamCMDDir string) error {
 
 // verifySteamCMDBinary verifies that the steamcmd binary exists.
 func verifySteamCMDBinary(steamCMDDir string) error {
-	binaryPath := filepath.Join(steamCMDDir, "linux32", "steamcmd")
+	// Different binary paths based on OS
+	var binaryPath string
+	if runtime.GOOS == "windows" {
+		binaryPath = filepath.Join(steamCMDDir, "steamcmd.exe")
+	} else {
+		binaryPath = filepath.Join(steamCMDDir, "linux32", "steamcmd")
+	}
+
 	if _, err := os.Stat(binaryPath); os.IsNotExist(err) {
 		return fmt.Errorf("steamcmd binary not found: %s", binaryPath)
 	}
