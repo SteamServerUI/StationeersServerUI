@@ -540,9 +540,19 @@ For security reasons, do not expose the UI directly to the internet without prop
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## Contributing
+## Contributing 
 
-Contributions are welcome! Feel free to open issues or submit pull requests.
+This repo—yep, right here, is the canonical home of the project. It’s where the magic happens, and I’d love for it to stay the heart of our community!
+
+Forks are totally cool, but swapping URLs in the README can get a little confusing since it doesn’t reflect the project’s true origins. Let’s keep it simple and stick with the official links, yeah?
+We’re proudly pulling the UI components from this repo at @JacksonTheMaster. URLs linking back here just makes sense—good vibes and good practice!
+
+### How You Can Jump In 
+
+Got ideas? Open an issue and let’s chat!
+
+Wanna tweak something? Submit a pull request—I’m all ears (or eyes, I guess ). Contributions are super welcome, and I’d love to see this grow right here. Let’s build it together! 
+
 
 ## Acknowledgments
 
