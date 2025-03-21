@@ -1,3 +1,4 @@
+// config.go
 package config
 
 import (
@@ -42,8 +43,8 @@ var (
 	ControlPanelChannelID     string
 	IsDiscordEnabled          bool
 	IsFirstTimeSetup          bool
-	Version                   = "2.4.3"
-	Branch                    = "linux-port"
+	Version                   = "2.4.4"
+	Branch                    = "nightly"
 )
 
 func LoadConfig(filename string) (*Config, error) {
