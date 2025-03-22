@@ -43,8 +43,8 @@ var (
 	ControlPanelChannelID     string
 	IsDiscordEnabled          bool
 	IsFirstTimeSetup          bool
-	Version                   = "2.4.4"
-	Branch                    = "nightly"
+	Version = "2.4.6"
+	Branch                    = "nightly-linux-fixes"
 )
 
 func LoadConfig(filename string) (*Config, error) {

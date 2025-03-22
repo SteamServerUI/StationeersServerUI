@@ -1,4 +1,4 @@
-# Stationeers Dedicated Server Control v2.4.1
+# Stationeers Dedicated Server Control v2.4.X
 
 ![Go](https://img.shields.io/badge/Go-1.22.1-blue)
 ![License](https://img.shields.io/github/license/jacksonthemaster/StationeersServerUI)
@@ -40,7 +40,7 @@ Special thanks to @mitoskalandiel for adding Linux and Docker support!
     - [Web Interface](#web-interface)
       - [Discord Commands](#discord-commands)
   - [Running with Docker](#running-with-docker)
-    - [Building your own Docker Image  **\[RECOMMENDED\]**](#building-your-own-docker-image--recommended)
+    - [Building your own Docker Image](#building-your-own-docker-image)
   - [Running with Docker Compose from your own image](#running-with-docker-compose-from-your-own-image)
   - [Using the Docker Image from GitHub Container Registry](#using-the-docker-image-from-github-container-registry)
   - [Using the Docker Image from GitHub Container Registry](#using-the-docker-image-from-github-container-registry-1)
@@ -334,7 +334,13 @@ The bot can send notifications for the following events:
 
 ## Running with Docker
 
-### Building your own Docker Image  **\[RECOMMENDED\]**
+Depending on the size of your base, the complexity of systems, code, and player connection handling, the Stationeers server itself can eat up a whole lot of resources—think 12+ CPU cores and 30GB of RAM or more for very large map setups. Stationeers is a beast when you’ve got intricate logic networks, big player counts, and most importantly sprawling bases with tons of atmosphere calculations.
+
+Docker *can* work for this gameserver, and some folks have run it that way—lightweight setups might do fine in a container. But here’s the rub: Docker’s resource limits and overhead can choke performance when the project gets bigger, especially if you’re not ready to tweak container or throw serious hardware at it. 
+
+_Personally, I’d skip it for larger projects or the ones that are planned to become such. Anything beefy—bare metal or a VM gives you raw power without the abstraction tax. That said, the decision’s yours: Docker’s an option if you’re cool with tuning it, but don’t sleep on the resource demands either way. Test your setup, watch those spikes, and pick what fits your rig and playstyle. We had this running for a 6-10 Player Server with multiple large bases for half a year, and maxed out 16 cores and 40+GB of RAM. It's your decision, and this is not a "Do not use Docker" recommendation. Find the setup that works best for you._
+
+### Building your own Docker Image
 
   To build the Docker image for the Stationeers Dedicated Server Control, follow these steps:
 

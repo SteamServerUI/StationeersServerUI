@@ -7,8 +7,17 @@ import (
 	"io"
 	"net/http"
 	"os/exec"
+	"runtime"
 	"strings"
 	"syscall"
+)
+
+const (
+	colorReset  = "\033[0m"
+	colorGreen  = "\033[32m"
+	colorYellow = "\033[33m"
+	colorCyan   = "\033[36m"
+	colorBold   = "\033[1m"
 )
 
 func StartServer(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +38,17 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	alwaysNeededParams := []string{"-batchmode", "1", "-nographics", "1", "-autostart", "1"}
 	args := append(append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings"), strings.Split(config.Server.Settings, " ")...)
 	cmd = exec.Command(config.Server.ExePath, args...)
-	fmt.Printf("Load command: %s %v\n", config.Server.ExePath, args)
+	exePath := colorGreen + colorBold + config.Server.ExePath + colorReset
+	fmt.Printf("\n%s%s=== GAMESERVER STARTING ===%s\n", colorCyan, colorBold, colorReset)
+	fmt.Printf("• Executable: %s\n", exePath)
+	fmt.Printf("• Parameters: ")
+
+	for i, arg := range args {
+		if i > 0 {
+			fmt.Printf("%s%s%s ", colorYellow, arg, colorReset)
+		}
+	}
+	fmt.Printf("\n\n")
 
 	// Capture stdout and stderr
 	stdout, err := cmd.StdoutPipe()
@@ -127,23 +146,29 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Attempt a graceful shutdown
-	err := cmd.Process.Signal(syscall.SIGTERM)
-	if err != nil {
-		// If sending SIGTERM fails, attempt to kill the process
-		fmt.Fprintf(w, "(Known issue) Error sending SIGTERM to server: %v. Killing the process.\n", err)
+	isWindows := runtime.GOOS == "windows"
 
-		err = cmd.Process.Kill()
-		if err != nil {
-			fmt.Fprintf(w, "Error killing server process: %v", err)
+	if isWindows {
+		// On Windows, just kill the process directly
+		if killErr := cmd.Process.Kill(); killErr != nil {
+			fmt.Fprintf(w, "Error stopping server: %v", killErr)
 			return
+		}
+	} else {
+		// On Linux/Unix, try SIGTERM first for graceful shutdown
+		if termErr := cmd.Process.Signal(syscall.SIGTERM); termErr != nil {
+			// If SIGTERM fails, fall back to Kill
+			if killErr := cmd.Process.Kill(); killErr != nil {
+				fmt.Fprintf(w, "Error stopping server: %v", killErr)
+				return
+			}
 		}
 	}
 
 	// Wait for the process to exit
-	err = cmd.Wait()
-	if err != nil && !strings.Contains(err.Error(), "exit status") {
-		fmt.Fprintf(w, "Error waiting for process: %v", err)
+	if waitErr := cmd.Wait(); waitErr != nil && !strings.Contains(waitErr.Error(), "exit status") {
+		// Only report actual errors, not just non-zero exit codes
+		fmt.Fprintf(w, "Error during server shutdown: %v", waitErr)
 		return
 	}
 

@@ -47,19 +47,19 @@ func CheckAndDownloadUIMod() {
 			return
 		}
 
-		// List of files to download
+		// List of files to download, using config.Branch
 		files := map[string]string{
-			"apiinfo.html":       "https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/UIMod/apiinfo.html",
-			"config.html":        "https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/UIMod/config.html",
-			"furtherconfig.html": "https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/UIMod/furtherconfig.html",
-			"config.json":        "https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/UIMod/config.json",
-			"config.xml":         "https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/UIMod/config.xml",
-			"index.html":         "https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/UIMod/index.html",
-			"script.js":          "https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/UIMod/script.js",
-			"stationeers.png":    "https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/UIMod/stationeers.png",
-			"style.css":          "https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/UIMod/style.css",
+			"apiinfo.html":       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/apiinfo.html", config.Branch),
+			"config.html":        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.html", config.Branch),
+			"furtherconfig.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/furtherconfig.html", config.Branch),
+			"config.json":        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.json", config.Branch),
+			"config.xml":         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.xml", config.Branch),
+			"index.html":         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/index.html", config.Branch),
+			"script.js":          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/script.js", config.Branch),
+			"stationeers.png":    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/stationeers.png", config.Branch),
+			"style.css":          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/style.css", config.Branch),
 		}
-		//set the first time setup flag to true
+		// Set the first time setup flag to true
 		config.IsFirstTimeSetup = true
 		// Download each file
 		for fileName, url := range files {
@@ -68,7 +68,7 @@ func CheckAndDownloadUIMod() {
 				fmt.Printf("❌ Error downloading %s: %v\n", fileName, err)
 				return
 			}
-			fmt.Printf("✅ Downloaded %s successfully\n", fileName)
+			fmt.Printf("✅ Downloaded %s successfully from branch %s\n", fileName, config.Branch)
 		}
 
 		fmt.Println("✅ All files downloaded successfully.")
