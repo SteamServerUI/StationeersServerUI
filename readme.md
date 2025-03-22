@@ -21,6 +21,12 @@ Additionally, it offers full Discord integration, enabling you and your communit
 
 Special thanks to @mitoskalandiel for adding Linux and Docker support!
 
+### Linux & Docker DISCLAIMER: (March 2025)
+
+This software got a rework to support Linux, and while it is technically possible to run it on Linux, there is a culprit:
+
+**The Stationeers Server Linux builds** are having a rough time right now. Stable’s struggling to start, and beta launches but stumbles on save loading. We suspect an issue with RocketWerkZ build pipeline at the moment and hope to see this resolved soon. Aside from this, StationeersSeverUI's Linux builds are suspected stable at the moment and would be ready to go.
+
 ## Table of Contents
 
 - [Stationeers Dedicated Server Control v2.4.1](#stationeers-dedicated-server-control-v241)
