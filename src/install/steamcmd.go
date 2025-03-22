@@ -163,8 +163,8 @@ func runSteamCMD(steamCMDDir string) {
 // buildSteamCMDCommand constructs the SteamCMD command based on the OS.
 func buildSteamCMDCommand(steamCMDDir, currentDir string) *exec.Cmd {
 	//print the config.GameBranch and config.GameServerAppID
-	fmt.Println(config.GameBranch)
-	fmt.Println(config.GameServerAppID)
+	logVerbose(ColorCyan + "🔍 Game Branch: " + ColorWhite + config.GameBranch + ColorReset + "\n")
+	logVerbose(ColorCyan + "🔍 Game Server App ID: " + ColorWhite + config.GameServerAppID + ColorReset + "\n")
 	if runtime.GOOS == "windows" {
 		return exec.Command(filepath.Join(steamCMDDir, "steamcmd.exe"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GameServerAppID, "-beta", config.GameBranch, "validate", "+quit")
 	}
