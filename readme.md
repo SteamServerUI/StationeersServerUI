@@ -48,6 +48,9 @@ Special thanks to @mitoskalandiel for adding Linux and Docker support!
   - [Important Notes](#important-notes)
   - [License](#license)
   - [Contributing](#contributing)
+    - [Branching Strategy](#branching-strategy)
+    - [Versioning](#versioning)
+    - [How You Can Jump In](#how-you-can-jump-in)
   - [Acknowledgments](#acknowledgments)
 
 ## Features
@@ -550,8 +553,27 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 This repo—yep, right here, is the canonical home of the project. It’s where the magic happens, and I’d love for it to stay the heart of our community!
 
-Forks are totally cool, but swapping URLs in the README can get a little confusing since it doesn’t reflect the project’s true origins. Let’s keep it simple and stick with the official links, yeah?
-We’re proudly pulling the UI components from this repo at @JacksonTheMaster. URLs linking back here just makes sense—good vibes and good practice!
+Forks are totally cool for testing, but let’s keep it simple and stick with the official repo right here, yeah?
+We’re proudly pulling the UI components from this repo at @JacksonTheMaster. All URLs linking back here just makes sense—good vibes and good practice!
+
+### Branching Strategy
+
+To keep the chaos in check, here’s how we roll with branches:
+
+- **`main`**: Stable, production-ready code. Merges here are polished and tested.
+- **`nightly`**: The bleeding-edge dev branch—mostly stable, but still a work in progress.
+- **Feature branches**: Spin off from `nightly` for your work. Name them like `add-cool-thing`, eg. `add-linux-vine`. Keep ‘em short-lived.
+- **Fix branches**: Spin off from the branch with the issue for your work. Name it like  `fix.important-thing`, eg. `fix-steamcmd-installer` Keep ‘em short-lived and possibly tied to an issue or PR.
+
+### Versioning
+
+We follow [semantic versioning](https://semver.org/) in spirit—`MAJOR.MINOR.PATCH`—but the process is automated via `build.go`. Here’s the breakdown:
+
+- **`MAJOR`**: Bumped _manually_ for big, incompatible changes or major milestones.
+- **`MINOR`**: Incremented _manually_ for backwards-compatible features.
+- **`PATCH`**: _Auto-incremented on each build_ by `build.go` for bug fixes and small tweaks.
+
+The script updates `src/config/config.go`, builds the executable (e.g., `StationeersServerControl1.2.3_nightly`), and cleans up old builds. No need to mess with versions yourself—focus on the code, and the build handles the rest!
 
 ### How You Can Jump In 
 
