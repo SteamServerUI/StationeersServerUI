@@ -9,8 +9,11 @@ import (
 )
 
 func SendMessageToControlChannel(message string) {
+	if !config.IsDiscordEnabled {
+		return
+	}
 	if config.DiscordSession == nil {
-		fmt.Println("Discord session is not initialized")
+		fmt.Println("Discord Error: Discord is enabled but session is not initialized")
 		return
 	}
 	//clearMessagesAboveLastN(config.ControlChannelID, 20)
@@ -23,8 +26,11 @@ func SendMessageToControlChannel(message string) {
 }
 
 func sendMessageToStatusChannel(message string) {
+	if !config.IsDiscordEnabled {
+		return
+	}
 	if config.DiscordSession == nil {
-		fmt.Println("Discord session is not initialized")
+		fmt.Println("Discord Error: Discord is enabled but session is not initialized")
 		return
 	}
 	//clearMessagesAboveLastN(config.StatusChannelID, 10)
@@ -37,8 +43,11 @@ func sendMessageToStatusChannel(message string) {
 }
 
 func sendMessageToErrorChannel(message string) []*discordgo.Message {
+	if !config.IsDiscordEnabled {
+		return nil
+	}
 	if config.DiscordSession == nil {
-		fmt.Println("Discord session is not initialized")
+		fmt.Println("Discord Error: Discord is enabled but session is not initialized")
 		return nil
 	}
 
@@ -84,8 +93,11 @@ func sendMessageToErrorChannel(message string) []*discordgo.Message {
 }
 
 func SendMessageToSavesChannel(message string) {
+	if !config.IsDiscordEnabled {
+		return
+	}
 	if config.DiscordSession == nil {
-		fmt.Println("Discord session is not initialized")
+		fmt.Println("Discord Error: Discord is enabled but session is not initialized")
 		return
 	}
 	//clearMessagesAboveLastN(config.SaveChannelID, 300)
@@ -104,8 +116,11 @@ func updateConnectedPlayersMessage(channelID string) {
 }
 
 func sendAndEditMessageInConnectedPlayersChannel(channelID, message string) {
+	if !config.IsDiscordEnabled {
+		return
+	}
 	if config.DiscordSession == nil {
-		fmt.Println("Discord session is not initialized")
+		fmt.Println("Discord Error: Discord is enabled but session is not initialized")
 		return
 	}
 	//only clear messages if we are on the beta branch
@@ -145,8 +160,11 @@ func updateBotStatus(s *discordgo.Session) {
 // CLEAR MESSAGES
 func clearMessagesAboveLastN(channelID string, keep int) {
 	go func() {
+		if !config.IsDiscordEnabled {
+			return
+		}
 		if config.DiscordSession == nil {
-			fmt.Println("Discord session is not initialized")
+			fmt.Println("Discord Error: Discord is enabled but session is not initialized")
 			return
 		}
 
