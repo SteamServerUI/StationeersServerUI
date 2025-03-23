@@ -45,8 +45,8 @@ var (
 	IsDiscordEnabled          bool
 	IsFirstTimeSetup          bool
 	GameBranch                string
-	Version                   = "2.4.7"
-	Branch                    = "branch-selector"
+	Version = "2.5.1"
+	Branch                    = "detection-module"
 	GameServerAppID           = "600760" // Steam App ID for Stationeers Dedicated Server
 )
 
