@@ -10,10 +10,30 @@ import (
 	"time"
 )
 
+const (
+	// ANSI color codes for styling terminal output
+	colorReset   = "\033[0m"
+	colorRed     = "\033[31m"
+	colorGreen   = "\033[32m"
+	colorYellow  = "\033[33m"
+	colorBlue    = "\033[34m"
+	colorMagenta = "\033[35m"
+	colorCyan    = "\033[36m"
+)
+
 // Install performs the entire installation process and ensures the server waits for it to complete
 func Install(wg *sync.WaitGroup) {
 	defer wg.Done()             // Signal that installation is complete
 	time.Sleep(1 * time.Second) // Small pause for effect
+
+	workingDir := "./UIMod/"
+	configFilePath := workingDir + "config.json"
+	fmt.Println(string(colorYellow), "Loading configuration from", configFilePath, string(colorReset))
+	_, err := config.LoadConfig(configFilePath)
+	if err != nil {
+		fmt.Println("⚠️  Config file not found or invalid, downloading stable branch...")
+		config.GameBranch = "public" // Set default value
+	}
 
 	// Step 1: Check and download the UIMod folder contents
 	fmt.Println("🔄 Checking UIMod folder contents...")

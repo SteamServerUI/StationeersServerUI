@@ -20,6 +20,7 @@ type Config struct {
 	BlackListFilePath       string `json:"blackListFilePath"`
 	IsDiscordEnabled        bool   `json:"isDiscordEnabled"`
 	ErrorChannelID          string `json:"errorChannelID"`
+	GameBranch              string `json:"gameBranch"`
 }
 
 var (
@@ -43,8 +44,10 @@ var (
 	ControlPanelChannelID     string
 	IsDiscordEnabled          bool
 	IsFirstTimeSetup          bool
-	Version = "2.4.6"
-	Branch                    = "nightly-linux-fixes"
+	GameBranch                string
+	Version                   = "2.4.7"
+	Branch                    = "branch-selector"
+	GameServerAppID           = "600760" // Steam App ID for Stationeers Dedicated Server
 )
 
 func LoadConfig(filename string) (*Config, error) {
@@ -81,5 +84,6 @@ func LoadConfig(filename string) (*Config, error) {
 	ControlPanelChannelID = config.ControlPanelChannelID
 	IsDiscordEnabled = config.IsDiscordEnabled
 	ErrorChannelID = config.ErrorChannelID
+	GameBranch = config.GameBranch
 	return &config, nil
 }

@@ -35,18 +35,23 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	alwaysNeededParams := []string{"-batchmode", "1", "-nographics", "1", "-autostart", "1"}
-	args := append(append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings"), strings.Split(config.Server.Settings, " ")...)
+	// Fix: Properly construct the parameters array
+	alwaysNeededParams := []string{"-batchmode", "-nographics", "-autostart"}
+	args := append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings")
+	args = append(args, strings.Split(config.Server.Settings, " ")...)
+
 	cmd = exec.Command(config.Server.ExePath, args...)
 	exePath := colorGreen + colorBold + config.Server.ExePath + colorReset
 	fmt.Printf("\n%s%s=== GAMESERVER STARTING ===%s\n", colorCyan, colorBold, colorReset)
 	fmt.Printf("• Executable: %s\n", exePath)
 	fmt.Printf("• Parameters: ")
 
+	// Fix: Print parameters with proper spacing
 	for i, arg := range args {
 		if i > 0 {
-			fmt.Printf("%s%s%s ", colorYellow, arg, colorReset)
+			fmt.Printf(" ")
 		}
+		fmt.Printf("%s%s%s", colorYellow, arg, colorReset)
 	}
 	fmt.Printf("\n\n")
 
