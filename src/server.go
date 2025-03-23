@@ -3,6 +3,7 @@ package main
 import (
 	"StationeersServerUI/src/api"
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/detection" // Add the detection package
 	discord "StationeersServerUI/src/discord"
 	"StationeersServerUI/src/install"
 	"fmt"
@@ -47,13 +48,19 @@ func main() {
 	fmt.Println(string(colorBlue), "Loading configuration from", configFilePath, string(colorReset))
 	config.LoadConfig(configFilePath)
 
+	// Initialize the detection module
+	fmt.Println(string(colorBlue), "Initializing detection module...", string(colorReset))
+	detector := detection.Start()
+	detection.RegisterDefaultHandlers(detector) // Logs detections to console for now
+	fmt.Println(string(colorGreen), "Detection module ready!", string(colorReset))
+
 	// If Discord is enabled, start the Discord bot
 	if config.IsDiscordEnabled {
 		fmt.Println(string(colorGreen), "Starting Discord bot...", string(colorReset))
 		go discord.StartDiscordBot()
 	}
 
-	go startLogStream()
+	go startLogStream(detector) // Pass the detector to the log stream function
 
 	fmt.Println(string(colorBlue), "Starting API services...", string(colorReset))
 	go api.StartAPI()
@@ -90,10 +97,9 @@ func main() {
 		fmt.Printf(string(colorRed)+"Error starting HTTP server: %v\n"+string(colorReset), err)
 		os.Exit(1)
 	}
-
 }
 
-func startLogStream() {
+func startLogStream(detector *detection.Detector) {
 	client := sse.NewClient("http://localhost:8080/output")
 	client.Headers["Content-Type"] = "text/event-stream"
 	client.Headers["Connection"] = "keep-alive"
@@ -108,10 +114,14 @@ func startLogStream() {
 			err := client.SubscribeRaw(func(msg *sse.Event) {
 				if len(msg.Data) > 0 {
 					logMessage := string(msg.Data)
-					discord.AddToLogBuffer(logMessage)
+					// Feed the log to both Discord (if enabled) and the detection module
+					if config.IsDiscordEnabled {
+						discord.AddToLogBuffer(logMessage)
+					}
+					detection.ProcessLog(detector, logMessage)
 
 					//fmt.Println(string(colorGreen), "Serverlog:", logMessage, string(colorReset))
-					//dont spam the console with the server log
+					//dont spam the console with the server log (it is filled with mono errors beacause stationeers is...literally bug-free...)
 				}
 			})
 
