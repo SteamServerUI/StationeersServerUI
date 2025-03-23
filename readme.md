@@ -8,9 +8,10 @@
 |:-----------:|:-------------:|:-----------------:|
 | ![UI Overview](media/UI-1.png) | ![Configuration](media/UI-2.png) | ![Backup Management](media/UI-3.png) |
 
-## Known Bug
-The Server config page got a rework. I broke the functionality doing this. Whoopsies. Please use Settings.xml in the main Server dir until I fix this issue. The SaveName on the Config Page still has to be specified for the backup system to work properly, and to be able to restore from Discord.
-OK Sorry guys I still haven't published the fix. I was working on it, I bet it is mostly finished but I didn't really need it and sadly did not finish. IF somebody wants to use this software - ping me, I will finish it for you!
+## Project Status Update (Linux Coming)
+The main branch is stable for Windows but trails behind features and importantly fixs in the nightly branch, where active development is taking place. The nightly branch (https://github.com/JacksonTheMaster/StationeersServerUI/tree/nightly) is currently "suspected stable" for Windows and includes progress on Linux and Docker support, though these builds are still in development with some pending issues. We’re refining these features before merging into main. 
+
+For the latest updates, including a "suspected stable" Windows version and experimental features, see the nightly branch.
 
 ## Introduction
 
