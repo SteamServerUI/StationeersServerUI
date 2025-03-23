@@ -3,7 +3,7 @@ package main
 import (
 	"StationeersServerUI/src/api"
 	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/detection" // Add the detection package
+	"StationeersServerUI/src/detection"
 	discord "StationeersServerUI/src/discord"
 	"StationeersServerUI/src/install"
 	"fmt"
