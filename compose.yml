@@ -3,6 +3,15 @@ services:
     container_name: stationeers-server
     build : .
     image: stationeers-server-ui:latest
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 16G
+          pids: 1
+        reservations:
+          cpus: '2'
+          memory: 4G
     ports:
       - "8080:8080"
       - "27016:27016"
@@ -15,5 +24,3 @@ services:
     # Example with additional arguments
     # command: ["/app/StationeersServerControl", "-config", "/app/config/config.json"]
     command: []
-
-#TODO: add resource limits and cpu core assignment
