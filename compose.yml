@@ -8,7 +8,6 @@ services:
         limits:
           cpus: '8'
           memory: 16G
-          pids: 1
         reservations:
           cpus: '4'
           memory: 8G
