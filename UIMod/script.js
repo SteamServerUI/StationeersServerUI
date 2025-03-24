@@ -1,6 +1,6 @@
 // /static/script.js
 document.addEventListener('DOMContentLoaded', () => {
-    typeText(document.querySelector('h1'), 60);  // Type out the h1 on load
+    typeText(document.querySelector('h1'), 30);  // Type out the h1 on load
     setDefaultConsoleMessage();
     setupTabs();
     fetchOutput();
@@ -24,29 +24,35 @@ function showTab(tabId) {
 }
 
 function typeText(element, speed) {
-    const fullText = element.innerHTML;
-    element.innerHTML = '';
+    const fullText = element.textContent; // Use textContent instead of innerHTML
+    console.log(fullText);
+    element.textContent = ''; // Clear using textContent
     let i = 0;
+    
     function typeChar() {
         if (i < fullText.length) {
-            element.innerHTML += fullText.charAt(i);
+            element.textContent += fullText.charAt(i);
             i++;
             setTimeout(typeChar, speed);
+            console.log(i, element.textContent)
+
+
         }
     }
     typeChar();
 }
 
 function typeTextWithCallback(element, text, speed, callback) {
-    element.innerHTML = '';
+    element.innerHTML = ''; // Clear the element
     let i = 0;
+    
     function typeChar() {
         if (i < text.length) {
             element.innerHTML += text.charAt(i);
             i++;
             setTimeout(typeChar, speed);
         } else if (callback) {
-            callback();
+            setTimeout(callback, 50);
         }
     }
     typeChar();
@@ -55,13 +61,17 @@ function typeTextWithCallback(element, text, speed, callback) {
 function startServer() {
     fetch('/start')
         .then(response => response.text())
-        .then(data => typeTextWithCallback(document.getElementById('status'), data, 20));
+        .then(document.getElementById('status').hidden = false)
+        .then(data => typeTextWithCallback(document.getElementById('status'), data, 20))
+        .then(setTimeout(() => document.getElementById('status').hidden = true, 10000));
 }
 
 function stopServer() {
     fetch('/stop')
         .then(response => response.text())
-        .then(data => typeTextWithCallback(document.getElementById('status'), data, 20));
+        .then(document.getElementById('status').hidden = false)
+        .then(data => typeTextWithCallback(document.getElementById('status'), data, 20))
+        .then(setTimeout(() => document.getElementById('status').hidden = true, 10000));
 }
 
 // Close SSE connections before navigation
@@ -194,7 +204,9 @@ function extractIndex(backupText) {
 function restoreBackup(index) {
     fetch(`/restore?index=${index}`)
         .then(response => response.text())
-        .then(data => typeTextWithCallback(document.getElementById('status'), data, 20));
+        .then(document.getElementById('status').hidden = false)
+        .then(data => typeTextWithCallback(document.getElementById('status'), data, 20))
+        .then(setTimeout(() => document.getElementById('status').hidden = true, 30000));
 }
 
 function setDefaultConsoleMessage() {
@@ -210,65 +222,158 @@ function setDefaultConsoleMessage() {
         "[##################     ] 80%",
         "[#######################] 100%"
     ];
-    const bootCompleteMessage = "System boot complete.\nINFO: Press 'Start' to launch the game server.";
+    const bootCompleteMessage = "Interface boot complete.";
     const bugChance = Math.random();
     const bugMessage = "ERROR: Nuclear parts in airflow detected! Initiating repair sequence...";
-
+    
+    // Random fun messages that appear during boot
+    const funMessages = [
+        "Calibrating quantum flux capacitors...",
+        "Initializing player happiness modules...",
+        "Checking for monsters under the server...",
+        "Brewing coffee for the CPU...",
+        "Charging laser sharks...",
+        "Teaching AI to say 'please' and 'thank you'...",
+        "Polishing pixels to a mirror shine...",
+        "Convincing electrons to flow in the right direction...",
+        "Rebooting atmospheric systems for the 17th time...",
+        "Attempting to locate your body after that last airlock malfunction...",
+        "Converting oxygen to errors at alarming efficiency...",
+        "Persuading physics engine to acknowledge gravity exists...",
+        "Calculating ways your base will catastrophically depressurize...",
+        "Optimizing unity garbage collection (good luck with that)...",
+        "Aligning planetary rotation with server tick rate...",
+        "Patching holes in space-time continuum and your habitat...",
+        "Convincing solar panels that 'sun' is not just a theoretical concept...",
+        "Negotiating peace treaty between logic circuits and the laws of thermodynamics...",
+        "Compressing atmosphere until your CPU begs for mercy...",
+        "Measuring distance between you and nearest fatal bug...",
+        "Attempting to explain 'pipe networks' to confused server hamsters...",
+        "Calculating probability of survival (spoiler: it's low)...",
+        "Wrangling rogue Unity instances back into containment...",
+        "Sacrificing RAM to the gods of stable framerates...",
+        "Convincing electrons to flow in the right direction... nope, the power grid's borked.",
+        "Patching hull breaches with duct tape and prayers...",
+        "Recalculating O2 levels... wait, why is it all CO2 now?",
+        "Spinning up the fabricator... hope it doesn’t eat the server this time.",
+        "Debugging Unity physics... object launched into orbit, send help.",
+        "Warming up the furnace... or just setting the base on fire, 50/50 shot.",
+        "Rerouting pipes... because who needs logical fluid dynamics anyway?",
+        "Loading terrain... oh look, it’s floating 3 meters above the ground again.",
+        "Processing ore... into a fine paste of lag and despair.",
+        "Stabilizing frame rate... lol, just kidding, welcome to 12 FPS city.",
+        "Checking for updates... new bug introduced, feature still broken!",
+        "Assembling solar tracker... now it’s tracking the admin instead.",
+        "Balancing gas mixtures... kaboom imminent, run you fool!"
+    ];
+    
+    // Add note that user can interact while booting
+    const noteElement = document.createElement('div');
+    noteElement.innerHTML = "<em>Note: You can use all controls while boot animation plays</em>";
+    noteElement.style.opacity = "0.7";
+    noteElement.style.fontSize = "0.9em";
+    noteElement.style.marginTop = "5px";
+    consoleElement.appendChild(noteElement);
+    
     typeTextWithCallback(consoleElement, bootTitle, 50, () => {
         setTimeout(() => {
             let index = 0;
             const progressElement = document.createElement('div');
             consoleElement.appendChild(progressElement);
+            
+            // Add a random fun message
+            const funMessageElement = document.createElement('div');
+            funMessageElement.style.color = '#0af';
+            funMessageElement.style.fontStyle = 'italic';
+            funMessageElement.textContent = funMessages[Math.floor(Math.random() * funMessages.length)];
+            consoleElement.appendChild(funMessageElement);
+            
             const bootInterval = setInterval(() => {
                 if (index < bootProgressStages.length) {
                     progressElement.textContent = bootProgressStages[index];
+                    
+                    // Add another random message halfway through
+                    if (index === 2) {
+                        const anotherFunMessage = document.createElement('div');
+                        anotherFunMessage.style.color = '#0af';
+                        anotherFunMessage.style.fontStyle = 'italic';
+                        
+                        // Get a different message than the first one
+                        let messageIndex;
+                        do {
+                            messageIndex = Math.floor(Math.random() * funMessages.length);
+                        } while (funMessageElement.textContent === funMessages[messageIndex]);
+                        
+                        anotherFunMessage.textContent = funMessages[messageIndex];
+                        consoleElement.appendChild(anotherFunMessage);
+                    }
+                    
                     consoleElement.scrollTop = consoleElement.scrollHeight;
                     index++;
                 } else {
                     clearInterval(bootInterval);
-                    if (bugChance < 0.05) {
-                        const bugElement = document.createElement('div');
-                        bugElement.style.color = 'red';
-                        bugElement.textContent = bugMessage;
-                        consoleElement.appendChild(bugElement);
-                        consoleElement.scrollTop = consoleElement.scrollHeight;
-                        setTimeout(() => {
-                            const repairMessage = "Repair complete. Continuing boot sequence...";
-                            const repairElement = document.createElement('div');
-                            repairElement.style.color = 'green';
-                            repairElement.textContent = repairMessage;
-                            consoleElement.appendChild(repairElement);
-                            consoleElement.scrollTop = consoleElement.scrollHeight;
-                            setTimeout(() => {
-                                const completionElement = document.createElement('div');
-                                completionElement.innerHTML = bootCompleteMessage.replace(/\n/g, '<br>');
-                                consoleElement.appendChild(completionElement);
-                                consoleElement.scrollTop = consoleElement.scrollHeight;
-                            }, 1000);
-                        }, 2000);
-                    } else {
-                        setTimeout(() => {
-                            const completionElement = document.createElement('div');
-                            completionElement.innerHTML = bootCompleteMessage.replace(/\n/g, '<br>');
-                            consoleElement.appendChild(completionElement);
-                            consoleElement.scrollTop = consoleElement.scrollHeight;
-                        }, 200);
-                    }
+                    completeBootAnimation();
                 }
-            }, 150);
-        }, 100);
+            }, 100); // Faster interval
+        }, 50); // Shorter initial delay
     });
+    
+    function completeBootAnimation() {
+        if (bugChance < 0.05) {
+            const bugElement = document.createElement('div');
+            bugElement.style.color = 'red';
+            bugElement.textContent = bugMessage;
+            consoleElement.appendChild(bugElement);
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+            setTimeout(() => {
+                const repairMessage = "Repair complete. Continuing boot sequence...";
+                const repairElement = document.createElement('div');
+                repairElement.style.color = 'green';
+                repairElement.textContent = repairMessage;
+                consoleElement.appendChild(repairElement);
+                consoleElement.scrollTop = consoleElement.scrollHeight;
+            }, 2000);
+        }
+        // Clear any running intervals
+        for (let i = 1; i < 9999; i++) window.clearInterval(i);
+        
+        // Complete the animation
+        const completionElement = document.createElement('div');
+        completionElement.innerHTML = bootCompleteMessage.replace(/\n/g, '<br>');
+        completionElement.style.color = '#0f0';
+        completionElement.style.fontWeight = 'bold';
+        consoleElement.appendChild(completionElement);
+        
+        // Add a small celebratory message
+        const celebrationElement = document.createElement('div');
+        celebrationElement.innerHTML = "🎮 Happy gaming! 🎮";
+        celebrationElement.style.textAlign = 'center';
+        celebrationElement.style.marginTop = '10px';
+        consoleElement.appendChild(celebrationElement);
+        
+        consoleElement.scrollTop = consoleElement.scrollHeight;
+    }
 }
 
-const cssAnimation = `
-@keyframes notification-glow {
-    0% { box-shadow: 0 0 5px rgba(0, 255, 171, 0.5); }
-    50% { box-shadow: 0 0 20px rgba(0, 255, 171, 1); }
-    100% { box-shadow: 0 0 5px rgba(0, 255, 171, 0.5); }
+const additionalCSS = `
+.skip-animation-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 170, 255, 0.3);
+    border: 1px solid rgba(0, 170, 255, 0.6);
+    color: rgba(0, 255, 255, 0.8);
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
-.notification {
-    animation: notification-glow 1s infinite;
-}`;
-const style = document.createElement('style');
-style.textContent = cssAnimation;
-document.head.appendChild(style);
+.skip-animation-btn:hover {
+    background: rgba(0, 170, 255, 0.5);
+    color: rgba(0, 255, 255, 1);
+}
+`;
+
+const extraStyle = document.createElement('style');
+extraStyle.textContent = additionalCSS;
+document.head.appendChild(extraStyle);
