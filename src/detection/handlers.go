@@ -1,7 +1,9 @@
+// Update src/detection/handlers.go
 package detection
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -20,52 +22,78 @@ const (
 func DefaultHandlers() map[EventType]Handler {
 	return map[EventType]Handler{
 		EventServerReady: func(event Event) {
-			fmt.Printf("%s🎮 [Gameserver] %s🔔 Server is ready to connect!%s\n",
-				colorCyan, colorGreen, colorReset)
+			message := "🎮 [Gameserver] 🔔 Server is ready to connect!"
+			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorGreen, colorReset)
+			BroadcastDetectionEvent(message)
 		},
 		EventServerStarting: func(event Event) {
-			fmt.Printf("%s🎮 [Gameserver] %s🕑 Server is starting up...%s\n",
-				colorCyan, colorYellow, colorReset)
+			message := "🎮 [Gameserver] 🕑 Server is starting up..."
+			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorYellow, colorReset)
+			BroadcastDetectionEvent(message)
 		},
 		EventServerError: func(event Event) {
-			fmt.Printf("%s🎮 [Gameserver] %s⚠️ Server error detected%s\n",
-				colorCyan, colorRed, colorReset)
+			message := "🎮 [Gameserver] ⚠️ Server error detected"
+			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorRed, colorReset)
+			BroadcastDetectionEvent(message)
 		},
 		EventPlayerConnecting: func(event Event) {
 			if event.PlayerInfo != nil {
-				fmt.Printf("%s🎮 [Gameserver] %s🔄 Player %s%s%s (SteamID: %s) is connecting...%s\n",
-					colorCyan, colorBlue, colorMagenta, event.PlayerInfo.Username,
+				message := fmt.Sprintf("🎮 [Gameserver] 🔄 Player %s (SteamID: %s) is connecting...",
+					event.PlayerInfo.Username, event.PlayerInfo.SteamID)
+				fmt.Printf("%s%s%s%s%s%s%s\n",
+					colorCyan, colorBlue, message, colorMagenta,
 					colorBlue, event.PlayerInfo.SteamID, colorReset)
+				BroadcastDetectionEvent(message)
 			}
 		},
 		EventPlayerReady: func(event Event) {
 			if event.PlayerInfo != nil {
-				fmt.Printf("%s🎮 [Gameserver] %s✅ Player %s%s%s (SteamID: %s) is ready!%s\n",
-					colorCyan, colorGreen, colorMagenta, event.PlayerInfo.Username,
+				message := fmt.Sprintf("🎮 [Gameserver] ✅ Player %s (SteamID: %s) is ready!",
+					event.PlayerInfo.Username, event.PlayerInfo.SteamID)
+				fmt.Printf("%s%s%s%s%s%s%s\n",
+					colorCyan, colorGreen, message, colorMagenta,
 					colorGreen, event.PlayerInfo.SteamID, colorReset)
+				BroadcastDetectionEvent(message)
 			}
 		},
 		EventPlayerDisconnect: func(event Event) {
 			if event.PlayerInfo != nil {
-				fmt.Printf("%s🎮 [Gameserver] %s👋 Player %s%s%s disconnected%s\n",
-					colorCyan, colorYellow, colorMagenta, event.PlayerInfo.Username,
+				message := fmt.Sprintf("🎮 [Gameserver] 👋 Player %s disconnected",
+					event.PlayerInfo.Username)
+				fmt.Printf("%s%s%s%s%s%s\n",
+					colorCyan, colorYellow, message, colorMagenta,
 					colorYellow, colorReset)
+				BroadcastDetectionEvent(message)
 			}
 		},
 		EventWorldSaved: func(event Event) {
 			if event.BackupInfo != nil {
-				fmt.Printf("%s🎮 [Gameserver] %s💾 World Saved: %sBackupIndex: %s%s UTC Time: %s%s\n",
-					colorCyan, colorGreen, colorYellow, event.BackupInfo.BackupIndex,
-					colorGreen, time.Now().UTC().Format(time.RFC3339), colorReset)
+				timeStr := time.Now().UTC().Format(time.RFC3339)
+				message := fmt.Sprintf("🎮 [Gameserver] 💾 World Saved: BackupIndex: %s UTC Time: %s",
+					event.BackupInfo.BackupIndex, timeStr)
+				fmt.Printf("%s%s%s%s%s%s%s\n",
+					colorCyan, colorGreen, message, colorYellow,
+					colorGreen, timeStr, colorReset)
+				BroadcastDetectionEvent(message)
 			}
 		},
 		EventException: func(event Event) {
-			fmt.Printf("%s🎮 [Gameserver] %s🚨 Exception detected!%s\n",
-				colorCyan, colorRed, colorReset)
+			// Initial alert message
+			alertMessage := "🎮 [Gameserver] 🚨 Exception detected!"
+			fmt.Printf("%s%s%s%s\n", colorCyan, alertMessage, colorRed, colorReset)
+			BroadcastDetectionEvent(alertMessage)
+
 			if event.ExceptionInfo != nil && len(event.ExceptionInfo.StackTrace) > 0 {
-				fmt.Printf("%sStack trace:%s\n%s%s%s\n",
-					colorYellow, colorReset, colorRed,
-					event.ExceptionInfo.StackTrace, colorReset)
+				// Format stack trace as a single-line string for SSE compatibility
+				stackTrace := strings.ReplaceAll(event.ExceptionInfo.StackTrace, "\n", " | ")
+				detailedMessage := fmt.Sprintf("Exception Details: Stack Trace: %s", stackTrace)
+
+				// Console output with original formatting
+				fmt.Printf("%sException Details:\nStack Trace:\n%s%s%s%s\n",
+					colorYellow, event.ExceptionInfo.StackTrace, colorReset, colorRed, colorReset)
+
+				// Broadcast UI-friendly version
+				BroadcastDetectionEvent(detailedMessage)
 			}
 		},
 	}

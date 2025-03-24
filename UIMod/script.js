@@ -1,7 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => {
     typeText(document.querySelector('h1'), 60);  // Type out the h1 on load
     setDefaultConsoleMessage();
+    setupTabs();
 });
+
+function setupTabs() {
+    // Set the first tab as active by default
+    showTab('console-tab');
+}
+
+function showTab(tabId) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    
+    // Show the selected tab
+    document.getElementById(tabId).classList.add('active');
+    
+    // Add active class to clicked button
+    document.querySelectorAll('.tab-button').forEach(button => {
+        if (button.getAttribute('onclick').includes(tabId)) {
+            button.classList.add('active');
+        }
+    });
+}
 
 function typeText(element, speed) {
     const fullText = element.innerHTML;
@@ -59,6 +87,50 @@ function fetchOutput() {
     };
 }
 
+function fetchDetectionEvents() {
+    const eventSource = new EventSource('/detection-events');
+    eventSource.onmessage = function(event) {
+        const detectionConsole = document.getElementById('detection-console');
+        const message = document.createElement('div');
+        message.className = getEventClassName(event.data);
+        message.classList.add('detection-event');
+        
+        const timestamp = document.createElement('span');
+        timestamp.className = 'event-timestamp';
+        timestamp.textContent = new Date().toLocaleTimeString() + ': ';
+        
+        const content = document.createElement('span');
+        content.textContent = event.data;
+        
+        message.appendChild(timestamp);
+        message.appendChild(content);
+        
+        detectionConsole.appendChild(message);
+        detectionConsole.scrollTop = detectionConsole.scrollHeight;
+        
+        // Also show notification if we're not on the detection tab
+        if (!document.getElementById('detection-tab').classList.contains('active')) {
+            const tabButton = document.querySelector('.tab-button[onclick*="detection-tab"]');
+            tabButton.classList.add('notification');
+            setTimeout(() => {
+                tabButton.classList.remove('notification');
+            }, 3000);
+        }
+    };
+}
+
+function getEventClassName(eventText) {
+    if (eventText.includes('Server is ready')) return 'event-server-ready';
+    if (eventText.includes('Server is starting')) return 'event-server-starting';
+    if (eventText.includes('Server error')) return 'event-server-error';
+    if (eventText.includes('Player') && eventText.includes('connecting')) return 'event-player-connecting';
+    if (eventText.includes('Player') && eventText.includes('ready')) return 'event-player-ready';
+    if (eventText.includes('Player') && eventText.includes('disconnected')) return 'event-player-disconnect';
+    if (eventText.includes('World Saved')) return 'event-world-saved';
+    if (eventText.includes('Exception')) return 'event-exception';
+    return '';
+}
+
 function fetchBackups() {
     fetch('/backups')
         .then(response => response.text())
@@ -91,7 +163,6 @@ function restoreBackup(index) {
         .then(response => response.text())
         .then(data => typeTextWithCallback(document.getElementById('status'), data, 20));
 }
-
 
 function setDefaultConsoleMessage() {
     const consoleElement = document.getElementById('console');
@@ -171,6 +242,24 @@ function setDefaultConsoleMessage() {
     });
 }
 
+// Add this to your animation section in the CSS
+const cssAnimation = `
+@keyframes notification-glow {
+    0% { box-shadow: 0 0 5px rgba(0, 255, 171, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(0, 255, 171, 1); }
+    100% { box-shadow: 0 0 5px rgba(0, 255, 171, 0.5); }
+}
 
+.notification {
+    animation: notification-glow 1s infinite;
+}`;
+
+// Inject the CSS animation
+const style = document.createElement('style');
+style.textContent = cssAnimation;
+document.head.appendChild(style);
+
+// Call our functions to set up the streams
 fetchOutput();
+fetchDetectionEvents();
 fetchBackups();
