@@ -80,7 +80,7 @@ func main() {
 	http.HandleFunc("/saveconfig", api.SaveConfig)
 	http.HandleFunc("/furtherconfig", api.HandleConfigJSON)
 	http.HandleFunc("/saveconfigasjson", api.SaveConfigJSON)
-	http.HandleFunc("/detection-events", ui.StartDetectionEventStream())
+	http.HandleFunc("/events", ui.StartDetectionEventStream())
 
 	fmt.Println(string(colorYellow), "Starting the HTTP server on port 8080...", string(colorReset))
 	fmt.Println(string(colorGreen), "UI available at: http://0.0.0.0:8080", string(colorReset))

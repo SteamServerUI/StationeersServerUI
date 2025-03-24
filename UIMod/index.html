@@ -15,9 +15,9 @@
         <div id="controls">
             <button onclick="startServer()">Start Server</button>
             <button onclick="stopServer()">Stop Server</button>
-            <button onclick="window.location.href = '/config'">Game Server Config</button>
-            <button onclick="window.location.href = '/furtherconfig'">Discord Config</button>
-            <button onclick="window.location.href = '/static/apiinfo.html'">Developer Info</button>
+            <button onclick="navigateTo('/config')">Game Config</button>
+            <button onclick="navigateTo('/furtherconfig')">Discord Config</button>
+            <button onclick="navigateTo('/static/apiinfo.html')">API Info</button>
         </div>
         <p id="status"></p>
         
@@ -39,7 +39,7 @@
             <ul id="backupList"></ul>
         </div>
         <br><br>
-        Copyright &copy; 2025 J. Langisch. Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.
+        Copyright © 2025 J. Langisch. Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.
     </main>
     <script src="/static/script.js"></script>
 </body>
