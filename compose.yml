@@ -6,12 +6,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '4'
+          cpus: '8'
           memory: 16G
           pids: 1
         reservations:
-          cpus: '2'
-          memory: 4G
+          cpus: '4'
+          memory: 8G
     ports:
       - "8080:8080"
       - "27016:27016"
