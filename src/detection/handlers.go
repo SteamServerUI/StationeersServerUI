@@ -2,6 +2,7 @@
 package detection
 
 import (
+	"StationeersServerUI/src/ui"
 	"fmt"
 	"strings"
 	"time"
@@ -24,17 +25,17 @@ func DefaultHandlers() map[EventType]Handler {
 		EventServerReady: func(event Event) {
 			message := "🎮 [Gameserver] 🔔 Server is ready to connect!"
 			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorGreen, colorReset)
-			BroadcastDetectionEvent(message)
+			ui.BroadcastDetectionEvent(message)
 		},
 		EventServerStarting: func(event Event) {
 			message := "🎮 [Gameserver] 🕑 Server is starting up..."
 			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorYellow, colorReset)
-			BroadcastDetectionEvent(message)
+			ui.BroadcastDetectionEvent(message)
 		},
 		EventServerError: func(event Event) {
 			message := "🎮 [Gameserver] ⚠️ Server error detected"
 			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorRed, colorReset)
-			BroadcastDetectionEvent(message)
+			ui.BroadcastDetectionEvent(message)
 		},
 		EventPlayerConnecting: func(event Event) {
 			if event.PlayerInfo != nil {
@@ -43,7 +44,7 @@ func DefaultHandlers() map[EventType]Handler {
 				fmt.Printf("%s%s%s%s%s%s%s\n",
 					colorCyan, colorBlue, message, colorMagenta,
 					colorBlue, event.PlayerInfo.SteamID, colorReset)
-				BroadcastDetectionEvent(message)
+				ui.BroadcastDetectionEvent(message)
 			}
 		},
 		EventPlayerReady: func(event Event) {
@@ -53,7 +54,7 @@ func DefaultHandlers() map[EventType]Handler {
 				fmt.Printf("%s%s%s%s%s%s%s\n",
 					colorCyan, colorGreen, message, colorMagenta,
 					colorGreen, event.PlayerInfo.SteamID, colorReset)
-				BroadcastDetectionEvent(message)
+				ui.BroadcastDetectionEvent(message)
 			}
 		},
 		EventPlayerDisconnect: func(event Event) {
@@ -63,7 +64,7 @@ func DefaultHandlers() map[EventType]Handler {
 				fmt.Printf("%s%s%s%s%s%s\n",
 					colorCyan, colorYellow, message, colorMagenta,
 					colorYellow, colorReset)
-				BroadcastDetectionEvent(message)
+				ui.BroadcastDetectionEvent(message)
 			}
 		},
 		EventWorldSaved: func(event Event) {
@@ -74,14 +75,14 @@ func DefaultHandlers() map[EventType]Handler {
 				fmt.Printf("%s%s%s%s%s%s%s\n",
 					colorCyan, colorGreen, message, colorYellow,
 					colorGreen, timeStr, colorReset)
-				BroadcastDetectionEvent(message)
+				ui.BroadcastDetectionEvent(message)
 			}
 		},
 		EventException: func(event Event) {
 			// Initial alert message
 			alertMessage := "🎮 [Gameserver] 🚨 Exception detected!"
 			fmt.Printf("%s%s%s%s\n", colorCyan, alertMessage, colorRed, colorReset)
-			BroadcastDetectionEvent(alertMessage)
+			ui.BroadcastDetectionEvent(alertMessage)
 
 			if event.ExceptionInfo != nil && len(event.ExceptionInfo.StackTrace) > 0 {
 				// Format stack trace as a single-line string for SSE compatibility
@@ -93,7 +94,7 @@ func DefaultHandlers() map[EventType]Handler {
 					colorYellow, event.ExceptionInfo.StackTrace, colorReset, colorRed, colorReset)
 
 				// Broadcast UI-friendly version
-				BroadcastDetectionEvent(detailedMessage)
+				ui.BroadcastDetectionEvent(detailedMessage)
 			}
 		},
 	}
