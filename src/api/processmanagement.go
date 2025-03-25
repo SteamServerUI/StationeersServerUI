@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -35,10 +36,25 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	settings := strings.Split(config.Server.Settings, " ")
+	// Separate LocalIpAddress
+	var otherSettings []string
+	var localIP string
+	for i := 0; i < len(settings)-1; i += 2 {
+		if settings[i] == "LocalIpAddress" {
+			localIP = settings[i+1]
+		} else {
+			otherSettings = append(otherSettings, settings[i], settings[i+1])
+		}
+	}
+
 	// Fix: Properly construct the parameters array
 	alwaysNeededParams := []string{"-batchmode", "-nographics", "-autostart"}
 	args := append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings")
-	args = append(args, strings.Split(config.Server.Settings, " ")...)
+	args = append(args, otherSettings...)
+	if localIP != "" {
+		args = append(args, "LocalIpAddress", localIP)
+	}
 
 	cmd = exec.Command(config.Server.ExePath, args...)
 	exePath := colorGreen + colorBold + config.Server.ExePath + colorReset
@@ -66,6 +82,17 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintf(w, "Error creating StderrPipe: %v", err)
 		return
+	}
+
+	// Redirect stdout to ./proc.out on Linux
+	if runtime.GOOS == "linux" {
+		procOut, err := os.Create("./proc.out")
+		if err != nil {
+			fmt.Fprintf(w, "Error creating output file: %v", err)
+			return
+		}
+		defer procOut.Close()
+		cmd.Stdout = procOut
 	}
 
 	// Start the command
