@@ -36,6 +36,11 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	settings := strings.Split(config.Server.Settings, " ")
+	quoteParams := map[string]bool{
+		"ServerName":       true,
+		"ServerPassword":   true,
+		"ServerAuthSecret": true, // Assuming this parameter exists
+	}
 	// Separate LocalIpAddress
 	var otherSettings []string
 	var localIP string
@@ -47,10 +52,19 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Fix: Properly construct the parameters array
-	alwaysNeededParams := []string{"-batchmode", "-nographics", "-autostart"}
+	alwaysNeededParams := []string{"-batchmode", "-nographics"}
 	args := append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings")
-	args = append(args, otherSettings...)
+
+	for i := 0; i < len(otherSettings)-1; i += 2 {
+		key := otherSettings[i]
+		value := otherSettings[i+1]
+		if quoteParams[key] {
+			args = append(args, key, "\""+value+"\"") // Add quotes around the value
+		} else {
+			args = append(args, key, value)
+		}
+	}
+
 	if localIP != "" {
 		args = append(args, "LocalIpAddress", localIP)
 	}
