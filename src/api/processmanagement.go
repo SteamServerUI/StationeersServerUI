@@ -71,12 +71,20 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("\n\n")
 
-	// Capture stdout and stderr
-	stdout, err := cmd.StdoutPipe()
+	// Create output files
+	procOut, err := os.Create("./proc.out")
 	if err != nil {
-		fmt.Fprintf(w, "Error creating StdoutPipe: %v", err)
+		fmt.Fprintf(w, "Error creating proc.out file: %v", err)
 		return
 	}
+	defer procOut.Close()
+
+	debugLog, err := os.OpenFile("./debug.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Fprintf(w, "Error creating debug.log file: %v", err)
+		return
+	}
+	defer debugLog.Close()
 
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
@@ -86,13 +94,13 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect stdout to ./proc.out on Linux
 	if runtime.GOOS == "linux" {
-		procOut, err := os.Create("./proc.out")
-		if err != nil {
-			fmt.Fprintf(w, "Error creating output file: %v", err)
-			return
+		stdoutWriter := io.MultiWriter(procOut)
+		cmd.Stdout = stdoutWriter
+		stdoutReader, err := cmd.StdoutPipe()
+		if err == nil {
+			go readPipe(stdoutReader)
 		}
-		defer procOut.Close()
-		cmd.Stdout = procOut
+		cmd.Stderr = debugLog
 	}
 
 	// Start the command
@@ -102,8 +110,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Start reading stdout and stderr
-	go readPipe(stdout)
+	// Start reading stdoutPipe and stderr
 	go readPipe(stderr)
 
 	fmt.Fprintf(w, "Server started.")
