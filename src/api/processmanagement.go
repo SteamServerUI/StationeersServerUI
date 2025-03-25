@@ -39,11 +39,17 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	alwaysNeededParams := []string{"-batchmode", "-nographics"}
 	args := alwaysNeededParams
 	if runtime.GOOS == "windows" {
-		args = append(alwaysNeededParams, "-LOAD", config.SaveFileName, config.WorldType, "-settings")
+		args = append(args, "-LOAD", config.SaveFileName)
+	} else { // Linux
+		args = append(args, "-LOAD", config.SaveFileName, "-logFile", "./debug.log")
 	}
-	if runtime.GOOS == "linux" {
-		args = append(alwaysNeededParams, "-LOAD", "-logFile \"./debug.log\"", config.SaveFileName, config.WorldType, "-settings")
+
+	//Handle WorldType - only append if not empty
+	if config.WorldType != "" {
+		args = append(args, config.WorldType)
 	}
+
+	args = append(args, "-settings") // "-settings" before other settings
 
 	// Process settings to ensure LocalIpAddress is last
 	settings := strings.Split(config.Server.Settings, " ")
