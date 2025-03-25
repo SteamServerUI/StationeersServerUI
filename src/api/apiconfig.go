@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 )
 
@@ -153,12 +154,20 @@ func SaveConfig(w http.ResponseWriter, r *http.Request) {
 
 		settingsStr := strings.Join(settings, " ")
 
+		// Determine the executable path based on the operating system
+		var exePath string
+		if runtime.GOOS == "windows" {
+			exePath = "./rocketstation_DedicatedServer.exe"
+		} else {
+			exePath = "./rocketstation_DedicatedServer.x86_64"
+		}
+
 		config := Config{
 			Server: struct {
 				ExePath  string `xml:"exePath"`
 				Settings string `xml:"settings"`
 			}{
-				ExePath:  "./rocketstation_DedicatedServer.exe",
+				ExePath:  exePath,
 				Settings: settingsStr,
 			},
 			SaveFileName: r.FormValue("saveFileName"),

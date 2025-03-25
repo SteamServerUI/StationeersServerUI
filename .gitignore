@@ -14,5 +14,6 @@ UnityPlayer.dll
 setting.xml
 rocketstation_DedicatedServer.exe
 /saves/*
-.github/
+.github/workflows/nightly-sync.yml
 repos.md
+StationeersServerUI

@@ -1,0 +1,25 @@
+services:
+  stationeers-server:
+    container_name: stationeers-server
+    build : .
+    image: stationeers-server-ui:latest
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 16G
+        reservations:
+          cpus: '4'
+          memory: 8G
+    ports:
+      - "8080:8080"
+      - "27016:27016"
+    volumes:
+      - ./saves:/app/saves
+      - ./config:/app/config
+    environment:
+      - STEAMCMD_DIR=/app/steamcmd
+    restart: unless-stopped
+    # Example with additional arguments
+    # command: ["/app/StationeersServerControl", "-config", "/app/config/config.json"]
+    command: []

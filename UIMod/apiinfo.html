@@ -11,22 +11,88 @@
         <img src="/static/stationeers.png" alt="Stationeers Banner" id="banner">
     </header>
     <main>
-        <h1>This page is rather outdated, but here's some information about the API:</h1>
-        <h2> V1.X: This server is built using Go, providing a fully functional REST API alongside a simple HTML interface. All UI actions correspond to API calls, allowing full control of the server via the API.</h2>
-        <h2> V2.X: Additionally, the server now features full Discord integration, meaning you can monitor and manage the server directly from your Discord server and let your community manage restores and restarts</h2>
-        <button onclick="window.location.href = '/'">Back</button>
-        <ul>
-            <li><a href="/start">/start GET</a></li>
-            <li><a href="/stop">/stop GET</a></li>
-            <li><a href="/output">/output GET</a></li>
-            <li><a href="/backups">/backups GET</a></li>
-            <li><a href="/restore">/restore GET with index parameter: /restore?index=123</a></li>
-            <li><a href="/saveconfig">/saveconfig POST Form Data, see below</a></li>
-            <li><a href="/config">/config GET</a></li>
-        </ul>
-        <h2>Form Data Explanation</h2>
-        <p><strong>SaveFileName:</strong> The name of the save file to load. This is the name of the file without the extension. Example: Mars</p>
-        <p><strong>Settings:</strong> The server settings. If you need the API, reverse-engineer the form yourself. Actually, consider it a challenge: If you're unable to do this, it's probably easier to just use the UI instead of the API.</p>
+        <h1>About the Server API</h1>
+            
+        <div class="api-overview">
+            <p>This server provides a complete REST API alongside the HTML interface. All UI actions map to API endpoints, allowing full programmatic control.</p>
+            <p class="highlight-text">Check out the events section tab on the main page for more clear information about server events that where detected.</p>
+        </div>
+        
+        <div class="api-section">
+            <h2>Available Endpoints</h2>
+            <div class="endpoint-container">
+                <div class="endpoint">
+                    <h3>Server Control</h3>
+                    <ul class="api-list">
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/start" class="endpoint-link">/start</a>
+                            <div class="endpoint-desc">Start the game server</div>
+                        </li>
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/stop" class="endpoint-link">/stop</a>
+                            <div class="endpoint-desc">Stop the game server</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="endpoint">
+                    <h3>Information</h3>
+                    <ul class="api-list">
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/output" class="endpoint-link">/output</a>
+                            <div class="endpoint-desc">Retrieve server console output</div>
+                        </li>
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/events" class="endpoint-link">/events</a>
+                            <div class="endpoint-desc">Retrieve Detected Events</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="endpoint">
+                    <h3>Configuration</h3>
+                    <ul class="api-list">
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/config" class="endpoint-link">/config</a>
+                            <div class="endpoint-desc">View server configuration</div>
+                        </li>
+                        <li>
+                            <div class="method post">POST</div>
+                            <span class="endpoint-link">/saveconfig</span>
+                            <div class="endpoint-desc">Save server configuration (Form data)</div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="endpoint">
+                    <h3>Save Management</h3>
+                    <ul class="api-list">
+                        <li>
+                            <div class="method get">GET</div>
+                            <span class="endpoint-link">/restore?index=123</span>
+                            <div class="endpoint-desc">Restore from specified save index</div>
+                        </li>
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/backups" class="endpoint-link">/backups</a>
+                            <div class="endpoint-desc">List available save files</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button onclick="window.location.href = '/'">Back to Dashboard</button>
+        </div>
     </main>
+    <footer>
+        <div class="copyright">Copyright &copy; 2025 J. Langisch. Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.</div>
+    </footer>
 </body>
 </html>

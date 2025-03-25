@@ -1,3 +1,4 @@
+// config.go
 package config
 
 import (
@@ -19,6 +20,7 @@ type Config struct {
 	BlackListFilePath       string `json:"blackListFilePath"`
 	IsDiscordEnabled        bool   `json:"isDiscordEnabled"`
 	ErrorChannelID          string `json:"errorChannelID"`
+	GameBranch              string `json:"gameBranch"`
 }
 
 var (
@@ -42,8 +44,10 @@ var (
 	ControlPanelChannelID     string
 	IsDiscordEnabled          bool
 	IsFirstTimeSetup          bool
-	Version = "2.4.3"
-	Branch                    = "Release"
+	GameBranch                string
+	Version = "3.0.1"
+	Branch                    = "release"
+	GameServerAppID           = "600760" // Steam App ID for Stationeers Dedicated Server
 )
 
 func LoadConfig(filename string) (*Config, error) {
@@ -80,5 +84,6 @@ func LoadConfig(filename string) (*Config, error) {
 	ControlPanelChannelID = config.ControlPanelChannelID
 	IsDiscordEnabled = config.IsDiscordEnabled
 	ErrorChannelID = config.ErrorChannelID
+	GameBranch = config.GameBranch
 	return &config, nil
 }

@@ -1,17 +1,25 @@
 package install
 
 import (
-	"archive/tar"
-	"archive/zip"
-	"bytes"
-	"compress/gzip"
+	"StationeersServerUI/src/config"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+)
+
+// ExtractorFunc is a type that represents a function for extracting archives.
+// It takes an io.ReaderAt, the size of the content, and the destination directory.
+type ExtractorFunc func(io.ReaderAt, int64, string) error
+
+// Constants for repeated strings
+const (
+	SteamCMDLinuxURL   = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz"
+	SteamCMDWindowsURL = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
+	SteamCMDLinuxDir   = "./steamcmd"
+	SteamCMDWindowsDir = "C:\\SteamCMD"
 )
 
 // Color codes for terminal
@@ -26,216 +34,141 @@ const (
 	ColorWhite  = "\033[37m"
 )
 
-// InstallAndRunSteamCMD installs and runs SteamCMD based on the platform (Windows/Linux)
+// Verbose mode flag - true if not Release branch
+var verbose = config.Branch != "Release"
+
+// logVerbose prints a message only if verbose mode is enabled.
+func logVerbose(message string) {
+	if verbose {
+		fmt.Print(message)
+	}
+}
+
+// logError prints an error message regardless of verbose mode.
+func logError(message string) {
+	fmt.Print(ColorRed + message + ColorReset)
+}
+
+// logSuccess prints a success message only if verbose mode is enabled.
+func logSuccess(message string) {
+	if verbose {
+		fmt.Print(ColorGreen + message + ColorReset)
+	}
+}
+
+// InstallAndRunSteamCMD installs and runs SteamCMD based on the platform (Windows/Linux).
+// It automatically detects the OS and calls the appropriate installation function.
 func InstallAndRunSteamCMD() {
 	if runtime.GOOS == "windows" {
 		installSteamCMDWindows()
 	} else if runtime.GOOS == "linux" {
 		installSteamCMDLinux()
 	} else {
-		fmt.Println(ColorRed + "SteamCMD installation is not supported on this OS." + ColorReset)
+		logError("❌ SteamCMD installation is not supported on this OS.\n")
 		return
 	}
 }
 
-// installSteamCMDWindows downloads and installs SteamCMD on Windows
-func installSteamCMDWindows() {
-	steamCMDDir := "C:\\SteamCMD"
-
+func installSteamCMD(platform string, steamCMDDir string, downloadURL string, extractFunc ExtractorFunc) {
 	// Check if SteamCMD is already installed
 	if _, err := os.Stat(steamCMDDir); os.IsNotExist(err) {
-		fmt.Println(ColorYellow + "SteamCMD not found, downloading..." + ColorReset)
+		logVerbose(ColorYellow + "⚠️ SteamCMD not found for " + platform + ", downloading...\n" + ColorReset)
 
 		// Create SteamCMD directory
-		err := os.MkdirAll(steamCMDDir, os.ModePerm)
-		if err != nil {
-			fmt.Printf(ColorRed+"Error creating SteamCMD directory: %v\n"+ColorReset, err)
+		if err := createSteamCMDDirectory(steamCMDDir); err != nil {
+			logError("❌ Error creating SteamCMD directory: " + err.Error() + "\n")
 			return
 		}
 
-		// Download SteamCMD
-		downloadURL := "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
-		resp, err := http.Get(downloadURL)
-		if err != nil {
-			fmt.Printf(ColorRed+"Error downloading SteamCMD: %v\n"+ColorReset, err)
-			return
-		}
-		defer resp.Body.Close()
+		// Ensure cleanup on failure
+		success := false
+		defer func() {
+			if !success {
+				logVerbose(ColorYellow + "⚠️ Cleaning up due to failure...\n" + ColorReset)
+				os.RemoveAll(steamCMDDir)
+			}
+		}()
 
-		// Read zip content
-		zipContent, err := io.ReadAll(resp.Body)
-		zipReader := bytes.NewReader(zipContent)
-
-		if err != nil {
-			fmt.Printf(ColorRed+"Error reading SteamCMD zip: %v\n"+ColorReset, err)
+		// Install required libraries
+		if err := installRequiredLibraries(); err != nil {
+			logError("❌ Error installing required libraries: " + err.Error() + "\n")
 			return
 		}
 
-		// Unzip to C:\SteamCMD
-		err = unzip(zipReader, zipReader.Size(), steamCMDDir)
-		if err != nil {
-			fmt.Printf(ColorRed+"Error extracting SteamCMD zip: %v\n"+ColorReset, err)
+		// Download and extract SteamCMD
+		if err := downloadAndExtractSteamCMD(downloadURL, steamCMDDir, extractFunc); err != nil {
+			logError("❌ " + err.Error() + "\n")
 			return
 		}
 
-		fmt.Println(ColorGreen + "💾SteamCMD installed successfully." + ColorReset)
+		// Set executable permissions for SteamCMD files
+		if err := setExecutablePermissions(steamCMDDir); err != nil {
+			logError("❌ Error setting executable permissions: " + err.Error() + "\n")
+			return
+		}
+
+		// Verify the steamcmd binary
+		if err := verifySteamCMDBinary(steamCMDDir); err != nil {
+			logError("❌ " + err.Error() + "\n")
+			return
+		}
+
+		// Mark installation as successful
+		success = true
+		logSuccess("✅ SteamCMD installed successfully.\n")
+	} else {
+		logVerbose("✅ SteamCMD is already installed.\n")
 	}
 
 	// Run SteamCMD
 	runSteamCMD(steamCMDDir)
 }
 
-// installSteamCMDLinux downloads and installs SteamCMD on Linux
+// installSteamCMDLinux downloads and installs SteamCMD on Linux.
 func installSteamCMDLinux() {
-	steamCMDDir := "./steamcmd"
-
-	// Check if SteamCMD is already installed
-	if _, err := os.Stat(steamCMDDir); os.IsNotExist(err) {
-		fmt.Println(ColorYellow + "⚠️SteamCMD not found, downloading..." + ColorReset)
-
-		// Create SteamCMD directory
-		err := os.MkdirAll(steamCMDDir, os.ModePerm)
-		if err != nil {
-			fmt.Printf(ColorRed+"❌Error creating SteamCMD directory: %v\n"+ColorReset, err)
-			return
-		}
-
-		// Download SteamCMD for Linux
-		downloadURL := "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz"
-		resp, err := http.Get(downloadURL)
-		if err != nil {
-			fmt.Printf(ColorRed+"❌Error downloading SteamCMD: %v\n"+ColorReset, err)
-			return
-		}
-		defer resp.Body.Close()
-
-		// Read tar.gz content
-		err = untar(steamCMDDir, resp.Body)
-		if err != nil {
-			fmt.Printf(ColorRed+"❌Error extracting SteamCMD tar.gz: %v\n"+ColorReset, err)
-			return
-		}
-
-		// Ensure executable permissions
-		err = os.Chmod(filepath.Join(steamCMDDir, "steamcmd.sh"), 0755)
-		if err != nil {
-			fmt.Printf(ColorRed+"❌Error setting SteamCMD executable permissions: %v\n"+ColorReset, err)
-			return
-		}
-
-		fmt.Println(ColorGreen + "✅SteamCMD installed successfully." + ColorReset)
-	}
-
-	// Run SteamCMD
-	runSteamCMD(steamCMDDir)
+	installSteamCMD("Linux", SteamCMDLinuxDir, SteamCMDLinuxURL, untarWrapper)
 }
 
-// runSteamCMD runs the SteamCMD command to update the game
+// installSteamCMDWindows downloads and installs SteamCMD on Windows.
+func installSteamCMDWindows() {
+	installSteamCMD("Windows", SteamCMDWindowsDir, SteamCMDWindowsURL, unzip)
+}
+
+// runSteamCMD runs the SteamCMD command to update the game.
 func runSteamCMD(steamCMDDir string) {
 	currentDir, err := os.Getwd()
 	if err != nil {
-		fmt.Printf(ColorRed+"❌Error getting current working directory: %v\n"+ColorReset, err)
+		logError("❌ Error getting current working directory: " + err.Error() + "\n")
 		return
 	}
+	logVerbose("✅ Current working directory: " + currentDir + "\n")
 
-	// Construct SteamCMD command based on OS
-	var cmd *exec.Cmd
-	if runtime.GOOS == "windows" {
-		cmd = exec.Command(filepath.Join(steamCMDDir, "steamcmd.exe"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", "600760", "+quit")
-	} else if runtime.GOOS == "linux" {
-		cmd = exec.Command(filepath.Join(steamCMDDir, "steamcmd.sh"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", "600760", "+quit")
-	}
+	// Build SteamCMD command
+	cmd := buildSteamCMDCommand(steamCMDDir, currentDir)
 
-	// Set output to stdout
+	// Set output to stdout and stderr
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
 	// Run the command
-	fmt.Println(ColorBlue + "🕑 Running SteamCMD..." + ColorReset)
+	logVerbose(ColorBlue + "🕑 Running SteamCMD...\n" + ColorReset)
 	err = cmd.Run()
 	if err != nil {
-		fmt.Printf(ColorRed+"❌ Error running SteamCMD: %v\n"+ColorReset, err)
+		logError("❌ Error running SteamCMD: " + err.Error() + "\n")
 		return
 	}
-
-	fmt.Println(ColorGreen + "✅ SteamCMD executed successfully." + ColorReset)
+	logSuccess("✅ SteamCMD executed successfully.\n")
 }
 
-// unzip extracts a zip archive
-func unzip(zipReader io.ReaderAt, size int64, dest string) error {
-	reader, err := zip.NewReader(zipReader, size)
-	if err != nil {
-		return err
+// buildSteamCMDCommand constructs the SteamCMD command based on the OS.
+func buildSteamCMDCommand(steamCMDDir, currentDir string) *exec.Cmd {
+	//print the config.GameBranch and config.GameServerAppID
+	logVerbose(ColorCyan + "🔍 Game Branch: " + ColorWhite + config.GameBranch + ColorReset + "\n")
+	logVerbose(ColorCyan + "🔍 Game Server App ID: " + ColorWhite + config.GameServerAppID + ColorReset + "\n")
+	if runtime.GOOS == "windows" {
+		return exec.Command(filepath.Join(steamCMDDir, "steamcmd.exe"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GameServerAppID, "-beta", config.GameBranch, "validate", "+quit")
 	}
+	return exec.Command(filepath.Join(steamCMDDir, "steamcmd.sh"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GameServerAppID, "-beta", config.GameBranch, "validate", "+quit")
+	//print the steamcmd command
 
-	for _, f := range reader.File {
-		fpath := filepath.Join(dest, f.Name)
-		if f.FileInfo().IsDir() {
-			os.MkdirAll(fpath, os.ModePerm)
-			continue
-		}
-
-		// Create the file
-		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-		if err != nil {
-			return err
-		}
-		defer outFile.Close()
-
-		rc, err := f.Open()
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		_, err = io.Copy(outFile, rc)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// untar extracts a tar.gz archive
-func untar(dest string, r io.Reader) error {
-	gr, err := gzip.NewReader(r)
-	if err != nil {
-		return err
-	}
-	defer gr.Close()
-
-	tr := tar.NewReader(gr)
-
-	for {
-		header, err := tr.Next()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return err
-		}
-
-		target := filepath.Join(dest, header.Name)
-		switch header.Typeflag {
-		case tar.TypeDir:
-			if err := os.MkdirAll(target, os.ModePerm); err != nil {
-				return err
-			}
-		case tar.TypeReg:
-			outFile, err := os.Create(target)
-			if err != nil {
-				return err
-			}
-			defer outFile.Close()
-
-			if _, err := io.Copy(outFile, tr); err != nil {
-				return err
-			}
-		default:
-			return fmt.Errorf(ColorRed+"unknown type: %v in %s"+ColorReset, header.Typeflag, header.Name)
-		}
-	}
-
-	return nil
 }
