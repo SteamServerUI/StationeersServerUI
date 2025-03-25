@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"runtime"
 	"strconv"
+	"strings"
 )
 
 type ServerConfig struct {
@@ -26,7 +27,7 @@ type Config struct {
 }
 
 func main() {
-	// Update the config file with the correct executable path based on the OS
+	// Update the config file with the correct executable paths
 	err := updateConfigExePath()
 	if err != nil {
 		log.Fatalf("Error updating config executable path: %v", err)
@@ -38,38 +39,54 @@ func main() {
 	// Increment the version
 	newVersion := incrementVersion("src/config/config.go")
 
-	// Prepare the output file name with the new version and branch
-	outputName := fmt.Sprintf("StationeersServerControl%s_%s", newVersion, config.Branch)
-
-	// Append .exe only on Windows
-	if runtime.GOOS == "windows" {
-		outputName += ".exe"
+	// Platforms to build for
+	platforms := []struct {
+		os   string
+		arch string
+	}{
+		{"windows", "amd64"},
+		{"linux", "amd64"},
 	}
 
-	// Run the go build command with the custom output name
-	cmd := exec.Command("go", "build", "-ldflags=-s -w", "-gcflags=-l=4", "-o", outputName, "./src")
+	// Build for each platform
+	for _, platform := range platforms {
+		// Set OS and architecture for cross-compilation
+		os.Setenv("GOOS", platform.os)
+		os.Setenv("GOARCH", platform.arch)
 
-	// Capture any output or errors
-	cmdOutput, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Fatalf("Build failed: %s\nOutput: %s", err, string(cmdOutput))
+		// Prepare the output file name with the new version, branch, and platform
+		var outputName string
+		if config.Branch == "release" {
+			outputName = fmt.Sprintf("StationeersServerControl%s", newVersion)
+		} else {
+			outputName = fmt.Sprintf("StationeersServerControl%s_%s", newVersion, config.Branch)
+		}
+
+		// Append .exe only on Windows
+		if platform.os == "windows" {
+			outputName += ".exe"
+		}
+		if platform.os == "linux" {
+			outputName += ".x86_64"
+		}
+
+		// Run the go build command with the custom output name
+		cmd := exec.Command("go", "build", "-ldflags=-s -w", "-gcflags=-l=4", "-o", outputName, "./src")
+
+		// Capture any output or errors
+		cmdOutput, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Fatalf("Build failed for %s-%s: %s\nOutput: %s", platform.os, platform.arch, err, string(cmdOutput))
+		}
+
+		fmt.Printf("Build successful for %s-%s! Output: %s\n", platform.os, platform.arch, outputName)
 	}
-
-	fmt.Printf("Build successful! Output: %s\n", outputName)
 
 	// Clean up old .exe files that follow the pattern "StationeersServerControl*"
-	cleanupOldExecutables(outputName)
+	cleanupOldExecutables(newVersion)
 }
 
 func updateConfigExePath() error {
-	// Determine the executable path based on the operating system
-	var exePath string
-	if runtime.GOOS == "windows" {
-		exePath = "./rocketstation_DedicatedServer.exe"
-	} else {
-		exePath = "./rocketstation_DedicatedServer.x86_64"
-	}
-
 	// Load the existing config file
 	configPath := "./UIMod/config.xml"
 	xmlFile, err := os.Open(configPath)
@@ -89,8 +106,12 @@ func updateConfigExePath() error {
 		return fmt.Errorf("error unmarshalling config file: %v", err)
 	}
 
-	// Update the ExePath
-	config.Server.ExePath = exePath
+	// Update the ExePath based on the current OS
+	if runtime.GOOS == "windows" {
+		config.Server.ExePath = "./rocketstation_DedicatedServer.exe"
+	} else {
+		config.Server.ExePath = "./rocketstation_DedicatedServer.x86_64"
+	}
 
 	// Write the updated config back to the file
 	file, err := os.Create(configPath)
@@ -146,24 +167,31 @@ func incrementVersion(configFile string) string {
 	return newVersion
 }
 
-// cleanupOldExecutables deletes all .exe files matching the pattern "StationeersServerControl*" except the current version
-func cleanupOldExecutables(currentExe string) {
-	// Get the directory of the current executable
-	dir := filepath.Dir(currentExe)
+// Modified cleanupOldExecutables to handle both Windows and Linux executables
+func cleanupOldExecutables(buildVersion string) {
+	currentVersion := buildVersion
+	// Get the current directory
+	dir := "."
 
-	// Get a list of all .exe files in the directory
+	// Get a list of all files in the directory
 	files, err := os.ReadDir(dir)
 	if err != nil {
 		log.Fatalf("Failed to read directory: %s", err)
 	}
 
-	// Loop through the files and delete any matching .exe that doesn't match the current one
+	// Loop through the files and delete old executables
 	for _, file := range files {
-		// Check if the file is a .exe and matches the "StationeersServerControl*" pattern
-		if filepath.Ext(file.Name()) == ".exe" && filepath.Base(file.Name()) != filepath.Base(currentExe) {
-			match, _ := filepath.Match("StationeersServerControl*.exe", file.Name())
+		filename := file.Name()
+		// Check for both .exe and Linux executables
+		if filepath.Ext(filename) == ".exe" || filepath.Ext(filename) == ".x86_64" {
+			match, _ := filepath.Match("StationeersServerControl*", filename)
 			if match {
-				exePath := filepath.Join(dir, file.Name())
+				// Skip deletion if the filename contains the current version
+				if strings.Contains(filename, currentVersion) {
+					continue
+				}
+
+				exePath := filepath.Join(dir, filename)
 				fmt.Printf("Deleting old executable: %s\n", exePath)
 				err := os.Remove(exePath)
 				if err != nil {
