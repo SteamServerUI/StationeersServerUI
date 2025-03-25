@@ -1,3 +1,4 @@
+// api.go
 package detection
 
 // This file contains the public API for the detection package

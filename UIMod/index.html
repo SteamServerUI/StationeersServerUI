@@ -15,18 +15,31 @@
         <div id="controls">
             <button onclick="startServer()">Start Server</button>
             <button onclick="stopServer()">Stop Server</button>
-            <button onclick="window.location.href = '/config'">Game Server Config</button>
-            <button onclick="window.location.href = '/furtherconfig'">Discord Config</button>
-            <button onclick="window.location.href = '/static/apiinfo.html'">Developer Info</button>
+            <button onclick="navigateTo('/config')">Game Config</button>
+            <button onclick="navigateTo('/furtherconfig')">Discord Config</button>
+            <button onclick="navigateTo('/static/apiinfo.html')">API Info</button>
         </div>
-        <p id="status"></p>
-        <div id="console"></div>
+        <p id="status" hidden></p>
+        
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="showTab('console-tab')">Console</button>
+                <button class="tab-button" onclick="showTab('detection-tab')">Detection Events</button>
+            </div>
+            <div id="console-tab" class="tab-content active">
+                <div id="console"></div>
+            </div>
+            <div id="detection-tab" class="tab-content">
+                <div id="detection-console"></div>
+            </div>
+        </div>
+        
         <div id="backups">
             <h2>Saves</h2>
             <ul id="backupList"></ul>
         </div>
         <br><br>
-        Copyright &copy; 2025 J. Langisch. Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.
+        Copyright © 2025 J. Langisch. Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.
     </main>
     <script src="/static/script.js"></script>
 </body>

@@ -44,6 +44,12 @@ func ServeUI(w http.ResponseWriter, r *http.Request) {
 		Version: config.Version,
 		Branch:  config.Branch,
 	}
+	if data.Version == "" {
+		data.Version = "unknown"
+	}
+	if data.Branch == "" {
+		data.Branch = "unknown"
+	}
 
 	err = tmpl.Execute(w, data)
 	if err != nil {

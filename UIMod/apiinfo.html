@@ -11,16 +11,11 @@
         <img src="/static/stationeers.png" alt="Stationeers Banner" id="banner">
     </header>
     <main>
-        <h1>Server API Documentation</h1>
-        
-        <div class="version-badge">
-            <span class="version-tag">V2.X</span>
-            <span class="status-tag">CURRENT</span>
-        </div>
-        
+        <h1>About the Server API</h1>
+            
         <div class="api-overview">
             <p>This server provides a complete REST API alongside the HTML interface. All UI actions map to API endpoints, allowing full programmatic control.</p>
-            <p class="highlight-text">New in V2.X: Full Discord integration for server monitoring and management through your Discord server.</p>
+            <p class="highlight-text">Check out the events section tab on the main page for more clear information about server events that where detected.</p>
         </div>
         
         <div class="api-section">
@@ -52,8 +47,8 @@
                         </li>
                         <li>
                             <div class="method get">GET</div>
-                            <a href="/backups" class="endpoint-link">/backups</a>
-                            <div class="endpoint-desc">List available save files</div>
+                            <a href="/events" class="endpoint-link">/events</a>
+                            <div class="endpoint-desc">Retrieve Detected Events</div>
                         </li>
                     </ul>
                 </div>
@@ -82,16 +77,13 @@
                             <span class="endpoint-link">/restore?index=123</span>
                             <div class="endpoint-desc">Restore from specified save index</div>
                         </li>
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/backups" class="endpoint-link">/backups</a>
+                            <div class="endpoint-desc">List available save files</div>
+                        </li>
                     </ul>
                 </div>
-            </div>
-        </div>
-        
-        <div class="developer-section">
-            <h2>Developer Challenge</h2>
-            <div class="code-block">
-                <p>Want to use the API programmatically? Reverse-engineer the form structure yourself.</p>
-                <p class="hint">Tip: Examine the network requests in your browser's developer tools when using the UI.</p>
             </div>
         </div>
         
