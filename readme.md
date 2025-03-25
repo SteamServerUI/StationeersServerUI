@@ -12,8 +12,6 @@
 ![Last Commit](https://img.shields.io/github/last-commit/jacksonthemaster/StationeersServerUI?logo=git&logoColor=white)
 ![Stationeers](https://img.shields.io/badge/Game-Stationeers-orange?logo=steam&logoColor=white)
 
-<div align="center">
-
 ### ✨ Feature Showcase ✨
 
 | 🚀 Easy Setup | 🔄 Auto Updates | 🎮 Easy Control | 💾 Smart Backups | 🤖 Discord Bot |
