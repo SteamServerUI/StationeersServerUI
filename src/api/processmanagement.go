@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -36,11 +37,30 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fix: Properly construct the parameters array
-	alwaysNeededParams := []string{"-batchmode", "-nographics", "-autostart"}
+	alwaysNeededParams := []string{"-batchmode", "-nographics"}
 	args := append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings")
 	args = append(args, strings.Split(config.Server.Settings, " ")...)
 
-	cmd = exec.Command(config.Server.ExePath, args...)
+	// Create command based on OS
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command(config.Server.ExePath, args...)
+	} else {
+		// Linux-specific setup with output redirection
+		cmd = exec.Command(config.Server.ExePath, args...)
+
+		// Create or truncate output file
+		outFile, err := os.Create("./proc.out")
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error creating output file: %v", err), http.StatusInternalServerError)
+			return
+		}
+		defer outFile.Close()
+
+		// Redirect both stdout and stderr to the file
+		cmd.Stdout = outFile
+		cmd.Stderr = outFile
+	}
+
 	exePath := colorGreen + colorBold + config.Server.ExePath + colorReset
 	fmt.Printf("\n%s%s=== GAMESERVER STARTING ===%s\n", colorCyan, colorBold, colorReset)
 	fmt.Printf("• Executable: %s\n", exePath)
@@ -55,17 +75,24 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("\n\n")
 
-	// Capture stdout and stderr
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		fmt.Fprintf(w, "Error creating StdoutPipe: %v", err)
-		return
-	}
+	// For Windows only: keep pipe reading functionality
+	if runtime.GOOS == "windows" {
+		// Capture stdout and stderr
+		stdout, err := cmd.StdoutPipe()
+		if err != nil {
+			fmt.Fprintf(w, "Error creating StdoutPipe: %v", err)
+			return
+		}
 
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		fmt.Fprintf(w, "Error creating StderrPipe: %v", err)
-		return
+		stderr, err := cmd.StderrPipe()
+		if err != nil {
+			fmt.Fprintf(w, "Error creating StderrPipe: %v", err)
+			return
+		}
+
+		// Start reading stdout and stderr
+		go readPipe(stdout)
+		go readPipe(stderr)
 	}
 
 	// Start the command
@@ -75,11 +102,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Start reading stdout and stderr
-	go readPipe(stdout)
-	go readPipe(stderr)
-
-	fmt.Fprintf(w, "Server started.")
+	fmt.Fprintf(w, "Server started. PID: %d", cmd.Process.Pid)
 }
 
 func readPipe(pipe io.ReadCloser) {
