@@ -21,6 +21,7 @@ type Config struct {
 	} `xml:"server"`
 
 	SaveFileName string `xml:"saveFileName"`
+	WorldType    string `xml:"worldType"`
 }
 
 func StartAPI() {

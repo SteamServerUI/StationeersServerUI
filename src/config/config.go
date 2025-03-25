@@ -3,6 +3,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"time"
 
@@ -21,6 +22,7 @@ type Config struct {
 	IsDiscordEnabled        bool   `json:"isDiscordEnabled"`
 	ErrorChannelID          string `json:"errorChannelID"`
 	GameBranch              string `json:"gameBranch"`
+	WorldType               string `json:"worldType"`
 }
 
 var (
@@ -45,10 +47,30 @@ var (
 	IsDiscordEnabled          bool
 	IsFirstTimeSetup          bool
 	GameBranch                string
-	Version = "3.0.1"
+	Version                   = "3.0.1"
 	Branch                    = "release"
 	GameServerAppID           = "600760" // Steam App ID for Stationeers Dedicated Server
 )
+
+func (c *Config) ValidateWorldType() error {
+	allowedWorldTypes := map[string]bool{
+		"moon":    true,
+		"mars":    true,
+		"europa":  true,
+		"europa2": true,
+		"mimas":   true,
+		"vulcan":  true,
+		"vulcan2": true,
+		"space":   true,
+		"loulan":  true,
+		"venus":   true,
+		"":        true, //Allow empty string for no world type
+	}
+	if !allowedWorldTypes[c.WorldType] {
+		return fmt.Errorf("invalid WorldType: %s. Allowed values are: moon, mars, europa, europa2, mimas, vulcan, vulcan2, space, loulan, venus", c.WorldType)
+	}
+	return nil
+}
 
 func LoadConfig(filename string) (*Config, error) {
 	file, err := os.Open(filename)
@@ -61,6 +83,9 @@ func LoadConfig(filename string) (*Config, error) {
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&config)
 	if err != nil {
+		return nil, err
+	}
+	if err := config.ValidateWorldType(); err != nil {
 		return nil, err
 	}
 	//print all the values to console

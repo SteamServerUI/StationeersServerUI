@@ -71,6 +71,7 @@ func HandleConfig(w http.ResponseWriter, r *http.Request) {
 		"{{ServerName}}":       settingsMap["ServerName"],
 		"{{AdditionalParams}}": getAdditionalParams(settings),
 		"{{SaveFileName}}":     config.SaveFileName,
+		"{{WorldType}}":        config.WorldType,
 	}
 
 	for placeholder, value := range replacements {
@@ -94,6 +95,7 @@ func getAdditionalParams(settings []string) string {
 		"AdminPassword":    true,
 		"ServerMaxPlayers": true,
 		"ServerName":       true,
+		"WorldType":        true,
 	}
 
 	var additionalParams []string
@@ -145,6 +147,9 @@ func SaveConfig(w http.ResponseWriter, r *http.Request) {
 		if serverName := r.FormValue("ServerName"); serverName != "" {
 			settings = append(settings, "ServerName", serverName)
 		}
+		if worldType := r.FormValue("WorldType"); worldType != "" {
+			settings = append(settings, "WorldType", worldType)
+		}
 
 		// Append additional parameters if any
 		additionalParams := r.FormValue("AdditionalParams")
@@ -171,6 +176,7 @@ func SaveConfig(w http.ResponseWriter, r *http.Request) {
 				Settings: settingsStr,
 			},
 			SaveFileName: r.FormValue("saveFileName"),
+			WorldType:    r.FormValue("WorldType"),
 		}
 
 		configPath := "./UIMod/config.xml"

@@ -36,9 +36,30 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fix: Properly construct the parameters array
-	alwaysNeededParams := []string{"-batchmode", "-nographics", "-autostart"}
-	args := append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings")
-	args = append(args, strings.Split(config.Server.Settings, " ")...)
+	alwaysNeededParams := []string{"-batchmode", "-nographics"}
+	args := alwaysNeededParams
+	if runtime.GOOS == "windows" {
+		args = append(alwaysNeededParams, "-LOAD", config.SaveFileName, config.WorldType, "-settings")
+	}
+	if runtime.GOOS == "linux" {
+		args = append(alwaysNeededParams, "-LOAD", "-logFile \"./debug.log\"", config.SaveFileName, config.WorldType, "-settings")
+	}
+
+	// Process settings to ensure LocalIpAddress is last
+	settings := strings.Split(config.Server.Settings, " ")
+	var localIpAddressArg string
+	var otherArgs []string
+	for _, setting := range settings {
+		if strings.HasPrefix(setting, "LocalIpAddress=") {
+			localIpAddressArg = setting
+		} else {
+			otherArgs = append(otherArgs, setting)
+		}
+	}
+	args = append(args, otherArgs...)
+	if localIpAddressArg != "" {
+		args = append(args, localIpAddressArg)
+	}
 
 	cmd = exec.Command(config.Server.ExePath, args...)
 	exePath := colorGreen + colorBold + config.Server.ExePath + colorReset
