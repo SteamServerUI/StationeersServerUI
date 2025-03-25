@@ -81,15 +81,14 @@ func HandleConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAdditionalParams(settings []string) string {
-	// List of known parameters
 	knownParams := map[string]bool{
-		"StartLocalHost":   true,
-		"ServerVisible":    true,
-		"GamePort":         true,
-		"UpdatePort":       true,
-		"AutoSave":         true,
-		"SaveInterval":     true,
-		"LocalIpAddress":   true,
+		"StartLocalHost": true,
+		"ServerVisible":  true,
+		"GamePort":       true,
+		"UpdatePort":     true,
+		"AutoSave":       true,
+		"SaveInterval":   true,
+		// Remove "LocalIpAddress" from knownParams
 		"ServerPassword":   true,
 		"AdminPassword":    true,
 		"ServerMaxPlayers": true,
@@ -97,10 +96,22 @@ func getAdditionalParams(settings []string) string {
 	}
 
 	var additionalParams []string
+	var localIPParam string // Store LocalIpAddress separately
+
 	for i := 0; i < len(settings)-1; i += 2 {
-		if !knownParams[settings[i]] {
-			additionalParams = append(additionalParams, settings[i]+" "+settings[i+1])
+		key := settings[i]
+		value := settings[i+1]
+
+		if key == "LocalIpAddress" {
+			localIPParam = key + " " + value // Save for later
+		} else if !knownParams[key] {
+			additionalParams = append(additionalParams, key+" "+value)
 		}
+	}
+
+	// Append LocalIpAddress last if it exists
+	if localIPParam != "" {
+		additionalParams = append(additionalParams, localIPParam)
 	}
 
 	return strings.Join(additionalParams, " ")
