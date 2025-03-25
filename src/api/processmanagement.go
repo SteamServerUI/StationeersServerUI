@@ -38,15 +38,22 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	// Fix: Properly construct the parameters array
 	alwaysNeededParams := []string{"-batchmode", "-nographics"}
 	args := alwaysNeededParams
-	if runtime.GOOS == "windows" {
-		args = append(args, "-LOAD", config.SaveFileName)
-	} else { // Linux
-		args = append(args, "-LOAD", config.SaveFileName, "-logFile", "./debug.log")
+	args = append(args, "-LOAD", config.SaveFileName)
+
+	// Handle WorldType - only append if not empty
+	worldTypeValue := config.WorldType
+	if strings.HasPrefix(worldTypeValue, "WorldType") {
+		worldTypeValue = strings.TrimPrefix(worldTypeValue, "WorldType=")
+		worldTypeValue = strings.TrimSpace(worldTypeValue) //remove leading/trailing spaces
 	}
 
-	//Handle WorldType - only append if not empty
-	if config.WorldType != "" {
-		args = append(args, config.WorldType)
+	if worldTypeValue != "" {
+		args = append(args, worldTypeValue)
+	}
+
+	// Attach a logfile on Linux, since piped output is not available
+	if runtime.GOOS == "linux" {
+		args = append(args, "-logFile", "./debug.log")
 	}
 
 	args = append(args, "-settings") // "-settings" before other settings
@@ -55,13 +62,19 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	settings := strings.Split(config.Server.Settings, " ")
 	var localIpAddressArg string
 	var otherArgs []string
-	for _, setting := range settings {
-		if strings.HasPrefix(setting, "LocalIpAddress") {
-			localIpAddressArg = setting
-		} else {
-			otherArgs = append(otherArgs, setting)
+
+	for i := 0; i < len(settings); i++ {
+		if strings.HasPrefix(settings[i], "LocalIpAddress") {
+			localIpAddressArg = settings[i]
+			if i+1 < len(settings) && !strings.HasPrefix(settings[i+1], " ") {
+				localIpAddressArg += " " + settings[i+1]
+				i++ // Skip next element as it's part of LocalIpAddress value
+			}
+		} else if settings[i] != "" {
+			otherArgs = append(otherArgs, settings[i])
 		}
 	}
+
 	args = append(args, otherArgs...)
 	if localIpAddressArg != "" {
 		args = append(args, localIpAddressArg)
