@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -69,7 +70,26 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		args = append(args, "LocalIpAddress", localIP)
 	}
 
-	cmd = exec.Command(config.Server.ExePath, args...)
+	// Create command based on OS
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command(config.Server.ExePath, args...)
+	} else {
+		// Linux-specific setup with output redirection
+		cmd = exec.Command(config.Server.ExePath, args...)
+
+		// Create or truncate output file
+		outFile, err := os.Create("./proc.out")
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Error creating output file: %v", err), http.StatusInternalServerError)
+			return
+		}
+		defer outFile.Close()
+
+		// Redirect both stdout and stderr to the file
+		cmd.Stdout = outFile
+		cmd.Stderr = outFile
+	}
+
 	exePath := colorGreen + colorBold + config.Server.ExePath + colorReset
 	fmt.Printf("\n%s%s=== GAMESERVER STARTING ===%s\n", colorCyan, colorBold, colorReset)
 	fmt.Printf("• Executable: %s\n", exePath)
@@ -119,7 +139,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	go readPipe(stderr)
 	go readPipe(stdout)
 
-	fmt.Fprintf(w, "Server started.")
+	fmt.Fprintf(w, "Server started. PID: %d", cmd.Process.Pid)
 }
 
 func readPipe(pipe io.ReadCloser) {
