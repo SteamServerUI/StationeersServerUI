@@ -50,7 +50,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	var localIpAddressArg string
 	var otherArgs []string
 	for _, setting := range settings {
-		if strings.HasPrefix(setting, "LocalIpAddress=") {
+		if strings.HasPrefix(setting, "LocalIpAddress") {
 			localIpAddressArg = setting
 		} else {
 			otherArgs = append(otherArgs, setting)
