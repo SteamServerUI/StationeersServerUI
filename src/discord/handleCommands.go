@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -140,62 +139,12 @@ func handleRestoreCommand(s *discordgo.Session, m *discordgo.MessageCreate, cont
 
 func handleUpdateCommand(s *discordgo.Session, channelID string) {
 	// Notify that the update process is starting
-	s.ChannelMessageSend(channelID, "🕛Starting the server update process...")
-
-	// PowerShell command to run SteamCMD
-	powerShellScript := `
-		cd C:\SteamCMD
-		.\steamcmd +force_install_dir C:/SteamCMD/Stationeers/ +login anonymous +app_update 600760 -beta public +quit
-	`
-
-	// Execute the PowerShell command
-	cmd := exec.Command("powershell", "-Command", powerShellScript)
-	err := cmd.Start()
-	if err != nil {
-		fmt.Printf("Error starting update command: %v\n", err)
-		s.ChannelMessageSend(channelID, "❌Failed to start the update process.")
-		return
-	}
-
-	// Wait for the process to complete
-	err = cmd.Wait()
-	if err != nil {
-		fmt.Printf("Error during update process: %v\n", err)
-		s.ChannelMessageSend(channelID, "❌The update process encountered an error.")
-	} else {
-		// Notify that the update process has finished
-		s.ChannelMessageSend(channelID, "✅Game Update process completed successfully. Server is up to date.")
-	}
+	s.ChannelMessageSend(channelID, "🙏Sorry, this feature has been deprecated. Server Updates are now handled automatically at Software Startup. If you are interested in bringing this feature back, please report it on the GitHub repository. We will be happy to implement it.")
 }
 
 func handleValidateCommand(s *discordgo.Session, channelID string) {
 	// Notify that the update process is starting
-	s.ChannelMessageSend(channelID, "🕛Starting the server validate process...")
-
-	// PowerShell command to run SteamCMD
-	powerShellScript := `
-		cd C:\SteamCMD
-		.\steamcmd +force_install_dir C:/SteamCMD/Stationeers/ +login anonymous +app_update 600760 -beta public -validate +quit
-	`
-
-	// Execute the PowerShell command
-	cmd := exec.Command("powershell", "-Command", powerShellScript)
-	err := cmd.Start()
-	if err != nil {
-		fmt.Printf("Error starting update command: %v\n", err)
-		s.ChannelMessageSend(channelID, "❌Failed to start the validate process.")
-		return
-	}
-
-	// Wait for the process to complete
-	err = cmd.Wait()
-	if err != nil {
-		fmt.Printf("Error during update process: %v\n", err)
-		s.ChannelMessageSend(channelID, "❌The validate process encountered an error.")
-	} else {
-		// Notify that the update process has finished
-		s.ChannelMessageSend(channelID, "✅Game validate process completed successfully. Server is valid, but custom changes are overwritten.")
-	}
+	s.ChannelMessageSend(channelID, "🙏Sorry, this feature has been deprecated. Server File Validation is now handled automatically at Software Startup. If you are interested in bringing this feature back, please report it on the GitHub repository. We will be happy to implement it.")
 }
 
 func handleBanCommand(s *discordgo.Session, channelID string, content string) {
