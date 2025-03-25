@@ -54,20 +54,20 @@ var (
 
 func (c *Config) ValidateWorldType() error {
 	allowedWorldTypes := map[string]bool{
-		"moon":    true,
-		"mars":    true,
-		"europa":  true,
-		"europa2": true,
-		"mimas":   true,
-		"vulcan":  true,
-		"vulcan2": true,
-		"space":   true,
-		"loulan":  true,
-		"venus":   true,
+		"Moon":    true,
+		"Mars":    true,
+		"Europa":  true,
+		"Europa2": true,
+		"Mimas":   true,
+		"Vulcan":  true,
+		"Vulcan2": true,
+		"Space":   true,
+		"Loulan":  true,
+		"Venus":   true,
 		"":        true, //Allow empty string for no world type
 	}
 	if !allowedWorldTypes[c.WorldType] {
-		return fmt.Errorf("invalid WorldType: %s. Allowed values are: moon, mars, europa, europa2, mimas, vulcan, vulcan2, space, loulan, venus", c.WorldType)
+		return fmt.Errorf("invalid WorldType: %s. Allowed values are: Moon, Mars, Europa, Europa2, Mimas, Vulcan, Vulcan2, Space, Loulan, Venus", c.WorldType)
 	}
 	return nil
 }
