@@ -38,7 +38,12 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 
 	// Fix: Properly construct the parameters array
 	alwaysNeededParams := []string{"-batchmode", "-nographics"}
-	args := append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings")
+	args := alwaysNeededParams
+	if runtime.GOOS == "windows" {
+		args = append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings")
+	} else if runtime.GOOS == "linux" {
+		args = append(alwaysNeededParams, "-LOAD", "-logfile \"./debug.log\"", config.SaveFileName, "-settings")
+	}
 	args = append(args, strings.Split(config.Server.Settings, " ")...)
 
 	// Create command based on OS
