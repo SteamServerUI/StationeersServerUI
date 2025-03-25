@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -71,37 +70,29 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("\n\n")
 
-	// Create output files
-	procOut, err := os.Create("./proc.out")
-	if err != nil {
-		fmt.Fprintf(w, "Error creating proc.out file: %v", err)
-		return
-	}
-	defer procOut.Close()
-
-	debugLog, err := os.OpenFile("./debug.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		fmt.Fprintf(w, "Error creating debug.log file: %v", err)
-		return
-	}
-	defer debugLog.Close()
-
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		fmt.Fprintf(w, "Error creating StderrPipe: %v", err)
 		return
 	}
 
-	// Redirect stdout to ./proc.out on Linux
-	if runtime.GOOS == "linux" {
-		stdoutWriter := io.MultiWriter(procOut)
-		cmd.Stdout = stdoutWriter
-		stdoutReader, err := cmd.StdoutPipe()
-		if err == nil {
-			go readPipe(stdoutReader)
-		}
-		cmd.Stderr = debugLog
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		fmt.Fprintf(w, "Error creating StderrPipe: %v", err)
+		return
 	}
+
+	// this doesn't exactly work, since there os now no output to the console if we do this.
+	// // Redirect stdout to ./proc.out on Linux
+	// if runtime.GOOS == "linux" {
+	// 	stdoutWriter := io.MultiWriter(procOut)
+	// 	cmd.Stdout = stdoutWriter
+	// 	stdoutReader, err := cmd.StdoutPipe()
+	// 	if err == nil {
+	// 		go readPipe(stdoutReader)
+	// 	}
+	// 	cmd.Stderr = debugLog
+	// }
 
 	// Start the command
 	err = cmd.Start()
@@ -112,6 +103,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 
 	// Start reading stdoutPipe and stderr
 	go readPipe(stderr)
+	go readPipe(stdout)
 
 	fmt.Fprintf(w, "Server started.")
 }
