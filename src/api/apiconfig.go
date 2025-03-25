@@ -48,14 +48,27 @@ func HandleConfig(w http.ResponseWriter, r *http.Request) {
 
 	htmlContent := string(htmlFile)
 
-	// Split the settings string into a map for easier access
-	settingsMap := make(map[string]string)
+	// Process settings with guaranteed order
 	settings := strings.Split(config.Server.Settings, " ")
+	settingsMap := make(map[string]string)
+	var localIPValue string
+
+	// First pass: extract LocalIpAddress and populate known params
 	for i := 0; i < len(settings)-1; i += 2 {
-		settingsMap[settings[i]] = settings[i+1]
+		key := settings[i]
+		value := settings[i+1]
+
+		if key == "LocalIpAddress" {
+			localIPValue = value
+			continue
+		}
+		settingsMap[key] = value
 	}
 
-	// Replace placeholders with actual values
+	// Prepare additional params (with LocalIpAddress last if present)
+	additionalParamsStr := getAdditionalParams(settings)
+
+	// Build replacements with consistent ordering
 	replacements := map[string]string{
 		"{{ExePath}}":          config.Server.ExePath,
 		"{{StartLocalHost}}":   settingsMap["StartLocalHost"],
@@ -64,108 +77,135 @@ func HandleConfig(w http.ResponseWriter, r *http.Request) {
 		"{{UpdatePort}}":       settingsMap["UpdatePort"],
 		"{{AutoSave}}":         settingsMap["AutoSave"],
 		"{{SaveInterval}}":     settingsMap["SaveInterval"],
-		"{{LocalIpAddress}}":   settingsMap["LocalIpAddress"],
 		"{{ServerPassword}}":   settingsMap["ServerPassword"],
 		"{{AdminPassword}}":    settingsMap["AdminPassword"],
 		"{{ServerMaxPlayers}}": settingsMap["ServerMaxPlayers"],
 		"{{ServerName}}":       settingsMap["ServerName"],
-		"{{AdditionalParams}}": getAdditionalParams(settings),
+		"{{AdditionalParams}}": additionalParamsStr,
+		"{{LocalIpAddress}}":   localIPValue, // Handled separately
 		"{{SaveFileName}}":     config.SaveFileName,
 	}
 
+	// Apply replacements
 	for placeholder, value := range replacements {
-		htmlContent = strings.ReplaceAll(htmlContent, placeholder, value)
+		if value != "" {
+			htmlContent = strings.ReplaceAll(htmlContent, placeholder, value)
+		}
 	}
 
 	fmt.Fprint(w, htmlContent)
 }
 
 func getAdditionalParams(settings []string) string {
+	// List of known parameters (excluding LocalIpAddress)
 	knownParams := map[string]bool{
-		"StartLocalHost": true,
-		"ServerVisible":  true,
-		"GamePort":       true,
-		"UpdatePort":     true,
-		"AutoSave":       true,
-		"SaveInterval":   true,
-		// Remove "LocalIpAddress" from knownParams
+		"StartLocalHost":   true,
+		"ServerVisible":    true,
+		"GamePort":         true,
+		"UpdatePort":       true,
+		"AutoSave":         true,
+		"SaveInterval":     true,
 		"ServerPassword":   true,
 		"AdminPassword":    true,
 		"ServerMaxPlayers": true,
 		"ServerName":       true,
 	}
 
-	var additionalParams []string
-	var localIPParam string // Store LocalIpAddress separately
+	var regularAdditional []string // For unknown parameters
+	var localIPParam string        // For LocalIpAddress only
+	var otherKnownParams []string  // For known parameters that aren't LocalIpAddress
 
+	// Process settings in pairs (key-value)
 	for i := 0; i < len(settings)-1; i += 2 {
 		key := settings[i]
 		value := settings[i+1]
 
-		if key == "LocalIpAddress" {
-			localIPParam = key + " " + value // Save for later
-		} else if !knownParams[key] {
-			additionalParams = append(additionalParams, key+" "+value)
+		switch {
+		case key == "LocalIpAddress":
+			localIPParam = key + " " + value
+		case knownParams[key]:
+			otherKnownParams = append(otherKnownParams, key+" "+value)
+		default:
+			regularAdditional = append(regularAdditional, key+" "+value)
 		}
 	}
 
-	// Append LocalIpAddress last if it exists
+	// Build the final parameter list in correct order:
+	// 1. Other known parameters first
+	// 2. Regular additional parameters
+	// 3. LocalIpAddress (always last)
+	var resultParams []string
+	resultParams = append(resultParams, otherKnownParams...)
+	resultParams = append(resultParams, regularAdditional...)
 	if localIPParam != "" {
-		additionalParams = append(additionalParams, localIPParam)
+		resultParams = append(resultParams, localIPParam)
 	}
 
-	return strings.Join(additionalParams, " ")
+	return strings.Join(resultParams, " ")
 }
 
 // SaveConfig saves the updated configuration to the XML file
 func SaveConfig(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		// Collect settings only if their values are not empty
-		var settings []string
+		// We'll collect parameters in three separate groups
+		var regularParams []string    // Main parameters in order
+		var additionalParams []string // Additional parameters
+		var localIPParam string       // LocalIpAddress (will be last)
 
-		if startLocalHost := r.FormValue("StartLocalHost"); startLocalHost != "" {
-			settings = append(settings, "StartLocalHost", startLocalHost)
+		// Collect all regular parameters except LocalIpAddress
+		if val := r.FormValue("StartLocalHost"); val != "" {
+			regularParams = append(regularParams, "StartLocalHost", val)
 		}
-		if serverVisible := r.FormValue("ServerVisible"); serverVisible != "" {
-			settings = append(settings, "ServerVisible", serverVisible)
+		if val := r.FormValue("ServerVisible"); val != "" {
+			regularParams = append(regularParams, "ServerVisible", val)
 		}
-		if gamePort := r.FormValue("GamePort"); gamePort != "" {
-			settings = append(settings, "GamePort", gamePort)
+		if val := r.FormValue("GamePort"); val != "" {
+			regularParams = append(regularParams, "GamePort", val)
 		}
-		if updatePort := r.FormValue("UpdatePort"); updatePort != "" {
-			settings = append(settings, "UpdatePort", updatePort)
+		if val := r.FormValue("UpdatePort"); val != "" {
+			regularParams = append(regularParams, "UpdatePort", val)
 		}
-		if autoSave := r.FormValue("AutoSave"); autoSave != "" {
-			settings = append(settings, "AutoSave", autoSave)
+		if val := r.FormValue("AutoSave"); val != "" {
+			regularParams = append(regularParams, "AutoSave", val)
 		}
-		if saveInterval := r.FormValue("SaveInterval"); saveInterval != "" {
-			settings = append(settings, "SaveInterval", saveInterval)
+		if val := r.FormValue("SaveInterval"); val != "" {
+			regularParams = append(regularParams, "SaveInterval", val)
 		}
-		if localIpAddress := r.FormValue("LocalIpAddress"); localIpAddress != "" {
-			settings = append(settings, "LocalIpAddress", localIpAddress)
+		if val := r.FormValue("ServerPassword"); val != "" {
+			regularParams = append(regularParams, "ServerPassword", val)
 		}
-		if serverPassword := r.FormValue("ServerPassword"); serverPassword != "" {
-			settings = append(settings, "ServerPassword", serverPassword)
+		if val := r.FormValue("AdminPassword"); val != "" {
+			regularParams = append(regularParams, "AdminPassword", val)
 		}
-		if adminPassword := r.FormValue("AdminPassword"); adminPassword != "" {
-			settings = append(settings, "AdminPassword", adminPassword)
+		if val := r.FormValue("ServerMaxPlayers"); val != "" {
+			regularParams = append(regularParams, "ServerMaxPlayers", val)
 		}
-		if serverMaxPlayers := r.FormValue("ServerMaxPlayers"); serverMaxPlayers != "" {
-			settings = append(settings, "ServerMaxPlayers", serverMaxPlayers)
-		}
-		if serverName := r.FormValue("ServerName"); serverName != "" {
-			settings = append(settings, "ServerName", serverName)
-		}
-
-		// Append additional parameters if any
-		additionalParams := r.FormValue("AdditionalParams")
-		if additionalParams != "" {
-			settings = append(settings, strings.Split(additionalParams, " ")...)
+		if val := r.FormValue("ServerName"); val != "" {
+			regularParams = append(regularParams, "ServerName", val)
 		}
 
-		settingsStr := strings.Join(settings, " ")
+		// Collect AdditionalParams if they exist
+		if extraParams := r.FormValue("AdditionalParams"); extraParams != "" {
+			additionalParams = strings.Split(extraParams, " ")
+		}
 
-		// Determine the executable path based on the operating system
+		// Collect LocalIpAddress separately
+		if localIP := r.FormValue("LocalIpAddress"); localIP != "" {
+			localIPParam = "LocalIpAddress " + localIP
+		}
+
+		// Combine all parameters in the correct order
+		var finalSettings []string
+		finalSettings = append(finalSettings, regularParams...)
+		finalSettings = append(finalSettings, additionalParams...)
+		if localIPParam != "" {
+			finalSettings = append(finalSettings, localIPParam)
+		}
+
+		// Create the final settings string
+		settingsStr := strings.Join(finalSettings, " ")
+
+		// Determine the executable path based on OS
 		var exePath string
 		if runtime.GOOS == "windows" {
 			exePath = "./rocketstation_DedicatedServer.exe"
@@ -173,6 +213,7 @@ func SaveConfig(w http.ResponseWriter, r *http.Request) {
 			exePath = "./rocketstation_DedicatedServer.x86_64"
 		}
 
+		// Create config structure
 		config := Config{
 			Server: struct {
 				ExePath  string `xml:"exePath"`
@@ -184,6 +225,7 @@ func SaveConfig(w http.ResponseWriter, r *http.Request) {
 			SaveFileName: r.FormValue("saveFileName"),
 		}
 
+		// Write to config file
 		configPath := "./UIMod/config.xml"
 		file, err := os.Create(configPath)
 		if err != nil {
