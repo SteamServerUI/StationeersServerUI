@@ -61,16 +61,15 @@ func main() {
 	go startLogStream(detector) // Pass the detector to the log stream function
 
 	fmt.Println(string(colorBlue), "Starting API services...", string(colorReset))
-	go api.StartAPI()
 	go api.StartBackupCleanupRoutine()
 	go api.WatchBackupDir()
 
 	fs := http.FileServer(http.Dir("./UIMod"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.HandleFunc("/", api.ServeUI)
+	http.HandleFunc("/", ui.ServeIndex)
 	http.HandleFunc("/start", api.StartServer)
 	http.HandleFunc("/stop", api.StopServer)
-	http.HandleFunc("/output", api.GetOutput)
+	http.HandleFunc("/output", api.GetLogOutput)
 	http.HandleFunc("/backups", api.ListBackups)
 	http.HandleFunc("/restore", api.RestoreBackup)
 	http.HandleFunc("/config", api.HandleConfigJSON)

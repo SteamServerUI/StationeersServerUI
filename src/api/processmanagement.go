@@ -2,14 +2,23 @@
 package api
 
 import (
+	"StationeersServerUI/src/config"
 	"bufio"
 	"fmt"
 	"io"
 	"net/http"
+	"os/exec"
 	"runtime"
+	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 )
+
+var cmd *exec.Cmd
+var mu sync.Mutex
+var clients []chan string
+var clientsMu sync.Mutex
 
 const (
 	colorReset  = "\033[0m"
@@ -18,6 +27,58 @@ const (
 	colorCyan   = "\033[36m"
 	colorBold   = "\033[1m"
 )
+
+type Arg struct {
+	Flag      string
+	Value     string
+	Condition func() bool
+}
+
+// Define argument order with clearer initialization
+var argOrder = []Arg{
+	{Flag: "-batchmode"},
+	{Flag: "-nographics"},
+	{Flag: "-LOAD", Value: config.SaveFileName},
+	{Flag: "-logFile", Value: "./debug.log", Condition: func() bool { return runtime.GOOS == "linux" }}, // Attach a logfile on Linux, since piped output is not available
+	{Flag: "-settings"},
+	{Flag: "StartLocalHost", Value: strconv.FormatBool(config.StartLocalHost)},
+	{Flag: "ServerVisible", Value: strconv.FormatBool(config.ServerVisible)},
+	{Flag: "GamePort", Value: config.GamePort},
+	{Flag: "UpdatePort", Value: config.UpdatePort},
+	{Flag: "AutoSave", Value: strconv.FormatBool(config.AutoSave)},
+	{Flag: "SaveInterval", Value: config.SaveInterval},
+	{Flag: "ServerMaxPlayers", Value: config.ServerMaxPlayers},
+	{Flag: "ServerName", Value: config.ServerName},
+	{Flag: "ServerPassword", Value: config.ServerPassword, Condition: func() bool { return config.ServerPassword != "" }},
+	{Flag: "ServerAuthSecret", Value: config.ServerAuthSecret, Condition: func() bool { return config.ServerAuthSecret != "" }},
+	{Flag: "AdminPassword", Value: config.AdminPassword, Condition: func() bool { return config.AdminPassword != "" }},
+	{Flag: "UPNPEnabled", Value: strconv.FormatBool(config.UPNPEnabled)},
+	{Flag: "AutoPauseServer", Value: strconv.FormatBool(config.AutoPauseServer)},
+	{Flag: "UseSteamP2P", Value: strconv.FormatBool(config.UseSteamP2P)},
+	{Flag: "LocalIpAddress", Value: config.LocalIpAddress},
+}
+
+func buildCommandArgs() []string {
+	var args []string
+
+	for _, arg := range argOrder {
+		if arg.Condition != nil && !arg.Condition() {
+			continue
+		}
+
+		args = append(args, arg.Flag)
+		if arg.Value != "" {
+			args = append(args, arg.Value)
+		}
+	}
+
+	if config.AdditionalParams != "" {
+		extraArgs := strings.Fields(config.AdditionalParams)
+		args = append(args, extraArgs...)
+	}
+
+	return args
+}
 
 func StartServer(w http.ResponseWriter, r *http.Request) {
 	mu.Lock()
@@ -28,32 +89,21 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//config, err := loadConfig()
-	//if err != nil {
-	//	http.Error(w, fmt.Sprintf("Error loading config: %v", err), http.StatusInternalServerError)
-	//	return
-	//}
+	args := buildCommandArgs()
+	cmd = exec.Command(config.ExePath, args...)
 
-	//// Fix: Properly construct the parameters array
-	//alwaysNeededParams := []string{"-batchmode", "-nographics", "-autostart"}
-	//args := append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings")
-	//args = append(args, strings.Split(config.Server.Settings, " ")...)
-	//
-	//cmd = exec.Command(config.Server.ExePath, args...)
-	//exePath := colorGreen + colorBold + config.Server.ExePath + colorReset
-	//fmt.Printf("\n%s%s=== GAMESERVER STARTING ===%s\n", colorCyan, colorBold, colorReset)
-	//fmt.Printf("• Executable: %s\n", exePath)
-	//fmt.Printf("• Parameters: ")
+	fmt.Printf("\n%s%s=== GAMESERVER STARTING ===%s\n", colorCyan, colorBold, colorReset)
+	fmt.Printf("• Executable: %s\n", (colorGreen + colorBold + config.ExePath + colorReset))
+	fmt.Printf("• Parameters: ")
 
-	// Fix: Print parameters with proper spacing
-	//for i, arg := range args {
-	//	if i > 0 {
-	//		fmt.Printf(" ")
-	//	}
-	//	fmt.Printf("%s%s%s", colorYellow, arg, colorReset)
-	//}
-	//fmt.Printf("\n\n")
+	for i, arg := range args {
+		if i > 0 {
+			fmt.Printf(" ")
+		}
+		fmt.Printf("%s%s%s", colorYellow, arg, colorReset)
+	}
 
+	fmt.Printf("\n\n")
 	// Capture stdout and stderr
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -101,7 +151,7 @@ func readPipe(pipe io.ReadCloser) {
 	}
 }
 
-func GetOutput(w http.ResponseWriter, r *http.Request) {
+func GetLogOutput(w http.ResponseWriter, r *http.Request) {
 	// Create a new channel for this client
 	clientChan := make(chan string)
 
