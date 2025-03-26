@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"reflect"
 	"strings"
 )
 
@@ -48,16 +49,6 @@ func HandleConfigJSON(w http.ResponseWriter, r *http.Request) {
 
 	htmlContent := string(htmlFile)
 
-	// Check the value of IsDiscordEnabled and set the appropriate option as selected
-	isDiscordEnabledTrue := ""
-	isDiscordEnabledFalse := ""
-
-	if config.IsDiscordEnabled {
-		isDiscordEnabledTrue = "selected"
-	} else {
-		isDiscordEnabledFalse = "selected"
-	}
-
 	// Replace placeholders in the HTML with actual config values, including the new errorChannelID
 	replacements := map[string]string{
 		"{{discordToken}}":            config.DiscordToken,
@@ -68,10 +59,30 @@ func HandleConfigJSON(w http.ResponseWriter, r *http.Request) {
 		"{{saveChannelID}}":           config.SaveChannelID,
 		"{{controlPanelChannelID}}":   config.ControlPanelChannelID,
 		"{{blackListFilePath}}":       config.BlackListFilePath,
-		"{{errorChannelID}}":          config.ErrorChannelID, // New errorChannelID field
-		"{{isDiscordEnabledTrue}}":    isDiscordEnabledTrue,
-		"{{isDiscordEnabledFalse}}":   isDiscordEnabledFalse,
+		"{{errorChannelID}}":          config.ErrorChannelID,
+		"{{isDiscordEnabled}}":        fmt.Sprintf("%v", config.IsDiscordEnabled),
+		"{{gameBranch}}":              config.GameBranch,
+		"{{ServerName}}":              config.ServerName,
+		"{{SaveFileName}}":            config.SaveFileName,
+		"{{ServerMaxPlayers}}":        config.ServerMaxPlayers,
+		"{{ServerPassword}}":          config.ServerPassword,
+		"{{ServerAuthSecret}}":        config.ServerAuthSecret,
+		"{{AdminPassword}}":           config.AdminPassword,
+		"{{GamePort}}":                config.GamePort,
+		"{{UpdatePort}}":              config.UpdatePort,
+		"{{UPNPEnabled}}":             fmt.Sprintf("%v", config.UPNPEnabled),
+		"{{AutoSave}}":                fmt.Sprintf("%v", config.AutoSave),
+		"{{SaveInterval}}":            config.SaveInterval,
+		"{{AutoPauseServer}}":         fmt.Sprintf("%v", config.AutoPauseServer),
+		"{{LocalIpAddress}}":          config.LocalIpAddress,
+		"{{StartLocalHost}}":          fmt.Sprintf("%v", config.StartLocalHost),
+		"{{ServerVisible}}":           fmt.Sprintf("%v", config.ServerVisible),
+		"{{UseSteamP2P}}":             fmt.Sprintf("%v", config.UseSteamP2P),
+		"{{ExePath}}":                 config.ExePath,
+		"{{AdditionalParams}}":        config.AdditionalParams,
 	}
+
+	fmt.Printf("Debug - UseSteamP2P value: %v, string representation: %s\n", config.UseSteamP2P, fmt.Sprintf("%v", config.UseSteamP2P))
 
 	for placeholder, value := range replacements {
 		htmlContent = strings.ReplaceAll(htmlContent, placeholder, value)
@@ -81,37 +92,53 @@ func HandleConfigJSON(w http.ResponseWriter, r *http.Request) {
 }
 
 func SaveConfigJSON(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		config := config.Config{
-			DiscordToken:            r.FormValue("discordToken"),
-			ControlChannelID:        r.FormValue("controlChannelID"),
-			StatusChannelID:         r.FormValue("statusChannelID"),
-			ConnectionListChannelID: r.FormValue("connectionListChannelID"),
-			LogChannelID:            r.FormValue("logChannelID"),
-			SaveChannelID:           r.FormValue("saveChannelID"),
-			ControlPanelChannelID:   r.FormValue("controlPanelChannelID"),
-			BlackListFilePath:       r.FormValue("blackListFilePath"),
-			ErrorChannelID:          r.FormValue("errorChannelID"), // New errorChannelID field
-			IsDiscordEnabled:        r.FormValue("isDiscordEnabled") == "true",
-		}
-
-		configPath := "./UIMod/config.json"
-		file, err := os.Create(configPath)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Error creating config.json: %v", err), http.StatusInternalServerError)
-			return
-		}
-		defer file.Close()
-
-		encoder := json.NewEncoder(file)
-		encoder.SetIndent("", "  ")
-		if err := encoder.Encode(&config); err != nil {
-			http.Error(w, fmt.Sprintf("Error encoding config.json: %v", err), http.StatusInternalServerError)
-			return
-		}
-
-		http.Redirect(w, r, "/furtherconfig", http.StatusSeeOther)
-	} else {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
 	}
+
+	// Load existing configuration
+	existingConfig, err := loadConfigJSON()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error loading existing configuration: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Use reflection to update only submitted fields
+	v := reflect.ValueOf(existingConfig).Elem()
+	t := v.Type()
+
+	for i := 0; i < v.NumField(); i++ {
+		fieldName := t.Field(i).Tag.Get("json")
+		formValue := r.FormValue(fieldName)
+
+		if formValue == "" {
+			continue
+		}
+
+		field := v.Field(i)
+		switch field.Kind() {
+		case reflect.String:
+			field.SetString(formValue)
+		case reflect.Bool:
+			field.SetBool(formValue == "true")
+		}
+	}
+
+	configPath := "./UIMod/config.json"
+	file, err := os.Create(configPath)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error creating config.json: %v", err), http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(existingConfig); err != nil {
+		http.Error(w, fmt.Sprintf("Error encoding config.json: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

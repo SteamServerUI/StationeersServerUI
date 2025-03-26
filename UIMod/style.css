@@ -737,6 +737,26 @@ a.endpoint-link:hover {
   margin-bottom: 30px;
 }
 
+.grid-container {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: rgba(114, 137, 218, 0.1);
+  border: 1px solid rgba(114, 137, 218, 0.5);
+  margin-bottom: 30px;
+  transition: all var(--transition-normal);
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+.grid-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(114, 137, 218, 0.3);
+}
+
+.grid-container.disabled {
+  opacity: 0.5;
+  filter: grayscale(50%);
+}
+
 .discord-container {
   padding: 20px;
   border-radius: 8px;

@@ -21,6 +21,24 @@ type Config struct {
 	IsDiscordEnabled        bool   `json:"isDiscordEnabled"`
 	ErrorChannelID          string `json:"errorChannelID"`
 	GameBranch              string `json:"gameBranch"`
+	ServerName              string `json:"ServerName"`
+	SaveFileName            string `json:"SaveFileName"`
+	ServerMaxPlayers        string `json:"ServerMaxPlayers"`
+	ServerPassword          string `json:"ServerPassword"`
+	ServerAuthSecret        string `json:"ServerAuthSecret"`
+	AdminPassword           string `json:"AdminPassword"`
+	GamePort                string `json:"GamePort"`
+	UpdatePort              string `json:"UpdatePort"`
+	UPNPEnabled             bool   `json:"UPNPEnabled"`
+	AutoSave                bool   `json:"AutoSave"`
+	SaveInterval            string `json:"SaveInterval"`
+	AutoPauseServer         bool   `json:"AutoPauseServer"`
+	LocalIpAddress          string `json:"LocalIpAddress"`
+	StartLocalHost          bool   `json:"StartLocalHost"`
+	ServerVisible           bool   `json:"ServerVisible"`
+	UseSteamP2P             bool   `json:"UseSteamP2P"`
+	ExePath                 string `json:"ExePath"`
+	AdditionalParams        string `json:"AdditionalParams"`
 }
 
 var (
@@ -32,6 +50,24 @@ var (
 	ConnectionListChannelID   string
 	SaveChannelID             string
 	BlackListFilePath         string
+	ServerName                string
+	SaveFileName              string
+	ServerMaxPlayers          string
+	ServerPassword            string
+	ServerAuthSecret          string
+	AdminPassword             string
+	GamePort                  string
+	UpdatePort                string
+	UPNPEnabled               bool
+	AutoSave                  bool
+	SaveInterval              string
+	AutoPauseServer           bool
+	LocalIpAddress            string
+	StartLocalHost            bool
+	ServerVisible             bool
+	UseSteamP2P               bool
+	ExePath                   string
+	AdditionalParams          string
 	DiscordSession            *discordgo.Session
 	LogMessageBuffer          string
 	MaxBufferSize             = 1000
@@ -45,7 +81,7 @@ var (
 	IsDiscordEnabled          bool
 	IsFirstTimeSetup          bool
 	GameBranch                string
-	Version = "3.0.1"
+	Version = "3.0.4"
 	Branch                    = "release"
 	GameServerAppID           = "600760" // Steam App ID for Stationeers Dedicated Server
 )
@@ -85,5 +121,23 @@ func LoadConfig(filename string) (*Config, error) {
 	IsDiscordEnabled = config.IsDiscordEnabled
 	ErrorChannelID = config.ErrorChannelID
 	GameBranch = config.GameBranch
+	ServerName = config.ServerName
+	SaveFileName = config.SaveFileName
+	ServerMaxPlayers = config.ServerMaxPlayers
+	ServerPassword = config.ServerPassword
+	ServerAuthSecret = config.ServerAuthSecret
+	AdminPassword = config.AdminPassword
+	GamePort = config.GamePort
+	UpdatePort = config.UpdatePort
+	UPNPEnabled = config.UPNPEnabled
+	AutoSave = config.AutoSave
+	SaveInterval = config.SaveInterval
+	AutoPauseServer = config.AutoPauseServer
+	LocalIpAddress = config.LocalIpAddress
+	StartLocalHost = config.StartLocalHost
+	ServerVisible = config.ServerVisible
+	UseSteamP2P = config.UseSteamP2P
+	ExePath = config.ExePath
+	AdditionalParams = config.AdditionalParams
 	return &config, nil
 }
