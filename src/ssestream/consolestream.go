@@ -1,4 +1,4 @@
-// sse/console.go
+// consolestream.go
 package ssestream
 
 import (

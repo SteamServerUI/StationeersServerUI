@@ -1,4 +1,4 @@
-// events.go
+// eventstream.go
 package ssestream
 
 import (
