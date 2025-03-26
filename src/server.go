@@ -89,7 +89,7 @@ func main() {
 		fmt.Println(string(colorMagenta), "https://github.com/jacksonthemaster/StationeersServerUI/blob/main/readme.md#first-time-setup", string(colorReset))
 		fmt.Println(string(colorMagenta), "Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)", string(colorReset))
 	}
-	if config.Branch != "Release" {
+	if config.Branch != "Release" && config.Branch != "release" {
 		fmt.Println(string(colorRed), "⚠️Starting pprof server on /debug/pprof", string(colorReset))
 	}
 	// Start the HTTP server and check for errors
