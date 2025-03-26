@@ -154,12 +154,22 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 
 func readPipe(pipe io.ReadCloser) {
 	scanner := bufio.NewScanner(pipe)
+	if config.IsDebugMode {
+		fmt.Println("Started reading pipe") // Debug
+	}
 	for scanner.Scan() {
 		output := scanner.Text()
+		if config.IsDebugMode {
+			fmt.Println("Pipe output:", output) // Debug
+		}
 		ssestream.NewEventManager().Broadcast(output)
 	}
 	if err := scanner.Err(); err != nil {
+		fmt.Println("Pipe error:", err) // Debug
 		ssestream.NewEventManager().Broadcast(fmt.Sprintf("Error reading pipe: %v", err))
+	}
+	if config.IsDebugMode {
+		fmt.Println("Pipe closed") // Debug
 	}
 }
 
