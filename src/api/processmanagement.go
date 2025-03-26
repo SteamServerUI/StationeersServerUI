@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os/exec"
 	"runtime"
 	"strings"
 	"syscall"
@@ -29,31 +28,31 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config, err := loadConfig()
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error loading config: %v", err), http.StatusInternalServerError)
-		return
-	}
+	//config, err := loadConfig()
+	//if err != nil {
+	//	http.Error(w, fmt.Sprintf("Error loading config: %v", err), http.StatusInternalServerError)
+	//	return
+	//}
 
-	// Fix: Properly construct the parameters array
-	alwaysNeededParams := []string{"-batchmode", "-nographics", "-autostart"}
-	args := append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings")
-	args = append(args, strings.Split(config.Server.Settings, " ")...)
-
-	cmd = exec.Command(config.Server.ExePath, args...)
-	exePath := colorGreen + colorBold + config.Server.ExePath + colorReset
-	fmt.Printf("\n%s%s=== GAMESERVER STARTING ===%s\n", colorCyan, colorBold, colorReset)
-	fmt.Printf("• Executable: %s\n", exePath)
-	fmt.Printf("• Parameters: ")
+	//// Fix: Properly construct the parameters array
+	//alwaysNeededParams := []string{"-batchmode", "-nographics", "-autostart"}
+	//args := append(alwaysNeededParams, "-LOAD", config.SaveFileName, "-settings")
+	//args = append(args, strings.Split(config.Server.Settings, " ")...)
+	//
+	//cmd = exec.Command(config.Server.ExePath, args...)
+	//exePath := colorGreen + colorBold + config.Server.ExePath + colorReset
+	//fmt.Printf("\n%s%s=== GAMESERVER STARTING ===%s\n", colorCyan, colorBold, colorReset)
+	//fmt.Printf("• Executable: %s\n", exePath)
+	//fmt.Printf("• Parameters: ")
 
 	// Fix: Print parameters with proper spacing
-	for i, arg := range args {
-		if i > 0 {
-			fmt.Printf(" ")
-		}
-		fmt.Printf("%s%s%s", colorYellow, arg, colorReset)
-	}
-	fmt.Printf("\n\n")
+	//for i, arg := range args {
+	//	if i > 0 {
+	//		fmt.Printf(" ")
+	//	}
+	//	fmt.Printf("%s%s%s", colorYellow, arg, colorReset)
+	//}
+	//fmt.Printf("\n\n")
 
 	// Capture stdout and stderr
 	stdout, err := cmd.StdoutPipe()
