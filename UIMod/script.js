@@ -95,7 +95,7 @@ function navigateTo(url) {
 }
 
 function fetchOutput() {
-    outputEventSource = new EventSource('/output');
+    outputEventSource = new EventSource('/console');
     outputEventSource.onmessage = function(event) {
         const consoleElement = document.getElementById('console');
         const message = document.createElement('div');

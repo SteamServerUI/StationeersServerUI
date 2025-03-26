@@ -4,8 +4,9 @@ import (
 	"StationeersServerUI/src/api"
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/detection"
-	discord "StationeersServerUI/src/discord"
+	"StationeersServerUI/src/discord"
 	"StationeersServerUI/src/install"
+	"StationeersServerUI/src/ssestream"
 	"StationeersServerUI/src/ui"
 	"fmt"
 	"net/http"
@@ -69,12 +70,12 @@ func main() {
 	http.HandleFunc("/", ui.ServeIndex)
 	http.HandleFunc("/start", api.StartServer)
 	http.HandleFunc("/stop", api.StopServer)
-	http.HandleFunc("/output", api.GetLogOutput)
+	http.HandleFunc("/console", api.GetLogOutput)
 	http.HandleFunc("/backups", api.ListBackups)
 	http.HandleFunc("/restore", api.RestoreBackup)
 	http.HandleFunc("/config", api.HandleConfigJSON)
 	http.HandleFunc("/saveconfigasjson", api.SaveConfigJSON)
-	http.HandleFunc("/events", ui.StartDetectionEventStream())
+	http.HandleFunc("/events", ssestream.StartDetectionEventStream())
 
 	fmt.Println(string(colorYellow), "Starting the HTTP server on port 8080...", string(colorReset))
 	fmt.Println(string(colorGreen), "UI available at: http://0.0.0.0:8080 or http://localhost:8080", string(colorReset))
@@ -96,7 +97,7 @@ func main() {
 }
 
 func startLogStream(detector *detection.Detector) {
-	client := sse.NewClient("http://localhost:8080/output")
+	client := sse.NewClient("http://localhost:8080/console")
 	client.Headers["Content-Type"] = "text/event-stream"
 	client.Headers["Connection"] = "keep-alive"
 	client.Headers["Cache-Control"] = "no-cache"

@@ -1,5 +1,5 @@
-// sse.go
-package ui
+// events.go
+package ssestream
 
 import (
 	"fmt"

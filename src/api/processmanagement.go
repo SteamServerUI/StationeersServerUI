@@ -3,6 +3,7 @@ package api
 
 import (
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/ssestream"
 	"bufio"
 	"fmt"
 	"io"
@@ -16,10 +17,8 @@ import (
 )
 
 var (
-	cmd       *exec.Cmd
-	mu        sync.Mutex
-	clients   []chan string
-	clientsMu sync.Mutex
+	cmd *exec.Cmd
+	mu  sync.Mutex
 )
 
 const (
@@ -145,74 +144,15 @@ func readPipe(pipe io.ReadCloser) {
 	scanner := bufio.NewScanner(pipe)
 	for scanner.Scan() {
 		output := scanner.Text()
-		clientsMu.Lock()
-		for _, clientChan := range clients {
-			select {
-			case clientChan <- output:
-			default: // Non-blocking send to avoid hanging on slow clients
-			}
-		}
-		clientsMu.Unlock()
+		ssestream.NewEventManager().Broadcast(output)
 	}
 	if err := scanner.Err(); err != nil {
-		output := fmt.Sprintf("Error reading pipe: %v", err)
-		clientsMu.Lock()
-		for _, clientChan := range clients {
-			select {
-			case clientChan <- output:
-			default: // Non-blocking send to avoid hanging on slow clients
-			}
-		}
-		clientsMu.Unlock()
+		ssestream.NewEventManager().Broadcast(fmt.Sprintf("Error reading pipe: %v", err))
 	}
 }
 
 func GetLogOutput(w http.ResponseWriter, r *http.Request) {
-	// Create a new channel for this client
-	clientChan := make(chan string, 100) // Buffered channel to prevent blocking
-
-	// Register the client
-	clientsMu.Lock()
-	clients = append(clients, clientChan)
-	clientsMu.Unlock()
-
-	// Ensure the channel is removed when the client disconnects
-	defer func() {
-		clientsMu.Lock()
-		for i, ch := range clients {
-			if ch == clientChan {
-				clients = append(clients[:i], clients[i+1:]...)
-				break
-			}
-		}
-		clientsMu.Unlock()
-		close(clientChan)
-	}()
-
-	// Set headers for SSE
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-
-	// Write data to the client as it comes in
-	flusher, ok := w.(http.Flusher)
-	if !ok {
-		http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
-		return
-	}
-
-	for {
-		select {
-		case msg, ok := <-clientChan:
-			if !ok {
-				return
-			}
-			fmt.Fprintf(w, "data: %s\n\n", msg)
-			flusher.Flush()
-		case <-r.Context().Done():
-			return
-		}
-	}
+	ssestream.NewEventManager().HandleEvents(w, r)
 }
 
 func StopServer(w http.ResponseWriter, r *http.Request) {
