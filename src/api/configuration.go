@@ -12,7 +12,7 @@ import (
 )
 
 // LoadConfigJSON loads the configuration from the JSON file
-func loadConfigJSON() (*config.Config, error) {
+func loadConfigJSON() (*config.JsonConfig, error) {
 	configPath := "./UIMod/config.json"
 	jsonFile, err := os.Open(configPath)
 	if err != nil {
@@ -25,7 +25,7 @@ func loadConfigJSON() (*config.Config, error) {
 		return nil, fmt.Errorf("error reading config.json: %v", err)
 	}
 
-	var config config.Config
+	var config config.JsonConfig
 	err = json.Unmarshal(byteValue, &config)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshalling config.json: %v", err)

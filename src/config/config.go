@@ -11,7 +11,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-type Config struct {
+type JsonConfig struct {
 	DiscordToken            string `json:"discordToken"`
 	ControlChannelID        string `json:"controlChannelID"`
 	StatusChannelID         string `json:"statusChannelID"`
@@ -83,62 +83,103 @@ var (
 	IsDiscordEnabled          bool
 	IsFirstTimeSetup          bool
 	GameBranch                string
-	Version                   = "3.0.18"
+	Version                   = "3.0.19"
 	Branch                    = "release"
 	GameServerAppID           = "600760" // Steam App ID for Stationeers Dedicated Server
 )
 
-func LoadConfig(filename string) (*Config, error) {
+func LoadConfig(filename string) (*JsonConfig, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	var config Config
+	var jsonconfig JsonConfig
 	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&config)
+	err = decoder.Decode(&jsonconfig)
 	if err != nil {
 		return nil, err
 	}
 	// Set the default executable path if not specified in the config file
-	if config.ExePath == "" {
+	if jsonconfig.ExePath == "" {
 		if runtime.GOOS == "windows" {
-			config.ExePath = "./rocketstation_DedicatedServer.exe"
+			jsonconfig.ExePath = "./rocketstation_DedicatedServer.exe"
 		} else {
-			config.ExePath = "./rocketstation_DedicatedServer.x86_64"
+			jsonconfig.ExePath = "./rocketstation_DedicatedServer.x86_64"
 		}
-		fmt.Println("Warning: No executable path specified in config file. Defaulting to", config.ExePath)
+		fmt.Println("Warning: No executable path specified in config file. Defaulting to", jsonconfig.ExePath)
 	}
 
-	DiscordToken = config.DiscordToken
-	ControlChannelID = config.ControlChannelID
-	StatusChannelID = config.StatusChannelID
-	LogChannelID = config.LogChannelID
-	ConnectionListChannelID = config.ConnectionListChannelID
-	SaveChannelID = config.SaveChannelID
-	BlackListFilePath = config.BlackListFilePath
-	ControlPanelChannelID = config.ControlPanelChannelID
-	IsDiscordEnabled = config.IsDiscordEnabled
-	ErrorChannelID = config.ErrorChannelID
-	GameBranch = config.GameBranch
-	ServerName = config.ServerName
-	SaveFileName = config.SaveFileName
-	ServerMaxPlayers = config.ServerMaxPlayers
-	ServerPassword = config.ServerPassword
-	ServerAuthSecret = config.ServerAuthSecret
-	AdminPassword = config.AdminPassword
-	GamePort = config.GamePort
-	UpdatePort = config.UpdatePort
-	UPNPEnabled = config.UPNPEnabled
-	AutoSave = config.AutoSave
-	SaveInterval = config.SaveInterval
-	AutoPauseServer = config.AutoPauseServer
-	LocalIpAddress = config.LocalIpAddress
-	StartLocalHost = config.StartLocalHost
-	ServerVisible = config.ServerVisible
-	UseSteamP2P = config.UseSteamP2P
-	ExePath = config.ExePath
-	AdditionalParams = config.AdditionalParams
-	return &config, nil
+	DiscordToken = jsonconfig.DiscordToken
+	ControlChannelID = jsonconfig.ControlChannelID
+	StatusChannelID = jsonconfig.StatusChannelID
+	LogChannelID = jsonconfig.LogChannelID
+	ConnectionListChannelID = jsonconfig.ConnectionListChannelID
+	SaveChannelID = jsonconfig.SaveChannelID
+	BlackListFilePath = jsonconfig.BlackListFilePath
+	ControlPanelChannelID = jsonconfig.ControlPanelChannelID
+	IsDiscordEnabled = jsonconfig.IsDiscordEnabled
+	ErrorChannelID = jsonconfig.ErrorChannelID
+	GameBranch = jsonconfig.GameBranch
+	ServerName = jsonconfig.ServerName
+	SaveFileName = jsonconfig.SaveFileName
+	ServerMaxPlayers = jsonconfig.ServerMaxPlayers
+	ServerPassword = jsonconfig.ServerPassword
+	ServerAuthSecret = jsonconfig.ServerAuthSecret
+	AdminPassword = jsonconfig.AdminPassword
+	GamePort = jsonconfig.GamePort
+	UpdatePort = jsonconfig.UpdatePort
+	UPNPEnabled = jsonconfig.UPNPEnabled
+	AutoSave = jsonconfig.AutoSave
+	SaveInterval = jsonconfig.SaveInterval
+	AutoPauseServer = jsonconfig.AutoPauseServer
+	LocalIpAddress = jsonconfig.LocalIpAddress
+	StartLocalHost = jsonconfig.StartLocalHost
+	ServerVisible = jsonconfig.ServerVisible
+	UseSteamP2P = jsonconfig.UseSteamP2P
+	ExePath = jsonconfig.ExePath
+	AdditionalParams = jsonconfig.AdditionalParams
+
+	//print all the values
+	fmt.Println("DiscordToken:", DiscordToken)
+	fmt.Println("ControlChannelID:", ControlChannelID)
+	fmt.Println("StatusChannelID:", StatusChannelID)
+	fmt.Println("LogChannelID:", LogChannelID)
+	fmt.Println("ConnectionListChannelID:", ConnectionListChannelID)
+	fmt.Println("SaveChannelID:", SaveChannelID)
+	fmt.Println("BlackListFilePath:", BlackListFilePath)
+	fmt.Println("ControlPanelChannelID:", ControlPanelChannelID)
+	fmt.Println("IsDiscordEnabled:", IsDiscordEnabled)
+	fmt.Println("ErrorChannelID:", ErrorChannelID)
+	fmt.Println("GameBranch:", GameBranch)
+	fmt.Println("ServerName:", ServerName)
+	fmt.Println("SaveFileName:", SaveFileName)
+	fmt.Println("ServerMaxPlayers:", ServerMaxPlayers)
+	fmt.Println("ServerPassword:", ServerPassword)
+	fmt.Println("ServerAuthSecret:", ServerAuthSecret)
+	fmt.Println("AdminPassword:", AdminPassword)
+	fmt.Println("GamePort:", GamePort)
+	fmt.Println("UpdatePort:", UpdatePort)
+	fmt.Println("UPNPEnabled:", UPNPEnabled)
+	fmt.Println("AutoSave:", AutoSave)
+	fmt.Println("SaveInterval:", SaveInterval)
+	fmt.Println("AutoPauseServer:", AutoPauseServer)
+	fmt.Println("LocalIpAddress:", LocalIpAddress)
+	fmt.Println("StartLocalHost:", StartLocalHost)
+	fmt.Println("ServerVisible:", ServerVisible)
+	fmt.Println("UseSteamP2P:", UseSteamP2P)
+	fmt.Println("ExePath:", ExePath)
+	fmt.Println("AdditionalParams:", AdditionalParams)
+	fmt.Println("Version:", Version)
+	fmt.Println("Branch:", Branch)
+	fmt.Println("GameServerAppID:", GameServerAppID)
+	fmt.Println("DiscordSession:", DiscordSession)
+	fmt.Println("LogMessageBuffer:", LogMessageBuffer)
+	fmt.Println("MaxBufferSize:", MaxBufferSize)
+	fmt.Println("BufferFlushTicker:", BufferFlushTicker)
+	fmt.Println("ConnectedPlayers:", ConnectedPlayers)
+	fmt.Println("ConnectedPlayersMessageID:", ConnectedPlayersMessageID)
+
+	return &jsonconfig, nil
 }
