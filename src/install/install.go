@@ -29,7 +29,7 @@ func Install(wg *sync.WaitGroup) {
 	workingDir := "./UIMod/"
 	configFilePath := workingDir + "config.json"
 	fmt.Println(string(colorYellow), "Loading configuration from", configFilePath, string(colorReset))
-	_, err := config.LoadConfig(configFilePath)
+	_, err := config.LoadConfig()
 	if err != nil {
 		fmt.Println("⚠️  Config file not found or invalid, downloading stable branch...")
 		config.GameBranch = "public" // Set default value

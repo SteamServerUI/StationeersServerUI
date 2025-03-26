@@ -4,46 +4,17 @@ import (
 	"StationeersServerUI/src/config"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"reflect"
 	"strings"
 )
 
-// LoadConfigJSON loads the configuration from the JSON file
-func loadConfigJSON() (*config.JsonConfig, error) {
-	configPath := "./UIMod/config.json"
-	jsonFile, err := os.Open(configPath)
-	if err != nil {
-		return nil, fmt.Errorf("error opening config.json: %v", err)
-	}
-	defer jsonFile.Close()
-
-	byteValue, err := io.ReadAll(jsonFile)
-	if err != nil {
-		return nil, fmt.Errorf("error reading config.json: %v", err)
-	}
-
-	var config config.JsonConfig
-	err = json.Unmarshal(byteValue, &config)
-	if err != nil {
-		return nil, fmt.Errorf("error unmarshalling config.json: %v", err)
-	}
-
-	return &config, nil
-}
-
 func HandleConfigJSON(w http.ResponseWriter, r *http.Request) {
-	config, err := loadConfigJSON()
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error loading config.json: %v", err), http.StatusInternalServerError)
-		return
-	}
 
 	htmlFile, err := os.ReadFile("./UIMod/config.html")
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error reading discord.html: %v", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Error reading config.html: %v", err), http.StatusInternalServerError)
 		return
 	}
 
@@ -167,7 +138,8 @@ func SaveConfigJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Load existing configuration
-	existingConfig, err := loadConfigJSON()
+	existingConfig, err := config.LoadConfig()
+
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error loading existing configuration: %v", err), http.StatusInternalServerError)
 		return
@@ -194,8 +166,7 @@ func SaveConfigJSON(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	configPath := "./UIMod/config.json"
-	file, err := os.Create(configPath)
+	file, err := os.Create(config.ConfigPath)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error creating config.json: %v", err), http.StatusInternalServerError)
 		return
@@ -208,6 +179,6 @@ func SaveConfigJSON(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Error encoding config.json: %v", err), http.StatusInternalServerError)
 		return
 	}
-
+	config.LoadConfig() //read the just saved config to globals
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

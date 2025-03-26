@@ -43,16 +43,13 @@ func main() {
 
 	fmt.Println(string(colorGreen), "Installation complete!", string(colorReset))
 
-	workingDir := "./UIMod/"
-	configFilePath := workingDir + "config.json"
-
-	fmt.Println(string(colorBlue), "Loading configuration from", configFilePath, string(colorReset))
-	config.LoadConfig(configFilePath)
+	fmt.Println(string(colorBlue), "Loading configuration", string(colorReset))
+	config.LoadConfig()
 
 	// Initialize the detection module
 	fmt.Println(string(colorBlue), "Initializing detection module...", string(colorReset))
 	detector := detection.Start()
-	detection.RegisterDefaultHandlers(detector) // Logs detections to console for now
+	detection.RegisterDefaultHandlers(detector)
 	fmt.Println(string(colorGreen), "Detection module ready!", string(colorReset))
 
 	// If Discord is enabled, start the Discord bot
@@ -87,7 +84,7 @@ func main() {
 		fmt.Println(string(colorMagenta), "https://github.com/jacksonthemaster/StationeersServerUI/blob/main/readme.md#first-time-setup", string(colorReset))
 		fmt.Println(string(colorMagenta), "Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)", string(colorReset))
 	}
-	if config.Branch != "Release" && config.Branch != "release" {
+	if config.IsDebugMode {
 		fmt.Println(string(colorRed), "⚠️Starting pprof server on /debug/pprof", string(colorReset))
 	}
 	// Start the HTTP server and check for errors
