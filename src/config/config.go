@@ -85,7 +85,7 @@ var (
 	IsFirstTimeSetup          bool
 	IsDebugMode               bool
 	GameBranch                string
-	Version                   = "3.0.28"
+	Version                   = "3.0.29"
 	Branch                    = "nightly"
 	GameServerAppID           = "600760" // Steam App ID for Stationeers Dedicated Server
 	ConfigPath                = "./UIMod/config.json"
@@ -112,7 +112,6 @@ func LoadConfig() (*JsonConfig, error) {
 		} else {
 			jsonconfig.ExePath = "./rocketstation_DedicatedServer.x86_64"
 		}
-		fmt.Println("Warning: No executable path specified in config file. Defaulting to", jsonconfig.ExePath)
 	}
 
 	DiscordToken = jsonconfig.DiscordToken
