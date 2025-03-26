@@ -41,7 +41,7 @@ func HandleConfigJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	htmlFile, err := os.ReadFile("./UIMod/furtherconfig.html")
+	htmlFile, err := os.ReadFile("./UIMod/config.html")
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error reading discord.html: %v", err), http.StatusInternalServerError)
 		return

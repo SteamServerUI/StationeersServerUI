@@ -76,7 +76,7 @@ func main() {
 	http.HandleFunc("/output", api.GetOutput)
 	http.HandleFunc("/backups", api.ListBackups)
 	http.HandleFunc("/restore", api.RestoreBackup)
-	http.HandleFunc("/furtherconfig", api.HandleConfigJSON)
+	http.HandleFunc("/config", api.HandleConfigJSON)
 	http.HandleFunc("/saveconfigasjson", api.SaveConfigJSON)
 	http.HandleFunc("/events", ui.StartDetectionEventStream())
 
