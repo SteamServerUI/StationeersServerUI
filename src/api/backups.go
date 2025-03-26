@@ -1,6 +1,7 @@
 package api
 
 import (
+	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/discord"
 	"fmt"
 	"io"
@@ -24,11 +25,6 @@ type backupGroup struct {
 }
 
 func ListBackups(w http.ResponseWriter, r *http.Request) {
-	config, err := loadConfig()
-	if err != nil {
-		http.Error(w, "Error loading config", http.StatusInternalServerError)
-		return
-	}
 
 	// Read from the Safebackups folder
 	safeBackupDir := "./saves/" + config.SaveFileName + "/Safebackups"
@@ -141,12 +137,6 @@ func RestoreBackup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config, err := loadConfig()
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error loading config: %v", err), http.StatusInternalServerError)
-		return
-	}
-
 	// Use the Safebackups folder for restoring
 	safeBackupDir := "./saves/" + config.SaveFileName + "/Safebackups"
 	saveDir := "./saves/" + config.SaveFileName
@@ -236,12 +226,6 @@ func WatchBackupDir() {
 		return
 	}
 	defer watcher.Close()
-
-	config, err := loadConfig()
-	if err != nil {
-		fmt.Println("Error loading config:", err)
-		return
-	}
 
 	backupDir := "./saves/" + config.SaveFileName + "/backup"
 	safeBackupDir := "./saves/" + config.SaveFileName + "/Safebackups"
@@ -489,12 +473,6 @@ func deleteBackupFiles(backup backupGroup) {
 func StartBackupCleanupRoutine() {
 	ticker := time.NewTicker(24 * time.Hour) // Run cleanup every 24 hours
 	defer ticker.Stop()
-
-	config, err := loadConfig()
-	if err != nil {
-		fmt.Println("Error loading config:", err)
-		return
-	}
 
 	safeBackupDir := "./saves/" + config.SaveFileName + "/Safebackups"
 	backupDir := "./saves/" + config.SaveFileName + "/backup"

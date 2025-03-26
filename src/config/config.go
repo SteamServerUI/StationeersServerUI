@@ -4,6 +4,7 @@ package config
 import (
 	"encoding/json"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -81,7 +82,7 @@ var (
 	IsDiscordEnabled          bool
 	IsFirstTimeSetup          bool
 	GameBranch                string
-	Version = "3.0.4"
+	Version = "3.0.12"
 	Branch                    = "release"
 	GameServerAppID           = "600760" // Steam App ID for Stationeers Dedicated Server
 )
@@ -98,6 +99,14 @@ func LoadConfig(filename string) (*Config, error) {
 	err = decoder.Decode(&config)
 	if err != nil {
 		return nil, err
+	}
+	// Set the default executable path if not specified in the config file
+	if config.ExePath == "" {
+		if runtime.GOOS == "windows" {
+			config.ExePath = "./rocketstation_DedicatedServer.exe"
+		} else {
+			config.ExePath = "./rocketstation_DedicatedServer.x86_64"
+		}
 	}
 	//print all the values to console
 	//fmt.Println("DiscordToken:", config.DiscordToken)

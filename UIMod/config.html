@@ -28,14 +28,14 @@
                         
                         <div class="form-group">
                             <label for="ServerName">Server Name:</label>
-                            <input type="text" id="ServerName" name="ServerName" value="{{ServerName}}" pattern="^\S*$" required>
+                            <input type="text" id="ServerName" name="ServerName" value="{{ServerName}}">
                             <div class="input-info">Name displayed in server list</div>
                         </div>
 
                         <div class="form-group">
-                            <label for="saveFileName">Save File Name:</label>
-                            <input type="text" id="SaveFileName" name="SaveFileName" value="{{SaveFileName}}" pattern="^\S*$" required>
-                            <div class="input-info">Name of save folder, capitalized (Moon1, not moon1)</div>
+                            <label for="SaveFileName">Save File Name:</label>
+                            <input type="text" id="SaveFileName" name="SaveFileName" value="{{SaveFileName}}"pattern="^[A-Z].*(\s[A-Z].*)?$" required>
+                            <div class="input-info">Name of save folder. Must be capitalized. Optially, provide the World type to generate. (MyMoonMap Moon)</div>
                         </div>
 
                         <div class="form-group">
@@ -77,8 +77,8 @@
                         <div class="form-group">
                             <label for="UPNPEnabled">UPNP Enabled:</label>
                             <select id="UPNPEnabled" name="UPNPEnabled" required>
-                                <option value="true" {{if eq UPNPEnabled "true"}}selected{{end}}>TRUE</option>
-                                <option value="false" {{if eq UPNPEnabled "false"}}selected{{end}}>FALSE</option>
+                                <option value="true" {{UPNPEnabledTrueSelected}}>TRUE</option>
+                                <option value="false" {{UPNPEnabledFalseSelected}}>FALSE</option>
                             </select>
                             <div class="input-info">Enable automatic UPNP port forwarding</div>
                         </div>
@@ -86,8 +86,8 @@
                         <div class="form-group">
                             <label for="AutoSave">Auto Save:</label>
                             <select id="AutoSave" name="AutoSave" required>
-                                <option value="true" {{if eq AutoSave "true"}}selected{{end}}>TRUE</option>
-                                <option value="false" {{if eq AutoSave "false"}}selected{{end}}>FALSE</option>
+                                <option value="true" {{AutoSaveTrueSelected}}>TRUE</option>
+                                <option value="false" {{AutoSaveFalseSelected}}>FALSE</option>
                             </select>
                             <div class="input-info">Set to TRUE to enable automatic saving</div>
                         </div>
@@ -101,8 +101,8 @@
                         <div class="form-group">
                             <label for="AutoPauseServer">Auto Pause Server:</label>
                             <select id="AutoPauseServer" name="AutoPauseServer" required>
-                                <option value="true" {{if eq AutoPauseServer "true"}}selected{{end}}>TRUE</option>
-                                <option value="false" {{if eq AutoPauseServer "false"}}selected{{end}}>FALSE</option>
+                                <option value="true" {{AutoPauseServerTrueSelected}}>TRUE</option>
+                                <option value="false" {{AutoPauseServerFalseSelected}}>FALSE</option>
                             </select>
                             <div class="input-info">Automatically pause server when no players are connected</div>
                         </div>
@@ -113,13 +113,11 @@
                             <div class="input-info">IP address to bind to</div>
                         </div>
 
-                        
-
                         <div class="form-group">
                             <label for="StartLocalHost">Start Local Host:</label>
                             <select id="StartLocalHost" name="StartLocalHost" required>
-                                <option value="true" {{if eq StartLocalHost "true"}}selected{{end}}>TRUE</option>
-                                <option value="false" {{if eq StartLocalHost "false"}}selected{{end}}>FALSE</option>
+                                <option value="true" {{StartLocalHostTrueSelected}}>TRUE</option>
+                                <option value="false" {{StartLocalHostFalseSelected}}>FALSE</option>
                             </select>
                             <div class="input-info">Set to TRUE to listen only on local network</div>
                         </div>
@@ -127,8 +125,8 @@
                         <div class="form-group">
                             <label for="ServerVisible">Server Visible:</label>
                             <select id="ServerVisible" name="ServerVisible" required>
-                                <option value="true" {{if eq ServerVisible "true"}}selected{{end}}>TRUE</option>
-                                <option value="false" {{if eq ServerVisible "false"}}selected{{end}}>FALSE</option>
+                                <option value="true" {{ServerVisibleTrueSelected}}>TRUE</option>
+                                <option value="false" {{ServerVisibleFalseSelected}}>FALSE</option>
                             </select>
                             <div class="input-info">Set to TRUE to list server publicly</div>
                         </div>
@@ -136,8 +134,8 @@
                         <div class="form-group">
                             <label for="UseSteamP2P">Use Steam P2P:</label>
                             <select id="UseSteamP2P" name="UseSteamP2P" required>
-                                <option value="true" {{if eq UseSteamP2P "true"}}selected{{end}}>TRUE</option>
-                                <option value="false" {{if eq UseSteamP2P "false"}}selected{{end}}>FALSE</option>
+                                <option value="true" {{UseSteamP2PTrueSelected}}>TRUE</option>
+                                <option value="false" {{UseSteamP2PFalseSelected}}>FALSE</option>
                             </select>
                             <div class="input-info">Enable Steam Peer-to-Peer networking</div>
                         </div>
@@ -146,6 +144,7 @@
                             <label for="ExePath">Server Executable Path:</label>
                             <input type="text" id="ExePath" name="ExePath" value="{{ExePath}}" readonly>
                             <div class="input-info">System path to server executable</div>
+                            <div class="input-info">Not editable from the UI for security reasons, but you can edit it manually in the config.json file.</div>
                         </div>
                         
                         <div class="form-group">
@@ -168,8 +167,8 @@
                 <div class="integration-status">
                     <label for="isDiscordEnabled" class="highlight-label">Discord Integration:</label>
                     <select id="isDiscordEnabled" name="isDiscordEnabled">
-                        <option value="true" {{if eq .isDiscordEnabled "true"}}selected{{end}}>ENABLED</option>
-                        <option value="false" {{if eq .isDiscordEnabled "false"}}selected{{end}}>DISABLED</option>
+                        <option value="true" {{IsDiscordEnabledTrueSelected}}>ENABLED</option>
+                        <option value="false" {{IsDiscordEnabledFalseSelected}}>DISABLED</option>
                     </select>
                     <div class="feature-badge">RECOMMENDED</div>
                 </div>
@@ -253,7 +252,7 @@
         </div>
     </main>
     <footer>
-        <div class="copyright">Copyright &copy; 2025 J. Langisch. Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.</div>
+        <div class="copyright">Copyright © 2025 J. Langisch. Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.</div>
     </footer>
 
     <script>

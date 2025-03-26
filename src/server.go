@@ -76,14 +76,12 @@ func main() {
 	http.HandleFunc("/output", api.GetOutput)
 	http.HandleFunc("/backups", api.ListBackups)
 	http.HandleFunc("/restore", api.RestoreBackup)
-	http.HandleFunc("/config", api.HandleConfig)
-	http.HandleFunc("/saveconfig", api.SaveConfig)
 	http.HandleFunc("/furtherconfig", api.HandleConfigJSON)
 	http.HandleFunc("/saveconfigasjson", api.SaveConfigJSON)
 	http.HandleFunc("/events", ui.StartDetectionEventStream())
 
 	fmt.Println(string(colorYellow), "Starting the HTTP server on port 8080...", string(colorReset))
-	fmt.Println(string(colorGreen), "UI available at: http://0.0.0.0:8080", string(colorReset))
+	fmt.Println(string(colorGreen), "UI available at: http://0.0.0.0:8080 or http://localhost:8080", string(colorReset))
 	if config.IsFirstTimeSetup {
 		fmt.Println(string(colorMagenta), "For first time Setup, follow the instructions on:", string(colorReset))
 		fmt.Println(string(colorMagenta), "https://github.com/jacksonthemaster/StationeersServerUI/blob/main/readme.md#first-time-setup", string(colorReset))
