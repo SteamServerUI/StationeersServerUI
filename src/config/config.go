@@ -3,6 +3,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"runtime"
 	"time"
@@ -82,7 +83,7 @@ var (
 	IsDiscordEnabled          bool
 	IsFirstTimeSetup          bool
 	GameBranch                string
-	Version = "3.0.12"
+	Version                   = "3.0.18"
 	Branch                    = "release"
 	GameServerAppID           = "600760" // Steam App ID for Stationeers Dedicated Server
 )
@@ -107,18 +108,9 @@ func LoadConfig(filename string) (*Config, error) {
 		} else {
 			config.ExePath = "./rocketstation_DedicatedServer.x86_64"
 		}
+		fmt.Println("Warning: No executable path specified in config file. Defaulting to", config.ExePath)
 	}
-	//print all the values to console
-	//fmt.Println("DiscordToken:", config.DiscordToken)
-	//fmt.Println("ControlChannelID:", config.ControlChannelID)
-	//fmt.Println("StatusChannelID:", config.StatusChannelID)
-	//fmt.Println("ConnectionListChannelID:", config.ConnectionListChannelID)
-	//fmt.Println("LogChannelID:", config.LogChannelID)
-	//fmt.Println("SaveChannelID:", config.SaveChannelID)
-	//fmt.Println("BlackListFilePath:", config.BlackListFilePath)
-	//fmt.Println("IsDiscordEnabled:", config.IsDiscordEnabled)
-	//fmt.Println("ErrorChannelID:", config.ErrorChannelID)
-	//fmt.Println("IsFirstTimeSetup:", IsFirstTimeSetup)
+
 	DiscordToken = config.DiscordToken
 	ControlChannelID = config.ControlChannelID
 	StatusChannelID = config.StatusChannelID
