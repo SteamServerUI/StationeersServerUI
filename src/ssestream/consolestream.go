@@ -106,9 +106,6 @@ func BroadcastConsoleOutput(message string) {
 		select {
 		case client <- message:
 			// Message sent successfully
-			//if config.IsDebugMode {
-			//	fmt.Println("Broadcasting to console clients:", message)
-			//}
 		case <-time.After(time.Second):
 			// Timeout - client might be slow; log and keep the client
 			log.Printf("%s🖥️ [Console/LogStream] ⏳ Timeout sending message after 1s: %q%s", colorMagenta, message, colorReset)

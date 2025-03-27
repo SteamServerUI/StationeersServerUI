@@ -1,4 +1,3 @@
-// eventstream.go
 package ssestream
 
 import (
@@ -24,7 +23,14 @@ func StartDetectionEventStream() http.HandlerFunc {
 		w.Header().Set("Connection", "keep-alive")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
-		// Create a new buffered channel for this client (buffer of 2000 events)
+		// Ensure the response writer supports flushing
+		flusher, ok := w.(http.Flusher)
+		if !ok {
+			http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
+			return
+		}
+
+		// Create a new buffered channel for this client
 		messageChan := make(chan string, 2000)
 
 		// Register this client
@@ -35,7 +41,6 @@ func StartDetectionEventStream() http.HandlerFunc {
 		// Send initial connection event
 		_, err := fmt.Fprintf(w, "data: UI event stream connected\n\n")
 		if err != nil {
-			// Early disconnect; clean up immediately
 			eventClientsMu.Lock()
 			delete(eventClients, messageChan)
 			eventClientsMu.Unlock()
@@ -43,29 +48,41 @@ func StartDetectionEventStream() http.HandlerFunc {
 			log.Printf("%s🖥️ [UI/EventStream] ⚠️ Failed to send initial event: %v%s", colorRed, err, colorReset)
 			return
 		}
-		w.(http.Flusher).Flush()
+		flusher.Flush()
 
-		// Remove client when connection is closed
+		// Handle client disconnection
 		notify := r.Context().Done()
+
+		// Start a goroutine to stream messages
 		go func(ch chan string) {
-			<-notify
-			eventClientsMu.Lock()
-			delete(eventClients, ch)
-			eventClientsMu.Unlock()
-			close(ch)
-			log.Printf("%s🖥️ [UI/EventStream] 👋 Client disconnected, channel closed%s", colorYellow, colorReset)
+			defer func() {
+				// Cleanup when the goroutine exits
+				eventClientsMu.Lock()
+				delete(eventClients, ch)
+				eventClientsMu.Unlock()
+				close(ch)
+				log.Printf("%s🖥️ [UI/EventStream] 👋 Client disconnected, channel closed%s", colorYellow, colorReset)
+			}()
+
+			for {
+				select {
+				case msg := <-ch:
+					// Send the message to the client
+					_, err := fmt.Fprintf(w, "data: %s\n\n", msg)
+					if err != nil {
+						log.Printf("%s🖥️ [UI/EventStream] ❌ Failed to send event to client: %v%s", colorRed, err, colorReset)
+						return
+					}
+					flusher.Flush()
+				case <-notify:
+					// Client disconnected
+					return
+				}
+			}
 		}(messageChan)
 
-		// Stream events to client
-		for msg := range messageChan {
-			_, err := fmt.Fprintf(w, "data: %s\n\n", msg)
-			if err != nil {
-				// Client likely disconnected; rely on context cancellation to clean up
-				log.Printf("%s🖥️ [UI/EventStream] ❌ Failed to send event to client: %v%s", colorRed, err, colorReset)
-				return
-			}
-			w.(http.Flusher).Flush()
-		}
+		// Keep the handler alive without blocking
+		<-notify // Wait for the client to disconnect, but don't block other handlers
 	}
 }
 
