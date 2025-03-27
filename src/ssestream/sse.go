@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+//the SSE blocking issue is NOT related to the backend, the API runs totally fine with 200 clients per channel. The issue must be in the javascript frontend, wich must improperly handle the SSE connection
+
 // ANSI color codes for logging
 const (
 	colorReset   = "\033[0m"
@@ -149,8 +151,8 @@ func (m *SSEManager) removeClient(client *Client) {
 
 // Global managers for console and event streams
 var (
-	ConsoleStreamManager = NewSSEManager(2, 2000)
-	EventStreamManager   = NewSSEManager(2, 2000)
+	ConsoleStreamManager = NewSSEManager(2, 2000) //set max clients to 2 to avoid blocking, not sure where the issue is coming from after hours of debugging thus the dirty "fix"
+	EventStreamManager   = NewSSEManager(20, 2000)
 )
 
 // StartConsoleStream creates an HTTP handler for console log SSE streaming
