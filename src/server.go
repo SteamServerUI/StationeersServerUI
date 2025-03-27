@@ -1,8 +1,8 @@
 package main
 
 import (
-	"StationeersServerUI/src/api"
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/core"
 	"StationeersServerUI/src/detection"
 	"StationeersServerUI/src/discord"
 	"StationeersServerUI/src/install"
@@ -62,19 +62,19 @@ func main() {
 	go startLogStream(detector) // Pass the detector to the log stream function
 
 	fmt.Println(string(colorBlue), "Starting API services...", string(colorReset))
-	go api.StartBackupCleanupRoutine()
-	go api.WatchBackupDir()
+	go core.StartBackupCleanupRoutine()
+	go core.WatchBackupDir()
 
 	fs := http.FileServer(http.Dir("./UIMod"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.HandleFunc("/", ui.ServeIndex)
-	http.HandleFunc("/start", api.StartServer)
-	http.HandleFunc("/stop", api.StopServer)
-	http.HandleFunc("/console", api.GetLogOutput)
-	http.HandleFunc("/backups", api.ListBackups)
-	http.HandleFunc("/restore", api.RestoreBackup)
-	http.HandleFunc("/config", api.HandleConfigJSON)
-	http.HandleFunc("/saveconfigasjson", api.SaveConfigJSON)
+	http.HandleFunc("/start", core.StartServer)
+	http.HandleFunc("/stop", core.StopServer)
+	http.HandleFunc("/console", core.GetLogOutput)
+	http.HandleFunc("/backups", core.ListBackups)
+	http.HandleFunc("/restore", core.RestoreBackup)
+	http.HandleFunc("/config", core.HandleConfigJSON)
+	http.HandleFunc("/saveconfigasjson", core.SaveConfigJSON)
 	http.HandleFunc("/events", ssestream.StartDetectionEventStream())
 
 	fmt.Println(string(colorYellow), "Starting the HTTP server on port 8080...", string(colorReset))

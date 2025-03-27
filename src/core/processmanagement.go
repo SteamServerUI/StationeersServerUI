@@ -1,5 +1,5 @@
 // processmanagement.go
-package api
+package core
 
 import (
 	"StationeersServerUI/src/config"
@@ -35,13 +35,6 @@ type Arg struct {
 	RequiresValue bool
 	Condition     func() bool
 	NoQuote       bool
-}
-
-// print args for debugging
-func printArgs(args []string) {
-	for _, arg := range args {
-		fmt.Println(arg)
-	}
 }
 
 func buildCommandArgs() []string {
