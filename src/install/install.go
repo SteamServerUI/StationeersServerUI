@@ -104,15 +104,15 @@ func checkAndCreateBlacklist() {
 
 	// Check if Blacklist.txt exists
 	if _, err := os.Stat(blacklistFile); os.IsNotExist(err) {
-		// Create an empty Blacklist.txt file
-		file, err := os.Create(blacklistFile)
+		// Create Blacklist.txt file with a dummy steamID64 so the gameserver doesn't fail reading this file, as it would not be the expected format if it was empty.
+		perm := os.FileMode(0644) // Still works cross-platform
+		err := os.WriteFile(blacklistFile, []byte("76561197960265728"), perm)
 		if err != nil {
 			fmt.Printf("❌ Error creating Blacklist.txt: %v\n", err)
 			return
 		}
-		defer file.Close()
 
-		fmt.Println("✅ Created Blacklist.txt.")
+		fmt.Println("✅ Created Blacklist.txt with dummy steamID64.")
 	} else {
 		fmt.Println("♻️ Blacklist.txt already exists. Skipping creation.")
 	}
