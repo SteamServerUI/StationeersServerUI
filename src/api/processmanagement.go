@@ -159,9 +159,9 @@ func readPipe(pipe io.ReadCloser) {
 	}
 	for scanner.Scan() {
 		output := scanner.Text()
-		if config.IsDebugMode {
-			fmt.Println("Pipe output:", output) // Debug
-		}
+		//if config.IsDebugMode {
+		//	fmt.Println("Pipe output:", output) // Debug
+		//}
 		ssestream.BroadcastConsoleOutput(output)
 	}
 	if err := scanner.Err(); err != nil {

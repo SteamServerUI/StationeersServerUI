@@ -1,7 +1,6 @@
 package ssestream
 
 import (
-	"StationeersServerUI/src/config"
 	"fmt"
 	"log"
 	"net/http"
@@ -35,7 +34,14 @@ func StartConsoleStream() http.HandlerFunc {
 		w.Header().Set("Connection", "keep-alive")
 		w.Header().Set("Access-Control-Allow-Origin", "")
 
-		// Create a new buffered channel for this client (buffer of 2000 events)
+		// Ensure the response writer supports flushing, not turning the server into a Potato until the client disconnects again (this took me a while to figure out)
+		flusher, ok := w.(http.Flusher)
+		if !ok {
+			http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
+			return
+		}
+
+		// Create a new buffered channel for this client
 		messageChan := make(chan string, 2000)
 
 		// Register this client
@@ -46,7 +52,6 @@ func StartConsoleStream() http.HandlerFunc {
 		// Send initial connection event
 		_, err := fmt.Fprintf(w, "data: Console log stream connected\n\n")
 		if err != nil {
-			// Early disconnect; clean up immediately
 			consoleClientsMu.Lock()
 			delete(consoleClients, messageChan)
 			consoleClientsMu.Unlock()
@@ -54,29 +59,41 @@ func StartConsoleStream() http.HandlerFunc {
 			log.Printf("%s🖥️ [Console/LogStream] ⚠️ Failed to send initial log message: %v%s", colorRed, err, colorReset)
 			return
 		}
-		w.(http.Flusher).Flush()
+		flusher.Flush()
 
-		// Remove client when connection is closed
+		// Handle client disconnection
 		notify := r.Context().Done()
+
+		// Start a goroutine to stream messages
 		go func(ch chan string) {
-			<-notify
-			consoleClientsMu.Lock()
-			delete(consoleClients, ch)
-			consoleClientsMu.Unlock()
-			close(ch)
-			log.Printf("%s🖥️ [Console/LogStream] 👋 Client disconnected, channel closed%s", colorYellow, colorReset)
+			defer func() {
+				// Cleanup when the goroutine exits
+				consoleClientsMu.Lock()
+				delete(consoleClients, ch)
+				consoleClientsMu.Unlock()
+				close(ch)
+				log.Printf("%s🖥️ [Console/LogStream] 👋 Client disconnected, channel closed%s", colorYellow, colorReset)
+			}()
+
+			for {
+				select {
+				case msg := <-ch:
+					// Send the message to the client
+					_, err := fmt.Fprintf(w, "data: %s\n\n", msg)
+					if err != nil {
+						log.Printf("%s🖥️ [Console/LogStream] ❌ Failed to send log to client: %v%s", colorRed, err, colorReset)
+						return
+					}
+					flusher.Flush()
+				case <-notify:
+					// Client disconnected
+					return
+				}
+			}
 		}(messageChan)
 
-		// Stream events to client
-		for msg := range messageChan {
-			_, err := fmt.Fprintf(w, "data: %s\n\n", msg)
-			if err != nil {
-				// Client likely disconnected; rely on context cancellation to clean up
-				log.Printf("%s🖥️ [Console/LogStream] ❌ Failed to send log to client: %v%s", colorRed, err, colorReset)
-				return
-			}
-			w.(http.Flusher).Flush()
-		}
+		// Keep the handler alive without blocking
+		<-notify // Wait for the client to disconnect, but don’t block other handlers
 	}
 }
 
@@ -89,9 +106,9 @@ func BroadcastConsoleOutput(message string) {
 		select {
 		case client <- message:
 			// Message sent successfully
-			if config.IsDebugMode {
-				fmt.Println("Broadcasting to console clients:", message)
-			}
+			//if config.IsDebugMode {
+			//	fmt.Println("Broadcasting to console clients:", message)
+			//}
 		case <-time.After(time.Second):
 			// Timeout - client might be slow; log and keep the client
 			log.Printf("%s🖥️ [Console/LogStream] ⏳ Timeout sending message after 1s: %q%s", colorMagenta, message, colorReset)
