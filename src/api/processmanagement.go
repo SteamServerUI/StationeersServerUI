@@ -32,8 +32,9 @@ const (
 type Arg struct {
 	Flag          string
 	Value         string
-	Condition     func() bool
 	RequiresValue bool
+	Condition     func() bool
+	NoQuote       bool
 }
 
 // print args for debugging
@@ -44,12 +45,11 @@ func printArgs(args []string) {
 }
 
 func buildCommandArgs() []string {
-
-	// Define argument order here
+	// Define argument order here, excluding LocalIpAddress for now
 	var argOrder = []Arg{
 		{Flag: "-nographics", RequiresValue: false},
 		{Flag: "-batchmode", RequiresValue: false},
-		{Flag: "-LOAD", Value: config.SaveFileName, RequiresValue: true},
+		{Flag: "-LOAD", Value: config.SaveFileName, RequiresValue: true, NoQuote: true},                                            // Added NoQuote to prevent quoting
 		{Flag: "-logFile", Value: `"./debug.log"`, Condition: func() bool { return runtime.GOOS == "linux" }, RequiresValue: true}, // Attach a logfile on Linux, since piped output is not available
 		{Flag: "-settings", RequiresValue: false},
 		{Flag: "StartLocalHost", Value: strconv.FormatBool(config.StartLocalHost), RequiresValue: true},
@@ -66,8 +66,8 @@ func buildCommandArgs() []string {
 		{Flag: "AutoPauseServer", Value: strconv.FormatBool(config.AutoPauseServer), RequiresValue: true},
 		{Flag: "UseSteamP2P", Value: strconv.FormatBool(config.UseSteamP2P), RequiresValue: true},
 		{Flag: "AdminPassword", Value: config.AdminPassword, Condition: func() bool { return config.AdminPassword != "" }, RequiresValue: true},
-		{Flag: "LocalIpAddress", Value: config.LocalIpAddress, RequiresValue: true},
 	}
+
 	var args []string
 	for _, arg := range argOrder {
 		// Skip if condition exists and fails
@@ -85,8 +85,8 @@ func buildCommandArgs() []string {
 
 		// Add the value if it exists
 		if arg.Value != "" {
-			// If the value contains a space and isn’t already quoted, wrap it in quotes
-			if strings.Contains(arg.Value, " ") && !strings.HasPrefix(arg.Value, `"`) && !strings.HasSuffix(arg.Value, `"`) {
+			// Only quote if it contains a space AND NoQuote is false
+			if strings.Contains(arg.Value, " ") && !arg.NoQuote && !strings.HasPrefix(arg.Value, `"`) && !strings.HasSuffix(arg.Value, `"`) {
 				args = append(args, `"`+arg.Value+`"`)
 			} else {
 				args = append(args, arg.Value)
@@ -94,6 +94,7 @@ func buildCommandArgs() []string {
 		}
 	}
 
+	// Append additional parameters
 	if config.AdditionalParams != "" {
 		extraArgs := strings.Fields(config.AdditionalParams)
 		for _, extraArg := range extraArgs {
@@ -104,6 +105,13 @@ func buildCommandArgs() []string {
 			}
 		}
 	}
+
+	// Add LocalIpAddress as the final parameter
+	if config.LocalIpAddress != "" {
+		args = append(args, "LocalIpAddress")
+		args = append(args, config.LocalIpAddress)
+	}
+
 	if config.IsDebugMode {
 		printArgs(args)
 	}
