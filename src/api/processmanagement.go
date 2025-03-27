@@ -49,8 +49,8 @@ func buildCommandArgs() []string {
 	var argOrder = []Arg{
 		{Flag: "-nographics", RequiresValue: false},
 		{Flag: "-batchmode", RequiresValue: false},
-		{Flag: "-LOAD", Value: config.SaveFileName, RequiresValue: true, NoQuote: true},                                            // Added NoQuote to prevent quoting
-		{Flag: "-logFile", Value: `"./debug.log"`, Condition: func() bool { return runtime.GOOS == "linux" }, RequiresValue: true}, // Attach a logfile on Linux, since piped output is not available
+		{Flag: "-LOAD", Value: config.SaveFileName, RequiresValue: true, NoQuote: true}, // LOAD has special handling beacause the gameserver expects 2 parameters for one flag here, wich is... weird. Nuice rocketwerkz
+		{Flag: "-logFile", Value: `"./debug.log"`, Condition: func() bool { return runtime.GOOS == "linux" }, RequiresValue: true},
 		{Flag: "-settings", RequiresValue: false},
 		{Flag: "StartLocalHost", Value: strconv.FormatBool(config.StartLocalHost), RequiresValue: true},
 		{Flag: "ServerVisible", Value: strconv.FormatBool(config.ServerVisible), RequiresValue: true},
@@ -83,7 +83,18 @@ func buildCommandArgs() []string {
 		// Add the flag
 		args = append(args, arg.Flag)
 
-		// Add the value if it exists
+		// Special handling for -LOAD to split save name and backup name
+		if arg.Flag == "-LOAD" && arg.Value != "" {
+			parts := strings.SplitN(arg.Value, " ", 2) // Split into at most 2 parts
+			for _, part := range parts {
+				if part != "" {
+					args = append(args, part)
+				}
+			}
+			continue // Skip the default value appending logic
+		}
+
+		// Add the value if it exists (for non -LOAD flags)
 		if arg.Value != "" {
 			// Only quote if it contains a space AND NoQuote is false
 			if strings.Contains(arg.Value, " ") && !arg.NoQuote && !strings.HasPrefix(arg.Value, `"`) && !strings.HasSuffix(arg.Value, `"`) {
