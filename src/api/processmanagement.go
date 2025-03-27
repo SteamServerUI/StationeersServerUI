@@ -162,11 +162,13 @@ func readPipe(pipe io.ReadCloser) {
 		if config.IsDebugMode {
 			fmt.Println("Pipe output:", output) // Debug
 		}
-		ssestream.NewEventManager().Broadcast(output)
+		ssestream.BroadcastConsoleOutput(output)
 	}
 	if err := scanner.Err(); err != nil {
-		fmt.Println("Pipe error:", err) // Debug
-		ssestream.NewEventManager().Broadcast(fmt.Sprintf("Error reading pipe: %v", err))
+		if config.IsDebugMode {
+			fmt.Println("Pipe error:", err) // Debug
+		}
+		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reading pipe: %v", err))
 	}
 	if config.IsDebugMode {
 		fmt.Println("Pipe closed") // Debug
@@ -174,7 +176,7 @@ func readPipe(pipe io.ReadCloser) {
 }
 
 func GetLogOutput(w http.ResponseWriter, r *http.Request) {
-	ssestream.NewEventManager().HandleEvents(w, r)
+	ssestream.StartConsoleStream()(w, r)
 }
 
 func StopServer(w http.ResponseWriter, r *http.Request) {

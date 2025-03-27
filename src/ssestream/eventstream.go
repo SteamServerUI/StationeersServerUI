@@ -15,17 +15,6 @@ var (
 	eventClientsMu sync.Mutex
 )
 
-// ANSI color codes for styling terminal output
-const (
-	colorReset   = "\033[0m"
-	colorRed     = "\033[31m"
-	colorGreen   = "\033[32m"
-	colorYellow  = "\033[33m"
-	colorBlue    = "\033[34m"
-	colorMagenta = "\033[35m"
-	colorCyan    = "\033[36m"
-)
-
 // StartDetectionEventStream creates and returns an HTTP handler for SSE event streaming
 func StartDetectionEventStream() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
