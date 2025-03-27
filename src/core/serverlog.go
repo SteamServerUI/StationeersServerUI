@@ -8,9 +8,9 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
+	"runtime"
 	"time"
-
-	"github.com/fsnotify/fsnotify"
 )
 
 // handler for the /console endpoint
@@ -39,112 +39,91 @@ func readPipe(pipe io.ReadCloser) {
 	}
 }
 
-// tailLogFile implements a tail -f-like behavior using fsnotify for linux because using the pipes to read the serverlog doesn't work on Linux with the stationeers gameserver
+// tailLogFile uses tail to read the log file because using the gameservers output in pipes to read the serverlog doesn't work on Linux with the stationeers gameserver, and I din't manage to implement proper file tailing here. This is a workaround for a workaround.
 func tailLogFile(logFilePath string) {
-	// Wait briefly to ensure the file exists after server start
-	time.Sleep(1 * time.Second)
-
-	// Open the log file
-	file, err := os.Open(logFilePath)
-	if err != nil {
-		if config.IsDebugMode {
-			fmt.Printf("Error opening log file: %v\n", err)
-		}
-		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error opening log file: %v", err))
-		return
+	//if gooos is windows somehow, skip this with a hard error and shutdown?
+	if runtime.GOOS == "windows" {
+		fmt.Println("[MAJOR ISSUE DETECTED]Windows detected while trying to read log files the linux way, skipping. You might wanna check your environment, as this should not happen.")
+		fmt.Println("[MAJOR ISSUE DETECTED]Shutting down...")
+		ssestream.BroadcastConsoleOutput("[MAJOR ISSUE DETECTED] Windows detected while trying to read log files the linux way, skipping. You might wanna check your environment, as this should not happen.")
+		ssestream.BroadcastConsoleOutput("[MAJOR ISSUE DETECTED] Shutting down...")
+		os.Exit(1)
 	}
-	defer file.Close()
 
-	// Create an fsnotify watcher
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		if config.IsDebugMode {
-			fmt.Printf("Error creating watcher: %v\n", err)
+	// Wait and retry until the log file exists
+	for i := range 10 { // Retry up to 10 times
+		if _, err := os.Stat(logFilePath); err == nil {
+			break // File exists, proceed
 		}
-		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error spawning log file watcher: %v", err))
-		return
+		if config.IsDebugMode {
+			fmt.Printf("Log file %s not found, retrying in 1s (%d/10)\n", logFilePath, i+1)
+		}
+		time.Sleep(1 * time.Second)
 	}
-	defer watcher.Close()
 
-	// Add the log file to the watcher
-	err = watcher.Add(logFilePath)
-	if err != nil {
+	// If file still doesn't exist, give up and report
+	if _, err := os.Stat(logFilePath); os.IsNotExist(err) {
 		if config.IsDebugMode {
-			fmt.Printf("Error adding log file to watcher: %v\n", err)
+			fmt.Printf("Log file %s still not found after retries\n", logFilePath)
 		}
-		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error adding log file to watcher: %v", err))
+		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Log file %s not found after retries", logFilePath))
 		return
 	}
 
-	// Seek to the end of the file initially to start tailing from the current point
-	_, err = file.Seek(0, io.SeekEnd)
+	// Start tail -f
+	cmd := exec.Command("tail", "-F", logFilePath)
+	pipe, err := cmd.StdoutPipe()
 	if err != nil {
 		if config.IsDebugMode {
-			fmt.Printf("Error seeking to end of log file: %v\n", err)
+			fmt.Printf("Error creating stdout pipe for tail: %v\n", err)
 		}
-		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error seeking log file: %v", err))
+		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error starting tail -f: %v", err))
 		return
 	}
 
-	scanner := bufio.NewScanner(file)
-	if config.IsDebugMode {
-		fmt.Println("Started tailing log file with fsnotify")
+	// Start the command
+	if err := cmd.Start(); err != nil {
+		if config.IsDebugMode {
+			fmt.Printf("Error starting tail -f: %v\n", err)
+		}
+		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error starting tail -f: %v", err))
+		return
 	}
 
-	// Goroutine to handle file events
-	go func() {
-		for {
-			select {
-			case event, ok := <-watcher.Events:
-				if !ok {
-					return
-				}
-				if event.Op&fsnotify.Write == fsnotify.Write {
-					// New content has been written to the file
-					for scanner.Scan() {
-						output := scanner.Text()
-						if config.IsDebugMode {
-							fmt.Println("DEBUG: Read from log file:", output)
-						}
-						ssestream.BroadcastConsoleOutput(output)
-					}
-					if err := scanner.Err(); err != nil {
-						if config.IsDebugMode {
-							fmt.Printf("Error reading log file: %v\n", err)
-						}
-						ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reading log file: %v", err))
-						return
-					}
-				}
-				// Handle file truncation or rotation (optional)
-				if event.Op&fsnotify.Remove == fsnotify.Remove || event.Op&fsnotify.Rename == fsnotify.Rename {
-					if config.IsDebugMode {
-						fmt.Println("Log file removed or renamed, attempting to reopen")
-					}
-					// Reopen the file and re-add to watcher
-					file.Close()
-					file, err = os.Open(logFilePath)
-					if err != nil {
-						ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reopening log file: %v", err))
-						return
-					}
-					scanner = bufio.NewScanner(file)
-					watcher.Add(logFilePath)
-				}
-			case err, ok := <-watcher.Errors:
-				if !ok {
-					return
-				}
-				if config.IsDebugMode {
-					fmt.Printf("Watcher error: %v\n", err)
-				}
-				ssestream.BroadcastConsoleOutput(fmt.Sprintf("Watcher error: %v", err))
-			case <-logDone:
-				return
-			}
+	// Clean up when done
+	defer func() {
+		cmd.Process.Kill() // Kill tail when logDone triggers
+		if err := cmd.Wait(); err != nil && config.IsDebugMode {
+			fmt.Printf("Tail process exited with: %v\n", err)
 		}
 	}()
 
-	// Keep the function running until we either get a signal to stop or the server stops
+	scanner := bufio.NewScanner(pipe)
+	if config.IsDebugMode {
+		fmt.Println("Started tailing log file with tail -f")
+	}
+
+	// Goroutine to read and broadcast tail output
+	go func() {
+		defer pipe.Close()
+		for scanner.Scan() {
+			output := scanner.Text()
+			if config.IsDebugMode {
+				fmt.Println("DEBUG: Read from tail -f:", output)
+			}
+			ssestream.BroadcastConsoleOutput(output)
+		}
+		if err := scanner.Err(); err != nil {
+			if config.IsDebugMode {
+				fmt.Printf("Error reading tail -f output: %v\n", err)
+			}
+			ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reading tail -f output: %v", err))
+		}
+	}()
+
+	// Wait for logDone signal to stop
 	<-logDone
+	if config.IsDebugMode {
+		fmt.Println("Received logDone signal, stopping tail -f")
+	}
 }
