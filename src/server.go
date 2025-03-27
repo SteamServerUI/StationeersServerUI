@@ -81,7 +81,7 @@ func main() {
 	fmt.Println(string(colorGreen), "UI available at: http://0.0.0.0:8080 or http://localhost:8080", string(colorReset))
 	if config.IsFirstTimeSetup {
 		fmt.Println(string(colorMagenta), "For first time Setup, follow the instructions on:", string(colorReset))
-		fmt.Println(string(colorMagenta), "https://github.com/jacksonthemaster/StationeersServerUI/blob/main/readme.md#first-time-setup", string(colorReset))
+		fmt.Println(string(colorMagenta), "https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup", string(colorReset))
 		fmt.Println(string(colorMagenta), "Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)", string(colorReset))
 	}
 	if config.IsDebugMode {
