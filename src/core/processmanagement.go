@@ -16,11 +16,14 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/fsnotify/fsnotify"
 )
 
 var (
-	cmd *exec.Cmd
-	mu  sync.Mutex
+	cmd     *exec.Cmd
+	mu      sync.Mutex
+	logDone chan struct{}
 )
 
 const (
@@ -152,6 +155,10 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		if config.IsDebugMode {
 			fmt.Println("Switching to log file for logs as we are on Linux! Hail the Penguin!")
 		}
+		if logDone != nil {
+			close(logDone) // Close any existing channel
+		}
+		logDone = make(chan struct{})
 		// On Linux, start the command without pipes since we're using the log file
 		if err := cmd.Start(); err != nil {
 			fmt.Fprintf(w, "Error starting server: %v", err)
@@ -186,11 +193,12 @@ func readPipe(pipe io.ReadCloser) {
 	}
 }
 
-// tailLogFile implements a tail -f-like behavior for Linux
+// tailLogFile implements a tail -f-like behavior using fsnotify
 func tailLogFile(logFilePath string) {
 	// Wait briefly to ensure the file exists after server start
 	time.Sleep(1 * time.Second)
 
+	// Open the log file
 	file, err := os.Open(logFilePath)
 	if err != nil {
 		if config.IsDebugMode {
@@ -201,7 +209,28 @@ func tailLogFile(logFilePath string) {
 	}
 	defer file.Close()
 
-	// Seek to the end of the file initially (like tail -f)
+	// Create an fsnotify watcher
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		if config.IsDebugMode {
+			fmt.Printf("Error creating watcher: %v\n", err)
+		}
+		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error spawning log file watcher: %v", err))
+		return
+	}
+	defer watcher.Close()
+
+	// Add the log file to the watcher
+	err = watcher.Add(logFilePath)
+	if err != nil {
+		if config.IsDebugMode {
+			fmt.Printf("Error adding log file to watcher: %v\n", err)
+		}
+		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error adding log file to watcher: %v", err))
+		return
+	}
+
+	// Seek to the end of the file initially to start tailing from the current point
 	_, err = file.Seek(0, io.SeekEnd)
 	if err != nil {
 		if config.IsDebugMode {
@@ -213,39 +242,65 @@ func tailLogFile(logFilePath string) {
 
 	scanner := bufio.NewScanner(file)
 	if config.IsDebugMode {
-		fmt.Println("Started tailing log file") // Debug
+		fmt.Println("Started tailing log file with fsnotify")
 	}
 
-	// Continuously read new lines
-	for {
-		for scanner.Scan() {
-			output := scanner.Text()
-			ssestream.BroadcastConsoleOutput(output)
-		}
-
-		// If we reach EOF, wait and check for new content
-		if err := scanner.Err(); err != nil {
-			if config.IsDebugMode {
-				fmt.Printf("Error reading log file: %v\n", err)
+	// Goroutine to handle file events
+	go func() {
+		for {
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
+				}
+				if event.Op&fsnotify.Write == fsnotify.Write {
+					// New content has been written to the file
+					for scanner.Scan() {
+						output := scanner.Text()
+						if config.IsDebugMode {
+							fmt.Println("DEBUG: Read from log file:", output)
+						}
+						ssestream.BroadcastConsoleOutput(output)
+					}
+					if err := scanner.Err(); err != nil {
+						if config.IsDebugMode {
+							fmt.Printf("Error reading log file: %v\n", err)
+						}
+						ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reading log file: %v", err))
+						return
+					}
+				}
+				// Handle file truncation or rotation (optional)
+				if event.Op&fsnotify.Remove == fsnotify.Remove || event.Op&fsnotify.Rename == fsnotify.Rename {
+					if config.IsDebugMode {
+						fmt.Println("Log file removed or renamed, attempting to reopen")
+					}
+					// Reopen the file and re-add to watcher
+					file.Close()
+					file, err = os.Open(logFilePath)
+					if err != nil {
+						ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reopening log file: %v", err))
+						return
+					}
+					scanner = bufio.NewScanner(file)
+					watcher.Add(logFilePath)
+				}
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					return
+				}
+				if config.IsDebugMode {
+					fmt.Printf("Watcher error: %v\n", err)
+				}
+				ssestream.BroadcastConsoleOutput(fmt.Sprintf("Watcher error: %v", err))
+			case <-logDone:
+				return
 			}
-			ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reading log file: %v", err))
-			return
 		}
+	}()
 
-		// Sleep briefly before checking for new content
-		time.Sleep(100 * time.Millisecond)
-
-		// Check if the file has been truncated or rotated (optional handling)
-		currentPos, _ := file.Seek(0, io.SeekCurrent)
-		fileInfo, err := file.Stat()
-		if err != nil {
-			continue
-		}
-		if currentPos > fileInfo.Size() {
-			// File was truncated or rotated, reset to start
-			file.Seek(0, io.SeekStart)
-		}
-	}
+	// Keep the function running until the server stops
+	<-logDone
 }
 
 func GetLogOutput(w http.ResponseWriter, r *http.Request) {
@@ -277,6 +332,11 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintf(w, "Error stopping server: %v", killErr)
 				return
 			}
+		}
+		// Close the logDone channel to stop the tailing goroutine (Linux only)
+		if logDone != nil {
+			close(logDone)
+			logDone = nil // Reset to nil to avoid double-closing
 		}
 	}
 
