@@ -45,11 +45,10 @@ func printArgs(args []string) {
 }
 
 func buildCommandArgs() []string {
-	// Define argument order here, excluding LocalIpAddress for now
 	var argOrder = []Arg{
 		{Flag: "-nographics", RequiresValue: false},
 		{Flag: "-batchmode", RequiresValue: false},
-		{Flag: "-LOAD", Value: config.SaveFileName, RequiresValue: true, NoQuote: true}, // LOAD has special handling beacause the gameserver expects 2 parameters for one flag here, wich is... weird. Nuice rocketwerkz
+		{Flag: "-LOAD", Value: config.SaveFileName, RequiresValue: true, NoQuote: true}, // LOAD has special handling because the gameserver expects 2 parameters
 		{Flag: "-logFile", Value: `"./debug.log"`, Condition: func() bool { return runtime.GOOS == "linux" }, RequiresValue: true},
 		{Flag: "-settings", RequiresValue: false},
 		{Flag: "StartLocalHost", Value: strconv.FormatBool(config.StartLocalHost), RequiresValue: true},
@@ -70,61 +69,44 @@ func buildCommandArgs() []string {
 
 	var args []string
 	for _, arg := range argOrder {
-		// Skip if condition exists and fails
 		if arg.Condition != nil && !arg.Condition() {
 			continue
 		}
-
-		// If the flag requires a value and the value is empty, skip it entirely
 		if arg.RequiresValue && arg.Value == "" {
 			continue
 		}
 
-		// Add the flag
 		args = append(args, arg.Flag)
 
-		// Special handling for -LOAD to split save name and backup name
 		if arg.Flag == "-LOAD" && arg.Value != "" {
-			parts := strings.SplitN(arg.Value, " ", 2) // Split into at most 2 parts
+			parts := strings.SplitN(arg.Value, " ", 2)
 			for _, part := range parts {
 				if part != "" {
 					args = append(args, part)
 				}
 			}
-			continue // Skip the default value appending logic
+			continue
 		}
 
-		// Add the value if it exists (for non -LOAD flags)
 		if arg.Value != "" {
-			// Only quote if it contains a space AND NoQuote is false
-			if strings.Contains(arg.Value, " ") && !arg.NoQuote && !strings.HasPrefix(arg.Value, `"`) && !strings.HasSuffix(arg.Value, `"`) {
-				args = append(args, `"`+arg.Value+`"`)
-			} else {
-				args = append(args, arg.Value)
-			}
+			args = append(args, arg.Value)
 		}
 	}
 
-	// Append additional parameters
 	if config.AdditionalParams != "" {
-		extraArgs := strings.Fields(config.AdditionalParams)
-		for _, extraArg := range extraArgs {
-			if strings.Contains(extraArg, " ") {
-				args = append(args, `"`+extraArg+`"`)
-			} else {
-				args = append(args, extraArg)
-			}
-		}
+		args = append(args, strings.Fields(config.AdditionalParams)...)
 	}
 
-	// Add LocalIpAddress as the final parameter
 	if config.LocalIpAddress != "" {
 		args = append(args, "LocalIpAddress")
 		args = append(args, config.LocalIpAddress)
 	}
 
 	if config.IsDebugMode {
-		printArgs(args)
+		fmt.Println("=== DEBUG: Raw arguments passed to exec.Command ===")
+		for i, arg := range args {
+			fmt.Printf("Arg[%d]: %q\n", i, arg)
+		}
 	}
 	return args
 }
