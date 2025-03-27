@@ -8,12 +8,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"os/exec"
 	"runtime"
 	"strconv"
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 )
 
 var (
@@ -122,30 +124,48 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("• Executable: %s\n", colorGreen+colorBold+config.ExePath+colorReset)
 	fmt.Printf("• Parameters: %s\n", colorYellow+strings.Join(args, " ")+colorReset)
 
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		fmt.Fprintf(w, "Error creating StdoutPipe: %v", err)
-		return
-	}
+	// Only set up pipes for Windows
+	if runtime.GOOS == "windows" {
+		stdout, err := cmd.StdoutPipe()
+		if err != nil {
+			fmt.Fprintf(w, "Error creating StdoutPipe: %v", err)
+			return
+		}
 
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		fmt.Fprintf(w, "Error creating StderrPipe: %v", err)
-		return
-	}
+		stderr, err := cmd.StderrPipe()
+		if err != nil {
+			fmt.Fprintf(w, "Error creating StderrPipe: %v", err)
+			return
+		}
 
-	if err := cmd.Start(); err != nil {
-		fmt.Fprintf(w, "Error starting server: %v", err)
-		return
-	}
+		if err := cmd.Start(); err != nil {
+			fmt.Fprintf(w, "Error starting server: %v", err)
+			return
+		}
+		if config.IsDebugMode {
+			fmt.Println("Created pipes")
+		}
+		// Start reading stdout and stderr pipes on Windows
+		go readPipe(stdout)
+		go readPipe(stderr)
+	} else {
+		if config.IsDebugMode {
+			fmt.Println("Switching to log file for logs as we are on Linux! Hail the Penguin!")
+		}
+		// On Linux, start the command without pipes since we're using the log file
+		if err := cmd.Start(); err != nil {
+			fmt.Fprintf(w, "Error starting server: %v", err)
+			return
+		}
 
-	// Start reading stdout and stderr
-	go readPipe(stdout)
-	go readPipe(stderr)
+		// Start tailing the debug.log file on Linux
+		go tailLogFile("./debug.log")
+	}
 
 	fmt.Fprintf(w, "Server started.")
 }
 
+// readPipe for Windows
 func readPipe(pipe io.ReadCloser) {
 	scanner := bufio.NewScanner(pipe)
 	if config.IsDebugMode {
@@ -153,9 +173,6 @@ func readPipe(pipe io.ReadCloser) {
 	}
 	for scanner.Scan() {
 		output := scanner.Text()
-		//if config.IsDebugMode {
-		//	fmt.Println("Pipe output:", output) // Debug
-		//}
 		ssestream.BroadcastConsoleOutput(output)
 	}
 	if err := scanner.Err(); err != nil {
@@ -166,6 +183,68 @@ func readPipe(pipe io.ReadCloser) {
 	}
 	if config.IsDebugMode {
 		fmt.Println("Pipe closed") // Debug
+	}
+}
+
+// tailLogFile implements a tail -f-like behavior for Linux
+func tailLogFile(logFilePath string) {
+	// Wait briefly to ensure the file exists after server start
+	time.Sleep(1 * time.Second)
+
+	file, err := os.Open(logFilePath)
+	if err != nil {
+		if config.IsDebugMode {
+			fmt.Printf("Error opening log file: %v\n", err)
+		}
+		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error opening log file: %v", err))
+		return
+	}
+	defer file.Close()
+
+	// Seek to the end of the file initially (like tail -f)
+	_, err = file.Seek(0, io.SeekEnd)
+	if err != nil {
+		if config.IsDebugMode {
+			fmt.Printf("Error seeking to end of log file: %v\n", err)
+		}
+		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error seeking log file: %v", err))
+		return
+	}
+
+	scanner := bufio.NewScanner(file)
+	if config.IsDebugMode {
+		fmt.Println("Started tailing log file") // Debug
+	}
+
+	// Continuously read new lines
+	for {
+		for scanner.Scan() {
+			output := scanner.Text()
+			ssestream.BroadcastConsoleOutput(output)
+		}
+
+		// If we reach EOF, wait and check for new content
+		if err := scanner.Err(); err != nil {
+			if config.IsDebugMode {
+				fmt.Printf("Error reading log file: %v\n", err)
+			}
+			ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reading log file: %v", err))
+			return
+		}
+
+		// Sleep briefly before checking for new content
+		time.Sleep(100 * time.Millisecond)
+
+		// Check if the file has been truncated or rotated (optional handling)
+		currentPos, _ := file.Seek(0, io.SeekCurrent)
+		fileInfo, err := file.Stat()
+		if err != nil {
+			continue
+		}
+		if currentPos > fileInfo.Size() {
+			// File was truncated or rotated, reset to start
+			file.Seek(0, io.SeekStart)
+		}
 	}
 }
 
