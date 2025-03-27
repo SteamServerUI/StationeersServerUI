@@ -39,7 +39,7 @@ func readPipe(pipe io.ReadCloser) {
 	}
 }
 
-// tailLogFile implements a tail -f-like behavior using fsnotify
+// tailLogFile implements a tail -f-like behavior using fsnotify for linux because using the pipes to read the serverlog doesn't work on Linux with the stationeers gameserver
 func tailLogFile(logFilePath string) {
 	// Wait briefly to ensure the file exists after server start
 	time.Sleep(1 * time.Second)
@@ -145,6 +145,6 @@ func tailLogFile(logFilePath string) {
 		}
 	}()
 
-	// Keep the function running until the server stops
+	// Keep the function running until we either get a signal to stop or the server stops
 	<-logDone
 }
