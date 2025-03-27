@@ -85,7 +85,7 @@ var (
 	IsFirstTimeSetup          bool
 	IsDebugMode               bool
 	GameBranch                string
-	Version = "3.0.37"
+	Version = "3.0.38"
 	Branch                    = "nightly"
 	GameServerAppID           = "600760" // Steam App ID for Stationeers Dedicated Server
 	ConfigPath                = "./UIMod/config.json"

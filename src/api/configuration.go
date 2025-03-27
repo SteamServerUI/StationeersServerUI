@@ -137,35 +137,47 @@ func SaveConfigJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Parse the form data
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, fmt.Sprintf("Error parsing form: %v", err), http.StatusInternalServerError)
+		return
+	}
+
 	// Load existing configuration
 	existingConfig, err := config.LoadConfig()
-
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error loading existing configuration: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	// Use reflection to update only submitted fields
+	// Use reflection to update fields present in the form
 	v := reflect.ValueOf(existingConfig).Elem()
 	t := v.Type()
 
 	for i := 0; i < v.NumField(); i++ {
 		fieldName := t.Field(i).Tag.Get("json")
-		formValue := r.FormValue(fieldName)
+		formValues, exists := r.Form[fieldName] // Check if the field exists in the form data
 
-		if formValue == "" {
-			continue
+		if !exists {
+			continue // Skip fields not submitted in the form
+		}
+
+		// If the field exists, use the first value (even if it's empty)
+		formValue := ""
+		if len(formValues) > 0 {
+			formValue = formValues[0]
 		}
 
 		field := v.Field(i)
 		switch field.Kind() {
 		case reflect.String:
-			field.SetString(formValue)
+			field.SetString(formValue) // Set the value, even if it's empty to allow clearing the field
 		case reflect.Bool:
 			field.SetBool(formValue == "true")
 		}
 	}
 
+	// Save the updated config to file
 	file, err := os.Create(config.ConfigPath)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error creating config.json: %v", err), http.StatusInternalServerError)
@@ -179,6 +191,7 @@ func SaveConfigJSON(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Error encoding config.json: %v", err), http.StatusInternalServerError)
 		return
 	}
-	config.LoadConfig() //read the just saved config to globals
+
+	config.LoadConfig() // Reload the saved config into globals
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
