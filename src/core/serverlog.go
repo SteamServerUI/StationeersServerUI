@@ -39,13 +39,15 @@ func readPipe(pipe io.ReadCloser) {
 	}
 }
 
-// tailLogFile uses tail to read the log file because using the gameservers output in pipes to read the serverlog doesn't work on Linux with the stationeers gameserver, and I din't manage to implement proper file tailing here. This is a workaround for a workaround.
+// tailLogFile uses tail to read the log file because using the gameserver's output in pipes to read the serverlog doesn't work on Linux with the Stationeers gameserver.
+// I didn't manage to implement proper file tailing (tail behavior) here in go, so I opted to just use the actual tail.. This is a workaround for a workaround.
+
 func tailLogFile(logFilePath string) {
-	//if gooos is windows somehow, skip this with a hard error and shutdown?
+	//if we somehow end up running THIS on windows, hard error and shutdown as the whole point of this software is to read the logs and do stuff with them.
 	if runtime.GOOS == "windows" {
-		fmt.Println("[MAJOR ISSUE DETECTED]Windows detected while trying to read log files the linux way, skipping. You might wanna check your environment, as this should not happen.")
-		fmt.Println("[MAJOR ISSUE DETECTED]Shutting down...")
-		ssestream.BroadcastConsoleOutput("[MAJOR ISSUE DETECTED] Windows detected while trying to read log files the linux way, skipping. You might wanna check your environment, as this should not happen.")
+		fmt.Println("[MAJOR ISSUE DETECTED] Windows detected while trying to read log files the Linux way, skipping. You might wanna check your environment, as this should not happen.")
+		fmt.Println("[MAJOR ISSUE DETECTED] Shutting down...")
+		ssestream.BroadcastConsoleOutput("[MAJOR ISSUE DETECTED] Windows detected while trying to read log files the Linux way, skipping. You might wanna check your environment, as this should not happen.")
 		ssestream.BroadcastConsoleOutput("[MAJOR ISSUE DETECTED] Shutting down...")
 		os.Exit(1)
 	}
@@ -70,23 +72,23 @@ func tailLogFile(logFilePath string) {
 		return
 	}
 
-	// Start tail -f
+	// Start tail -F (robust against rotation)
 	cmd := exec.Command("tail", "-F", logFilePath)
 	pipe, err := cmd.StdoutPipe()
 	if err != nil {
 		if config.IsDebugMode {
 			fmt.Printf("Error creating stdout pipe for tail: %v\n", err)
 		}
-		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error starting tail -f: %v", err))
+		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error starting tail -F: %v", err))
 		return
 	}
 
 	// Start the command
 	if err := cmd.Start(); err != nil {
 		if config.IsDebugMode {
-			fmt.Printf("Error starting tail -f: %v\n", err)
+			fmt.Printf("Error starting tail -F: %v\n", err)
 		}
-		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error starting tail -f: %v", err))
+		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error starting tail -F: %v", err))
 		return
 	}
 
@@ -100,30 +102,30 @@ func tailLogFile(logFilePath string) {
 
 	scanner := bufio.NewScanner(pipe)
 	if config.IsDebugMode {
-		fmt.Println("Started tailing log file with tail -f")
+		fmt.Println("Started tailing log file with tail -F")
 	}
 
 	// Goroutine to read and broadcast tail output
 	go func() {
-		defer pipe.Close()
+		defer pipe.Close() // Close pipe when goroutine exits
 		for scanner.Scan() {
 			output := scanner.Text()
 			if config.IsDebugMode {
-				fmt.Println("DEBUG: Read from tail -f:", output)
+				fmt.Println("DEBUG: Read from tail -F:", output)
 			}
 			ssestream.BroadcastConsoleOutput(output)
 		}
 		if err := scanner.Err(); err != nil {
 			if config.IsDebugMode {
-				fmt.Printf("Error reading tail -f output: %v\n", err)
+				fmt.Printf("Error reading tail -F output: %v\n", err)
 			}
-			ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reading tail -f output: %v", err))
+			ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reading tail -F output: %v", err))
 		}
 	}()
 
 	// Wait for logDone signal to stop
 	<-logDone
 	if config.IsDebugMode {
-		fmt.Println("Received logDone signal, stopping tail -f")
+		fmt.Println("Received logDone signal, stopping tail -F")
 	}
 }
