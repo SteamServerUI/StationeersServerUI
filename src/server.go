@@ -7,16 +7,13 @@ import (
 	"StationeersServerUI/src/discord"
 	"StationeersServerUI/src/install"
 	"StationeersServerUI/src/ssestream"
+	"StationeersServerUI/src/tlsconfig"
 	"StationeersServerUI/src/ui"
 	"fmt"
 	"net/http"
-	"os"
 	"sync"
-	"time"
 
 	_ "net/http/pprof"
-
-	"github.com/r3labs/sse"
 )
 
 const (
@@ -59,7 +56,7 @@ func main() {
 		go discord.StartDiscordBot()
 	}
 
-	go startLogStream(detector) // Pass the detector to the log stream function
+	go detection.StartLogStream(detector) // Pass the detector to the log stream function
 
 	fmt.Println(string(colorBlue), "Starting API services...", string(colorReset))
 	go core.StartBackupCleanupRoutine()
@@ -83,20 +80,26 @@ func main() {
 	go func() {
 		defer wg.Done()
 		fmt.Println(string(colorYellow), "Starting the HTTP server on port 8080...", string(colorReset))
-		fmt.Println(string(colorGreen), "UI available at: http://0.0.0.0:8080 or http://localhost:8080", string(colorReset))
+		fmt.Println(string(colorGreen), "UI available at: https://0.0.0.0:443 or https://localhost:443", string(colorReset))
 		if config.IsFirstTimeSetup {
 			fmt.Println(string(colorMagenta), "For first time Setup, follow the instructions on:", string(colorReset))
 			fmt.Println(string(colorMagenta), "https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup", string(colorReset))
 			fmt.Println(string(colorMagenta), "Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)", string(colorReset))
 		}
-		err := http.ListenAndServe("0.0.0.0:8080", nil)
+		// Ensure TLS certs are ready
+		if err := tlsconfig.EnsureTLSCerts(); err != nil {
+			fmt.Printf(string(colorRed)+"Error setting up TLS certificates: %v\n"+string(colorReset), err)
+			//os.Exit(1)
+		}
+
+		err := http.ListenAndServeTLS("0.0.0.0:443", config.TLSCertPath, config.TLSKeyPath, nil)
 		if err != nil {
-			fmt.Printf(string(colorRed)+"Error starting main HTTP server: %v\n"+string(colorReset), err)
-			os.Exit(1)
+			fmt.Printf(string(colorRed)+"Error starting HTTPS server: %v\n"+string(colorReset), err)
+			//os.Exit(1)
 		}
 	}()
 
-	// Start the pprof server if debug mode is enabled
+	// Start the pprof server if debug mode is enabled (HTTP/1.1)
 	if config.IsDebugMode {
 		wg.Add(1)
 		go func() {
@@ -113,44 +116,4 @@ func main() {
 
 	// Wait for both servers to be running
 	wg.Wait()
-}
-
-func startLogStream(detector *detection.Detector) {
-	client := sse.NewClient("http://localhost:8080/console")
-	client.Headers["Content-Type"] = "text/event-stream"
-	client.Headers["Connection"] = "keep-alive"
-	client.Headers["Cache-Control"] = "no-cache"
-
-	retryDelay := 5 * time.Second // Retry every 5 seconds
-
-	go func() {
-		for {
-			fmt.Println(string(colorYellow), "Attempting to connect to SSE stream...", string(colorReset))
-
-			err := client.SubscribeRaw(func(msg *sse.Event) {
-				if len(msg.Data) > 0 {
-					logMessage := string(msg.Data)
-					// Feed the log to both Discord (if enabled) and the detection module
-					if config.IsDiscordEnabled {
-						discord.AddToLogBuffer(logMessage)
-					}
-					detection.ProcessLog(detector, logMessage)
-
-					//fmt.Println(string(colorGreen), "Serverlog:", logMessage, string(colorReset))
-					//dont spam the console with the server log (it is filled with mono errors beacause stationeers is...literally bug-free...)
-				}
-			})
-
-			if err != nil {
-				// Instead of logging errors repeatedly, retry silently until the endpoint is available
-				fmt.Println(string(colorYellow), "SSE stream not available yet, retrying in 5 seconds...", string(colorReset))
-				time.Sleep(retryDelay)
-				continue
-			}
-
-			// Successfully connected, break the loop and handle messages
-			fmt.Println(string(colorGreen), "Connected to SSE stream.", string(colorReset))
-			return
-		}
-	}()
 }

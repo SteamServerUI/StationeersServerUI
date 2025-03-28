@@ -73,6 +73,8 @@ var (
 	BlackListFilePath string
 	SaveFileName      string
 	ExePath           string
+	TLSCertPath       = "./UIMod/cert.pem"
+	TLSKeyPath        = "./UIMod/key.pem"
 	ConfigPath        = "./UIMod/config.json"
 	GameServerAppID   = "600760" // Steam App ID for Stationeers Dedicated Server
 
@@ -102,7 +104,7 @@ var (
 	BackupRestoreMessageID string
 
 	// Versioning
-	Version    = "4.0.7"
+	Version = "4.0.13"
 	Branch     = "nightly"
 	GameBranch string
 )
