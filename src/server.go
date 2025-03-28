@@ -66,15 +66,15 @@ func main() {
 
 	// Unprotected auth routes
 	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./UIMod/login.html")
+		http.ServeFile(w, r, "./UIMod/login/login.html")
 	})
 	mux.HandleFunc("/login/login.js", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/javascript")
-		http.ServeFile(w, r, "./UIMod/login.js")
+		http.ServeFile(w, r, "./UIMod/login/login.js")
 	})
 	mux.HandleFunc("/login/login.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/css")
-		http.ServeFile(w, r, "./UIMod/login.css")
+		http.ServeFile(w, r, "./UIMod/login/login.css")
 	})
 	mux.HandleFunc("/auth/login", tlsconfig.LoginHandler) // Token issuer
 
