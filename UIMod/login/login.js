@@ -45,39 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
 
-    // Breakout Animation
-    function createBreakoutAnimation() {
-        const breakoutContainer = document.querySelector('.breakout-container');
-        const barCount = 10;
-        const colors = ['#00FFAB', '#1b1b2f', '#0a0a14'];
-
-        for (let i = 0; i < barCount; i++) {
-            const bar = document.createElement('div');
-            bar.classList.add('breakout-bar');
-            
-            // Randomize bar properties
-            bar.style.width = `${Math.random() * 100 + 50}%`;
-            bar.style.height = `${Math.random() * 10 + 2}px`;
-            bar.style.top = `${Math.random() * 100}%`;
-            bar.style.left = `${-50 + Math.random() * 100}%`;
-            bar.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            bar.style.transform = `rotate(${Math.random() * 360}deg)`;
-
-            breakoutContainer.appendChild(bar);
-        }
-
-        // Trigger animation
-        setTimeout(() => {
-            breakoutContainer.classList.add('active');
-            const bars = breakoutContainer.querySelectorAll('.breakout-bar');
-            bars.forEach((bar, index) => {
-                setTimeout(() => {
-                    bar.classList.add('expand');
-                    bar.style.transform = `rotate(${Math.random() * 720}deg) scale(${Math.random() * 2 + 1})`;
-                }, index * 100);
-            });
-        }, 100);
-    }
 
     // Preloader management
     function showPreloader() {
@@ -128,9 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 showPreloader();
                 const preloadSuccess = await preloadNextPage();
 
-                // Trigger breakout animation
-                createBreakoutAnimation();
-                
                 // Redirect after animations
                 setTimeout(() => {
                     if (preloadSuccess) {
@@ -149,8 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 showNotification(errorMessage);
             }
         } catch (error) {
-            console.error('Login error:', error);
-            showNotification('Network error. Please try again.');
+            console.error('Login error:', error);   
+            showNotification('Login error. Please try again.');
         }
     });
 });
