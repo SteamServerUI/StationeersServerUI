@@ -30,8 +30,13 @@ func ListBackups(w http.ResponseWriter, r *http.Request) {
 	safeBackupDir := "./saves/" + config.WorldName + "/Safebackups"
 	files, err := os.ReadDir(safeBackupDir)
 	if err != nil {
-		http.Error(w, "Unable to read Safebackups directory", http.StatusInternalServerError)
-		return
+		fmt.Println("Error reading Safebackups directory:", err)
+		// on error, try to create the directory
+		err = os.MkdirAll(safeBackupDir, os.ModePerm)
+		if err != nil {
+			http.Error(w, "Unable to create Safebackups directory", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	backupDetails := make(map[int]time.Time)
@@ -81,7 +86,7 @@ func ListBackups(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(output) == 0 {
-		fmt.Fprint(w, "No valid backup files found. Is the directory specified and valid?")
+		fmt.Fprint(w, "No valid backup files found in Safebackups directory.")
 		return
 	}
 
