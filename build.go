@@ -13,16 +13,6 @@ import (
 	"strings"
 )
 
-type ServerConfig struct {
-	ExePath  string `xml:"exePath"`
-	Settings string `xml:"settings"`
-}
-
-type Config struct {
-	Server       ServerConfig `xml:"server"`
-	SaveFileName string       `xml:"saveFileName"`
-}
-
 func main() {
 
 	// Load the config
