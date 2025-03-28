@@ -80,6 +80,7 @@ func CheckAndDownloadUIMod() {
 			"login.css":          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.css", config.Branch),
 			"login.js":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.js", config.Branch),
 			"login.html":         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.html", config.Branch),
+			"favicon.ico":        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/favicon.ico", config.Branch),
 		}
 		// Set the first time setup flag to true
 		config.IsFirstTimeSetup = true
