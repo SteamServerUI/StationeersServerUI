@@ -106,8 +106,14 @@ var (
 	ExceptionMessageID     string
 	BackupRestoreMessageID string
 
+	// Authentication
+	Username          string
+	Password          string
+	JwtKey            string
+	AuthTokenLifetime int // In minutes, e.g., 1440 (24h)
+
 	// Versioning
-	Version    = "4.0.15"
+	Version = "4.0.18"
 	Branch     = "nightly"
 	GameBranch string
 )
@@ -142,6 +148,12 @@ func LoadConfig() (*JsonConfig, error) {
 	if jsonconfig.GameBranch == "" {
 		jsonconfig.GameBranch = "public" //default to public release of Stationeers if no value is set from the config file
 	}
+
+	//for now, we'll just set these to defaults
+	Username = "admin"
+	Password = "password"
+	JwtKey = "my-32-byte-secret-key-here!!"
+	AuthTokenLifetime = 1440
 
 	DiscordToken = jsonconfig.DiscordToken
 	ControlChannelID = jsonconfig.ControlChannelID

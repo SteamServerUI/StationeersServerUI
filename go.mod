@@ -5,6 +5,7 @@ go 1.22.1
 require (
 	github.com/bwmarrin/discordgo v0.28.1
 	github.com/fsnotify/fsnotify v1.7.0
+	github.com/golang-jwt/jwt/v5 v5.2.2
 )
 
 require (

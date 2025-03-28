@@ -61,24 +61,35 @@ func main() {
 	go core.StartBackupCleanupRoutine()
 	go core.WatchBackupDir()
 
-	// Set up main server handlers
-	fs := http.FileServer(http.Dir("./UIMod"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.HandleFunc("/", ui.ServeIndex)
-	http.HandleFunc("/start", core.StartServer)
-	http.HandleFunc("/stop", core.StopServer)
-	http.HandleFunc("/console", core.GetLogOutput)
-	http.HandleFunc("/backups", core.ListBackups)
-	http.HandleFunc("/restore", core.RestoreBackup)
-	http.HandleFunc("/config", core.HandleConfigJSON)
-	http.HandleFunc("/saveconfigasjson", core.SaveConfigJSON)
-	http.HandleFunc("/events", ssestream.StartDetectionEventStream())
+	// Set up handlers with auth middleware
+	mux := http.NewServeMux() // Base mux for all routes
 
-	// Start the main HTTP server
+	// Unprotected auth routes
+	mux.HandleFunc("/login", tlsconfig.BasicLoginPage)    // Temporary login page
+	mux.HandleFunc("/auth/login", tlsconfig.LoginHandler) // Token issuer
+
+	// Protected routes (wrapped with middleware)
+	protectedMux := http.NewServeMux()
+	fs := http.FileServer(http.Dir("./UIMod"))
+	protectedMux.Handle("/static/", http.StripPrefix("/static/", fs))
+	protectedMux.HandleFunc("/", ui.ServeIndex)
+	protectedMux.HandleFunc("/start", core.StartServer)
+	protectedMux.HandleFunc("/stop", core.StopServer)
+	protectedMux.HandleFunc("/console", core.GetLogOutput)
+	protectedMux.HandleFunc("/backups", core.ListBackups)
+	protectedMux.HandleFunc("/restore", core.RestoreBackup)
+	protectedMux.HandleFunc("/config", core.HandleConfigJSON)
+	protectedMux.HandleFunc("/saveconfigasjson", core.SaveConfigJSON)
+	protectedMux.HandleFunc("/events", ssestream.StartDetectionEventStream())
+
+	// Apply middleware only to protected routes
+	mux.Handle("/", tlsconfig.AuthMiddleware(protectedMux)) // Wrap protected routes under root
+
+	// Start HTTP server
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		fmt.Println(string(colorYellow), "Starting the HTTP server on port 8080...", string(colorReset))
+		fmt.Println(string(colorYellow), "Starting the HTTP server on port 8443...", string(colorReset))
 		fmt.Println(string(colorGreen), "UI available at: https://0.0.0.0:8443 or https://localhost:8443", string(colorReset))
 		if config.IsFirstTimeSetup {
 			fmt.Println(string(colorMagenta), "For first time Setup, follow the instructions on:", string(colorReset))
@@ -90,11 +101,9 @@ func main() {
 			fmt.Printf(string(colorRed)+"Error setting up TLS certificates: %v\n"+string(colorReset), err)
 			//os.Exit(1)
 		}
-
-		err := http.ListenAndServeTLS("0.0.0.0:8443", config.TLSCertPath, config.TLSKeyPath, nil)
+		err := http.ListenAndServeTLS("0.0.0.0:8443", config.TLSCertPath, config.TLSKeyPath, mux)
 		if err != nil {
 			fmt.Printf(string(colorRed)+"Error starting HTTPS server: %v\n"+string(colorReset), err)
-			//os.Exit(1)
 		}
 	}()
 
