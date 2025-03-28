@@ -153,29 +153,3 @@ func (m *SSEManager) removeClient(client *Client) {
 	delete(m.clients, client)
 	close(client.messages)
 }
-
-// Global managers for console and event streams
-var (
-	ConsoleStreamManager = NewSSEManager(20, 2000)
-	EventStreamManager   = NewSSEManager(20, 2000)
-)
-
-// StartConsoleStream creates an HTTP handler for console log SSE streaming
-func StartConsoleStream() http.HandlerFunc {
-	return ConsoleStreamManager.CreateStreamHandler("Console")
-}
-
-// StartDetectionEventStream creates an HTTP handler for detection event SSE streaming
-func StartDetectionEventStream() http.HandlerFunc {
-	return EventStreamManager.CreateStreamHandler("Event")
-}
-
-// BroadcastConsoleOutput sends log to all connected console log clients
-func BroadcastConsoleOutput(message string) {
-	ConsoleStreamManager.Broadcast(message)
-}
-
-// BroadcastDetectionEvent sends an event to all connected clients
-func BroadcastDetectionEvent(message string) {
-	EventStreamManager.Broadcast(message)
-}
