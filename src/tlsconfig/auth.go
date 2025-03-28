@@ -19,6 +19,22 @@ type UserCredentials struct {
 	Password string `json:"password"`
 }
 
+// LoginPage serves static login files from ./UIMod/login.html, ./UIMod/login.js, ./UIMod/login.css
+func LoginPage(w http.ResponseWriter, r *http.Request) {
+	switch r.URL.Path {
+	case "/login":
+		http.ServeFile(w, r, "./UIMod/login.html")
+	case "/login/login.js":
+		w.Header().Set("Content-Type", "application/javascript")
+		http.ServeFile(w, r, "./UIMod/login.js")
+	case "/login/login.css":
+		w.Header().Set("Content-Type", "text/css")
+		http.ServeFile(w, r, "./UIMod/login.css")
+	default:
+		http.NotFound(w, r)
+	}
+}
+
 // LoginHandler issues a JWT cookie
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var creds UserCredentials
@@ -107,18 +123,28 @@ func acceptsHTML(r *http.Request) bool {
 	return strings.Contains(accept, "text/html")
 }
 
-// LoginPage serves static login files from ./UIMod/login.html, ./UIMod/login.js, ./UIMod/login.css
-func LoginPage(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/login":
-		http.ServeFile(w, r, "./UIMod/login.html")
-	case "/login/login.js":
-		w.Header().Set("Content-Type", "application/javascript")
-		http.ServeFile(w, r, "./UIMod/login.js")
-	case "/login/login.css":
-		w.Header().Set("Content-Type", "text/css")
-		http.ServeFile(w, r, "./UIMod/login.css")
-	default:
-		http.NotFound(w, r)
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	// Clear the cookie by setting it with an expired time
+	http.SetCookie(w, &http.Cookie{
+		Name:     "AuthToken",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour), // Set to past time to expire immediately
+		HttpOnly: true,
+		Secure:   true,
+		Path:     "/",
+		SameSite: http.SameSiteStrictMode,
+	})
+
+	// For browser requests, redirect to login page
+	if acceptsHTML(r) {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
 	}
+
+	// For API requests, return success response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Successfully logged out",
+	})
 }
