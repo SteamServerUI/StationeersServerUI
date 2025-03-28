@@ -107,7 +107,7 @@ var (
 	BackupRestoreMessageID string
 
 	// Versioning
-	Version    = "4.0.13"
+	Version = "4.0.14"
 	Branch     = "nightly"
 	GameBranch string
 )

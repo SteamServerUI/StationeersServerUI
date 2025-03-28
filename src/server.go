@@ -56,7 +56,7 @@ func main() {
 		go discord.StartDiscordBot()
 	}
 
-	go detection.StartLogStream(detector) // Pass the detector to the log stream function
+	go detection.StreamLogs(detector) // Pass the detector to the log stream function
 
 	fmt.Println(string(colorBlue), "Starting API services...", string(colorReset))
 	go core.StartBackupCleanupRoutine()
