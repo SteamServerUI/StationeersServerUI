@@ -1,16 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stationeers Server UI - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/login/login.css">
 </head>
 <body>
-    <h2>Stationeers Server UI - Login</h2>
-    <form id="loginForm">
-        <label>Username:</label><input type="text" id="username"><br>
-        <label>Password:</label><input type="password" id="password"><br>
-        <input type="submit" value="Login">
-    </form>
+    <main class="login-container">
+        <header>
+            <h1>Stationeers Server UI</h1>
+        </header>
+        
+        <div class="form-container">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        required 
+                        placeholder="Enter your username"
+                    >
+                    <div class="input-info">Your server access credentials</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required 
+                        placeholder="Enter your password"
+                    >
+                    <div class="input-info">Secure access required</div>
+                </div>
+
+                <div class="form-actions">
+                    <input 
+                        type="submit" 
+                        value="Login" 
+                        class="login-button"
+                    >
+                </div>
+            </form>
+        </div>
+
+        <footer>
+            <p>If you don't know how to login or have any issues, please visit the First Time Setup page on the wiki.</p>
+        </footer>
+    </main>
+
     <script src="/login/login.js"></script>
 </body>
 </html>
