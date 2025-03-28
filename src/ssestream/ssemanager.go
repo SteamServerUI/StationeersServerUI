@@ -1,3 +1,4 @@
+// ssemanager.go
 package ssestream
 
 import (

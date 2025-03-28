@@ -1,4 +1,4 @@
-// ssemanagers.go
+// sseutils.go
 package ssestream
 
 import (
