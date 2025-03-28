@@ -116,7 +116,7 @@ var (
 	AuthTokenLifetime int // In minutes, e.g., 1440 (24h)
 
 	// Versioning
-	Version    = "4.0.24"
+	Version = "4.0.26"
 	Branch     = "nightly"
 	GameBranch string
 )
