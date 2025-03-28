@@ -43,6 +43,10 @@ type JsonConfig struct {
 	UseSteamP2P             bool   `json:"UseSteamP2P"`
 	ExePath                 string `json:"ExePath"`
 	AdditionalParams        string `json:"AdditionalParams"`
+	Username                string `json:"Username,omitempty"`
+	Password                string `json:"Password,omitempty"`
+	JwtKey                  string `json:"JwtKey,omitempty"`
+	AuthTokenLifetime       int    `json:"AuthTokenLifetime,omitempty"`
 	Debug                   bool   `json:"Debug,omitempty"` //Optional, default false
 }
 
@@ -116,7 +120,7 @@ var (
 	AuthTokenLifetime int // In minutes, e.g., 1440 (24h)
 
 	// Versioning
-	Version = "4.0.26"
+	Version = "4.1.1"
 	Branch     = "nightly"
 	GameBranch string
 )
@@ -135,6 +139,7 @@ func LoadConfig() (*JsonConfig, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	// Set the default executable path if not specified in the config file
 	if jsonconfig.ExePath == "" {
 		if runtime.GOOS == "windows" {
@@ -152,11 +157,8 @@ func LoadConfig() (*JsonConfig, error) {
 		jsonconfig.GameBranch = "public" //default to public release of Stationeers if no value is set from the config file
 	}
 
-	//for now, we'll just set these to defaults
-	Username = "admin"
-	Password = "password"
-	JwtKey = "my-32-byte-secret-key-here!!"
-	AuthTokenLifetime = 1440
+	// Get secrets from env vars, json or defaults
+	GetSecretsFromEnv(jsonconfig)
 
 	if jsonconfig.SaveInfo == "" {
 		jsonconfig.SaveInfo = "Moon Moon"
@@ -205,47 +207,53 @@ func LoadConfig() (*JsonConfig, error) {
 	DiscordCharBufferSize = jsonconfig.DiscordCharBufferSize
 
 	if jsonconfig.Debug {
-		fmt.Println("DiscordToken:", DiscordToken)
-		fmt.Println("ControlChannelID:", ControlChannelID)
-		fmt.Println("StatusChannelID:", StatusChannelID)
-		fmt.Println("LogChannelID:", LogChannelID)
-		fmt.Println("ConnectionListChannelID:", ConnectionListChannelID)
-		fmt.Println("SaveChannelID:", SaveChannelID)
+		fmt.Println("----AUTHENTICATION CONFIG VARS----")
+		fmt.Println("AuthTokenLifetime:", AuthTokenLifetime)
+		fmt.Println("ConnectedPlayersMessageID:", ConnectedPlayersMessageID)
+		fmt.Println("JwtKey:", JwtKey)
+		fmt.Println("Password:", Password)
+		fmt.Println("Username:", Username)
+		fmt.Println("----DISCORD CONFIG VARS----")
 		fmt.Println("BlackListFilePath:", BlackListFilePath)
+		fmt.Println("ConnectionListChannelID:", ConnectionListChannelID)
+		fmt.Println("ControlChannelID:", ControlChannelID)
 		fmt.Println("ControlPanelChannelID:", ControlPanelChannelID)
-		fmt.Println("IsDiscordEnabled:", IsDiscordEnabled)
+		fmt.Println("DiscordCharBufferSize:", DiscordCharBufferSize)
+		fmt.Println("DiscordSession:", DiscordSession)
+		fmt.Println("DiscordToken:", DiscordToken)
 		fmt.Println("ErrorChannelID:", ErrorChannelID)
-		fmt.Println("GameBranch:", GameBranch)
-		fmt.Println("ServerName:", ServerName)
-		fmt.Println("SaveInfo:", SaveInfo)
-		fmt.Println("WorldName:", WorldName)
-		fmt.Println("BackupWorldName:", BackupWorldName)
-		fmt.Println("ServerMaxPlayers:", ServerMaxPlayers)
-		fmt.Println("ServerPassword:", ServerPassword)
-		fmt.Println("ServerAuthSecret:", ServerAuthSecret)
+		fmt.Println("IsDiscordEnabled:", IsDiscordEnabled)
+		fmt.Println("LogChannelID:", LogChannelID)
+		fmt.Println("LogMessageBuffer:", LogMessageBuffer)
+		fmt.Println("SaveChannelID:", SaveChannelID)
+		fmt.Println("StatusChannelID:", StatusChannelID)
+		fmt.Println("----GAMESERVER CONFIG VARS----")
+		fmt.Println("AdditionalParams:", AdditionalParams)
 		fmt.Println("AdminPassword:", AdminPassword)
+		fmt.Println("AutoPauseServer:", AutoPauseServer)
+		fmt.Println("AutoSave:", AutoSave)
+		fmt.Println("BackupWorldName:", BackupWorldName)
+		fmt.Println("ExePath:", ExePath)
+		fmt.Println("GameBranch:", GameBranch)
 		fmt.Println("GamePort:", GamePort)
+		fmt.Println("LocalIpAddress:", LocalIpAddress)
+		fmt.Println("SaveInfo:", SaveInfo)
+		fmt.Println("SaveInterval:", SaveInterval)
+		fmt.Println("ServerAuthSecret:", ServerAuthSecret)
+		fmt.Println("ServerMaxPlayers:", ServerMaxPlayers)
+		fmt.Println("ServerName:", ServerName)
+		fmt.Println("ServerPassword:", ServerPassword)
+		fmt.Println("ServerVisible:", ServerVisible)
+		fmt.Println("StartLocalHost:", StartLocalHost)
 		fmt.Println("UpdatePort:", UpdatePort)
 		fmt.Println("UPNPEnabled:", UPNPEnabled)
-		fmt.Println("AutoSave:", AutoSave)
-		fmt.Println("SaveInterval:", SaveInterval)
-		fmt.Println("AutoPauseServer:", AutoPauseServer)
-		fmt.Println("LocalIpAddress:", LocalIpAddress)
-		fmt.Println("StartLocalHost:", StartLocalHost)
-		fmt.Println("ServerVisible:", ServerVisible)
 		fmt.Println("UseSteamP2P:", UseSteamP2P)
-		fmt.Println("ExePath:", ExePath)
-		fmt.Println("AdditionalParams:", AdditionalParams)
-		fmt.Println("Version:", Version)
+		fmt.Println("WorldName:", WorldName)
+		fmt.Println("----MISC CONFIG VARS----")
 		fmt.Println("Branch:", Branch)
-		fmt.Println("GameServerAppID:", GameServerAppID)
-		fmt.Println("DiscordSession:", DiscordSession)
-		fmt.Println("LogMessageBuffer:", LogMessageBuffer)
-		fmt.Println("DiscordCharBufferSize:", DiscordCharBufferSize)
 		fmt.Println("BufferFlushTicker:", BufferFlushTicker)
-		fmt.Println("ConnectedPlayers:", ConnectedPlayers)
-		fmt.Println("ConnectedPlayersMessageID:", ConnectedPlayersMessageID)
-
+		fmt.Println("GameServerAppID:", GameServerAppID)
+		fmt.Println("Version:", Version)
 	}
 
 	return &jsonconfig, nil
