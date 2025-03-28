@@ -8,7 +8,12 @@ import (
 	"time"
 )
 
-//the SSE blocking issue is NOT related to the backend, the API runs totally fine with 200 clients per channel. The issue must be in the javascript frontend, wich must improperly handle the SSE connection
+// The SSE blocking issue is NOT related to the backend; the API handles 200 clients per channel fine.
+// The issue lies in the JS frontend, where browsers cap HTTP/1.1 SSE streams at ~6 concurrent connections per domain.
+// See RFC 2616 (HTTP/1.1), Section 8.1.4: https://datatracker.ietf.org/doc/html/rfc2616#section-8.1.4
+// SSE spec (WHATWG HTML): https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events
+// Workaround: Use HTTP/2 (RFC 7540, Section 5.1.2) for up to 100 streams: https://datatracker.ietf.org/doc/html/rfc7540#section-5.1.2
+// I spent way too much time on this thinking it would be the backend blocking requests. It's not.
 
 // ANSI color codes for logging
 const (
@@ -151,7 +156,7 @@ func (m *SSEManager) removeClient(client *Client) {
 
 // Global managers for console and event streams
 var (
-	ConsoleStreamManager = NewSSEManager(2, 2000) //set max clients to 2 to avoid blocking, not sure where the issue is coming from after hours of debugging thus the dirty "fix"
+	ConsoleStreamManager = NewSSEManager(20, 2000)
 	EventStreamManager   = NewSSEManager(20, 2000)
 )
 
