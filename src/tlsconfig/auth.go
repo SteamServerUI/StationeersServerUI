@@ -5,10 +5,9 @@ package tlsconfig
 
 import (
 	"StationeersServerUI/src/config"
-	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -37,7 +36,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Generate JWT
 	expirationTime := time.Now().Add(time.Duration(config.AuthTokenLifetime) * time.Minute)
-	claims := &jwt.MapClaims{ // Using MapClaims for simplicity
+	claims := &jwt.MapClaims{
 		"exp": expirationTime.Unix(),
 		"iss": "StationeersServerUI",
 		"id":  creds.Username,
@@ -56,12 +55,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Value:    tokenString,
 		Expires:  expirationTime,
 		HttpOnly: true,
-		Secure:   true, // Works with your TLS
+		Secure:   true,
 		Path:     "/",
 		SameSite: http.SameSiteStrictMode,
 	})
 
-	// Return token (optional, UI can ignore this if it uses the cookie)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"token": tokenString})
 }
@@ -72,6 +70,11 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		cookie, err := r.Cookie("AuthToken")
 		if err != nil {
 			if err == http.ErrNoCookie {
+				// Check if it's a browser (accepts HTML)
+				if acceptsHTML(r) {
+					http.Redirect(w, r, "/login", http.StatusSeeOther)
+					return
+				}
 				http.Error(w, "Unauthorized - No token", http.StatusUnauthorized)
 				return
 			}
@@ -85,6 +88,10 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		})
 
 		if err != nil || !token.Valid {
+			if acceptsHTML(r) {
+				http.Redirect(w, r, "/login", http.StatusSeeOther)
+				return
+			}
 			http.Error(w, "Unauthorized - Invalid token", http.StatusUnauthorized)
 			return
 		}
@@ -94,34 +101,24 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// BasicLoginPage serves a simple login form (temporary)
-func BasicLoginPage(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		// Handle form submission by redirecting to LoginHandler
-		username := r.FormValue("username")
-		password := r.FormValue("password")
-		creds := UserCredentials{Username: username, Password: password}
-		data, _ := json.Marshal(creds)
-		req, _ := http.NewRequest("POST", "/auth/login", bytes.NewBuffer(data))
-		req.Header.Set("Content-Type", "application/json")
-		LoginHandler(w, req)
-		return
-	}
+// Helper to detect browser requests
+func acceptsHTML(r *http.Request) bool {
+	accept := r.Header.Get("Accept")
+	return strings.Contains(accept, "text/html")
+}
 
-	// Serve basic HTML form
-	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintf(w, `
-        <!DOCTYPE html>
-        <html>
-        <head><title>Login</title></head>
-        <body>
-            <h2>Stationeers Server UI - Login</h2>
-            <form method="POST" action="/login">
-                <label>Username:</label><input type="text" name="username"><br>
-                <label>Password:</label><input type="password" name="password"><br>
-                <input type="submit" value="Login">
-            </form>
-        </body>
-        </html>
-    `)
+// LoginPage serves static login files from ./UIMod/login.html, ./UIMod/login.js, ./UIMod/login.css
+func LoginPage(w http.ResponseWriter, r *http.Request) {
+	switch r.URL.Path {
+	case "/login":
+		http.ServeFile(w, r, "./UIMod/login.html")
+	case "/login/login.js":
+		w.Header().Set("Content-Type", "application/javascript")
+		http.ServeFile(w, r, "./UIMod/login.js")
+	case "/login/login.css":
+		w.Header().Set("Content-Type", "text/css")
+		http.ServeFile(w, r, "./UIMod/login.css")
+	default:
+		http.NotFound(w, r)
+	}
 }

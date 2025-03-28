@@ -62,10 +62,20 @@ func main() {
 	go core.WatchBackupDir()
 
 	// Set up handlers with auth middleware
-	mux := http.NewServeMux() // Base mux for all routes
+	mux := http.NewServeMux() // Use a mux to apply middleware globally
 
 	// Unprotected auth routes
-	mux.HandleFunc("/login", tlsconfig.BasicLoginPage)    // Temporary login page
+	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./UIMod/login.html")
+	})
+	mux.HandleFunc("/login/login.js", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/javascript")
+		http.ServeFile(w, r, "./UIMod/login.js")
+	})
+	mux.HandleFunc("/login/login.css", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/css")
+		http.ServeFile(w, r, "./UIMod/login.css")
+	})
 	mux.HandleFunc("/auth/login", tlsconfig.LoginHandler) // Token issuer
 
 	// Protected routes (wrapped with middleware)
