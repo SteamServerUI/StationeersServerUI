@@ -11,9 +11,8 @@ import (
 	"StationeersServerUI/src/ui"
 	"fmt"
 	"net/http"
+	"net/http/pprof"
 	"sync"
-
-	_ "net/http/pprof"
 )
 
 const (
@@ -80,7 +79,7 @@ func main() {
 	go func() {
 		defer wg.Done()
 		fmt.Println(string(colorYellow), "Starting the HTTP server on port 8080...", string(colorReset))
-		fmt.Println(string(colorGreen), "UI available at: https://0.0.0.0:443 or https://localhost:443", string(colorReset))
+		fmt.Println(string(colorGreen), "UI available at: https://0.0.0.0:8443 or https://localhost:8443", string(colorReset))
 		if config.IsFirstTimeSetup {
 			fmt.Println(string(colorMagenta), "For first time Setup, follow the instructions on:", string(colorReset))
 			fmt.Println(string(colorMagenta), "https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup", string(colorReset))
@@ -92,7 +91,7 @@ func main() {
 			//os.Exit(1)
 		}
 
-		err := http.ListenAndServeTLS("0.0.0.0:443", config.TLSCertPath, config.TLSKeyPath, nil)
+		err := http.ListenAndServeTLS("0.0.0.0:8443", config.TLSCertPath, config.TLSKeyPath, nil)
 		if err != nil {
 			fmt.Printf(string(colorRed)+"Error starting HTTPS server: %v\n"+string(colorReset), err)
 			//os.Exit(1)
@@ -105,9 +104,10 @@ func main() {
 		go func() {
 			defer wg.Done()
 			pprofMux := http.NewServeMux()
-			pprofMux.Handle("/debug/pprof/", http.DefaultServeMux)
-			fmt.Println(string(colorRed), "⚠️Starting pprof server on :8081/debug/pprof", string(colorReset))
-			err := http.ListenAndServe("0.0.0.0:8081", pprofMux)
+			// Register pprof handler
+			pprofMux.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
+			fmt.Println(string(colorRed), "⚠️Starting pprof server on :6060/debug/pprof", string(colorReset))
+			err := http.ListenAndServe("0.0.0.0:6060", pprofMux)
 			if err != nil {
 				fmt.Printf(string(colorRed)+"Error starting pprof server: %v\n"+string(colorReset), err)
 			}
