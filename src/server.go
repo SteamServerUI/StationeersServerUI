@@ -65,6 +65,7 @@ func main() {
 	go core.StartBackupCleanupRoutine()
 	go core.WatchBackupDir()
 
+	// Set up main server handlers
 	fs := http.FileServer(http.Dir("./UIMod"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.HandleFunc("/", ui.ServeIndex)
@@ -77,23 +78,41 @@ func main() {
 	http.HandleFunc("/saveconfigasjson", core.SaveConfigJSON)
 	http.HandleFunc("/events", ssestream.StartDetectionEventStream())
 
-	fmt.Println(string(colorYellow), "Starting the HTTP server on port 8080...", string(colorReset))
-	fmt.Println(string(colorGreen), "UI available at: http://0.0.0.0:8080 or http://localhost:8080", string(colorReset))
-	if config.IsFirstTimeSetup {
-		fmt.Println(string(colorMagenta), "For first time Setup, follow the instructions on:", string(colorReset))
-		fmt.Println(string(colorMagenta), "https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup", string(colorReset))
-		fmt.Println(string(colorMagenta), "Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)", string(colorReset))
-	}
-	if config.IsDebugMode {
-		fmt.Println(string(colorRed), "⚠️Starting pprof server on /debug/pprof", string(colorReset))
-	}
-	// Start the HTTP server and check for errors
-	err := http.ListenAndServe("0.0.0.0:8080", nil)
+	// Start the main HTTP server
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		fmt.Println(string(colorYellow), "Starting the HTTP server on port 8080...", string(colorReset))
+		fmt.Println(string(colorGreen), "UI available at: http://0.0.0.0:8080 or http://localhost:8080", string(colorReset))
+		if config.IsFirstTimeSetup {
+			fmt.Println(string(colorMagenta), "For first time Setup, follow the instructions on:", string(colorReset))
+			fmt.Println(string(colorMagenta), "https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup", string(colorReset))
+			fmt.Println(string(colorMagenta), "Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)", string(colorReset))
+		}
+		err := http.ListenAndServe("0.0.0.0:8080", nil)
+		if err != nil {
+			fmt.Printf(string(colorRed)+"Error starting main HTTP server: %v\n"+string(colorReset), err)
+			os.Exit(1)
+		}
+	}()
 
-	if err != nil {
-		fmt.Printf(string(colorRed)+"Error starting HTTP server: %v\n"+string(colorReset), err)
-		os.Exit(1)
+	// Start the pprof server if debug mode is enabled
+	if config.IsDebugMode {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			pprofMux := http.NewServeMux()
+			pprofMux.Handle("/debug/pprof/", http.DefaultServeMux)
+			fmt.Println(string(colorRed), "⚠️Starting pprof server on :8081/debug/pprof", string(colorReset))
+			err := http.ListenAndServe("0.0.0.0:8081", pprofMux)
+			if err != nil {
+				fmt.Printf(string(colorRed)+"Error starting pprof server: %v\n"+string(colorReset), err)
+			}
+		}()
 	}
+
+	// Wait for both servers to be running
+	wg.Wait()
 }
 
 func startLogStream(detector *detection.Detector) {
