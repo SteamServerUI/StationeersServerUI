@@ -27,7 +27,7 @@ type backupGroup struct {
 func ListBackups(w http.ResponseWriter, r *http.Request) {
 
 	// Read from the Safebackups folder
-	safeBackupDir := "./saves/" + config.SaveFileName + "/Safebackups"
+	safeBackupDir := "./saves/" + config.WorldName + "/Safebackups"
 	files, err := os.ReadDir(safeBackupDir)
 	if err != nil {
 		http.Error(w, "Unable to read Safebackups directory", http.StatusInternalServerError)
@@ -138,8 +138,8 @@ func RestoreBackup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Use the Safebackups folder for restoring
-	safeBackupDir := "./saves/" + config.SaveFileName + "/Safebackups"
-	saveDir := "./saves/" + config.SaveFileName
+	safeBackupDir := "./saves/" + config.WorldName + "/Safebackups"
+	saveDir := "./saves/" + config.WorldName
 	files := []struct {
 		backupName    string
 		backupNameAlt string // Alternative name with _AutoSave
@@ -227,8 +227,8 @@ func WatchBackupDir() {
 	}
 	defer watcher.Close()
 
-	backupDir := "./saves/" + config.SaveFileName + "/backup"
-	safeBackupDir := "./saves/" + config.SaveFileName + "/Safebackups"
+	backupDir := "./saves/" + config.WorldName + "/backup"
+	safeBackupDir := "./saves/" + config.WorldName + "/Safebackups"
 
 	// Ensure the safe backup directory exists
 	if err := os.MkdirAll(safeBackupDir, os.ModePerm); err != nil {
@@ -474,8 +474,8 @@ func StartBackupCleanupRoutine() {
 	ticker := time.NewTicker(24 * time.Hour) // Run cleanup every 24 hours
 	defer ticker.Stop()
 
-	safeBackupDir := "./saves/" + config.SaveFileName + "/Safebackups"
-	backupDir := "./saves/" + config.SaveFileName + "/backup"
+	safeBackupDir := "./saves/" + config.WorldName + "/Safebackups"
+	backupDir := "./saves/" + config.WorldName + "/backup"
 
 	for range ticker.C {
 		fmt.Println("Starting backup cleanup...")

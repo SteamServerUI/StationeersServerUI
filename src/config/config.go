@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -25,7 +26,7 @@ type JsonConfig struct {
 	ErrorChannelID          string `json:"errorChannelID"`
 	GameBranch              string `json:"gameBranch"`
 	ServerName              string `json:"ServerName"`
-	SaveFileName            string `json:"SaveFileName"`
+	SaveInfo                string `json:"SaveInfo"`
 	ServerMaxPlayers        string `json:"ServerMaxPlayers"`
 	ServerPassword          string `json:"ServerPassword"`
 	ServerAuthSecret        string `json:"ServerAuthSecret"`
@@ -72,7 +73,9 @@ var (
 
 	// File paths and constants
 	BlackListFilePath string
-	SaveFileName      string
+	SaveInfo          string // Save folder name, optionally with backup name ("WorldName BackupName")
+	BackupWorldName   string // Only Backup world name
+	WorldName         string // Only World name
 	ExePath           string
 	TLSCertPath       = "./UIMod/cert.pem"
 	TLSKeyPath        = "./UIMod/key.pem"
@@ -113,7 +116,7 @@ var (
 	AuthTokenLifetime int // In minutes, e.g., 1440 (24h)
 
 	// Versioning
-	Version = "4.0.23"
+	Version    = "4.0.24"
 	Branch     = "nightly"
 	GameBranch string
 )
@@ -155,6 +158,21 @@ func LoadConfig() (*JsonConfig, error) {
 	JwtKey = "my-32-byte-secret-key-here!!"
 	AuthTokenLifetime = 1440
 
+	if jsonconfig.SaveInfo == "" {
+		jsonconfig.SaveInfo = "Moon Moon"
+	}
+
+	//set BackupWorldName and WorldName from SaveInfo, wich is in the format "WorldName BackupName" for argument handling.
+	parts := strings.Split(jsonconfig.SaveInfo, " ")
+	if len(parts) > 0 {
+		WorldName = parts[0]
+	}
+	if len(parts) > 1 {
+		BackupWorldName = parts[1]
+	}
+
+	//set the rest of the config variables from the json config if they are available
+	SaveInfo = jsonconfig.SaveInfo
 	DiscordToken = jsonconfig.DiscordToken
 	ControlChannelID = jsonconfig.ControlChannelID
 	StatusChannelID = jsonconfig.StatusChannelID
@@ -167,7 +185,6 @@ func LoadConfig() (*JsonConfig, error) {
 	ErrorChannelID = jsonconfig.ErrorChannelID
 	GameBranch = jsonconfig.GameBranch
 	ServerName = jsonconfig.ServerName
-	SaveFileName = jsonconfig.SaveFileName
 	ServerMaxPlayers = jsonconfig.ServerMaxPlayers
 	ServerPassword = jsonconfig.ServerPassword
 	ServerAuthSecret = jsonconfig.ServerAuthSecret
@@ -200,7 +217,9 @@ func LoadConfig() (*JsonConfig, error) {
 		fmt.Println("ErrorChannelID:", ErrorChannelID)
 		fmt.Println("GameBranch:", GameBranch)
 		fmt.Println("ServerName:", ServerName)
-		fmt.Println("SaveFileName:", SaveFileName)
+		fmt.Println("SaveInfo:", SaveInfo)
+		fmt.Println("WorldName:", WorldName)
+		fmt.Println("BackupWorldName:", BackupWorldName)
 		fmt.Println("ServerMaxPlayers:", ServerMaxPlayers)
 		fmt.Println("ServerPassword:", ServerPassword)
 		fmt.Println("ServerAuthSecret:", ServerAuthSecret)
@@ -226,6 +245,7 @@ func LoadConfig() (*JsonConfig, error) {
 		fmt.Println("BufferFlushTicker:", BufferFlushTicker)
 		fmt.Println("ConnectedPlayers:", ConnectedPlayers)
 		fmt.Println("ConnectedPlayersMessageID:", ConnectedPlayersMessageID)
+
 	}
 
 	return &jsonconfig, nil

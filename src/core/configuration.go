@@ -93,7 +93,7 @@ func HandleConfigJSON(w http.ResponseWriter, r *http.Request) {
 		"{{IsDiscordEnabledFalseSelected}}": discordFalseSelected,
 		"{{gameBranch}}":                    config.GameBranch,
 		"{{ServerName}}":                    config.ServerName,
-		"{{SaveFileName}}":                  config.SaveFileName,
+		"{{SaveInfo}}":                      config.SaveInfo,
 		"{{ServerMaxPlayers}}":              config.ServerMaxPlayers,
 		"{{ServerPassword}}":                config.ServerPassword,
 		"{{ServerAuthSecret}}":              config.ServerAuthSecret,
