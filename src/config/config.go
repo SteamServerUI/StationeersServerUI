@@ -136,7 +136,11 @@ func LoadConfig() (*JsonConfig, error) {
 	}
 
 	if jsonconfig.DiscordCharBufferSize <= 0 {
-		jsonconfig.DiscordCharBufferSize = 1000 // Fallback to 1000 characters
+		jsonconfig.DiscordCharBufferSize = 1000 // Default to 1000 characters
+	}
+
+	if jsonconfig.GameBranch == "" {
+		jsonconfig.GameBranch = "public" //default to public release of Stationeers if no value is set from the config file
 	}
 
 	DiscordToken = jsonconfig.DiscordToken

@@ -32,7 +32,6 @@ func Install(wg *sync.WaitGroup) {
 	_, err := config.LoadConfig()
 	if err != nil {
 		fmt.Println("⚠️  Config file not found or invalid, downloading stable branch...")
-		config.GameBranch = "public" // Set default value
 	}
 
 	// Step 1: Check and download the UIMod folder contents
