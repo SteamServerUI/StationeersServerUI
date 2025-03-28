@@ -1,8 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Create planet background
+    // Planet creation functions (previous implementation remains the same)
     const planetContainer = document.getElementById('planet-container');
     
-    // Create multiple planets
     function createPlanet(size, x, y, speed, color) {
         const planet = document.createElement('div');
         planet.classList.add('planet');
@@ -19,20 +18,91 @@ document.addEventListener('DOMContentLoaded', () => {
         planetContainer.appendChild(planet);
     }
 
-    // Create some planets with different characteristics
     createPlanet(80, 10, 20, 30, 'rgba(200, 100, 50, 0.7)');
     createPlanet(50, 70, 60, 45, 'rgba(100, 200, 150, 0.5)');
     createPlanet(30, 50, 80, 20, 'rgba(50, 150, 250, 0.6)');
 
-    // Add custom CSS for planet orbits
-    const styleSheet = document.createElement('style');
-    styleSheet.textContent = `
-        @keyframes orbit {
-            0% { transform: rotate(0deg) translateX(150px) rotate(0deg); }
-            100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+    // Notification function (previous implementation remains the same)
+    function showNotification(message, type = 'error') {
+        const existingNotification = document.querySelector('.notification');
+        if (existingNotification) {
+            existingNotification.remove();
         }
-    `;
-    document.head.appendChild(styleSheet);
+
+        const notification = document.createElement('div');
+        notification.classList.add('notification', type);
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+        
+        notification.offsetHeight;
+        
+        notification.classList.add('show');
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    }
+
+    // Breakout Animation
+    function createBreakoutAnimation() {
+        const breakoutContainer = document.querySelector('.breakout-container');
+        const barCount = 10;
+        const colors = ['#00FFAB', '#1b1b2f', '#0a0a14'];
+
+        for (let i = 0; i < barCount; i++) {
+            const bar = document.createElement('div');
+            bar.classList.add('breakout-bar');
+            
+            // Randomize bar properties
+            bar.style.width = `${Math.random() * 100 + 50}%`;
+            bar.style.height = `${Math.random() * 10 + 2}px`;
+            bar.style.top = `${Math.random() * 100}%`;
+            bar.style.left = `${-50 + Math.random() * 100}%`;
+            bar.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            bar.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+            breakoutContainer.appendChild(bar);
+        }
+
+        // Trigger animation
+        setTimeout(() => {
+            breakoutContainer.classList.add('active');
+            const bars = breakoutContainer.querySelectorAll('.breakout-bar');
+            bars.forEach((bar, index) => {
+                setTimeout(() => {
+                    bar.classList.add('expand');
+                    bar.style.transform = `rotate(${Math.random() * 720}deg) scale(${Math.random() * 2 + 1})`;
+                }, index * 100);
+            });
+        }, 100);
+    }
+
+    // Preloader management
+    function showPreloader() {
+        const preloader = document.getElementById('preloader');
+        preloader.classList.add('show');
+    }
+
+    function hidePreloader() {
+        const preloader = document.getElementById('preloader');
+        preloader.classList.remove('show');
+    }
+
+    // Preload next page
+    async function preloadNextPage() {
+        try {
+            const response = await fetch('/', { 
+                method: 'HEAD',
+                cache: 'no-store'
+            });
+            return response.ok;
+        } catch (error) {
+            console.error('Preload failed:', error);
+            return false;
+        }
+    }
 
     // Login form submission
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -51,43 +121,36 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                // Add a space-launch style transition
-                document.body.style.transition = 'transform 1s ease-in';
-                document.body.style.transform = 'perspective(1000px) rotateX(90deg) scale(0.5)';
+                // Show success notification
+                showNotification('Login Successful! Preparing launch...', 'success');
+
+                // Start preloading
+                showPreloader();
+                const preloadSuccess = await preloadNextPage();
+
+                // Trigger breakout animation
+                createBreakoutAnimation();
                 
-                // Delay redirect to allow animation
+                // Redirect after animations
                 setTimeout(() => {
-                    window.location.href = '/';
-                }, 800);
+                    if (preloadSuccess) {
+                        hidePreloader();
+                        window.location.href = '/';
+                    } else {
+                        showNotification('Preload failed. Redirecting anyway.', 'error');
+                        window.location.href = '/';
+                    }
+                }, 2000);
             } else {
                 const errorData = await response.json();
-                const errorMessage = errorData.message || 'Login failed!';
+                const errorMessage = errorData.message || 'Login failed! Please check your credentials.';
                 
-                // Create and show error notification
-                const errorNotification = document.createElement('div');
-                errorNotification.classList.add('notification', 'error');
-                errorNotification.textContent = errorMessage;
-                errorNotification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background-color: rgba(255, 0, 0, 0.7);
-                    color: white;
-                    padding: 15px;
-                    border-radius: 5px;
-                    z-index: 1000;
-                `;
-                document.body.appendChild(errorNotification);
-
-                // Remove notification after 3 seconds
-                setTimeout(() => {
-                    errorNotification.remove();
-                }, 3000);
+                // Show error notification
+                showNotification(errorMessage);
             }
         } catch (error) {
             console.error('Login error:', error);
-            alert('Network error. Please try again.');
+            showNotification('Network error. Please try again.');
         }
     });
 });

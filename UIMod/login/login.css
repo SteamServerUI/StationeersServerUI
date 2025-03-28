@@ -7,6 +7,8 @@
     --bg-dark: #0a0a14;
     --bg-panel: #1b1b2f;
     --text-bright: #e0ffe9;
+    --error-bg: rgba(255, 0, 0, 0.8);
+    --success-bg: rgba(0, 255, 0, 0.8);
 }
 
 * {
@@ -243,6 +245,127 @@ footer {
     opacity: 0.5;
     animation: stars 100s linear infinite;
 }
+
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 30px;
+    border-radius: 8px;
+    color: white;
+    font-family: 'Share Tech Mono', monospace;
+    z-index: 1000;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+.notification.error {
+    background-color: var(--error-bg);
+    border: 2px solid red;
+}
+
+.notification.success {
+    background-color: var(--success-bg);
+    border: 2px solid green;
+}
+
+.notification.show {
+    opacity: 1;
+    top: 30px;
+}
+
+/* Login Transition Improvements */
+.login-transition {
+    transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    transform-origin: center bottom;
+}
+
+.login-transition.activate {
+    transform: perspective(1000px) rotateX(45deg) scale(0.8);
+    opacity: 0;
+}
+
+/* Breakout Blur Animation */
+.breakout-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.breakout-bar {
+    position: absolute;
+    background: linear-gradient(
+        to right, 
+        transparent, 
+        var(--primary), 
+        transparent
+    );
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.breakout-container.active {
+    opacity: 1;
+}
+
+.breakout-bar.expand {
+    opacity: 1;
+}
+
+/* Preloader Styles */
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+#preloader.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.preloader-content {
+    text-align: center;
+    color: var(--primary);
+}
+
+.preloader-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid var(--primary-dim);
+    border-top: 3px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
