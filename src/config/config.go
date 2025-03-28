@@ -19,6 +19,7 @@ type JsonConfig struct {
 	LogChannelID            string `json:"logChannelID"`
 	SaveChannelID           string `json:"saveChannelID"`
 	ControlPanelChannelID   string `json:"controlPanelChannelID"`
+	DiscordCharBufferSize   int    `json:"DiscordCharBufferSize"`
 	BlackListFilePath       string `json:"blackListFilePath"`
 	IsDiscordEnabled        bool   `json:"isDiscordEnabled"`
 	ErrorChannelID          string `json:"errorChannelID"`
@@ -90,9 +91,11 @@ var (
 	IsFirstTimeSetup bool
 
 	// Logging and buffers
-	LogMessageBuffer  string
-	MaxBufferSize     = 1000
-	BufferFlushTicker *time.Ticker
+	LogMessageBuffer      string
+	DiscordCharBufferSize int
+	SSEMessageBufferSize  = 2000
+	MaxSSEConnections     = 20
+	BufferFlushTicker     *time.Ticker
 
 	// Player tracking
 	ConnectedPlayers          = make(map[string]string) // SteamID -> Username
@@ -104,7 +107,7 @@ var (
 	BackupRestoreMessageID string
 
 	// Versioning
-	Version = "4.0.13"
+	Version    = "4.0.13"
 	Branch     = "nightly"
 	GameBranch string
 )
@@ -130,6 +133,10 @@ func LoadConfig() (*JsonConfig, error) {
 		} else {
 			jsonconfig.ExePath = "./rocketstation_DedicatedServer.x86_64"
 		}
+	}
+
+	if jsonconfig.DiscordCharBufferSize <= 0 {
+		jsonconfig.DiscordCharBufferSize = 1000 // Fallback to 1000 characters
 	}
 
 	DiscordToken = jsonconfig.DiscordToken
@@ -162,6 +169,7 @@ func LoadConfig() (*JsonConfig, error) {
 	ExePath = jsonconfig.ExePath
 	AdditionalParams = jsonconfig.AdditionalParams
 	IsDebugMode = jsonconfig.Debug
+	DiscordCharBufferSize = jsonconfig.DiscordCharBufferSize
 
 	if jsonconfig.Debug {
 		fmt.Println("DiscordToken:", DiscordToken)
@@ -198,7 +206,7 @@ func LoadConfig() (*JsonConfig, error) {
 		fmt.Println("GameServerAppID:", GameServerAppID)
 		fmt.Println("DiscordSession:", DiscordSession)
 		fmt.Println("LogMessageBuffer:", LogMessageBuffer)
-		fmt.Println("MaxBufferSize:", MaxBufferSize)
+		fmt.Println("DiscordCharBufferSize:", DiscordCharBufferSize)
 		fmt.Println("BufferFlushTicker:", BufferFlushTicker)
 		fmt.Println("ConnectedPlayers:", ConnectedPlayers)
 		fmt.Println("ConnectedPlayersMessageID:", ConnectedPlayersMessageID)

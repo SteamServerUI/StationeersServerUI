@@ -10,7 +10,7 @@ func AddToLogBuffer(logMessage string) {
 	if config.IsDiscordEnabled && config.DiscordSession != nil {
 		checkForKeywords(logMessage)
 	}
-	if len(config.LogMessageBuffer) >= config.MaxBufferSize && config.IsDiscordEnabled {
+	if len(config.LogMessageBuffer) >= config.DiscordCharBufferSize && config.IsDiscordEnabled {
 		flushLogBufferToDiscord()
 	}
 }
