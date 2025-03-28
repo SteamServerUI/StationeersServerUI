@@ -38,9 +38,9 @@ func main() {
 	// Wait for the installation to finish before starting the rest of the server
 	wg.Wait()
 
-	fmt.Println(string(colorGreen), "Installation complete!", string(colorReset))
+	fmt.Println(string(colorGreen), "Setup complete!", string(colorReset))
 
-	fmt.Println(string(colorBlue), "Loading configuration", string(colorReset))
+	fmt.Println(string(colorBlue), "Reloading configuration", string(colorReset))
 	config.LoadConfig()
 
 	// Initialize the detection module

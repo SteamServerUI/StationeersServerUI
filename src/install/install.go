@@ -28,7 +28,7 @@ func Install(wg *sync.WaitGroup) {
 
 	workingDir := "./UIMod/"
 	configFilePath := workingDir + "config.json"
-	fmt.Println(string(colorYellow), "Loading configuration from", configFilePath, string(colorReset))
+	fmt.Println(string(colorYellow), "Loading Config for Setup from", configFilePath, string(colorReset))
 	_, err := config.LoadConfig()
 	if err != nil {
 		fmt.Println("⚠️  Config file not found or invalid, downloading stable branch...")

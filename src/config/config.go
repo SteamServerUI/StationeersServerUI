@@ -120,7 +120,7 @@ var (
 	AuthTokenLifetime int // In minutes, e.g., 1440 (24h)
 
 	// Versioning
-	Version = "4.1.1"
+	Version    = "4.1.2"
 	Branch     = "nightly"
 	GameBranch string
 )
@@ -207,19 +207,13 @@ func LoadConfig() (*JsonConfig, error) {
 	DiscordCharBufferSize = jsonconfig.DiscordCharBufferSize
 
 	if jsonconfig.Debug {
-		fmt.Println("----AUTHENTICATION CONFIG VARS----")
-		fmt.Println("AuthTokenLifetime:", AuthTokenLifetime)
-		fmt.Println("ConnectedPlayersMessageID:", ConnectedPlayersMessageID)
-		fmt.Println("JwtKey:", JwtKey)
-		fmt.Println("Password:", Password)
-		fmt.Println("Username:", Username)
 		fmt.Println("----DISCORD CONFIG VARS----")
 		fmt.Println("BlackListFilePath:", BlackListFilePath)
+		fmt.Println("ConnectedPlayersMessageID:", ConnectedPlayersMessageID)
 		fmt.Println("ConnectionListChannelID:", ConnectionListChannelID)
 		fmt.Println("ControlChannelID:", ControlChannelID)
 		fmt.Println("ControlPanelChannelID:", ControlPanelChannelID)
 		fmt.Println("DiscordCharBufferSize:", DiscordCharBufferSize)
-		fmt.Println("DiscordSession:", DiscordSession)
 		fmt.Println("DiscordToken:", DiscordToken)
 		fmt.Println("ErrorChannelID:", ErrorChannelID)
 		fmt.Println("IsDiscordEnabled:", IsDiscordEnabled)
@@ -249,9 +243,13 @@ func LoadConfig() (*JsonConfig, error) {
 		fmt.Println("UPNPEnabled:", UPNPEnabled)
 		fmt.Println("UseSteamP2P:", UseSteamP2P)
 		fmt.Println("WorldName:", WorldName)
+		fmt.Println("----AUTHENTICATION CONFIG VARS----")
+		fmt.Println("AuthTokenLifetime:", AuthTokenLifetime)
+		fmt.Println("JwtKey:", JwtKey)
+		fmt.Println("Password:", Password)
+		fmt.Println("Username:", Username)
 		fmt.Println("----MISC CONFIG VARS----")
 		fmt.Println("Branch:", Branch)
-		fmt.Println("BufferFlushTicker:", BufferFlushTicker)
 		fmt.Println("GameServerAppID:", GameServerAppID)
 		fmt.Println("Version:", Version)
 	}

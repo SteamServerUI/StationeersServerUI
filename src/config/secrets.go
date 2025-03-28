@@ -44,8 +44,8 @@ func generateJwtKey() string {
 
 func GetSecretsFromEnv(jsonconfig JsonConfig) {
 	// Try to locate User config from JSON, if not found, use env vars, and fallback to defaults, but generate JwtKey (no default)
-	Username = getConfigValue(jsonconfig.Username, "USERNAME", "admin")
-	Password = getConfigValue(jsonconfig.Password, "PASSWORD", "password")
-	JwtKey = getConfigValue(jsonconfig.JwtKey, "JWT_KEY", generateJwtKey())
+	Username = getConfigValue(jsonconfig.Username, "SSUI_USERNAME", "admin")
+	Password = getConfigValue(jsonconfig.Password, "SSUI_PASSWORD", "password")
+	JwtKey = getConfigValue(jsonconfig.JwtKey, "SSUI_JWT_KEY", generateJwtKey())
 	AuthTokenLifetime = getConfigValueInt(jsonconfig.AuthTokenLifetime, "AUTH_TOKEN_LIFETIME", 1440)
 }
