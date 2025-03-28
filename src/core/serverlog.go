@@ -22,7 +22,7 @@ func GetLogOutput(w http.ResponseWriter, r *http.Request) {
 func readPipe(pipe io.ReadCloser) {
 	scanner := bufio.NewScanner(pipe)
 	if config.IsDebugMode {
-		fmt.Println("Started reading pipe") // Debug
+		fmt.Println("[DEBUG] Started reading pipe") // Debug
 	}
 	for scanner.Scan() {
 		output := scanner.Text()
@@ -35,7 +35,7 @@ func readPipe(pipe io.ReadCloser) {
 		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reading pipe: %v", err))
 	}
 	if config.IsDebugMode {
-		fmt.Println("Pipe closed") // Debug
+		fmt.Println("[DEBUG] Pipe closed") // Debug
 	}
 }
 
