@@ -45,50 +45,66 @@ type JsonConfig struct {
 }
 
 var (
-	DiscordToken              string
-	ControlChannelID          string
-	StatusChannelID           string
-	LogChannelID              string
-	ErrorChannelID            string
-	ConnectionListChannelID   string
-	SaveChannelID             string
-	BlackListFilePath         string
-	ServerName                string
-	SaveFileName              string
-	ServerMaxPlayers          string
-	ServerPassword            string
-	ServerAuthSecret          string
-	AdminPassword             string
-	GamePort                  string
-	UpdatePort                string
-	UPNPEnabled               bool
-	AutoSave                  bool
-	SaveInterval              string
-	AutoPauseServer           bool
-	LocalIpAddress            string
-	StartLocalHost            bool
-	ServerVisible             bool
-	UseSteamP2P               bool
-	ExePath                   string
-	AdditionalParams          string
-	DiscordSession            *discordgo.Session
-	LogMessageBuffer          string
-	MaxBufferSize             = 1000
-	BufferFlushTicker         *time.Ticker
+	// Discord-related settings
+	DiscordToken            string
+	DiscordSession          *discordgo.Session
+	IsDiscordEnabled        bool
+	ControlChannelID        string
+	StatusChannelID         string
+	LogChannelID            string
+	ErrorChannelID          string
+	ConnectionListChannelID string
+	SaveChannelID           string
+	ControlPanelChannelID   string
+
+	// Server configuration
+	ServerName       string
+	ServerMaxPlayers string
+	ServerPassword   string
+	ServerAuthSecret string
+	AdminPassword    string
+	GamePort         string
+	UpdatePort       string
+	LocalIpAddress   string
+	ServerVisible    bool
+	UseSteamP2P      bool
+
+	// File paths and constants
+	BlackListFilePath string
+	SaveFileName      string
+	ExePath           string
+	ConfigPath        = "./UIMod/config.json"
+	GameServerAppID   = "600760" // Steam App ID for Stationeers Dedicated Server
+
+	// Runtime settings
+	SaveInterval     string
+	AdditionalParams string
+	AutoPauseServer  bool
+	UPNPEnabled      bool
+	AutoSave         bool
+	StartLocalHost   bool
+	TLSEnabled       bool
+	IsDebugMode      bool
+	IsFirstTimeSetup bool
+
+	// Logging and buffers
+	LogMessageBuffer  string
+	MaxBufferSize     = 1000
+	BufferFlushTicker *time.Ticker
+
+	// Player tracking
 	ConnectedPlayers          = make(map[string]string) // SteamID -> Username
 	ConnectedPlayersMessageID string
-	ControlMessageID          string
-	ExceptionMessageID        string
-	BackupRestoreMessageID    string
-	ControlPanelChannelID     string
-	IsDiscordEnabled          bool
-	IsFirstTimeSetup          bool
-	IsDebugMode               bool
-	GameBranch                string
-	Version = "4.0.7"
-	Branch                    = "nightly"
-	GameServerAppID           = "600760" // Steam App ID for Stationeers Dedicated Server
-	ConfigPath                = "./UIMod/config.json"
+
+	// Message IDs
+	ControlMessageID       string
+	ExceptionMessageID     string
+	BackupRestoreMessageID string
+
+	// Versioning
+	Version    = "4.0.7"
+	Branch     = "nightly"
+	GameBranch string
 )
 
 func LoadConfig() (*JsonConfig, error) {
