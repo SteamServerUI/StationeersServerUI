@@ -7,9 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     setDefaultConsoleMessage(); // Handles SSE setup completely
     // Create planets with size, orbit radius, speed, and color
     const planetContainer = document.getElementById('planet-container');
-    createPlanet(planetContainer, 80, 850, 30, 'rgba(200, 100, 50, 0.7)');
-    createPlanet(planetContainer, 50, 1000, 45, 'rgba(100, 200, 150, 0.5)');
-    createPlanet(planetContainer, 30, 1150, 20, 'rgba(50, 150, 250, 0.6)');
+    createPlanet(planetContainer, 80, 650, 25, 'rgba(200, 100, 50, 0.7)');
+    createPlanet(planetContainer, 50, 1000, 40, 'rgba(100, 200, 150, 0.5)');
+    createPlanet(planetContainer, 30, 1250, 55, 'rgba(50, 150, 250, 0.6)');
+    createPlanet(planetContainer, 70, 400, 20, 'rgba(200, 150, 200, 0.7)'); 
+
+
 });
 
 // Global references to EventSource objects
@@ -327,7 +330,6 @@ function setDefaultConsoleMessage() {
 }
 
 function createPlanet(container, size, orbitRadius, speed, color) {
-    // Create orbit container
     const orbit = document.createElement('div');
     orbit.classList.add('orbit');
     orbit.style.width = `${orbitRadius * 2}px`;
@@ -336,9 +338,11 @@ function createPlanet(container, size, orbitRadius, speed, color) {
     orbit.style.left = '50%';
     orbit.style.top = '50%';
     orbit.style.transform = 'translate(-50%, -50%)';
-    orbit.style.animation = `orbit ${speed}s linear infinite`;
+    
+    // Add random delay to start animation at different points
+    const randomDelay = -(Math.random() * speed); // Negative delay to offset start
+    orbit.style.animation = `orbit ${speed}s linear infinite ${randomDelay}s`;
 
-    // Create planet
     const planet = document.createElement('div');
     planet.classList.add('planet');
     planet.style.width = `${size}px`;
@@ -351,5 +355,5 @@ function createPlanet(container, size, orbitRadius, speed, color) {
     planet.style.boxShadow = `0 0 20px ${color}`;
     
     orbit.appendChild(planet);
-    container.appendChild(orbit); // Use the passed container parameter
+    container.appendChild(orbit);
 }

@@ -2,25 +2,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Planet creation functions
     const planetContainer = document.getElementById('planet-container');
     
-    function createPlanet(size, x, y, speed, color) {
+    function createPlanet(container, size, orbitRadius, speed, color) {
+        const orbit = document.createElement('div');
+        orbit.classList.add('orbit');
+        orbit.style.width = `${orbitRadius * 2}px`;
+        orbit.style.height = `${orbitRadius * 2}px`;
+        orbit.style.position = 'absolute';
+        orbit.style.left = '50%';
+        orbit.style.top = '50%';
+        orbit.style.transform = 'translate(-50%, -50%)';
+        
+        // Add random delay to start animation at different points
+        const randomDelay = -(Math.random() * speed); // Negative delay to offset start
+        orbit.style.animation = `orbit ${speed}s linear infinite ${randomDelay}s`;
+    
         const planet = document.createElement('div');
         planet.classList.add('planet');
         planet.style.width = `${size}px`;
         planet.style.height = `${size}px`;
         planet.style.position = 'absolute';
-        planet.style.left = `${x}%`;
-        planet.style.top = `${y}%`;
+        planet.style.left = '0%';
+        planet.style.top = '50%';
         planet.style.backgroundColor = color;
         planet.style.borderRadius = '50%';
-        planet.style.animation = `orbit ${speed}s linear infinite`;
         planet.style.boxShadow = `0 0 20px ${color}`;
         
-        planetContainer.appendChild(planet);
+        orbit.appendChild(planet);
+        container.appendChild(orbit);
     }
 
-    createPlanet(80, 10, 20, 30, 'rgba(200, 100, 50, 0.7)');
-    createPlanet(50, 70, 60, 45, 'rgba(100, 200, 150, 0.5)');
-    createPlanet(30, 50, 80, 20, 'rgba(50, 150, 250, 0.6)');
+    // Create planets with size, orbit radius, speed, and color
+    createPlanet(planetContainer, 80, 650, 25, 'rgba(200, 100, 50, 0.7)');
+    createPlanet(planetContainer, 50, 1000, 40, 'rgba(100, 200, 150, 0.5)');
+    createPlanet(planetContainer, 30, 1250, 55, 'rgba(50, 150, 250, 0.6)');
+    createPlanet(planetContainer, 70, 350, 20, 'rgba(200, 150, 200, 0.7)'); 
 
     // Notification function
     function showNotification(message, type = 'error') {
