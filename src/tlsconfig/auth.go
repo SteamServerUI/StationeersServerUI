@@ -6,6 +6,7 @@ package tlsconfig
 import (
 	"StationeersServerUI/src/config"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -109,6 +110,9 @@ func AuthMiddleware(next http.Handler) http.Handler {
 				return
 			}
 			http.Error(w, "Unauthorized - Invalid token", http.StatusUnauthorized)
+			if config.IsDebugMode {
+				fmt.Println("[AUTH] Unauthorized Request - Invalid token")
+			}
 			return
 		}
 
