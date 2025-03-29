@@ -14,13 +14,13 @@
 
 ### ✨ Feature Showcase ✨
 
-| 🚀 Easy Setup | 🔄 Auto Updates | 🎮 Easy Control | 💾 Smart Backups | 🤖 Discord Bot |
-|:-------------:|:---------------:|:---------------:|:----------------:|:--------------:|
-| Just run and go | Gameserver updates at startup | One-click management | Automated system | Remote control |
+| 🚀 Easy Setup | Secure by Default | 🔄 Auto Updates | 🎮 Easy Control | 💾 Smart Backups | 🤖 Discord Bot |
+|:-------------:|:-----------------:|:---------------:|:----------------:|:----------------:|:--------------:|
+| Just run and go | JWT auth, TLS | Gameserver updates at startup | One-click management | Automated system | Remote control |
 
 </div>
 <div align="center">
-  <img src="media/UI-4.png" alt="UI Overview" width="100%">
+  <img src="media/UI-1.png" alt="UI Overview" width="100%">
   <em>Manage your Stationeers server with style - Retro interface, modern capabilities.</em>
 </div>
 
@@ -28,8 +28,9 @@
 
 1. 📦 Download latest release from [here](https://github.com/JacksonTheMaster/StationeersServerUI/releases)
 2. 📁 Place in empty folder and run it
-3. 🌐 Access UI at `http://localhost:8080`
+3. 🌐 Access UI at `https://localhost:8443`
 4. 📚 See [First-Time Setup](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup) in the wiki
+5. 🔒 If you set this up too quickly and are in search of the Default Username/Password, see [Security Considerations](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/Security-Considerations) for more details.
 
 ## What is This?
 
@@ -43,6 +44,7 @@ A sleek, retro-themed web UI to manage your Stationeers dedicated server. No mor
 - 💾 **Smart Backups** - Automated backup system with easy restore
 - 🤖 **Discord Integration** - Control your server through Discord
 - 🔌 **Auto SteamCMD Setup** - No manual installation required
+- 🔒 **Secure by Default** - JWT auth, TLS, and randomized JWT key
 
 ## Detailed Documentation
 
@@ -59,33 +61,21 @@ For comprehensive instructions, examples, and more details, visit our [GitHub Wi
 | [Docker Guide](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/Docker-Guide) | Running in Docker containers |
 | [Security Considerations](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/Security-Considerations) | Important security best practices |
 
-
 ## Web UI Preview
 
-_The Images below are from the 2.2 release, I will update them eventually. Minor changes have been made to the UI since. The font has partly been changed to a more readable one, and buttons have been renamed. The config pages got cleanups too._
+_Click the images to expand them._
 
 | UI Overview | Configuration | Backup Management |
 |:-----------:|:-------------:|:-----------------:|
 | ![UI Overview](media/UI-1.png) | ![Configuration](media/UI-2.png) | ![Backup Management](media/UI-3.png) |
 
-
 ## Discord Preview
 
+_Click the images to expand them._
 
 | Connection Log | Save Log | Panel | Discord Commands |
 |:-----------:|:-------------:|:-----------------:|:-------------:|
 | ![Connection Log](media/discord-connections.png) | ![Save Log](media/discord-saves.png) | ![Panel](media/discord-panel.png) | ![Discord Commands](media/discord-commands.png) |
-
-
-## Important Security Note
-
-⚠️ **For security reasons, do not expose this UI directly to the internet without proper authentication.**
-
-See [Security Considerations](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/Security-Considerations) for more details.
-
-## Linux Support (March 2025)
-
-While this software now proudly supports Linux, please note that the Stationeers Server Linux builds are currently experiencing issues. Stable branch has startup problems, and beta launches but fails on save loading. We're monitoring the situation with RocketWerkZ and will update when resolved.
 
 ## Contributing
 
