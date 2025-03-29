@@ -262,7 +262,7 @@ func WatchBackupDir() {
 				return
 			}
 			if event.Op&fsnotify.Create == fsnotify.Create {
-				fmt.Println("New backup file detected:", event.Name)
+				fmt.Println("[BACKUP]💾 New backup file detected:", event.Name)
 				go copyBackupToSafeLocation(event.Name, safeBackupDir)
 			}
 
@@ -299,7 +299,7 @@ func copyBackupToSafeLocation(srcFilePath string, safeBackupDir string) {
 			return
 		}
 
-		fmt.Println("Backup successfully copied to safe location:", dstFilePath)
+		fmt.Println("[BACKUP] 💾 Backup successfully copied to safe location:", dstFilePath)
 		discord.SendMessageToSavesChannel(fmt.Sprintf("Backup file %s copied to safe location.", dstFilePath))
 	}()
 }
