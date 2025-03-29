@@ -1,21 +1,17 @@
 package main
 
 import (
-	"StationeersServerUI/src/api"
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/core"
 	"StationeersServerUI/src/detection"
-	discord "StationeersServerUI/src/discord"
+	"StationeersServerUI/src/discord"
 	"StationeersServerUI/src/install"
-	"StationeersServerUI/src/ui"
+	"StationeersServerUI/src/security"
+	"StationeersServerUI/src/ssestream"
 	"fmt"
 	"net/http"
-	"os"
+	"net/http/pprof"
 	"sync"
-	"time"
-
-	_ "net/http/pprof"
-
-	"github.com/r3labs/sse"
 )
 
 const (
@@ -41,18 +37,15 @@ func main() {
 	// Wait for the installation to finish before starting the rest of the server
 	wg.Wait()
 
-	fmt.Println(string(colorGreen), "Installation complete!", string(colorReset))
+	fmt.Println(string(colorGreen), "Setup complete!", string(colorReset))
 
-	workingDir := "./UIMod/"
-	configFilePath := workingDir + "config.json"
-
-	fmt.Println(string(colorBlue), "Loading configuration from", configFilePath, string(colorReset))
-	config.LoadConfig(configFilePath)
+	fmt.Println(string(colorBlue), "Reloading configuration", string(colorReset))
+	config.LoadConfig()
 
 	// Initialize the detection module
 	fmt.Println(string(colorBlue), "Initializing detection module...", string(colorReset))
 	detector := detection.Start()
-	detection.RegisterDefaultHandlers(detector) // Logs detections to console for now
+	detection.RegisterDefaultHandlers(detector)
 	fmt.Println(string(colorGreen), "Detection module ready!", string(colorReset))
 
 	// If Discord is enabled, start the Discord bot
@@ -61,82 +54,85 @@ func main() {
 		go discord.StartDiscordBot()
 	}
 
-	go startLogStream(detector) // Pass the detector to the log stream function
+	go detection.StreamLogs(detector) // Pass the detector to the log stream function
 
 	fmt.Println(string(colorBlue), "Starting API services...", string(colorReset))
-	go api.StartAPI()
-	go api.StartBackupCleanupRoutine()
-	go api.WatchBackupDir()
+	go core.StartBackupCleanupRoutine()
+	go core.WatchBackupDir()
 
+	// Set up handlers with auth middleware
+	mux := http.NewServeMux() // Use a mux to apply middleware globally
+
+	// Unprotected auth routes
+	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./UIMod/login/login.html")
+	})
+	mux.HandleFunc("/login/login.js", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/javascript")
+		http.ServeFile(w, r, "./UIMod/login/login.js")
+	})
+	mux.HandleFunc("/login/login.css", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/css")
+		http.ServeFile(w, r, "./UIMod/login/login.css")
+	})
+	mux.HandleFunc("/auth/login", security.LoginHandler) // Token issuer
+	mux.HandleFunc("/auth/logout", security.LogoutHandler)
+
+	// Protected routes (wrapped with middleware)
+	protectedMux := http.NewServeMux()
 	fs := http.FileServer(http.Dir("./UIMod"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.HandleFunc("/", api.ServeUI)
-	http.HandleFunc("/start", api.StartServer)
-	http.HandleFunc("/stop", api.StopServer)
-	http.HandleFunc("/output", api.GetOutput)
-	http.HandleFunc("/backups", api.ListBackups)
-	http.HandleFunc("/restore", api.RestoreBackup)
-	http.HandleFunc("/config", api.HandleConfig)
-	http.HandleFunc("/saveconfig", api.SaveConfig)
-	http.HandleFunc("/furtherconfig", api.HandleConfigJSON)
-	http.HandleFunc("/saveconfigasjson", api.SaveConfigJSON)
-	http.HandleFunc("/events", ui.StartDetectionEventStream())
+	protectedMux.Handle("/static/", http.StripPrefix("/static/", fs))
+	protectedMux.HandleFunc("/", core.ServeIndex)
+	protectedMux.HandleFunc("/start", core.StartServer)
+	protectedMux.HandleFunc("/stop", core.StopServer)
+	protectedMux.HandleFunc("/console", core.GetLogOutput)
+	protectedMux.HandleFunc("/backups", core.ListBackups)
+	protectedMux.HandleFunc("/restore", core.RestoreBackup)
+	protectedMux.HandleFunc("/config", core.HandleConfigJSON)
+	protectedMux.HandleFunc("/saveconfigasjson", core.SaveConfigJSON)
+	protectedMux.HandleFunc("/events", ssestream.StartDetectionEventStream())
 
-	fmt.Println(string(colorYellow), "Starting the HTTP server on port 8080...", string(colorReset))
-	fmt.Println(string(colorGreen), "UI available at: http://0.0.0.0:8080", string(colorReset))
-	if config.IsFirstTimeSetup {
-		fmt.Println(string(colorMagenta), "For first time Setup, follow the instructions on:", string(colorReset))
-		fmt.Println(string(colorMagenta), "https://github.com/jacksonthemaster/StationeersServerUI/blob/main/readme.md#first-time-setup", string(colorReset))
-		fmt.Println(string(colorMagenta), "Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)", string(colorReset))
-	}
-	if config.Branch != "Release" {
-		fmt.Println(string(colorRed), "⚠️Starting pprof server on /debug/pprof", string(colorReset))
-	}
-	// Start the HTTP server and check for errors
-	err := http.ListenAndServe("0.0.0.0:8080", nil)
+	// Apply middleware only to protected routes
+	mux.Handle("/", security.AuthMiddleware(protectedMux)) // Wrap protected routes under root
 
-	if err != nil {
-		fmt.Printf(string(colorRed)+"Error starting HTTP server: %v\n"+string(colorReset), err)
-		os.Exit(1)
-	}
-}
-
-func startLogStream(detector *detection.Detector) {
-	client := sse.NewClient("http://localhost:8080/output")
-	client.Headers["Content-Type"] = "text/event-stream"
-	client.Headers["Connection"] = "keep-alive"
-	client.Headers["Cache-Control"] = "no-cache"
-
-	retryDelay := 5 * time.Second // Retry every 5 seconds
-
+	// Start HTTP server
+	wg.Add(1)
 	go func() {
-		for {
-			fmt.Println(string(colorYellow), "Attempting to connect to SSE stream...", string(colorReset))
-
-			err := client.SubscribeRaw(func(msg *sse.Event) {
-				if len(msg.Data) > 0 {
-					logMessage := string(msg.Data)
-					// Feed the log to both Discord (if enabled) and the detection module
-					if config.IsDiscordEnabled {
-						discord.AddToLogBuffer(logMessage)
-					}
-					detection.ProcessLog(detector, logMessage)
-
-					//fmt.Println(string(colorGreen), "Serverlog:", logMessage, string(colorReset))
-					//dont spam the console with the server log (it is filled with mono errors beacause stationeers is...literally bug-free...)
-				}
-			})
-
-			if err != nil {
-				// Instead of logging errors repeatedly, retry silently until the endpoint is available
-				fmt.Println(string(colorYellow), "SSE stream not available yet, retrying in 5 seconds...", string(colorReset))
-				time.Sleep(retryDelay)
-				continue
-			}
-
-			// Successfully connected, break the loop and handle messages
-			fmt.Println(string(colorGreen), "Connected to SSE stream.", string(colorReset))
-			return
+		defer wg.Done()
+		fmt.Println(string(colorYellow), "Starting the HTTP server on port 8443...", string(colorReset))
+		fmt.Println(string(colorGreen), "UI available at: https://0.0.0.0:8443 or https://localhost:8443", string(colorReset))
+		if config.IsFirstTimeSetup {
+			fmt.Println(string(colorMagenta), "For first time Setup, follow the instructions on:", string(colorReset))
+			fmt.Println(string(colorMagenta), "https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup", string(colorReset))
+			fmt.Println(string(colorMagenta), "Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)", string(colorReset))
+		}
+		// Ensure TLS certs are ready
+		if err := security.EnsureTLSCerts(); err != nil {
+			fmt.Printf(string(colorRed)+"Error setting up TLS certificates: %v\n"+string(colorReset), err)
+			//os.Exit(1)
+		}
+		err := http.ListenAndServeTLS("0.0.0.0:8443", config.TLSCertPath, config.TLSKeyPath, mux)
+		if err != nil {
+			fmt.Printf(string(colorRed)+"Error starting HTTPS server: %v\n"+string(colorReset), err)
 		}
 	}()
+
+	// Start the pprof server if debug mode is enabled (HTTP/1.1)
+	if config.IsDebugMode {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			pprofMux := http.NewServeMux()
+			// Register pprof handler
+			pprofMux.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
+			fmt.Println(string(colorRed), "⚠️Starting pprof server on :6060/debug/pprof", string(colorReset))
+			err := http.ListenAndServe("0.0.0.0:6060", pprofMux)
+			if err != nil {
+				fmt.Printf(string(colorRed)+"Error starting pprof server: %v\n"+string(colorReset), err)
+			}
+		}()
+	}
+
+	// Wait for both servers to be running
+	wg.Wait()
 }

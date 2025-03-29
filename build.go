@@ -3,38 +3,20 @@ package main
 
 import (
 	"StationeersServerUI/src/config"
-	"encoding/xml"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"strconv"
 	"strings"
 )
 
-type ServerConfig struct {
-	ExePath  string `xml:"exePath"`
-	Settings string `xml:"settings"`
-}
-
-type Config struct {
-	Server       ServerConfig `xml:"server"`
-	SaveFileName string       `xml:"saveFileName"`
-}
-
 func main() {
-	// Update the config file with the correct executable paths
-	err := updateConfigExePath()
-	if err != nil {
-		log.Fatalf("Error updating config executable path: %v", err)
-	}
 
-	// Load the config to access Version and Branch
-	config.LoadConfig("./UIMod/config.json")
+	// Load the config
+	config.LoadConfig()
 
 	// Increment the version
 	newVersion := incrementVersion("src/config/config.go")
@@ -84,49 +66,6 @@ func main() {
 
 	// Clean up old .exe files that follow the pattern "StationeersServerControl*"
 	cleanupOldExecutables(newVersion)
-}
-
-func updateConfigExePath() error {
-	// Load the existing config file
-	configPath := "./UIMod/config.xml"
-	xmlFile, err := os.Open(configPath)
-	if err != nil {
-		return fmt.Errorf("error opening config file: %v", err)
-	}
-	defer xmlFile.Close()
-
-	byteValue, err := io.ReadAll(xmlFile)
-	if err != nil {
-		return fmt.Errorf("error reading config file: %v", err)
-	}
-
-	var config Config
-	err = xml.Unmarshal(byteValue, &config)
-	if err != nil {
-		return fmt.Errorf("error unmarshalling config file: %v", err)
-	}
-
-	// Update the ExePath based on the current OS
-	if runtime.GOOS == "windows" {
-		config.Server.ExePath = "./rocketstation_DedicatedServer.exe"
-	} else {
-		config.Server.ExePath = "./rocketstation_DedicatedServer.x86_64"
-	}
-
-	// Write the updated config back to the file
-	file, err := os.Create(configPath)
-	if err != nil {
-		return fmt.Errorf("error creating config file: %v", err)
-	}
-	defer file.Close()
-
-	encoder := xml.NewEncoder(file)
-	encoder.Indent("", "  ")
-	if err := encoder.Encode(config); err != nil {
-		return fmt.Errorf("error encoding config: %v", err)
-	}
-
-	return nil
 }
 
 // incrementVersion function to increment the version in config.go

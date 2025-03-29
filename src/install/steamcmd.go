@@ -143,6 +143,14 @@ func runSteamCMD(steamCMDDir string) {
 	}
 	logVerbose("✅ Current working directory: " + currentDir + "\n")
 
+	// Ensure permissions every time if we run on linux
+	if runtime.GOOS != "windows" {
+		if err := setExecutablePermissions(steamCMDDir); err != nil {
+			logError("❌ Error setting executable permissions, your Steamcmd install might be broken: " + err.Error() + "\n")
+			return
+		}
+	}
+
 	// Build SteamCMD command
 	cmd := buildSteamCMDCommand(steamCMDDir, currentDir)
 
