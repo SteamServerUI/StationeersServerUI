@@ -7,10 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     handleConsole();
     // Create planets with size, orbit radius, speed, and color
     const planetContainer = document.getElementById('planet-container');
-    createPlanet(planetContainer, 80, 650, 25, 'rgba(200, 100, 50, 0.7)');
-    createPlanet(planetContainer, 50, 1000, 40, 'rgba(100, 200, 150, 0.5)');
-    createPlanet(planetContainer, 30, 1250, 55, 'rgba(50, 150, 250, 0.6)');
-    createPlanet(planetContainer, 70, 400, 20, 'rgba(200, 150, 200, 0.7)'); 
+    createPlanet(planetContainer, 80, 650, 34, 'rgba(200, 100, 50, 0.7)');
+    createPlanet(planetContainer, 50, 1000, 46, 'rgba(100, 200, 150, 0.5)');
+    createPlanet(planetContainer, 30, 1250, 63, 'rgba(50, 150, 250, 0.6)');
+    createPlanet(planetContainer, 70, 400, 28, 'rgba(200, 150, 200, 0.7)'); 
 
 
 });
