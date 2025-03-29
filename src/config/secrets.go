@@ -50,5 +50,5 @@ func GetSecretsFromEnv(jsonconfig JsonConfig) {
 	Username = getConfigValue(jsonconfig.Username, "SSUI_USERNAME", "admin")
 	Password = getConfigValue(jsonconfig.Password, "SSUI_PASSWORD", "password")
 	JwtKey = getConfigValue(jsonconfig.JwtKey, "SSUI_JWT_KEY", generateJwtKey())
-	AuthTokenLifetime = getConfigValueInt(jsonconfig.AuthTokenLifetime, "AUTH_TOKEN_LIFETIME", 1440)
+	AuthTokenLifetime = getConfigValueInt(jsonconfig.AuthTokenLifetime, "SSUI_AUTH_TOKEN_LIFETIME", 1440)
 }
