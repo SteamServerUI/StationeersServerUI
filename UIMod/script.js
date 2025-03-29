@@ -5,6 +5,30 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchDetectionEvents();
     fetchBackups();
     setDefaultConsoleMessage(); // Handles SSE setup completely
+
+
+    // add planets
+    const planetContainer = document.getElementById('planet-container');
+    
+    function createPlanet(size, x, y, speed, color) {
+        const planet = document.createElement('div');
+        planet.classList.add('planet');
+        planet.style.width = `${size}px`;
+        planet.style.height = `${size}px`;
+        planet.style.position = 'absolute';
+        planet.style.left = `${x}%`;
+        planet.style.top = `${y}%`;
+        planet.style.backgroundColor = color;
+        planet.style.borderRadius = '50%';
+        planet.style.animation = `orbit ${speed}s linear infinite`;
+        planet.style.boxShadow = `0 0 20px ${color}`;
+        
+        planetContainer.appendChild(planet);
+    }
+
+    createPlanet(80, 10, 20, 30, 'rgba(200, 100, 50, 0.7)');
+    createPlanet(50, 70, 60, 45, 'rgba(100, 200, 150, 0.5)');
+    createPlanet(30, 50, 80, 20, 'rgba(50, 150, 250, 0.6)');
 });
 
 // Global references to EventSource objects

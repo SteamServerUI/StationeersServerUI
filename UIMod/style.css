@@ -68,6 +68,70 @@ header::before {
   z-index: 0;
 }
 
+
+#space-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+  z-index: -2;
+}
+
+#planet-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+
+/* Star field animation */
+@keyframes stars {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-2000px); }
+}
+
+#space-background::before,
+#space-background::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#space-background::before {
+  background-image: radial-gradient(1px 1px at 20px 30px, #eee, transparent),
+                    radial-gradient(1px 1px at 50px 50px, #fff, transparent),
+                    radial-gradient(1px 1px at 90px 80px, #fff, transparent),
+                    radial-gradient(1px 1px at 130px 120px, #eee, transparent);
+  background-size: 200px 200px;
+  opacity: 0.3;
+  animation: stars 50s linear infinite;
+}
+
+#space-background::after {
+  background-image: radial-gradient(2px 2px at 20px 200px, #fff, transparent),
+                    radial-gradient(3px 3px at 50px 250px, #eee, transparent),
+                    radial-gradient(2px 2px at 90px 300px, #fff, transparent),
+                    radial-gradient(3px 3px at 130px 400px, #eee, transparent);
+  background-size: 300px 300px;
+  opacity: 0.5;
+  animation: stars 100s linear infinite;
+}
+
+
 #banner {
   width: 60%;
   max-width: 500px;
@@ -535,7 +599,7 @@ footer a:hover {
   display: flex;
   gap: 15px;
   margin-top: 30px;
-  justify-content: flex-start;
+  justify-content: space-between;
 }
 
 /* Notification with improved animation */
@@ -807,8 +871,8 @@ a.endpoint-link:hover {
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   background: none;
   border: none;
   cursor: pointer;
@@ -819,6 +883,48 @@ a.endpoint-link:hover {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 20px;
+}
+
+/* maybe */
+.logout-icon:hover {
+  transform: scale(1.1);
+}
+
+.save-button,
+.back-button {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    background-color: #232338;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    box-shadow: 0 0 10px rgba(0, 255, 171, 0.4), 0 0 20px rgba(0, 255, 171, 0.1);
+    font-family: 'Press Start 2P', cursive;
+    line-height: 1.5;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+    will-change: transform, box-shadow;
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Save icon (using a floppy disk icon) */
+.save-button {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2300FFAB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z'/%3E%3Cpolyline points='17 21 17 13 7 13 7 21'/%3E%3Cpolyline points='7 3 7 8 15 8'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Back icon (using the arrow icon you provided) */
+.back-button {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2300FFAB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='19' y1='12' x2='5' y2='12'%3E%3C/line%3E%3Cpolyline points='12 19 5 12 12 5'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .logout-icon::before {
