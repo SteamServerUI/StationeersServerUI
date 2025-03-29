@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupTabs();
     fetchDetectionEvents();
     fetchBackups();
-    setDefaultConsoleMessage(); // Handles SSE setup completely
+    handleConsole();
     // Create planets with size, orbit radius, speed, and color
     const planetContainer = document.getElementById('planet-container');
     createPlanet(planetContainer, 80, 650, 25, 'rgba(200, 100, 50, 0.7)');
@@ -207,7 +207,7 @@ function restoreBackup(index) {
 }
 
 // Console initialization with SSE stream setup
-function setDefaultConsoleMessage() {
+function handleConsole() {
     const consoleElement = document.getElementById('console');
     consoleElement.innerHTML = '';
     const bootTitle = "Interface initializing...";
@@ -302,7 +302,7 @@ function setDefaultConsoleMessage() {
                     if (!outputEventSource) {
                         // Re-run setup to reconnect
                         consoleElement.innerHTML = ''; // Clear console for fresh start
-                        setDefaultConsoleMessage();
+                        handleConsole();
                     }
                 }, 2000);
             }
