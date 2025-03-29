@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Planet creation functions (previous implementation remains the same)
+    // Planet creation functions
     const planetContainer = document.getElementById('planet-container');
     
     function createPlanet(size, x, y, speed, color) {
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createPlanet(50, 70, 60, 45, 'rgba(100, 200, 150, 0.5)');
     createPlanet(30, 50, 80, 20, 'rgba(50, 150, 250, 0.6)');
 
-    // Notification function (previous implementation remains the same)
+    // Notification function
     function showNotification(message, type = 'error') {
         const existingNotification = document.querySelector('.notification');
         if (existingNotification) {
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/auth/login', {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     'HTTP2-Settings': 'AAEAAQABAAAAAQAAAAEAAAAAAAEAxABAAQAA' // HTTP/2 SETTINGS 
                 },
