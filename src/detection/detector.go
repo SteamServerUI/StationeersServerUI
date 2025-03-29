@@ -1,3 +1,4 @@
+// detector.go
 package detection
 
 import (

@@ -1,4 +1,4 @@
-// Update src/detection/handlers.go
+// handlers.go
 package detection
 
 import (

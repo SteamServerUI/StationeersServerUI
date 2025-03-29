@@ -1,3 +1,4 @@
+// types.go
 package detection
 
 // EventType defines the type of event detected
