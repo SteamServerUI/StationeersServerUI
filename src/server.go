@@ -8,7 +8,6 @@ import (
 	"StationeersServerUI/src/install"
 	"StationeersServerUI/src/security"
 	"StationeersServerUI/src/ssestream"
-	"StationeersServerUI/src/ui"
 	"fmt"
 	"net/http"
 	"net/http/pprof"
@@ -83,7 +82,7 @@ func main() {
 	protectedMux := http.NewServeMux()
 	fs := http.FileServer(http.Dir("./UIMod"))
 	protectedMux.Handle("/static/", http.StripPrefix("/static/", fs))
-	protectedMux.HandleFunc("/", ui.ServeIndex)
+	protectedMux.HandleFunc("/", core.ServeIndex)
 	protectedMux.HandleFunc("/start", core.StartServer)
 	protectedMux.HandleFunc("/stop", core.StopServer)
 	protectedMux.HandleFunc("/console", core.GetLogOutput)
