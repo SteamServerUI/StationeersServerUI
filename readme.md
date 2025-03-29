@@ -20,17 +20,17 @@
 
 </div>
 <div align="center">
-  <img src="media/UI-1.png" alt="UI Overview" width="100%">
+  <img src="media/events-preview.png" alt="UI Overview" width="100%">
   <em>Manage your Stationeers server with style - Retro interface, modern capabilities.</em>
 </div>
 
 ## TL;DR - Get Started Fast
 
-1. 📦 Download latest release from [here](https://github.com/JacksonTheMaster/StationeersServerUI/releases)
-2. 📁 Place in empty folder and run it
-3. 🌐 Access UI at `https://localhost:8443`
+1. 📦 Download latest executable from [here](https://github.com/JacksonTheMaster/StationeersServerUI/releases)
+2. 📁 Place in empty folder and run it on Linux or Windows (chmod +x on linux)
+3. 🌐 Access UI at `https://<<server-ip>>:8443`
 4. 📚 See [First-Time Setup](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup) in the wiki
-5. 🔒 If you set this up too quickly and are in search of the Default Username/Password, see [Security Considerations](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/Security-Considerations) for more details.
+5. 🔒 If you set this up too quickly and are in search of the Default Username/Password, see [Security Considerations](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/Security-Considerations) for more details!
 
 ## What is This?
 
@@ -67,7 +67,7 @@ _Click the images to expand them._
 
 | UI Overview | Configuration | Backup Management |
 |:-----------:|:-------------:|:-----------------:|
-| ![UI Overview](media/UI-1.png) | ![Configuration](media/UI-2.png) | ![Backup Management](media/UI-3.png) |
+| ![UI Overview](media/UI-4.png) | ![Configuration](media/UI-2.png) | ![Backup Management](media/UI-3.png) |
 
 ## Discord Preview
 
