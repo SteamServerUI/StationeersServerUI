@@ -77,7 +77,7 @@ func main() {
 		http.ServeFile(w, r, "./UIMod/login/login.css")
 	})
 	mux.HandleFunc("/auth/login", tlsconfig.LoginHandler) // Token issuer
-	mux.HandleFunc("/logout", tlsconfig.LogoutHandler)
+	mux.HandleFunc("/auth/logout", tlsconfig.LogoutHandler)
 
 	// Protected routes (wrapped with middleware)
 	protectedMux := http.NewServeMux()
