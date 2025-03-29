@@ -13,6 +13,10 @@ const (
 	EventPlayerDisconnect EventType = "PLAYER_DISCONNECT"
 	EventWorldSaved       EventType = "WORLD_SAVED"
 	EventException        EventType = "EXCEPTION"
+	EventSettingsChanged  EventType = "SETTINGS_CHANGED"
+	EventServerHosted     EventType = "SERVER_HOSTED"
+	EventNewGameStarted   EventType = "NEW_GAME_STARTED"
+	EventServerRunning    EventType = "SERVER_RUNNING"
 )
 
 // Event represents a detected event from server logs

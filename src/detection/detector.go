@@ -2,6 +2,7 @@
 package detection
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -36,6 +37,7 @@ func (d *Detector) ProcessLogMessage(logMessage string) {
 		"Ready":                               EventServerReady,
 		"Unloading 1 Unused Serialized files": EventServerStarting,
 		"EXCEPTION":                           EventServerError,
+		"Initialize engine version":           EventServerRunning,
 	}
 
 	for keyword, eventType := range keywordPatterns {
@@ -151,6 +153,45 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 					ExceptionInfo: &ExceptionInfo{
 						StackTrace: logMessage, // Using the full log message as the stack trace
 					},
+				})
+			},
+		},
+		{
+			pattern: regexp.MustCompile(`\d{2}:\d{2}:\d{2}: Changed setting '(.+?)' from '(.+?)' to '(.+?)'`),
+			handler: func(matches []string, logMessage string) {
+				settingName := matches[1]
+				oldValue := matches[2]
+				newValue := matches[3]
+				d.triggerEvent(Event{
+					Type:      EventSettingsChanged,
+					Message:   fmt.Sprintf("Setting %s changed from %s to %s", settingName, oldValue, newValue),
+					RawLog:    logMessage,
+					Timestamp: time.Now().Format(time.RFC3339),
+				})
+			},
+		},
+		{
+			pattern: regexp.MustCompile(`RocketNet Succesfully hosted with Address: (.+?) Port: (\d+)`),
+			handler: func(matches []string, logMessage string) {
+				address := matches[1]
+				port := matches[2]
+				d.triggerEvent(Event{
+					Type:      EventServerHosted,
+					Message:   fmt.Sprintf("RocketNet Server hosted at %s:%s", address, port),
+					RawLog:    logMessage,
+					Timestamp: time.Now().Format(time.RFC3339),
+				})
+			},
+		},
+		{
+			pattern: regexp.MustCompile(`Started new game in world (.+)`),
+			handler: func(matches []string, logMessage string) {
+				worldName := matches[1]
+				d.triggerEvent(Event{
+					Type:      EventNewGameStarted,
+					Message:   fmt.Sprintf("New game started in world %s", worldName),
+					RawLog:    logMessage,
+					Timestamp: time.Now().Format(time.RFC3339),
 				})
 			},
 		},

@@ -37,6 +37,26 @@ func DefaultHandlers() map[EventType]Handler {
 			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorRed, colorReset)
 			ssestream.BroadcastDetectionEvent(message)
 		},
+		EventSettingsChanged: func(event Event) {
+			message := fmt.Sprintf("🎮 [Gameserver] ⚙️ %s", event.Message)
+			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorYellow, colorReset)
+			ssestream.BroadcastDetectionEvent(message)
+		},
+		EventServerHosted: func(event Event) {
+			message := fmt.Sprintf("🎮 [Gameserver] 🌐 %s", event.Message)
+			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorGreen, colorReset)
+			ssestream.BroadcastDetectionEvent(message)
+		},
+		EventNewGameStarted: func(event Event) {
+			message := fmt.Sprintf("🎮 [Gameserver] 🎲 %s", event.Message)
+			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorGreen, colorReset)
+			ssestream.BroadcastDetectionEvent(message)
+		},
+		EventServerRunning: func(event Event) {
+			message := "🎮 [Gameserver] ✅ Server process has started!"
+			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorGreen, colorReset)
+			ssestream.BroadcastDetectionEvent(message)
+		},
 		EventPlayerConnecting: func(event Event) {
 			if event.PlayerInfo != nil {
 				message := fmt.Sprintf("🎮 [Gameserver] 🔄 Player %s (SteamID: %s) is connecting...",
