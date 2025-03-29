@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,13 +8,14 @@
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
+
 <body>
     <header>
         <img src="/static/stationeers.png" alt="Stationeers Banner" id="banner">
     </header>
     <main>
         <h1>Server Configuration</h1>
-        
+
         <div class="tab-container">
             <div class="tab-buttons">
                 <button class="tab-button active" onclick="showTab('server-config-tab')">Server Config</button>
@@ -23,10 +25,8 @@
 
         <div id="server-config-tab" class="tab-content active">
             <div class="grid-container">
-                <form action="/saveconfigasjson" method="post">
-                    <h2>Server Settings</h2>
+                <form id="server-config-form" action="/saveconfigasjson" method="post">
                     <div class="channel-grid">
-                        
                         <div class="form-group">
                             <label for="ServerName">Server Name:</label>
                             <input type="text" id="ServerName" name="ServerName" value="{{ServerName}}">
@@ -35,43 +35,51 @@
 
                         <div class="form-group">
                             <label for="SaveInfo">Save File Name:</label>
-                            <input type="text" id="SaveInfo" name="SaveInfo" value="{{SaveInfo}}"pattern="^[A-Z].*(\s[A-Z].*)?$" required>
-                            <div class="input-info">Name of save folder. Must be capitalized. Optially, provide the World type to generate. (MyMoonMap Moon)</div>
+                            <input type="text" id="SaveInfo" name="SaveInfo" value="{{SaveInfo}}"
+                                pattern="^[A-Z].*(\s[A-Z].*)?$" required>
+                            <div class="input-info">Name of save folder. Must be capitalized. Optially, provide the
+                                World type to generate. (MyMoonMap Moon)</div>
                         </div>
 
                         <div class="form-group">
                             <label for="ServerMaxPlayers">Max Players:</label>
-                            <input type="text" id="ServerMaxPlayers" name="ServerMaxPlayers" value="{{ServerMaxPlayers}}" pattern="^\S*$" required>
+                            <input type="text" id="ServerMaxPlayers" name="ServerMaxPlayers"
+                                value="{{ServerMaxPlayers}}" pattern="^\S*$" required>
                             <div class="input-info">Maximum number of players allowed</div>
                         </div>
-                        
+
                         <div class="form-group password-field">
                             <label for="ServerPassword">Server Password:</label>
-                            <input type="text" id="ServerPassword" name="ServerPassword" value="{{ServerPassword}}" pattern="^\S*$">
+                            <input type="text" id="ServerPassword" name="ServerPassword" value="{{ServerPassword}}"
+                                pattern="^\S*$">
                             <div class="input-info">Leave empty for no password</div>
                         </div>
 
                         <div class="form-group">
                             <label for="ServerAuthSecret">Server Auth Secret:</label>
-                            <input type="text" id="ServerAuthSecret" name="ServerAuthSecret" value="{{ServerAuthSecret}}">
+                            <input type="text" id="ServerAuthSecret" name="ServerAuthSecret"
+                                value="{{ServerAuthSecret}}">
                             <div class="input-info">Authentication secret for the server (optional)</div>
                         </div>
-                        
+
                         <div class="form-group password-field">
                             <label for="AdminPassword">Admin Password:</label>
-                            <input type="text" id="AdminPassword" name="AdminPassword" value="{{AdminPassword}}" pattern="^\S*$">
+                            <input type="text" id="AdminPassword" name="AdminPassword" value="{{AdminPassword}}"
+                                pattern="^\S*$">
                             <div class="input-info">Currently not functioning in recent Stationeers builds</div>
                         </div>
 
                         <div class="form-group">
                             <label for="GamePort">Game Port:</label>
-                            <input type="text" id="GamePort" name="GamePort" value="{{GamePort}}" pattern="^\S*$" required>
+                            <input type="text" id="GamePort" name="GamePort" value="{{GamePort}}" pattern="^\S*$"
+                                required>
                             <div class="input-info">Default: 27500</div>
                         </div>
 
                         <div class="form-group">
                             <label for="UpdatePort">Update Port:</label>
-                            <input type="text" id="UpdatePort" name="UpdatePort" value="{{UpdatePort}}" pattern="^\S*$" required>
+                            <input type="text" id="UpdatePort" name="UpdatePort" value="{{UpdatePort}}" pattern="^\S*$"
+                                required>
                             <div class="input-info">Default: 27015</div>
                         </div>
 
@@ -95,7 +103,8 @@
 
                         <div class="form-group">
                             <label for="SaveInterval">Save Interval:</label>
-                            <input type="text" id="SaveInterval" name="SaveInterval" value="{{SaveInterval}}" pattern="^\S*$" required>
+                            <input type="text" id="SaveInterval" name="SaveInterval" value="{{SaveInterval}}"
+                                pattern="^\S*$" required>
                             <div class="input-info">Time in seconds between saves</div>
                         </div>
 
@@ -110,7 +119,8 @@
 
                         <div class="form-group">
                             <label for="LocalIpAddress">Local IP Address:</label>
-                            <input type="text" id="LocalIpAddress" name="LocalIpAddress" value="{{LocalIpAddress}}" pattern="^\S*$" required>
+                            <input type="text" id="LocalIpAddress" name="LocalIpAddress" value="{{LocalIpAddress}}"
+                                pattern="^\S*$" required>
                             <div class="input-info">IP address to bind to</div>
                         </div>
 
@@ -131,7 +141,7 @@
                             </select>
                             <div class="input-info">Set to TRUE to list server publicly</div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="UseSteamP2P">Use Steam P2P:</label>
                             <select id="UseSteamP2P" name="UseSteamP2P" required>
@@ -145,26 +155,28 @@
                             <label for="ExePath">Server Executable Path:</label>
                             <input type="text" id="ExePath" name="ExePath" value="{{ExePath}}" readonly>
                             <div class="input-info">System path to server executable</div>
-                            <div class="input-info">Not editable from the UI for security reasons, but you can edit it manually in the config.json file.</div>
+                            <div class="input-info">Not editable from the UI for security reasons, but you can edit it
+                                manually in the config.json file.</div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="AdditionalParams">Additional Parameters:</label>
-                            <input type="text" id="AdditionalParams" name="AdditionalParams" value="{{AdditionalParams}}">
+                            <input type="text" id="AdditionalParams" name="AdditionalParams"
+                                value="{{AdditionalParams}}">
                             <div class="input-info">Format: CustomParam1 Value1 CustomParam2 Value2</div>
                         </div>
                     </div>
-
                     <div class="form-actions">
-                        <input type="submit" value="Save Server Configuration">
-                        <button type="button" onclick="window.location.href = '/'">Back to Dashboard</button>
+                        <button type="button" class="back-button" onclick="window.location.href = '/'"></button>
+                        <button type="button" class="save-button"
+                            onclick="document.getElementById('server-config-form').submit()"></button>
                     </div>
                 </form>
             </div>
         </div>
 
         <div id="discord-config-tab" class="tab-content">
-            <form action="/saveconfigasjson" method="post">
+            <form id="discord-config-form" action="/saveconfigasjson" method="post">
                 <div class="integration-status">
                     <label for="isDiscordEnabled" class="highlight-label">Discord Integration:</label>
                     <select id="isDiscordEnabled" name="isDiscordEnabled">
@@ -173,7 +185,7 @@
                     </select>
                     <div class="feature-badge">RECOMMENDED</div>
                 </div>
-                
+                </br>
                 <div class="discord-container">
                     <div class="form-group">
                         <label for="discordToken">Discord Bot Token:</label>
@@ -185,13 +197,15 @@
                     <div class="channel-grid">
                         <div class="form-group">
                             <label for="controlChannelID">Admin Command Channel:</label>
-                            <input type="text" id="controlChannelID" name="controlChannelID" value="{{controlChannelID}}">
+                            <input type="text" id="controlChannelID" name="controlChannelID"
+                                value="{{controlChannelID}}">
                             <div class="input-info">Channel for admin commands</div>
                         </div>
 
                         <div class="form-group">
                             <label for="controlPanelChannelID">Control Panel Channel:</label>
-                            <input type="text" id="controlPanelChannelID" name="controlPanelChannelID" value="{{controlPanelChannelID}}">
+                            <input type="text" id="controlPanelChannelID" name="controlPanelChannelID"
+                                value="{{controlPanelChannelID}}">
                             <div class="input-info">Channel for control panel</div>
                         </div>
 
@@ -203,7 +217,8 @@
 
                         <div class="form-group">
                             <label for="connectionListChannelID">Connection List Channel:</label>
-                            <input type="text" id="connectionListChannelID" name="connectionListChannelID" value="{{connectionListChannelID}}">
+                            <input type="text" id="connectionListChannelID" name="connectionListChannelID"
+                                value="{{connectionListChannelID}}">
                             <div class="input-info">Player connection tracking</div>
                         </div>
 
@@ -228,32 +243,36 @@
 
                     <div class="form-group">
                         <label for="blackListFilePath">Banned Players List Path:</label>
-                        <input type="text" id="blackListFilePath" name="blackListFilePath" value="{{blackListFilePath}}">
+                        <input type="text" id="blackListFilePath" name="blackListFilePath"
+                            value="{{blackListFilePath}}">
                         <div class="input-info">File path to banned players list</div>
                     </div>
-                </div>
-
-                <div class="form-actions">
-                    <input type="submit" value="Save Discord Settings">
-                    <button type="button" onclick="window.location.href = '/'">Back to Dashboard</button>
+                    <div class="form-actions">
+                        <button type="button" class="back-button" onclick="window.location.href = '/'"></button>
+                        <button type="button" class="save-button"
+                            onclick="document.getElementById('discord-config-form').submit()"></button>
+                    </div>
                 </div>
             </form>
+            <div class="info-panel">
+                <h3>Discord Integration Benefits</h3>
+                <ul class="feature-list">
+                    <li>Monitor server status in real-time</li>
+                    <li>Manage restarts and restores remotely</li>
+                    <li>Track player connections</li>
+                    <li>Community management options</li>
+                    <li>Real-time error notifications</li>
+                </ul>
+                <p>For setup instructions, visit the <a href="https://github.com/jacksonthemaster/StationeersServerUI"
+                        target="_blank">GitHub repository</a></p>
+            </div>
         </div>
 
-        <div class="info-panel">
-            <h3>Discord Integration Benefits</h3>
-            <ul class="feature-list">
-                <li>Monitor server status in real-time</li>
-                <li>Manage restarts and restores remotely</li>
-                <li>Track player connections</li>
-                <li>Community management options</li>
-                <li>Real-time error notifications</li>
-            </ul>
-            <p>For setup instructions, visit the <a href="https://github.com/jacksonthemaster/StationeersServerUI" target="_blank">GitHub repository</a></p>
-        </div>
+
     </main>
     <footer>
-        <div class="copyright">Copyright © 2025 J. Langisch. Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.</div>
+        <div class="copyright">Copyright © 2025 J. Langisch. Licensed under <a
+                href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.</div>
     </footer>
 
     <script>
@@ -271,21 +290,22 @@
             document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
         }
 
-        document.getElementById('isDiscordEnabled').addEventListener('change', function() {
+        document.getElementById('isDiscordEnabled').addEventListener('change', function () {
             if (this.value === 'false') {
                 alert('You are missing out on nice features! Please consider using the Discord Integration. Info can be found on the GitHub page.');
-                
+
                 // Toggle visual indication
                 document.querySelector('.discord-container').classList.add('disabled');
             } else {
                 document.querySelector('.discord-container').classList.remove('disabled');
             }
         });
-        
+
         // Set initial state
         if (document.getElementById('isDiscordEnabled').value === 'false') {
             document.querySelector('.discord-container').classList.add('disabled');
         }
     </script>
 </body>
+
 </html>
