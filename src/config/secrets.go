@@ -33,6 +33,9 @@ func getConfigValueInt(jsonValue int, envKey string, defaultValue int) int {
 
 // generateJwtKey creates a random 32-byte key for JWT if not provided
 func generateJwtKey() string {
+	if JwtKey != "" {
+		return JwtKey
+	}
 	key := make([]byte, 32)
 	_, err := rand.Read(key)
 	if err != nil {
