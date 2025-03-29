@@ -1,5 +1,5 @@
 // auth.go
-package tlsconfig
+package security
 
 //repurposed from a Jacksonthemaster private repo
 

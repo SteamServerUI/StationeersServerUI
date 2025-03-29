@@ -6,8 +6,8 @@ import (
 	"StationeersServerUI/src/detection"
 	"StationeersServerUI/src/discord"
 	"StationeersServerUI/src/install"
+	"StationeersServerUI/src/security"
 	"StationeersServerUI/src/ssestream"
-	"StationeersServerUI/src/tlsconfig"
 	"StationeersServerUI/src/ui"
 	"fmt"
 	"net/http"
@@ -76,8 +76,8 @@ func main() {
 		w.Header().Set("Content-Type", "text/css")
 		http.ServeFile(w, r, "./UIMod/login/login.css")
 	})
-	mux.HandleFunc("/auth/login", tlsconfig.LoginHandler) // Token issuer
-	mux.HandleFunc("/auth/logout", tlsconfig.LogoutHandler)
+	mux.HandleFunc("/auth/login", security.LoginHandler) // Token issuer
+	mux.HandleFunc("/auth/logout", security.LogoutHandler)
 
 	// Protected routes (wrapped with middleware)
 	protectedMux := http.NewServeMux()
@@ -94,7 +94,7 @@ func main() {
 	protectedMux.HandleFunc("/events", ssestream.StartDetectionEventStream())
 
 	// Apply middleware only to protected routes
-	mux.Handle("/", tlsconfig.AuthMiddleware(protectedMux)) // Wrap protected routes under root
+	mux.Handle("/", security.AuthMiddleware(protectedMux)) // Wrap protected routes under root
 
 	// Start HTTP server
 	wg.Add(1)
@@ -108,7 +108,7 @@ func main() {
 			fmt.Println(string(colorMagenta), "Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)", string(colorReset))
 		}
 		// Ensure TLS certs are ready
-		if err := tlsconfig.EnsureTLSCerts(); err != nil {
+		if err := security.EnsureTLSCerts(); err != nil {
 			fmt.Printf(string(colorRed)+"Error setting up TLS certificates: %v\n"+string(colorReset), err)
 			//os.Exit(1)
 		}

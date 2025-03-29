@@ -1,4 +1,4 @@
-package tlsconfig
+package security
 
 import (
 	"StationeersServerUI/src/config"
