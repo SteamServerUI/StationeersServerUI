@@ -28,11 +28,10 @@ func Install(wg *sync.WaitGroup) {
 
 	workingDir := "./UIMod/"
 	configFilePath := workingDir + "config.json"
-	fmt.Println(string(colorYellow), "Loading configuration from", configFilePath, string(colorReset))
-	_, err := config.LoadConfig(configFilePath)
+	fmt.Println(string(colorYellow), "Loading Config for Setup from", configFilePath, string(colorReset))
+	_, err := config.LoadConfig()
 	if err != nil {
 		fmt.Println("⚠️  Config file not found or invalid, downloading stable branch...")
-		config.GameBranch = "public" // Set default value
 	}
 
 	// Step 1: Check and download the UIMod folder contents
@@ -78,6 +77,10 @@ func CheckAndDownloadUIMod() {
 			"script.js":          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/script.js", config.Branch),
 			"stationeers.png":    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/stationeers.png", config.Branch),
 			"style.css":          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/style.css", config.Branch),
+			"login.css":          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.css", config.Branch),
+			"login.js":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.js", config.Branch),
+			"login.html":         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.html", config.Branch),
+			"favicon.ico":        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/favicon.ico", config.Branch),
 		}
 		// Set the first time setup flag to true
 		config.IsFirstTimeSetup = true
@@ -104,15 +107,15 @@ func checkAndCreateBlacklist() {
 
 	// Check if Blacklist.txt exists
 	if _, err := os.Stat(blacklistFile); os.IsNotExist(err) {
-		// Create an empty Blacklist.txt file
-		file, err := os.Create(blacklistFile)
+		// Create Blacklist.txt file with a dummy steamID64 so the gameserver doesn't fail reading this file, as it would not be the expected format if it was empty.
+		perm := os.FileMode(0644) // Still works cross-platform
+		err := os.WriteFile(blacklistFile, []byte("76561197960265728"), perm)
 		if err != nil {
 			fmt.Printf("❌ Error creating Blacklist.txt: %v\n", err)
 			return
 		}
-		defer file.Close()
 
-		fmt.Println("✅ Created Blacklist.txt.")
+		fmt.Println("✅ Created Blacklist.txt with dummy steamID64.")
 	} else {
 		fmt.Println("♻️ Blacklist.txt already exists. Skipping creation.")
 	}

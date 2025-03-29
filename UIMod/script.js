@@ -1,232 +1,212 @@
 // /static/script.js
 document.addEventListener('DOMContentLoaded', () => {
-    typeText(document.querySelector('h1'), 30);  // Type out the h1 on load
-    setDefaultConsoleMessage();
+    typeText(document.querySelector('h1'), 30);
     setupTabs();
-    fetchOutput();
     fetchDetectionEvents();
     fetchBackups();
+    setDefaultConsoleMessage(); // Handles SSE setup completely
 });
 
 // Global references to EventSource objects
 let outputEventSource = null;
 let detectionEventSource = null;
 
+// Utility function for typing text
+function typeText(element, speed) {
+    const fullText = element.textContent;
+    element.textContent = '';
+    let i = 0;
+    
+    const typeChar = () => {
+        if (i < fullText.length) {
+            element.textContent += fullText.charAt(i++);
+            setTimeout(typeChar, speed);
+        }
+    };
+    typeChar();
+}
+
+// Utility function for typing text with a callback
+function typeTextWithCallback(element, text, speed, callback) {
+    element.textContent = '';
+    let i = 0;
+    
+    const typeChar = () => {
+        if (i < text.length) {
+            element.textContent += text.charAt(i++);
+            setTimeout(typeChar, speed);
+        } else if (callback) {
+            setTimeout(callback, 50);
+        }
+    };
+    typeChar();
+}
+
+// Tab management
 function setupTabs() {
     showTab('console-tab');
 }
 
 function showTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
+    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+    const tab = document.getElementById(tabId);
+    tab.classList.add('active');
     document.querySelector(`.tab-button[onclick*="showTab('${tabId}')"]`).classList.add('active');
 }
 
-function typeText(element, speed) {
-    const fullText = element.textContent; // Use textContent instead of innerHTML
-    console.log(fullText);
-    element.textContent = ''; // Clear using textContent
-    let i = 0;
-    
-    function typeChar() {
-        if (i < fullText.length) {
-            element.textContent += fullText.charAt(i);
-            i++;
-            setTimeout(typeChar, speed);
-            console.log(i, element.textContent)
-
-
-        }
-    }
-    typeChar();
-}
-
-function typeTextWithCallback(element, text, speed, callback) {
-    element.innerHTML = ''; // Clear the element
-    let i = 0;
-    
-    function typeChar() {
-        if (i < text.length) {
-            element.innerHTML += text.charAt(i);
-            i++;
-            setTimeout(typeChar, speed);
-        } else if (callback) {
-            setTimeout(callback, 50);
-        }
-    }
-    typeChar();
-}
-
+// Server control functions
 function startServer() {
-    fetch('/start')
-        .then(response => response.text())
-        .then(document.getElementById('status').hidden = false)
-        .then(data => typeTextWithCallback(document.getElementById('status'), data, 20))
-        .then(setTimeout(() => document.getElementById('status').hidden = true, 10000));
+    toggleServer('/start');
 }
 
 function stopServer() {
-    fetch('/stop')
+    toggleServer('/stop');
+}
+
+function toggleServer(endpoint) {
+    const status = document.getElementById('status');
+    fetch(endpoint)
         .then(response => response.text())
-        .then(document.getElementById('status').hidden = false)
-        .then(data => typeTextWithCallback(document.getElementById('status'), data, 20))
-        .then(setTimeout(() => document.getElementById('status').hidden = true, 10000));
+        .then(data => {
+            status.hidden = false;
+            typeTextWithCallback(status, data, 20, () => {
+                setTimeout(() => status.hidden = true, 10000);
+            });
+        })
+        .catch(err => console.error(`Failed to ${endpoint}:`, err));
 }
 
-// Close SSE connections before navigation
+// EventSource management
 function closeEventSources() {
-    if (outputEventSource) {
-        outputEventSource.close();
-        outputEventSource = null;
-        console.log("Output stream closed");
-    }
-    if (detectionEventSource) {
-        detectionEventSource.close();
-        detectionEventSource = null;
-        console.log("Detection events stream closed");
-    }
+    [outputEventSource, detectionEventSource].forEach(source => {
+        if (source) {
+            source.close();
+            console.log(`${source === outputEventSource ? 'Output' : 'Detection events'} stream closed`);
+        }
+    });
+    outputEventSource = detectionEventSource = null;
 }
 
-// Wrap navigation in a function to handle cleanup
 function navigateTo(url) {
     closeEventSources();
     window.location.href = url;
 }
 
-function fetchOutput() {
-    outputEventSource = new EventSource('/output');
-    outputEventSource.onmessage = function(event) {
-        const consoleElement = document.getElementById('console');
-        const message = document.createElement('div');
-        message.textContent = event.data;
-        consoleElement.appendChild(message);
-        consoleElement.scrollTop = consoleElement.scrollHeight;
-    };
-    outputEventSource.onerror = function() {
-        console.error("Output stream disconnected");
-        outputEventSource.close();
-        outputEventSource = null;
-        // Only reconnect if still on the main page
-        if (window.location.pathname === '/') {
-            setTimeout(fetchOutput, 2000);
-        }
-    };
-}
-
+// Detection events streaming
 function fetchDetectionEvents() {
     const maxMessages = 500;
-    function connect() {
+    const detectionConsole = document.getElementById('detection-console');
+    
+    const connect = () => {
         detectionEventSource = new EventSource('/events');
-        detectionEventSource.onmessage = function(event) {
-            const detectionConsole = document.getElementById('detection-console');
+        
+        detectionEventSource.onmessage = event => {
             const message = document.createElement('div');
-            message.className = getEventClassName(event.data);
-            message.classList.add('detection-event');
+            message.className = `detection-event ${getEventClassName(event.data)}`;
             
             const timestamp = document.createElement('span');
             timestamp.className = 'event-timestamp';
-            timestamp.textContent = new Date().toLocaleTimeString() + ': ';
+            timestamp.textContent = `${new Date().toLocaleTimeString()}: `;
             
             const content = document.createElement('span');
             content.textContent = event.data;
             
-            message.appendChild(timestamp);
-            message.appendChild(content);
+            message.append(timestamp, content);
             detectionConsole.appendChild(message);
             
-            while (detectionConsole.children.length > maxMessages) {
-                detectionConsole.removeChild(detectionConsole.firstChild);
+            while (detectionConsole.childElementCount > maxMessages) {
+                detectionConsole.firstChild.remove();
             }
             detectionConsole.scrollTop = detectionConsole.scrollHeight;
             
-            if (!document.getElementById('detection-tab').classList.contains('active')) {
+            const detectionTab = document.getElementById('detection-tab');
+            if (!detectionTab.classList.contains('active')) {
                 const tabButton = document.querySelector('.tab-button[onclick*="detection-tab"]');
                 tabButton.classList.add('notification');
                 setTimeout(() => tabButton.classList.remove('notification'), 3000);
             }
         };
-        detectionEventSource.onopen = function() {
-            console.log("Detection events stream connected");
-        };
-        detectionEventSource.onerror = function() {
+        
+        detectionEventSource.onopen = () => console.log("Detection events stream connected");
+        
+        detectionEventSource.onerror = () => {
             console.error("Detection events stream disconnected");
             detectionEventSource.close();
             detectionEventSource = null;
-            // Only reconnect if still on the main page
             if (window.location.pathname === '/') {
                 setTimeout(connect, 2000);
             }
         };
-    }
+    };
     connect();
 }
 
 function getEventClassName(eventText) {
-    if (eventText.includes('Server is ready')) return 'event-server-ready';
-    if (eventText.includes('Server is starting')) return 'event-server-starting';
-    if (eventText.includes('Server error')) return 'event-server-error';
-    if (eventText.includes('Player') && eventText.includes('connecting')) return 'event-player-connecting';
-    if (eventText.includes('Player') && eventText.includes('ready')) return 'event-player-ready';
-    if (eventText.includes('Player') && eventText.includes('disconnected')) return 'event-player-disconnect';
-    if (eventText.includes('World Saved')) return 'event-world-saved';
-    if (eventText.includes('Exception')) return 'event-exception';
-    return '';
+    const checks = [
+        ['Server is ready', 'event-server-ready'],
+        ['Server is starting', 'event-server-starting'],
+        ['Server error', 'event-server-error'],
+        ['Player', 'connecting', 'event-player-connecting'],
+        ['Player', 'ready', 'event-player-ready'],
+        ['Player', 'disconnected', 'event-player-disconnect'],
+        ['World Saved', 'event-world-saved'],
+        ['Exception', 'event-exception']
+    ];
+    
+    return checks.find(([text, , condition]) => 
+        condition ? eventText.includes(text) && eventText.includes(condition) : eventText.includes(text)
+    )?.[1] || '';
 }
 
+// Backup management
 function fetchBackups() {
     fetch('/backups')
         .then(response => response.text())
         .then(data => {
             const backupList = document.getElementById('backupList');
             backupList.innerHTML = '';
+            
             if (data.trim() === "No valid backup files found.") {
-                backupList.innerHTML = data;
+                backupList.textContent = data;
             } else {
-                const backups = data.split('\n');
-                backups.forEach(backup => {
-                    if (backup.trim()) {
-                        const listItem = document.createElement('li');
-                        listItem.classList.add('backup-item');
-                        listItem.innerHTML = backup + ' <button onclick="restoreBackup(' + extractIndex(backup) + ')">Restore</button>';
-                        backupList.appendChild(listItem);
-                    }
+                data.split('\n').filter(Boolean).forEach(backup => {
+                    const li = document.createElement('li');
+                    li.className = 'backup-item';
+                    li.innerHTML = `${backup} <button onclick="restoreBackup(${extractIndex(backup)})">Restore</button>`;
+                    backupList.appendChild(li);
                 });
             }
-        });
+        })
+        .catch(err => console.error("Failed to fetch backups:", err));
 }
 
 function extractIndex(backupText) {
-    const match = backupText.match(/Index: (\d+)/);
-    return match ? match[1] : null;
+    return backupText.match(/Index: (\d+)/)?.[1] || null;
 }
 
 function restoreBackup(index) {
+    const status = document.getElementById('status');
     fetch(`/restore?index=${index}`)
         .then(response => response.text())
-        .then(document.getElementById('status').hidden = false)
-        .then(data => typeTextWithCallback(document.getElementById('status'), data, 20))
-        .then(setTimeout(() => document.getElementById('status').hidden = true, 30000));
+        .then(data => {
+            status.hidden = false;
+            typeTextWithCallback(status, data, 20, () => {
+                setTimeout(() => status.hidden = true, 30000);
+            });
+        })
+        .catch(err => console.error(`Failed to restore backup ${index}:`, err));
 }
 
+// Console initialization with SSE stream setup
 function setDefaultConsoleMessage() {
     const consoleElement = document.getElementById('console');
     consoleElement.innerHTML = '';
-    const bootTitle = "Interface booting...";
-    const bootProgressStages = [
-        "[                       ] 0%",
-        "[####                   ] 20%",
-        "[#####                  ] 30%",
-        "[########               ] 40%",
-        "[#############          ] 60%",
-        "[##################     ] 80%",
-        "[#######################] 100%"
-    ];
-    const bootCompleteMessage = "Interface boot complete.";
+    const bootTitle = "Interface initializing...";
+    const bootCompleteMessage = "Interface ready.🎮 Happy gaming! 🎮";
     const bugChance = Math.random();
     const bugMessage = "ERROR: Nuclear parts in airflow detected! Initiating repair sequence...";
     
-    // Random fun messages that appear during boot
     const funMessages = [
         "Calibrating quantum flux capacitors...",
         "Initializing player happiness modules...",
@@ -266,114 +246,77 @@ function setDefaultConsoleMessage() {
         "Assembling solar tracker... now it’s tracking the admin instead.",
         "Balancing gas mixtures... kaboom imminent, run you fool!"
     ];
-    
-    // Add note that user can interact while booting
-    const noteElement = document.createElement('div');
-    noteElement.innerHTML = "<em>Note: You can use all controls while boot animation plays</em>";
-    noteElement.style.opacity = "0.7";
-    noteElement.style.fontSize = "0.9em";
-    noteElement.style.marginTop = "5px";
-    consoleElement.appendChild(noteElement);
-    
-    typeTextWithCallback(consoleElement, bootTitle, 50, () => {
-        setTimeout(() => {
-            let index = 0;
-            const progressElement = document.createElement('div');
-            consoleElement.appendChild(progressElement);
-            
-            // Add a random fun message
-            const funMessageElement = document.createElement('div');
-            funMessageElement.style.color = '#0af';
-            funMessageElement.style.fontStyle = 'italic';
-            funMessageElement.textContent = funMessages[Math.floor(Math.random() * funMessages.length)];
-            consoleElement.appendChild(funMessageElement);
-            
-            const bootInterval = setInterval(() => {
-                if (index < bootProgressStages.length) {
-                    progressElement.textContent = bootProgressStages[index];
-                    
-                    // Add another random message halfway through
-                    if (index === 2) {
-                        const anotherFunMessage = document.createElement('div');
-                        anotherFunMessage.style.color = '#0af';
-                        anotherFunMessage.style.fontStyle = 'italic';
-                        
-                        // Get a different message than the first one
-                        let messageIndex;
-                        do {
-                            messageIndex = Math.floor(Math.random() * funMessages.length);
-                        } while (funMessageElement.textContent === funMessages[messageIndex]);
-                        
-                        anotherFunMessage.textContent = funMessages[messageIndex];
-                        consoleElement.appendChild(anotherFunMessage);
-                    }
-                    
-                    consoleElement.scrollTop = consoleElement.scrollHeight;
-                    index++;
-                } else {
-                    clearInterval(bootInterval);
-                    completeBootAnimation();
-                }
-            }, 100); // Faster interval
-        }, 50); // Shorter initial delay
-    });
-    
-    function completeBootAnimation() {
-        if (bugChance < 0.05) {
-            const bugElement = document.createElement('div');
-            bugElement.style.color = 'red';
-            bugElement.textContent = bugMessage;
-            consoleElement.appendChild(bugElement);
-            consoleElement.scrollTop = consoleElement.scrollHeight;
-            setTimeout(() => {
-                const repairMessage = "Repair complete. Continuing boot sequence...";
-                const repairElement = document.createElement('div');
-                repairElement.style.color = 'green';
-                repairElement.textContent = repairMessage;
-                consoleElement.appendChild(repairElement);
-                consoleElement.scrollTop = consoleElement.scrollHeight;
-            }, 2000);
-        }
-        // Clear any running intervals
-        for (let i = 1; i < 9999; i++) window.clearInterval(i);
-        
-        // Complete the animation
-        const completionElement = document.createElement('div');
-        completionElement.innerHTML = bootCompleteMessage.replace(/\n/g, '<br>');
-        completionElement.style.color = '#0f0';
-        completionElement.style.fontWeight = 'bold';
-        consoleElement.appendChild(completionElement);
-        
-        // Add a small celebratory message
-        const celebrationElement = document.createElement('div');
-        celebrationElement.innerHTML = "🎮 Happy gaming! 🎮";
-        celebrationElement.style.textAlign = 'center';
-        celebrationElement.style.marginTop = '10px';
-        consoleElement.appendChild(celebrationElement);
-        
+
+    const addMessage = (text, color, style = 'normal') => {
+        const div = document.createElement('div');
+        div.textContent = text;
+        div.style.color = color;
+        div.style.fontStyle = style;
+        consoleElement.appendChild(div);
         consoleElement.scrollTop = consoleElement.scrollHeight;
+    };
+
+    // Start with initializing message
+    typeTextWithCallback(consoleElement, bootTitle, 30, () => {
+        // Show two funny messages while connecting
+        const messageIndex1 = Math.floor(Math.random() * funMessages.length);
+        addMessage(funMessages[messageIndex1], '#0af', 'italic');
+
+        let messageIndex2;
+        do {
+            messageIndex2 = Math.floor(Math.random() * funMessages.length);
+        } while (messageIndex2 === messageIndex1);
+        addMessage(funMessages[messageIndex2], '#0af', 'italic');
+
+        // Set up the persistent console stream
+        outputEventSource = new EventSource('/console');
+        
+        // Persistent message handler
+        outputEventSource.onmessage = event => {
+            const message = document.createElement('div');
+            message.textContent = event.data;
+            consoleElement.appendChild(message);
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+        };
+
+        outputEventSource.onopen = () => {
+            console.log("Console stream connected");
+            finishInitialization();
+        };
+
+        outputEventSource.onerror = () => {
+            console.error("Console stream disconnected");
+            outputEventSource.close();
+            outputEventSource = null;
+            addMessage("Warning: Console stream unavailable. Retrying...", '#ff0');
+            if (window.location.pathname === '/') {
+                setTimeout(() => {
+                    if (!outputEventSource) {
+                        // Re-run setup to reconnect
+                        consoleElement.innerHTML = ''; // Clear console for fresh start
+                        setDefaultConsoleMessage();
+                    }
+                }, 2000);
+            }
+        };
+    });
+
+    function finishInitialization() {
+        if (bugChance < 0.05) {
+            addMessage(bugMessage, 'red');
+            setTimeout(() => {
+                addMessage("Repair complete. Continuing initialization...", 'green');
+                completeBoot();
+            }, 1000);
+        } else {
+            completeBoot();
+        }
+    }
+
+    function completeBoot() {
+        setTimeout(() => {
+            addMessage(bootCompleteMessage, '#0f0');
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+        }, 500);
     }
 }
-
-const additionalCSS = `
-.skip-animation-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(0, 170, 255, 0.3);
-    border: 1px solid rgba(0, 170, 255, 0.6);
-    color: rgba(0, 255, 255, 0.8);
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.skip-animation-btn:hover {
-    background: rgba(0, 170, 255, 0.5);
-    color: rgba(0, 255, 255, 1);
-}
-`;
-
-const extraStyle = document.createElement('style');
-extraStyle.textContent = additionalCSS;
-document.head.appendChild(extraStyle);
