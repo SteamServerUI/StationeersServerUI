@@ -60,9 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Preload next page
     async function preloadNextPage() {
         try {
-            const response = await fetch('/', { 
+            const response = await fetch('/static/favicon.ico', { // as there is no actual endpoint to check login status right now and this is a dummy preloader (secretly), we just stick with this for now.
                 method: 'HEAD',
-                cache: 'no-store'
+                cache: 'force-cache'
             });
             return response.ok;
         } catch (error) {
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         showNotification('Preload failed. Redirecting anyway.', 'error');
                         window.location.href = '/';
                     }
-                }, 2000);
+                }, 600); // fake loading time to avoid flickering, will be replaced with a proper preloader later
             } else {
                 const errorData = await response.json();
                 const errorMessage = errorData.message || 'Login failed! Please check your credentials.';
