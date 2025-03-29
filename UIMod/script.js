@@ -5,30 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchDetectionEvents();
     fetchBackups();
     setDefaultConsoleMessage(); // Handles SSE setup completely
-
-
-    // add planets
+    // Create planets with size, orbit radius, speed, and color
     const planetContainer = document.getElementById('planet-container');
-    
-    function createPlanet(size, x, y, speed, color) {
-        const planet = document.createElement('div');
-        planet.classList.add('planet');
-        planet.style.width = `${size}px`;
-        planet.style.height = `${size}px`;
-        planet.style.position = 'absolute';
-        planet.style.left = `${x}%`;
-        planet.style.top = `${y}%`;
-        planet.style.backgroundColor = color;
-        planet.style.borderRadius = '50%';
-        planet.style.animation = `orbit ${speed}s linear infinite`;
-        planet.style.boxShadow = `0 0 20px ${color}`;
-        
-        planetContainer.appendChild(planet);
-    }
-
-    createPlanet(80, 10, 20, 30, 'rgba(200, 100, 50, 0.7)');
-    createPlanet(50, 70, 60, 45, 'rgba(100, 200, 150, 0.5)');
-    createPlanet(30, 50, 80, 20, 'rgba(50, 150, 250, 0.6)');
+    createPlanet(planetContainer, 80, 850, 30, 'rgba(200, 100, 50, 0.7)');
+    createPlanet(planetContainer, 50, 1000, 45, 'rgba(100, 200, 150, 0.5)');
+    createPlanet(planetContainer, 30, 1150, 20, 'rgba(50, 150, 250, 0.6)');
 });
 
 // Global references to EventSource objects
@@ -343,4 +324,32 @@ function setDefaultConsoleMessage() {
             consoleElement.scrollTop = consoleElement.scrollHeight;
         }, 500);
     }
+}
+
+function createPlanet(container, size, orbitRadius, speed, color) {
+    // Create orbit container
+    const orbit = document.createElement('div');
+    orbit.classList.add('orbit');
+    orbit.style.width = `${orbitRadius * 2}px`;
+    orbit.style.height = `${orbitRadius * 2}px`;
+    orbit.style.position = 'absolute';
+    orbit.style.left = '50%';
+    orbit.style.top = '50%';
+    orbit.style.transform = 'translate(-50%, -50%)';
+    orbit.style.animation = `orbit ${speed}s linear infinite`;
+
+    // Create planet
+    const planet = document.createElement('div');
+    planet.classList.add('planet');
+    planet.style.width = `${size}px`;
+    planet.style.height = `${size}px`;
+    planet.style.position = 'absolute';
+    planet.style.left = '0%';
+    planet.style.top = '50%';
+    planet.style.backgroundColor = color;
+    planet.style.borderRadius = '50%';
+    planet.style.boxShadow = `0 0 20px ${color}`;
+    
+    orbit.appendChild(planet);
+    container.appendChild(orbit); // Use the passed container parameter
 }
