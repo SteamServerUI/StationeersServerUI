@@ -90,6 +90,48 @@ header::before {
 }
 
 
+/* Star field animation */
+@keyframes stars {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-2000px); }
+}
+
+#space-background::before,
+#space-background::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#space-background::before {
+  background-image: radial-gradient(1px 1px at 20px 30px, #eee, transparent),
+                    radial-gradient(1px 1px at 50px 50px, #fff, transparent),
+                    radial-gradient(1px 1px at 90px 80px, #fff, transparent),
+                    radial-gradient(1px 1px at 130px 120px, #eee, transparent);
+  background-size: 200px 200px;
+  opacity: 0.3;
+  animation: stars 50s linear infinite;
+}
+
+#space-background::after {
+  background-image: radial-gradient(2px 2px at 20px 200px, #fff, transparent),
+                    radial-gradient(3px 3px at 50px 250px, #eee, transparent),
+                    radial-gradient(2px 2px at 90px 300px, #fff, transparent),
+                    radial-gradient(3px 3px at 130px 400px, #eee, transparent);
+  background-size: 300px 300px;
+  opacity: 0.5;
+  animation: stars 100s linear infinite;
+}
+
+
 #banner {
   width: 60%;
   max-width: 500px;
