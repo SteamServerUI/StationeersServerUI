@@ -77,7 +77,7 @@ RUN echo "Verifying the copied and renamed StationeersServerControl executable:"
 COPY --from=bootstrapper /app/UIMod /app/UIMod
 
 # Expose the ports
-EXPOSE 8080 27016
+EXPOSE 8443 27016
 
 # Set the entrypoint to the application
 ENTRYPOINT ["/app/StationeersServerControl"]

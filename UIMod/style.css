@@ -7,7 +7,7 @@
   --primary-dim: rgba(0, 255, 171, 0.7);
   --primary-glow: rgba(0, 255, 171, 0.3);
   --bg-dark: #0a0a14;
-  --bg-panel: #1b1b2f;
+  --bg-panel: #1b1b2f8f;
   --accent: #0084ff;
   --text-bright: #e0ffe9;
   --text-header: #ffffff;
@@ -68,7 +68,6 @@ header::before {
   z-index: 0;
 }
 
-
 #space-background {
   position: fixed;
   top: 0;
@@ -77,6 +76,7 @@ header::before {
   height: 100%;
   background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
   z-index: -2;
+  will-change: transform; /* Improves animation performance */
 }
 
 #planet-container {
@@ -87,13 +87,30 @@ header::before {
   height: 100%;
   pointer-events: none;
   z-index: -1;
+  overflow: hidden; /* Prevents any overflow issues */
 }
 
+@keyframes orbit {
+  from {
+      transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+      transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
 
-/* Star field animation */
 @keyframes stars {
   0% { transform: translateY(0px); }
   100% { transform: translateY(-2000px); }
+}
+
+.orbit {
+  transform-origin: center center;
+}
+
+.planet {
+  transform: translateY(-50%);
+  will-change: transform; /* Improves animation performance */
 }
 
 #space-background::before,
@@ -109,6 +126,7 @@ header::before {
   display: block;
   z-index: 1;
   pointer-events: none;
+  will-change: transform; /* Improves animation performance */
 }
 
 #space-background::before {

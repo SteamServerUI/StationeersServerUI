@@ -53,7 +53,7 @@ body {
 .login-container {
     width: 100%;
     max-width: 500px;
-    background-color: rgba(27, 27, 47, 0.8);
+    background-color: #1b1b2f8f;
     border-radius: 15px;
     padding: 40px;
     box-shadow: 0 20px 60px rgba(0, 255, 171, 0.3);
@@ -183,14 +183,53 @@ footer {
     color: var(--primary-dim);
 }
 
-/* Star field animation */
-@keyframes stars {
+#space-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    z-index: -2;
+    will-change: transform; /* Improves animation performance */
+  }
+  
+  #planet-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden; /* Prevents any overflow issues */
+  }
+  
+  @keyframes orbit {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+  
+  @keyframes stars {
     0% { transform: translateY(0px); }
     100% { transform: translateY(-2000px); }
-}
-
-#space-background::before,
-#space-background::after {
+  }
+  
+  .orbit {
+    transform-origin: center center;
+  }
+  
+  .planet {
+    transform: translateY(-50%);
+    will-change: transform; /* Improves animation performance */
+  }
+  
+  #space-background::before,
+  #space-background::after {
     content: "";
     position: absolute;
     top: 0;
@@ -202,9 +241,10 @@ footer {
     display: block;
     z-index: 1;
     pointer-events: none;
-}
-
-#space-background::before {
+    will-change: transform; /* Improves animation performance */
+  }
+  
+  #space-background::before {
     background-image: radial-gradient(1px 1px at 20px 30px, #eee, transparent),
                       radial-gradient(1px 1px at 50px 50px, #fff, transparent),
                       radial-gradient(1px 1px at 90px 80px, #fff, transparent),
@@ -212,9 +252,9 @@ footer {
     background-size: 200px 200px;
     opacity: 0.3;
     animation: stars 50s linear infinite;
-}
-
-#space-background::after {
+  }
+  
+  #space-background::after {
     background-image: radial-gradient(2px 2px at 20px 200px, #fff, transparent),
                       radial-gradient(3px 3px at 50px 250px, #eee, transparent),
                       radial-gradient(2px 2px at 90px 300px, #fff, transparent),
@@ -222,7 +262,7 @@ footer {
     background-size: 300px 300px;
     opacity: 0.5;
     animation: stars 100s linear infinite;
-}
+  }
 
 
 /* Notification Styles */

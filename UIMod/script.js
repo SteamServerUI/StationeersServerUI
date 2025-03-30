@@ -4,31 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
     setupTabs();
     fetchDetectionEvents();
     fetchBackups();
-    setDefaultConsoleMessage(); // Handles SSE setup completely
-
-
-    // add planets
+    handleConsole();
+    // Create planets with size, orbit radius, speed, and color
     const planetContainer = document.getElementById('planet-container');
-    
-    function createPlanet(size, x, y, speed, color) {
-        const planet = document.createElement('div');
-        planet.classList.add('planet');
-        planet.style.width = `${size}px`;
-        planet.style.height = `${size}px`;
-        planet.style.position = 'absolute';
-        planet.style.left = `${x}%`;
-        planet.style.top = `${y}%`;
-        planet.style.backgroundColor = color;
-        planet.style.borderRadius = '50%';
-        planet.style.animation = `orbit ${speed}s linear infinite`;
-        planet.style.boxShadow = `0 0 20px ${color}`;
-        
-        planetContainer.appendChild(planet);
-    }
+    createPlanet(planetContainer, 80, 650, 34, 'rgba(200, 100, 50, 0.7)');
+    createPlanet(planetContainer, 50, 1000, 46, 'rgba(100, 200, 150, 0.5)');
+    createPlanet(planetContainer, 30, 1250, 63, 'rgba(50, 150, 250, 0.6)');
+    createPlanet(planetContainer, 70, 400, 28, 'rgba(200, 150, 200, 0.7)'); 
 
-    createPlanet(80, 10, 20, 30, 'rgba(200, 100, 50, 0.7)');
-    createPlanet(50, 70, 60, 45, 'rgba(100, 200, 150, 0.5)');
-    createPlanet(30, 50, 80, 20, 'rgba(50, 150, 250, 0.6)');
+
 });
 
 // Global references to EventSource objects
@@ -223,7 +207,7 @@ function restoreBackup(index) {
 }
 
 // Console initialization with SSE stream setup
-function setDefaultConsoleMessage() {
+function handleConsole() {
     const consoleElement = document.getElementById('console');
     consoleElement.innerHTML = '';
     const bootTitle = "Interface initializing...";
@@ -318,7 +302,7 @@ function setDefaultConsoleMessage() {
                     if (!outputEventSource) {
                         // Re-run setup to reconnect
                         consoleElement.innerHTML = ''; // Clear console for fresh start
-                        setDefaultConsoleMessage();
+                        handleConsole();
                     }
                 }, 2000);
             }
@@ -343,4 +327,33 @@ function setDefaultConsoleMessage() {
             consoleElement.scrollTop = consoleElement.scrollHeight;
         }, 500);
     }
+}
+
+function createPlanet(container, size, orbitRadius, speed, color) {
+    const orbit = document.createElement('div');
+    orbit.classList.add('orbit');
+    orbit.style.width = `${orbitRadius * 2}px`;
+    orbit.style.height = `${orbitRadius * 2}px`;
+    orbit.style.position = 'absolute';
+    orbit.style.left = '50%';
+    orbit.style.top = '50%';
+    orbit.style.transform = 'translate(-50%, -50%)';
+    
+    // Add random delay to start animation at different points
+    const randomDelay = -(Math.random() * speed); // Negative delay to offset start
+    orbit.style.animation = `orbit ${speed}s linear infinite ${randomDelay}s`;
+
+    const planet = document.createElement('div');
+    planet.classList.add('planet');
+    planet.style.width = `${size}px`;
+    planet.style.height = `${size}px`;
+    planet.style.position = 'absolute';
+    planet.style.left = '0%';
+    planet.style.top = '50%';
+    planet.style.backgroundColor = color;
+    planet.style.borderRadius = '50%';
+    planet.style.boxShadow = `0 0 20px ${color}`;
+    
+    orbit.appendChild(planet);
+    container.appendChild(orbit);
 }
