@@ -18,9 +18,20 @@
 |:-------------:|:-----------------:|:---------------:|:----------------:|:----------------:|:--------------:|
 | Just run and go | JWT auth, TLS | Gameserver updates at startup | One-click management | Automated system | Remote control |
 
+<div align="center">
+
+### 🌟 Live UI Preview 🌟
+
+Explore your fututre Stationeers Server UI in action—no setup required! (Demo, no actual Backend connected)
+
+[![Live Preview - Stationeers UI](https://img.shields.io/badge/Live%20Preview-Stationeers%20UI-blueviolet?style=for-the-badge&logo=github)](https://jacksonthemaster.github.io/StationeersServerUI/)
+
+</div>
+
 </div>
 <div align="center">
-  <img src="media/events-preview.png" alt="UI Overview" width="100%">
+  
+  [![UI Overview](media/events-preview.png)](https://jacksonthemaster.github.io/StationeersServerUI/)
   <em>Manage your Stationeers server with style - Retro interface, modern capabilities.</em>
 </div>
 
