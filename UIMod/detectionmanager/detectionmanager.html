@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Custom Detection Manager</title>
     <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="/static/detectionmanager/detections.css">
+    <link rel="stylesheet" href="/static/detectionmanager/detectionmanager.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
 <body>
@@ -15,7 +15,6 @@
     </header>
     <main>
         <h1>Custom Detection Manager</h1>
-
         <div class="tab-container">
             <div class="tab-buttons">
                 <button class="tab-button active" data-tab="detection-list-tab">Detection List</button>
@@ -66,9 +65,13 @@
                     <input type="hidden" id="eventType" name="eventType" value="CUSTOM_DETECTION">
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="add-button">Add Detection</button>
+                    <button type="button" class="save-button add-button"></button>
                 </div>
             </form>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="back-button" onclick="window.location.href = '/config'"></button>
         </div>
 
         <div class="notification" id="notification"></div>
@@ -77,7 +80,7 @@
         <div class="copyright">Copyright © 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a> Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.</div>
     </footer>
 
-    <script src="/static/detectionmanager/detection-manager.js"></script>
+    <script src="/static/detectionmanager/detectionmanager.js"></script>
 </body>
 
 </html>
