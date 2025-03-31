@@ -22,6 +22,13 @@ const (
 // DefaultHandlers returns a map of event types to default handlers
 func DefaultHandlers() map[EventType]Handler {
 	return map[EventType]Handler{
+
+		EventCustomDetection: func(event Event) {
+			message := fmt.Sprintf("🎮 [Custom Detection] %s", event.Message)
+			fmt.Printf("%s%s%s%s\n", colorMagenta, message, colorReset, colorReset)
+			ssestream.BroadcastDetectionEvent(message)
+		},
+
 		EventServerReady: func(event Event) {
 			message := "🎮 [Gameserver] 🔔 Server is ready to connect!"
 			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorGreen, colorReset)
