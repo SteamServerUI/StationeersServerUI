@@ -19,6 +19,7 @@
             <div class="tab-buttons">
                 <button class="tab-button active" data-tab="detection-list-tab">Detection List</button>
                 <button class="tab-button" data-tab="add-detection-tab">Add Detection</button>
+                <button class="tab-button" data-tab="help-tab">About Custom Detections</Data></button>
             </div>
         </div>
 
@@ -70,6 +71,31 @@
             </form>
         </div>
 
+        <div id="help-tab" class="tab-content">
+            <h3>Custom Detection Patterns</h3>
+            <p>Custom detections allow you to create custom patterns for detection. These patterns can be used to detect specific events in the server logs.</p>
+            <p>To create a custom detection, you can use the "Add Detection Tab" to define a regex pattern or alternatively a simple string match ("keyword") and a message that will be logged in the Events and if enabled in Discord when the pattern is detected. It is not possible to create patterns that have faulty regex.</p>
+            <div class="info-panel">
+                <h3>Creating Effective Detections</h3>
+                <div class="usage-examples">
+                    <div class="example">
+                        <h4>Keyword Detection:</h4>
+                        </p> For example, to detect the "Unsupported shader" message that unity logs when a shader is not supported, you would use the following pattern:</p>
+                        <code>Pattern: "Unsupported shader"</code>
+                        <code>Message: "Unity detected an unsupported shader. This may cause unexpected behavior."</code>
+                    </div>
+                    <div class="example">
+                        <h4>Regex Detection:</h4>
+                        </p> For example, to detect (fictional) the "Player (.+) has reached level (\d+)" message that is logged when a player reaches a certain level in an elevator, you would use the following pattern:</p>
+                        <code>Pattern: "Player (.+) has reached level (\d+)"</code>
+                        <code>Message: "Player {1} has reached level {2}"</code>
+                        </p> The AI of your choise will be more than happy to help you create effective detections. You can also use the <a href="https://regex101.com/" target="_blank">Regex101</a> tool to test your patterns.</p>
+                    </div>
+                </div>
+                <p>For more information, visit the <a href="https://github.com/jacksonthemaster/StationeersServerUI/wiki/Custom-Detection-Patterns" target="_blank">GitHub Wiki</a></p>
+            </div>
+        </div>
+        
         <div class="form-actions">
             <button type="button" class="back-button" onclick="window.location.href = '/config'"></button>
         </div>
