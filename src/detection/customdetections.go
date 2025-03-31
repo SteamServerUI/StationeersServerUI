@@ -11,6 +11,15 @@ import (
 	"sync"
 )
 
+/*
+Custom Detection Pattern Management System
+- Manages lifecycle of user-defined detection patterns (regex/keywords)
+- Provides CRUD operations for patterns persisted in JSON format
+- Handles pattern validation, storage synchronization, and detector updates
+- Thread-safe implementation with RW mutex for concurrent access
+- Integrated with main Detector for real-time pattern application
+*/
+
 const CustomDetectionsFilePath = "./UIMod/customdetections.json"
 
 // CustomDetectionsManager handles loading, saving and managing custom detections

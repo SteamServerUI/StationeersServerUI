@@ -1,7 +1,15 @@
-// api.go
+// interface.go
 package detection
 
-// This file contains the public API for the detection package
+/*
+Code-Public Detection API interface
+- Exposes simplified interface for external references if needed
+- Provides access to core detector functionality:
+  - System initialization
+  - New Handler registration - just in case we need to add more handlers later
+  - Log processing
+  - State queries (connected players currently)
+*/
 
 // Start initializes the detector and returns it
 func Start() *Detector {

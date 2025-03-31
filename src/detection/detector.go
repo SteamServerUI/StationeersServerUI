@@ -8,7 +8,18 @@ import (
 	"time"
 )
 
-// Detector is responsible for analyzing log messages and detecting events
+/*
+Core Event Detection Engine
+- Analyzes the log stream using regex and keyword matching
+- Maintains states
+- Triggers events with contextual payloads
+- Supports extensible pattern matching with custom user defined rules
+- Implements multi-stage processing pipeline:
+  1. Basic keyword checks
+  2. Complex regex pattern matching
+  3. Custom rule evaluation
+- Handles event distribution to registered handlers
+*/
 
 // NewDetector creates a new instance of Detector
 func NewDetector() *Detector {

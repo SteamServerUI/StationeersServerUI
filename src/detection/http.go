@@ -8,6 +8,12 @@ import (
 	"github.com/google/uuid"
 )
 
+/*
+HTTP API for custom detections.
+- Handles GET (list), POST (add), and DELETE (remove) requests for custom patterns.
+- Interfaces with the CustomDetectionsManager over HTTP.
+*/
+
 var customDetectionsManager *CustomDetectionsManager
 
 // InitCustomDetectionsManager initializes the custom detections manager
