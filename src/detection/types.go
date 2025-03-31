@@ -1,6 +1,8 @@
 // types.go
 package detection
 
+import "regexp"
+
 // EventType defines the type of event detected
 type EventType string
 
@@ -17,7 +19,22 @@ const (
 	EventServerHosted     EventType = "SERVER_HOSTED"
 	EventNewGameStarted   EventType = "NEW_GAME_STARTED"
 	EventServerRunning    EventType = "SERVER_RUNNING"
+	EventCustomDetection  EventType = "CUSTOM_DETECTION"
 )
+
+type Detector struct {
+	handlers         map[EventType][]Handler
+	connectedPlayers map[string]string // SteamID -> Username
+	customPatterns   []CustomPattern
+}
+
+type CustomPattern struct {
+	Pattern     *regexp.Regexp
+	EventType   EventType
+	MessageTmpl string
+	IsRegex     bool
+	Keyword     string
+}
 
 // Event represents a detected event from server logs
 type Event struct {

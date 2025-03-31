@@ -9,10 +9,6 @@ import (
 )
 
 // Detector is responsible for analyzing log messages and detecting events
-type Detector struct {
-	handlers         map[EventType][]Handler
-	connectedPlayers map[string]string // SteamID -> Username
-}
 
 // NewDetector creates a new instance of Detector
 func NewDetector() *Detector {
@@ -51,8 +47,40 @@ func (d *Detector) ProcessLogMessage(logMessage string) {
 		}
 	}
 
-	// Process regex patterns for more complex detections
-	d.processRegexPatterns(logMessage)
+	// Process CUSTOM PATTERNS (both regex and keywords)
+	for _, cp := range d.customPatterns {
+		if cp.IsRegex {
+			matches := cp.Pattern.FindStringSubmatch(logMessage)
+			if matches != nil {
+				// Format message with {0}, {1} placeholders
+				message := formatMessage(cp.MessageTmpl, matches)
+				d.triggerEvent(Event{
+					Type:      cp.EventType,
+					Message:   message,
+					RawLog:    logMessage,
+					Timestamp: time.Now().Format(time.RFC3339),
+				})
+			}
+		} else {
+			// Keyword matching
+			if strings.Contains(logMessage, cp.Keyword) {
+				d.triggerEvent(Event{
+					Type:      cp.EventType,
+					Message:   cp.MessageTmpl,
+					RawLog:    logMessage,
+					Timestamp: time.Now().Format(time.RFC3339),
+				})
+			}
+		}
+	}
+}
+
+func formatMessage(template string, matches []string) string {
+	for i, match := range matches {
+		placeholder := fmt.Sprintf("{%d}", i)
+		template = strings.ReplaceAll(template, placeholder, match)
+	}
+	return template
 }
 
 // processRegexPatterns handles more complex pattern matching with regex
