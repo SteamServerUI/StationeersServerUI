@@ -77,13 +77,12 @@ func HandleCustomDetection(w http.ResponseWriter, r *http.Request) {
 func HandleDeleteCustomDetection(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// Extract ID from path
-	pathParts := strings.Split(r.URL.Path, "/")
-	if len(pathParts) < 4 {
-		http.Error(w, "Invalid path", http.StatusBadRequest)
+	// Extract ID from query parameter
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		http.Error(w, "Missing detection ID in query parameter (?id=)", http.StatusBadRequest)
 		return
 	}
-	id := pathParts[3]
 
 	if id == "" {
 		http.Error(w, "Missing detection ID", http.StatusBadRequest)
