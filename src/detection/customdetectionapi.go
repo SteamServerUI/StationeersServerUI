@@ -56,7 +56,11 @@ func HandleCustomDetection(w http.ResponseWriter, r *http.Request) {
 
 		// Add the detection
 		if err := customDetectionsManager.AddDetection(newDetection); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			if strings.Contains(err.Error(), "Invalid Detection") {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+			} else {
+				http.Error(w, "Server error: "+err.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 
@@ -81,17 +85,24 @@ func HandleDeleteCustomDetection(w http.ResponseWriter, r *http.Request) {
 	}
 	id := pathParts[3]
 
+	if id == "" {
+		http.Error(w, "Missing detection ID", http.StatusBadRequest)
+		return
+	}
+
 	switch r.Method {
 	case http.MethodDelete:
 		// Delete the detection
 		if err := customDetectionsManager.DeleteDetection(id); err != nil {
-			http.Error(w, err.Error(), http.StatusNotFound)
+			if strings.Contains(err.Error(), "detection not found") {
+				http.Error(w, err.Error(), http.StatusNotFound)
+			} else {
+				http.Error(w, "Server error: "+err.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 
-		// Return success
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{"status": "deleted", "id": id})
+		w.WriteHeader(http.StatusNoContent)
 
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
