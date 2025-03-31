@@ -85,6 +85,7 @@ func main() {
 	protectedMux.Handle("/static/", http.StripPrefix("/static/", fs))
 	protectedMux.HandleFunc("/", core.ServeIndex)
 	protectedMux.HandleFunc("/config", core.HandleConfigJSON)
+	protectedMux.HandleFunc("/detections", core.ServeDetectionManager)
 
 	// v1 API routes
 	protectedMux.HandleFunc("/start", core.StartServer)
