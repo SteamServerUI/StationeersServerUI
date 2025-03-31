@@ -112,7 +112,7 @@ func main() {
 
 	// Custom Detections
 	protectedMux.HandleFunc("/api/v2/custom-detections", detection.HandleCustomDetection)
-	protectedMux.HandleFunc("DELETE /api/v2/custom-detections/delete", detection.HandleDeleteCustomDetection)
+	protectedMux.HandleFunc("/api/v2/custom-detections/delete/", detection.HandleDeleteCustomDetection)
 
 	// Apply middleware only to protected routes
 	mux.Handle("/", security.AuthMiddleware(protectedMux)) // Wrap protected routes under root

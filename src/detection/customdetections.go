@@ -80,28 +80,6 @@ func (m *CustomDetectionsManager) LoadDetections() error {
 	return nil
 }
 
-// SaveDetections saves custom detections to file
-func (m *CustomDetectionsManager) SaveDetections() error {
-	m.mutex.RLock()
-	defer m.mutex.RUnlock()
-
-	// Create file
-	file, err := os.Create(CustomDetectionsFilePath)
-	if err != nil {
-		return fmt.Errorf("failed to create file: %w", err)
-	}
-	defer file.Close()
-
-	// Encode JSON
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(m.Detections); err != nil {
-		return fmt.Errorf("failed to encode JSON: %w", err)
-	}
-
-	return nil
-}
-
 // AddDetection adds a new custom detection
 func (m *CustomDetectionsManager) AddDetection(detection CustomDetection) error {
 	m.mutex.Lock()
@@ -121,8 +99,20 @@ func (m *CustomDetectionsManager) AddDetection(detection CustomDetection) error 
 	// Update detector
 	m.updateDetector()
 
-	// Save to file
-	return m.SaveDetections()
+	// Save to file directly
+	file, err := os.Create(CustomDetectionsFilePath)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %w", err)
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(m.Detections); err != nil {
+		return fmt.Errorf("failed to encode JSON: %w", err)
+	}
+
+	return nil
 }
 
 // DeleteDetection removes a custom detection by ID
@@ -139,8 +129,20 @@ func (m *CustomDetectionsManager) DeleteDetection(id string) error {
 			// Update detector
 			m.updateDetector()
 
-			// Save to file
-			return m.SaveDetections()
+			// Save to file directly
+			file, err := os.Create(CustomDetectionsFilePath)
+			if err != nil {
+				return fmt.Errorf("failed to create file: %w", err)
+			}
+			defer file.Close()
+
+			encoder := json.NewEncoder(file)
+			encoder.SetIndent("", "  ")
+			if err := encoder.Encode(m.Detections); err != nil {
+				return fmt.Errorf("failed to encode JSON: %w", err)
+			}
+
+			return nil
 		}
 	}
 
