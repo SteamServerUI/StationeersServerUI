@@ -13,42 +13,41 @@ import (
 )
 
 type JsonConfig struct {
-	DiscordToken            string            `json:"discordToken"`
-	ControlChannelID        string            `json:"controlChannelID"`
-	StatusChannelID         string            `json:"statusChannelID"`
-	ConnectionListChannelID string            `json:"connectionListChannelID"`
-	LogChannelID            string            `json:"logChannelID"`
-	SaveChannelID           string            `json:"saveChannelID"`
-	ControlPanelChannelID   string            `json:"controlPanelChannelID"`
-	DiscordCharBufferSize   int               `json:"DiscordCharBufferSize"`
-	BlackListFilePath       string            `json:"blackListFilePath"`
-	IsDiscordEnabled        bool              `json:"isDiscordEnabled"`
-	ErrorChannelID          string            `json:"errorChannelID"`
-	GameBranch              string            `json:"gameBranch"`
-	ServerName              string            `json:"ServerName"`
-	SaveInfo                string            `json:"SaveInfo"`
-	ServerMaxPlayers        string            `json:"ServerMaxPlayers"`
-	ServerPassword          string            `json:"ServerPassword"`
-	ServerAuthSecret        string            `json:"ServerAuthSecret"`
-	AdminPassword           string            `json:"AdminPassword"`
-	GamePort                string            `json:"GamePort"`
-	UpdatePort              string            `json:"UpdatePort"`
-	UPNPEnabled             bool              `json:"UPNPEnabled"`
-	AutoSave                bool              `json:"AutoSave"`
-	SaveInterval            string            `json:"SaveInterval"`
-	AutoPauseServer         bool              `json:"AutoPauseServer"`
-	LocalIpAddress          string            `json:"LocalIpAddress"`
-	StartLocalHost          bool              `json:"StartLocalHost"`
-	ServerVisible           bool              `json:"ServerVisible"`
-	UseSteamP2P             bool              `json:"UseSteamP2P"`
-	ExePath                 string            `json:"ExePath"`
-	AdditionalParams        string            `json:"AdditionalParams"`
-	Username                string            `json:"Username,omitempty"`
-	Password                string            `json:"Password,omitempty"`
-	JwtKey                  string            `json:"JwtKey,omitempty"`
-	AuthTokenLifetime       int               `json:"AuthTokenLifetime,omitempty"`
-	CustomDetections        []CustomDetection `json:"customDetections"`
-	Debug                   bool              `json:"Debug,omitempty"` //Optional, default false
+	DiscordToken            string `json:"discordToken"`
+	ControlChannelID        string `json:"controlChannelID"`
+	StatusChannelID         string `json:"statusChannelID"`
+	ConnectionListChannelID string `json:"connectionListChannelID"`
+	LogChannelID            string `json:"logChannelID"`
+	SaveChannelID           string `json:"saveChannelID"`
+	ControlPanelChannelID   string `json:"controlPanelChannelID"`
+	DiscordCharBufferSize   int    `json:"DiscordCharBufferSize"`
+	BlackListFilePath       string `json:"blackListFilePath"`
+	IsDiscordEnabled        bool   `json:"isDiscordEnabled"`
+	ErrorChannelID          string `json:"errorChannelID"`
+	GameBranch              string `json:"gameBranch"`
+	ServerName              string `json:"ServerName"`
+	SaveInfo                string `json:"SaveInfo"`
+	ServerMaxPlayers        string `json:"ServerMaxPlayers"`
+	ServerPassword          string `json:"ServerPassword"`
+	ServerAuthSecret        string `json:"ServerAuthSecret"`
+	AdminPassword           string `json:"AdminPassword"`
+	GamePort                string `json:"GamePort"`
+	UpdatePort              string `json:"UpdatePort"`
+	UPNPEnabled             bool   `json:"UPNPEnabled"`
+	AutoSave                bool   `json:"AutoSave"`
+	SaveInterval            string `json:"SaveInterval"`
+	AutoPauseServer         bool   `json:"AutoPauseServer"`
+	LocalIpAddress          string `json:"LocalIpAddress"`
+	StartLocalHost          bool   `json:"StartLocalHost"`
+	ServerVisible           bool   `json:"ServerVisible"`
+	UseSteamP2P             bool   `json:"UseSteamP2P"`
+	ExePath                 string `json:"ExePath"`
+	AdditionalParams        string `json:"AdditionalParams"`
+	Username                string `json:"Username,omitempty"`
+	Password                string `json:"Password,omitempty"`
+	JwtKey                  string `json:"JwtKey,omitempty"`
+	AuthTokenLifetime       int    `json:"AuthTokenLifetime,omitempty"`
+	Debug                   bool   `json:"Debug,omitempty"` //Optional, default false
 }
 
 type CustomDetection struct {
