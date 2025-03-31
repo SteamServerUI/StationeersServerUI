@@ -46,6 +46,8 @@ func (d *Detector) ProcessLogMessage(logMessage string) {
 			})
 		}
 	}
+	// Process regex patterns for more complex detections
+	d.processRegexPatterns(logMessage)
 
 	// Process CUSTOM PATTERNS (both regex and keywords)
 	for _, cp := range d.customPatterns {
@@ -248,4 +250,8 @@ func (d *Detector) GetConnectedPlayers() map[string]string {
 		players[k] = v
 	}
 	return players
+}
+
+func (d *Detector) SetCustomPatterns(patterns []CustomPattern) {
+	d.customPatterns = patterns
 }
