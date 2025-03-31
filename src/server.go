@@ -46,6 +46,7 @@ func main() {
 	fmt.Println(string(colorBlue), "Initializing detection module...", string(colorReset))
 	detector := detection.Start()
 	detection.RegisterDefaultHandlers(detector)
+	detection.InitCustomDetectionsManager(detector)
 	fmt.Println(string(colorGreen), "Detection module ready!", string(colorReset))
 
 	// If Discord is enabled, start the Discord bot
@@ -83,14 +84,35 @@ func main() {
 	fs := http.FileServer(http.Dir("./UIMod"))
 	protectedMux.Handle("/static/", http.StripPrefix("/static/", fs))
 	protectedMux.HandleFunc("/", core.ServeIndex)
+	protectedMux.HandleFunc("/config", core.HandleConfigJSON)
+
+	// v1 API routes
 	protectedMux.HandleFunc("/start", core.StartServer)
 	protectedMux.HandleFunc("/stop", core.StopServer)
-	protectedMux.HandleFunc("/console", core.GetLogOutput)
+
 	protectedMux.HandleFunc("/backups", core.ListBackups)
 	protectedMux.HandleFunc("/restore", core.RestoreBackup)
-	protectedMux.HandleFunc("/config", core.HandleConfigJSON)
 	protectedMux.HandleFunc("/saveconfigasjson", core.SaveConfigJSON)
+
+	// SSE routes
+	protectedMux.HandleFunc("/console", core.GetLogOutput)
 	protectedMux.HandleFunc("/events", ssestream.StartDetectionEventStream())
+
+	// v2 API routes that will eventually replace the API routes above, but for now we'll keep v1 (no prefix) for compatibility.
+	// Server Control
+	protectedMux.HandleFunc("/api/v2/server/start", core.StartServer)
+	protectedMux.HandleFunc("/api/v2/server/stop", core.StopServer)
+
+	// Backups
+	protectedMux.HandleFunc("/api/v2/backups", core.ListBackups)
+	protectedMux.HandleFunc("/api/v2/backups/restore", core.RestoreBackup)
+
+	// Configuration
+	protectedMux.HandleFunc("/api/v2/saveconfig", core.SaveConfigJSON)
+
+	// Custom Detections
+	protectedMux.HandleFunc("/api/v2/custom-detections", detection.HandleCustomDetection)
+	protectedMux.HandleFunc("DELETE /api/v2/custom-detections/delete", detection.HandleDeleteCustomDetection)
 
 	// Apply middleware only to protected routes
 	mux.Handle("/", security.AuthMiddleware(protectedMux)) // Wrap protected routes under root
