@@ -1,6 +1,7 @@
 package main
 
 import (
+	"StationeersServerUI/src/backups"
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/core"
 	"StationeersServerUI/src/detection"
@@ -58,8 +59,8 @@ func main() {
 	go detection.StreamLogs(detector) // Pass the detector to the log stream function
 
 	fmt.Println(string(colorBlue), "Starting API services...", string(colorReset))
-	go core.StartBackupCleanupRoutine()
-	go core.WatchBackupDir()
+	go backups.StartBackupCleanupRoutine()
+	go backups.WatchBackupDir()
 
 	// Set up handlers with auth middleware
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
@@ -91,8 +92,8 @@ func main() {
 	protectedMux.HandleFunc("/start", core.StartServer)
 	protectedMux.HandleFunc("/stop", core.StopServer)
 
-	protectedMux.HandleFunc("/backups", core.ListBackups)
-	protectedMux.HandleFunc("/restore", core.RestoreBackup)
+	protectedMux.HandleFunc("/backups", backups.ListBackups)
+	protectedMux.HandleFunc("/restore", backups.RestoreBackup)
 	protectedMux.HandleFunc("/saveconfigasjson", core.SaveConfigJSON)
 
 	// SSE routes
@@ -105,8 +106,8 @@ func main() {
 	protectedMux.HandleFunc("/api/v2/server/stop", core.StopServer)
 
 	// Backups
-	protectedMux.HandleFunc("/api/v2/backups", core.ListBackups)
-	protectedMux.HandleFunc("/api/v2/backups/restore", core.RestoreBackup)
+	protectedMux.HandleFunc("/api/v2/backups", backups.ListBackups)
+	protectedMux.HandleFunc("/api/v2/backups/restore", backups.RestoreBackup)
 
 	// Configuration
 	protectedMux.HandleFunc("/api/v2/saveconfig", core.SaveConfigJSON)
