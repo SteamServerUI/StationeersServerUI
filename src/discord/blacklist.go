@@ -10,7 +10,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// v4 OK
 func readBlacklist(blackListFilePath string) (string, error) {
 	file, err := os.Open(blackListFilePath)
 	if err != nil {
@@ -25,7 +24,6 @@ func readBlacklist(blackListFilePath string) (string, error) {
 	return string(data), nil
 }
 
-// v4 OK
 func appendToBlacklist(blacklist, steamID string) string {
 	if len(blacklist) > 0 && !strings.HasSuffix(blacklist, ",") {
 		blacklist += ","
@@ -33,7 +31,6 @@ func appendToBlacklist(blacklist, steamID string) string {
 	return blacklist + steamID
 }
 
-// v4 OK
 func removeFromBlacklist(blacklist, steamID string) string {
 	entries := strings.Split(blacklist, ",")
 	var updatedEntries []string
@@ -45,7 +42,6 @@ func removeFromBlacklist(blacklist, steamID string) string {
 	return strings.Join(updatedEntries, ",")
 }
 
-// v4 OK
 func handleBanCommand(s *discordgo.Session, channelID string, content string) {
 	// Extract the SteamID from the command
 	parts := strings.Split(content, ":")
@@ -81,7 +77,6 @@ func handleBanCommand(s *discordgo.Session, channelID string, content string) {
 	s.ChannelMessageSend(channelID, fmt.Sprintf("✅SteamID %s has been banned.", steamID))
 }
 
-// v4 OK
 func handleUnbanCommand(s *discordgo.Session, channelID string, content string) {
 	// Extract the SteamID from the command
 	parts := strings.Split(content, ":")
