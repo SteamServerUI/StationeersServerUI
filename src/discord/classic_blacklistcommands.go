@@ -6,13 +6,17 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/bwmarrin/discordgo"
 )
 
-// ISSUE: File writes are NOT thread safe, so we need to lock the file before writing to it.
+var blacklistMutex sync.Mutex
 
 func readBlacklist(blackListFilePath string) (string, error) {
+	blacklistMutex.Lock()
+	defer blacklistMutex.Unlock()
+
 	file, err := os.Open(blackListFilePath)
 	if err != nil {
 		return "", err
@@ -45,7 +49,6 @@ func removeFromBlacklist(blacklist, steamID string) string {
 }
 
 func handleBanCommand(s *discordgo.Session, channelID string, content string) {
-
 	// Extract the SteamID from the command
 	parts := strings.Split(content, ":")
 	if len(parts) != 2 {
@@ -71,6 +74,8 @@ func handleBanCommand(s *discordgo.Session, channelID string, content string) {
 	blacklist = appendToBlacklist(blacklist, steamID)
 
 	// Write the updated blacklist back to the file
+	blacklistMutex.Lock()
+	defer blacklistMutex.Unlock()
 	err = os.WriteFile(config.BlackListFilePath, []byte(blacklist), 0644)
 	if err != nil {
 		s.ChannelMessageSend(channelID, "❌Error writing to blacklist file.")
@@ -106,6 +111,8 @@ func handleUnbanCommand(s *discordgo.Session, channelID string, content string) 
 	updatedBlacklist := removeFromBlacklist(blacklist, steamID)
 
 	// Write the updated blacklist back to the file
+	blacklistMutex.Lock()
+	defer blacklistMutex.Unlock()
 	err = os.WriteFile(config.BlackListFilePath, []byte(updatedBlacklist), 0644)
 	if err != nil {
 		s.ChannelMessageSend(channelID, "❌Error writing to blacklist file.")
