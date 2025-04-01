@@ -59,6 +59,47 @@ func SendMessageToSavesChannel(message string) {
 	}
 }
 
+func SendUntrackedMessageToErrorChannel(message string) {
+	if !config.IsDiscordEnabled {
+		return
+	}
+	if config.DiscordSession == nil {
+		fmt.Println("Discord Error: Discord is enabled but session is not initialized")
+		return
+	}
+
+	maxMessageLength := 2000 // Discord's message character limit
+
+	// Function to split the message into chunks and send each one
+	for len(message) > 0 {
+		if len(message) > maxMessageLength {
+			// Find a safe split point, for example, the last newline before the limit
+			splitIndex := strings.LastIndex(message[:maxMessageLength], "\n")
+			if splitIndex == -1 {
+				splitIndex = maxMessageLength // No newline found, force split at max length
+			}
+
+			// Send the chunk
+			_, err := config.DiscordSession.ChannelMessageSend(config.ErrorChannelID, message[:splitIndex])
+			if err != nil {
+				fmt.Println("Error sending message to error channel:", err)
+				return
+			}
+
+			// Remove the sent chunk from the message
+			message = message[splitIndex:]
+		} else {
+			// Send the remaining part of the message
+			_, err := config.DiscordSession.ChannelMessageSend(config.ErrorChannelID, message)
+			if err != nil {
+				fmt.Println("Error sending message to error channel:", err)
+				return // Return whatever was sent before the error
+			}
+			break
+		}
+	}
+}
+
 // v4 OK, unsused in 4.3
 func sendMessageToErrorChannel(message string) []*discordgo.Message {
 	if !config.IsDiscordEnabled {
@@ -111,6 +152,9 @@ func sendMessageToErrorChannel(message string) []*discordgo.Message {
 }
 
 func sendControlMessage() {
+	if !config.IsDiscordEnabled {
+		return
+	}
 	messageContent := "Control Panel:\n\nReact with the following to perform actions:\n" +
 		"▶️ Start the server\n\n" +
 		"⏹️ Stop the server\n\n" +
@@ -135,7 +179,7 @@ func sendControlMessage() {
 	}
 }
 
-// CLEAR MESSAGES
+// This function is used to clear messages above the last N messages in a channel. If you call this with 5, it will clear all messages in the channel besides the most recent 5.
 func clearMessagesAboveLastN(channelID string, keep int) {
 	go func() {
 		if !config.IsDiscordEnabled {
