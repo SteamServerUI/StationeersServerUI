@@ -1,12 +1,13 @@
 package discord
 
-// v4 NOT OK but if we leave the sendCommandToAPI function to accept slash commands from the internal API too, we could just keep this file. For now, changing the need to change prefix to QuestioningToChange
+// v4 FIXED
 
 import (
 	"fmt"
 	"time"
 
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/core"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -60,17 +61,17 @@ func reactionAddHandler(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	// Optionally, add more message-specific handlers here for other features
 }
 
-// v4 NOT OK
+// v4 FIXED
 func handleExceptionReactions(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	var actionMessage string
 
 	switch r.Emoji.Name {
 	case "♻️": // Stop server action due to exception
 		actionMessage = "🛑 Server is manually restarting due to critical exception."
-		SendCommandToAPI("/stop")
+		core.InternalStopServer()
 		//sleep 5 sec
 		time.Sleep(5 * time.Second)
-		SendCommandToAPI("/start")
+		core.InternalStartServer()
 
 	default:
 		fmt.Println("Unknown reaction:", r.Emoji.Name)
@@ -95,24 +96,24 @@ func handleExceptionReactions(s *discordgo.Session, r *discordgo.MessageReaction
 	}
 }
 
-// v4 NOT OK
+// v4 FIXED
 func handleControlReactions(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	// handleControlReactions - Handles reactions for server control actions
 	var actionMessage string
 
 	switch r.Emoji.Name {
 	case "▶️": // Start action
-		SendCommandToAPI("/start")
+		core.InternalStartServer()
 		actionMessage = "🕛Server is Starting..."
 	case "⏹️": // Stop action
-		SendCommandToAPI("/stop")
+		core.InternalStopServer()
 		actionMessage = "🛑Server is Stopping..."
 	case "♻️": // Restart action
 		actionMessage = "♻️Server is restarting..."
-		SendCommandToAPI("/stop")
+		core.InternalStopServer()
 		//sleep 5 sec
 		time.Sleep(5 * time.Second)
-		SendCommandToAPI("/start")
+		core.InternalStartServer()
 
 	default:
 		fmt.Println("Unknown reaction:", r.Emoji.Name)

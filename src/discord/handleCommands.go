@@ -1,6 +1,6 @@
 package discord
 
-// v4 NOT OK
+// v4 FIXED
 
 import (
 	"fmt"
@@ -38,19 +38,16 @@ Please stop the server before using update commands.
 	}
 }
 
-// v4 NOT OK
+// v4 IGNORED
 func SendCommandToAPI(endpoint string) {
-	url := "http://localhost:8080" + endpoint
-	if _, err := http.Get(url); err != nil {
-		fmt.Printf("Failed to send %s command: %v\n", endpoint, err)
-	}
+	//unused, remove me when rebuilding backups package
 }
 
 /*
 As Backups.go will be rewritten, these actions will be rebuilt later:
 */
 
-// v4 NOT OK
+// v4 IGNORED
 func handleListCommand(s *discordgo.Session, channelID string, content string) {
 	s.ChannelMessageSend(channelID, "❌This feature has been soft-deprecated due to backend changes. It will come back soon, but for now we recommend using the WebUI.")
 	fmt.Println("!list command received, fetching backup list...")
@@ -121,7 +118,7 @@ func handleListCommand(s *discordgo.Session, channelID string, content string) {
 	}
 }
 
-// v4 NOT OK
+// v4 IGNORED
 func handleRestoreCommand(s *discordgo.Session, m *discordgo.MessageCreate, content string) {
 	s.ChannelMessageSend(m.ChannelID, "❌This feature has been soft-deprecated due to backend changes. It will come back soon, but for now we recommend using the WebUI.")
 
@@ -154,13 +151,13 @@ func handleRestoreCommand(s *discordgo.Session, m *discordgo.MessageCreate, cont
 	SendCommandToAPI("/start")
 }
 
-// v4 OK
+// v4 IGNORED
 func handleUpdateCommand(s *discordgo.Session, channelID string) {
 	// Notify that the update process is starting
 	s.ChannelMessageSend(channelID, "🙏Sorry, this feature has been deprecated. Server Updates are now handled automatically at Software Startup. If you are interested in bringing this feature back, please report it on the GitHub repository. We will be happy to implement it.")
 }
 
-// v4 OK
+// v4 IGNORED
 func handleValidateCommand(s *discordgo.Session, channelID string) {
 	// Notify that the update process is starting
 	s.ChannelMessageSend(channelID, "🙏Sorry, this feature has been deprecated. Server File Validation is now handled automatically at Software Startup. If you are interested in bringing this feature back, please report it on the GitHub repository. We will be happy to implement it.")

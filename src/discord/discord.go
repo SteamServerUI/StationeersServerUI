@@ -1,9 +1,8 @@
 package discord
 
-// v4 NOT OK but if we leave the sendCommandToAPI function to accept slash commands from the internal API too, we could just keep this file. For now, changing the need to change prefix to QuestioningToChange
-
 import (
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/core"
 	"fmt"
 	"regexp"
 	"strings"
@@ -151,7 +150,7 @@ func checkForKeywords(logMessage string) {
 	}
 }
 
-// v4 NOT OK
+// v4 OK
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID || m.ChannelID != config.ControlChannelID {
 		return
@@ -161,12 +160,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	switch {
 	case strings.HasPrefix(content, "!start"):
-		SendCommandToAPI("/start")
+		core.InternalStartServer()
 		s.ChannelMessageSend(m.ChannelID, "🕛Server is starting...")
 		sendMessageToStatusChannel("🕛Start command received from Server Controller, Server is Starting...")
 
 	case strings.HasPrefix(content, "!stop"):
-		SendCommandToAPI("/stop")
+		core.InternalStopServer()
 		s.ChannelMessageSend(m.ChannelID, "🕛Server is stopping...")
 		sendMessageToStatusChannel("🕛Stop command received from Server Controller, flatlining Server in 5 Seconds...")
 
