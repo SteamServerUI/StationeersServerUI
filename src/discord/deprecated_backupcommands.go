@@ -120,18 +120,6 @@ func handleRestoreCommand(s *discordgo.Session, m *discordgo.MessageCreate, cont
 	//SendCommandToAPI("/start")
 }
 
-// DEPRECATED
-func handleUpdateCommand(s *discordgo.Session, channelID string) {
-	// Notify that the update process is starting
-	s.ChannelMessageSend(channelID, "🙏Sorry, this feature has been deprecated. Server Updates are now handled automatically at Software Startup. If you are interested in bringing this feature back, please report it on the GitHub repository. We will be happy to implement it.")
-}
-
-// DEPRECATED
-func handleValidateCommand(s *discordgo.Session, channelID string) {
-	// Notify that the update process is starting
-	s.ChannelMessageSend(channelID, "🙏Sorry, this feature has been deprecated. Server File Validation is now handled automatically at Software Startup. If you are interested in bringing this feature back, please report it on the GitHub repository. We will be happy to implement it.")
-}
-
 // v4 SOFT-DEPRECATED
 func parseBackupList(rawData string) string {
 	lines := strings.Split(rawData, "\n")
@@ -146,4 +134,16 @@ func parseBackupList(rawData string) string {
 		}
 	}
 	return strings.Join(formattedLines, "\n")
+}
+
+// DEPRECATED
+func handleUpdateCommand(s *discordgo.Session, channelID string) {
+	// Notify that the update process is starting
+	s.ChannelMessageSend(channelID, "🙏Sorry, this feature has been deprecated. Server Updates are now handled automatically at Software Startup. If you are interested in bringing this feature back, please report it on the GitHub repository. We will be happy to implement it.")
+}
+
+// DEPRECATED
+func handleValidateCommand(s *discordgo.Session, channelID string) {
+	// Notify that the update process is starting
+	s.ChannelMessageSend(channelID, "🙏Sorry, this feature has been deprecated. Server File Validation is now handled automatically at Software Startup. If you are interested in bringing this feature back, please report it on the GitHub repository. We will be happy to implement it.")
 }
