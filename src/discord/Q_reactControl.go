@@ -1,6 +1,6 @@
 package discord
 
-// v4 NOT OK
+// v4 NOT OK but if we leave the sendCommandToAPI function to accept slash commands from the internal API too, we could just keep this file. For now, changing the need to change prefix to QuestioningToChange
 
 import (
 	"fmt"

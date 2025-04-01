@@ -1,21 +1,10 @@
 package discord
 
-// v4 NOT OK
-
 import (
 	"StationeersServerUI/src/config"
 	"fmt"
-	"net/http"
 	"strings"
 )
-
-// v4 NOT OK
-func SendCommandToAPI(endpoint string) {
-	url := "http://localhost:8080" + endpoint
-	if _, err := http.Get(url); err != nil {
-		fmt.Printf("Failed to send %s command: %v\n", endpoint, err)
-	}
-}
 
 // v4 OK
 func parseBackupList(rawData string) string {

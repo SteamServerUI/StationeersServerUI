@@ -39,7 +39,20 @@ Please stop the server before using update commands.
 }
 
 // v4 NOT OK
+func SendCommandToAPI(endpoint string) {
+	url := "http://localhost:8080" + endpoint
+	if _, err := http.Get(url); err != nil {
+		fmt.Printf("Failed to send %s command: %v\n", endpoint, err)
+	}
+}
+
+/*
+As Backups.go will be rewritten, these actions will be rebuilt later:
+*/
+
+// v4 NOT OK
 func handleListCommand(s *discordgo.Session, channelID string, content string) {
+	s.ChannelMessageSend(channelID, "❌This feature has been soft-deprecated due to backend changes. It will come back soon, but for now we recommend using the WebUI.")
 	fmt.Println("!list command received, fetching backup list...")
 
 	// Extract the "top" number or "all" option from the command
@@ -110,6 +123,8 @@ func handleListCommand(s *discordgo.Session, channelID string, content string) {
 
 // v4 NOT OK
 func handleRestoreCommand(s *discordgo.Session, m *discordgo.MessageCreate, content string) {
+	s.ChannelMessageSend(m.ChannelID, "❌This feature has been soft-deprecated due to backend changes. It will come back soon, but for now we recommend using the WebUI.")
+
 	parts := strings.Split(content, ":")
 	if len(parts) != 2 {
 		s.ChannelMessageSend(m.ChannelID, "❌Invalid restore command. Use `!restore:<index>`.")
