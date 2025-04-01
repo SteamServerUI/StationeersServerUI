@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// v4 OK
 func SendMessageToControlChannel(message string) {
 	if !config.IsDiscordEnabled {
 		return
@@ -25,6 +26,7 @@ func SendMessageToControlChannel(message string) {
 	}
 }
 
+// v4 OK
 func sendMessageToStatusChannel(message string) {
 	if !config.IsDiscordEnabled {
 		return
@@ -42,6 +44,7 @@ func sendMessageToStatusChannel(message string) {
 	}
 }
 
+// v4 OK
 func sendMessageToErrorChannel(message string) []*discordgo.Message {
 	if !config.IsDiscordEnabled {
 		return nil
@@ -92,6 +95,7 @@ func sendMessageToErrorChannel(message string) []*discordgo.Message {
 	return sentMessages
 }
 
+// v4 OK
 func SendMessageToSavesChannel(message string) {
 	if !config.IsDiscordEnabled {
 		return
@@ -110,11 +114,13 @@ func SendMessageToSavesChannel(message string) {
 }
 
 // CONNECTION LIST
+// v4 OK
 func updateConnectedPlayersMessage(channelID string) {
 	content := formatConnectedPlayers()
 	sendAndEditMessageInConnectedPlayersChannel(channelID, content)
 }
 
+// v4 OK
 func sendAndEditMessageInConnectedPlayersChannel(channelID, message string) {
 	if !config.IsDiscordEnabled {
 		return
@@ -123,8 +129,8 @@ func sendAndEditMessageInConnectedPlayersChannel(channelID, message string) {
 		fmt.Println("Discord Error: Discord is enabled but session is not initialized")
 		return
 	}
-	//only clear messages if we are on the beta branch
-	if config.Branch == "Prod" {
+	//only clear messages if we are on release branch
+	if config.Branch == "release" || config.Branch == "Release" {
 		clearMessagesAboveLastN(config.ControlChannelID, 1)
 	}
 	if config.ConnectedPlayersMessageID == "" {
@@ -148,6 +154,7 @@ func sendAndEditMessageInConnectedPlayersChannel(channelID, message string) {
 }
 
 // BOT STATUS
+// v4 OK
 func updateBotStatus(s *discordgo.Session) {
 	playerCount := len(config.ConnectedPlayers)
 	statusMessage := fmt.Sprintf("%d Employees connected", playerCount)
@@ -158,6 +165,7 @@ func updateBotStatus(s *discordgo.Session) {
 }
 
 // CLEAR MESSAGES
+// v4 OK
 func clearMessagesAboveLastN(channelID string, keep int) {
 	go func() {
 		if !config.IsDiscordEnabled {

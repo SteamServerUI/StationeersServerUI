@@ -1,11 +1,11 @@
 package discord
 
+// v4 NOT OK
+
 import (
-	"StationeersServerUI/src/config"
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -38,6 +38,7 @@ Please stop the server before using update commands.
 	}
 }
 
+// v4 NOT OK
 func handleListCommand(s *discordgo.Session, channelID string, content string) {
 	fmt.Println("!list command received, fetching backup list...")
 
@@ -107,6 +108,7 @@ func handleListCommand(s *discordgo.Session, channelID string, content string) {
 	}
 }
 
+// v4 NOT OK
 func handleRestoreCommand(s *discordgo.Session, m *discordgo.MessageCreate, content string) {
 	parts := strings.Split(content, ":")
 	if len(parts) != 2 {
@@ -137,82 +139,14 @@ func handleRestoreCommand(s *discordgo.Session, m *discordgo.MessageCreate, cont
 	SendCommandToAPI("/start")
 }
 
+// v4 OK
 func handleUpdateCommand(s *discordgo.Session, channelID string) {
 	// Notify that the update process is starting
 	s.ChannelMessageSend(channelID, "🙏Sorry, this feature has been deprecated. Server Updates are now handled automatically at Software Startup. If you are interested in bringing this feature back, please report it on the GitHub repository. We will be happy to implement it.")
 }
 
+// v4 OK
 func handleValidateCommand(s *discordgo.Session, channelID string) {
 	// Notify that the update process is starting
 	s.ChannelMessageSend(channelID, "🙏Sorry, this feature has been deprecated. Server File Validation is now handled automatically at Software Startup. If you are interested in bringing this feature back, please report it on the GitHub repository. We will be happy to implement it.")
-}
-
-func handleBanCommand(s *discordgo.Session, channelID string, content string) {
-	// Extract the SteamID from the command
-	parts := strings.Split(content, ":")
-	if len(parts) != 2 {
-		s.ChannelMessageSend(channelID, "❌Invalid ban command. Use `!ban:<SteamID>`.")
-		return
-	}
-	steamID := strings.TrimSpace(parts[1])
-
-	// Read the current blacklist
-	blacklist, err := readBlacklist(config.BlackListFilePath)
-	if err != nil {
-		s.ChannelMessageSend(channelID, "❌Error reading blacklist file.")
-		return
-	}
-
-	// Check if the SteamID is already in the blacklist
-	if strings.Contains(blacklist, steamID) {
-		s.ChannelMessageSend(channelID, fmt.Sprintf("❌SteamID %s is already banned.", steamID))
-		return
-	}
-
-	// Add the SteamID to the blacklist
-	blacklist = appendToBlacklist(blacklist, steamID)
-
-	// Write the updated blacklist back to the file
-	err = os.WriteFile(config.BlackListFilePath, []byte(blacklist), 0644)
-	if err != nil {
-		s.ChannelMessageSend(channelID, "❌Error writing to blacklist file.")
-		return
-	}
-
-	s.ChannelMessageSend(channelID, fmt.Sprintf("✅SteamID %s has been banned.", steamID))
-}
-
-func handleUnbanCommand(s *discordgo.Session, channelID string, content string) {
-	// Extract the SteamID from the command
-	parts := strings.Split(content, ":")
-	if len(parts) != 2 {
-		s.ChannelMessageSend(channelID, "❌Invalid unban command. Use `!unban:<SteamID>`.")
-		return
-	}
-	steamID := strings.TrimSpace(parts[1])
-
-	// Read the current blacklist
-	blacklist, err := readBlacklist(config.BlackListFilePath)
-	if err != nil {
-		s.ChannelMessageSend(channelID, "❌Error reading blacklist file.")
-		return
-	}
-
-	// Check if the SteamID is in the blacklist
-	if !strings.Contains(blacklist, steamID) {
-		s.ChannelMessageSend(channelID, fmt.Sprintf("✅SteamID %s is not banned.", steamID))
-		return
-	}
-
-	// Remove the SteamID from the blacklist
-	updatedBlacklist := removeFromBlacklist(blacklist, steamID)
-
-	// Write the updated blacklist back to the file
-	err = os.WriteFile(config.BlackListFilePath, []byte(updatedBlacklist), 0644)
-	if err != nil {
-		s.ChannelMessageSend(channelID, "❌Error writing to blacklist file.")
-		return
-	}
-
-	s.ChannelMessageSend(channelID, fmt.Sprintf("✅SteamID %s has been unbanned.", steamID))
 }

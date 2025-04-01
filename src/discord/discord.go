@@ -1,5 +1,7 @@
 package discord
 
+// v4 NOT OK
+
 import (
 	"StationeersServerUI/src/config"
 	"fmt"
@@ -10,6 +12,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// v4 OK
 func StartDiscordBot() {
 	var err error
 	config.DiscordSession, err = discordgo.New("Bot " + config.DiscordToken)
@@ -47,6 +50,7 @@ func StartDiscordBot() {
 	select {} // Keep the program running
 }
 
+// v4 OK
 func checkForKeywords(logMessage string) {
 	// List of keywords to detect and their corresponding messages
 	keywordActions := map[string]string{
@@ -147,6 +151,7 @@ func checkForKeywords(logMessage string) {
 	}
 }
 
+// v4 NOT OK
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID || m.ChannelID != config.ControlChannelID {
 		return

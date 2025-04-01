@@ -1,5 +1,7 @@
 package discord
 
+// v4 NOT OK
+
 import (
 	"fmt"
 	"time"
@@ -9,6 +11,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// v4 OK
 func SendControlMessage() {
 	messageContent := "Control Panel:\n\nReact with the following to perform actions:\n" +
 		"▶️ Start the server\n\n" +
@@ -35,6 +38,7 @@ func SendControlMessage() {
 }
 
 // reactionAddHandler - Handles reactions added to messages
+// v4 OK
 func reactionAddHandler(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	// Ignore bot's own reactions
 	if r.UserID == s.State.User.ID {
@@ -56,6 +60,7 @@ func reactionAddHandler(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	// Optionally, add more message-specific handlers here for other features
 }
 
+// v4 NOT OK
 func handleExceptionReactions(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	var actionMessage string
 
@@ -90,8 +95,9 @@ func handleExceptionReactions(s *discordgo.Session, r *discordgo.MessageReaction
 	}
 }
 
-// handleControlReactions - Handles reactions for server control actions
+// v4 NOT OK
 func handleControlReactions(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+	// handleControlReactions - Handles reactions for server control actions
 	var actionMessage string
 
 	switch r.Emoji.Name {

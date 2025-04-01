@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// v4 OK
 func AddToLogBuffer(logMessage string) {
 	config.LogMessageBuffer += logMessage + "\n"
 	if config.IsDiscordEnabled && config.DiscordSession != nil {
@@ -15,6 +16,7 @@ func AddToLogBuffer(logMessage string) {
 	}
 }
 
+// v4 OK
 func flushLogBufferToDiscord() {
 	if len(config.LogMessageBuffer) == 0 {
 		return // No messages to send
