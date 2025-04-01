@@ -38,11 +38,6 @@ Please stop the server before using update commands.
 	}
 }
 
-// v4 IGNORED
-func SendCommandToAPI(endpoint string) {
-	//unused, remove me when rebuilding backups package
-}
-
 /*
 As Backups.go will be rewritten, these actions will be rebuilt later:
 */
@@ -50,6 +45,7 @@ As Backups.go will be rewritten, these actions will be rebuilt later:
 // v4 IGNORED
 func handleListCommand(s *discordgo.Session, channelID string, content string) {
 	s.ChannelMessageSend(channelID, "❌This feature has been soft-deprecated due to backend changes. It will come back soon, but for now we recommend using the WebUI.")
+	return
 	fmt.Println("!list command received, fetching backup list...")
 
 	// Extract the "top" number or "all" option from the command
@@ -121,14 +117,14 @@ func handleListCommand(s *discordgo.Session, channelID string, content string) {
 // v4 IGNORED
 func handleRestoreCommand(s *discordgo.Session, m *discordgo.MessageCreate, content string) {
 	s.ChannelMessageSend(m.ChannelID, "❌This feature has been soft-deprecated due to backend changes. It will come back soon, but for now we recommend using the WebUI.")
-
+	return
 	parts := strings.Split(content, ":")
 	if len(parts) != 2 {
 		s.ChannelMessageSend(m.ChannelID, "❌Invalid restore command. Use `!restore:<index>`.")
 		sendMessageToStatusChannel("⚠️Restore command received, but not able to restore Server.")
 		return
 	}
-	SendCommandToAPI("/stop")
+	// SendCommandToAPI("/stop")
 	indexStr := parts[1]
 	index, err := strconv.Atoi(indexStr)
 	if err != nil {
@@ -148,7 +144,7 @@ func handleRestoreCommand(s *discordgo.Session, m *discordgo.MessageCreate, cont
 	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("✅Backup %d restored successfully, Starting Server...", index))
 	//sleep 5 sec to give the server time to start
 	time.Sleep(5 * time.Second)
-	SendCommandToAPI("/start")
+	//SendCommandToAPI("/start")
 }
 
 // v4 IGNORED
