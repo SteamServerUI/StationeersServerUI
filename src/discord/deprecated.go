@@ -14,6 +14,12 @@ import (
 
 /*
 Unused Discord functionality from v2 (not used in v4):
+In v2, we had a restart button on the last exception message.
+In v2, we had a connected players message in a dedicated channel that was updated every time a player connected or disconnected.
+In v2, the backup system was usable from discord. This is no longer the case. I will add it back in the future.
+In v2, update and validate commands were usable from discord. This is no longer the case.
+	I will add some kind of Update & Validate functionality back in the future wich stops the server, runs SteamCMD, and restarts the server again.
+		This would also allow to change the game branch without restarting the Software.
 */
 
 func updateConnectedPlayersMessage(channelID string) {
