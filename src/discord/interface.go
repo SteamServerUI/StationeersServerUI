@@ -49,7 +49,7 @@ func StartDiscordBot() {
 	select {} // Keep the program running
 }
 
-// BOT STATUS
+// Updates the bot status with a string message
 func UpdateBotStatusWithMessage(message string) {
 	err := config.DiscordSession.UpdateGameStatus(0, message)
 	if err != nil {

@@ -100,7 +100,7 @@ func SendUntrackedMessageToErrorChannel(message string) {
 	}
 }
 
-// v4 OK, unsused in 4.3
+// unsused in 4.3, needed for having a restart button on the last exception message like in v2. Might remve this in the future, but for now let's keep it.
 func sendMessageToErrorChannel(message string) []*discordgo.Message {
 	if !config.IsDiscordEnabled {
 		return nil
