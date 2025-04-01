@@ -26,17 +26,18 @@ const (
 	colorBold   = "\033[1m"
 )
 
-func StartServer(w http.ResponseWriter, r *http.Request) {
+func InternalStartServer() error {
 	mu.Lock()
 	defer mu.Unlock()
 
 	if cmd != nil && cmd.Process != nil {
-		fmt.Fprintf(w, "Server is already running.")
-		return
+		return fmt.Errorf("server is already running")
 	}
+
 	if config.IsDebugMode {
 		fmt.Println("Config values:", config.UPNPEnabled, config.StartLocalHost, config.ServerVisible, config.AutoSave, config.AutoPauseServer, config.UseSteamP2P)
 	}
+
 	args := buildCommandArgs()
 	cmd = exec.Command(config.ExePath, args...)
 
@@ -44,23 +45,19 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("• Executable: %s\n", colorGreen+colorBold+config.ExePath+colorReset)
 	fmt.Printf("• Parameters: %s\n", colorYellow+strings.Join(args, " ")+colorReset)
 
-	// Only set up pipes for Windows
 	if runtime.GOOS == "windows" {
 		stdout, err := cmd.StdoutPipe()
 		if err != nil {
-			fmt.Fprintf(w, "Error creating StdoutPipe: %v", err)
-			return
+			return fmt.Errorf("error creating StdoutPipe: %v", err)
 		}
 
 		stderr, err := cmd.StderrPipe()
 		if err != nil {
-			fmt.Fprintf(w, "Error creating StderrPipe: %v", err)
-			return
+			return fmt.Errorf("error creating StderrPipe: %v", err)
 		}
 
 		if err := cmd.Start(); err != nil {
-			fmt.Fprintf(w, "Error starting server: %v", err)
-			return
+			return fmt.Errorf("error starting server: %v", err)
 		}
 		if config.IsDebugMode {
 			fmt.Println("Created pipes")
@@ -78,24 +75,22 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		logDone = make(chan struct{})
 		// On Linux, start the command without pipes since we're using the log file
 		if err := cmd.Start(); err != nil {
-			fmt.Fprintf(w, "Error starting server: %v", err)
-			return
+			return fmt.Errorf("error starting server: %v", err)
 		}
 
 		// Start tailing the debug.log file on Linux
 		go tailLogFile("./debug.log")
 	}
 
-	fmt.Fprintf(w, "Server started.")
+	return nil
 }
 
-func StopServer(w http.ResponseWriter, r *http.Request) {
+func InternalStopServer() error {
 	mu.Lock()
 	defer mu.Unlock()
 
 	if cmd == nil || cmd.Process == nil {
-		fmt.Fprintf(w, "Server is not running.")
-		return
+		return fmt.Errorf("server is not running")
 	}
 
 	isWindows := runtime.GOOS == "windows"
@@ -103,16 +98,14 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	if isWindows {
 		// On Windows, just kill the process directly
 		if killErr := cmd.Process.Kill(); killErr != nil {
-			fmt.Fprintf(w, "Error stopping server: %v", killErr)
-			return
+			return fmt.Errorf("error stopping server: %v", killErr)
 		}
 	} else {
 		// On Linux/Unix, try SIGTERM first for graceful shutdown
 		if termErr := cmd.Process.Signal(syscall.SIGTERM); termErr != nil {
 			// If SIGTERM fails, fall back to Kill
 			if killErr := cmd.Process.Kill(); killErr != nil {
-				fmt.Fprintf(w, "Error stopping server: %v", killErr)
-				return
+				return fmt.Errorf("error stopping server: %v", killErr)
 			}
 		}
 		// Close the logDone channel to stop the tailing goroutine (Linux only)
@@ -125,10 +118,27 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	// Wait for the process to exit
 	if waitErr := cmd.Wait(); waitErr != nil && !strings.Contains(waitErr.Error(), "exit status") {
 		// Only report actual errors, not just non-zero exit codes
-		fmt.Fprintf(w, "Error during server shutdown: %v", waitErr)
-		return
+		return fmt.Errorf("error during server shutdown: %v", waitErr)
 	}
 
 	cmd = nil
-	fmt.Fprintf(w, "Server stopped.")
+	return nil
+}
+
+// StartServer HTTP handler
+func StartServer(w http.ResponseWriter, r *http.Request) {
+	if err := InternalStartServer(); err != nil {
+		fmt.Fprint(w, err.Error())
+		return
+	}
+	fmt.Fprint(w, "Server started.")
+}
+
+// StopServer HTTP handler
+func StopServer(w http.ResponseWriter, r *http.Request) {
+	if err := InternalStopServer(); err != nil {
+		fmt.Fprint(w, err.Error())
+		return
+	}
+	fmt.Fprint(w, "Server stopped.")
 }
