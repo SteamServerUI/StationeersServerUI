@@ -24,7 +24,7 @@ func StreamLogs(detector *Detector) {
 		fmt.Println(string(colorGreen), "Connected to internal log stream.", string(colorReset))
 		for logMessage := range logChan {
 			if config.IsDiscordEnabled {
-				discord.AddToLogBuffer(logMessage)
+				discord.PassLogStreamToDiscordLogBuffer(logMessage)
 			}
 			ProcessLog(detector, logMessage)
 		}

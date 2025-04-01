@@ -5,18 +5,15 @@ import (
 	"fmt"
 )
 
-// v4 OK
-func AddToLogBuffer(logMessage string) {
+// PassLogMessageToDiscordLogBuffer is called from the detection module to add a log message to the buffer.
+func PassLogStreamToDiscordLogBuffer(logMessage string) {
 	config.LogMessageBuffer += logMessage + "\n"
-	if config.IsDiscordEnabled && config.DiscordSession != nil {
-		checkForKeywords(logMessage)
-	}
 	if len(config.LogMessageBuffer) >= config.DiscordCharBufferSize && config.IsDiscordEnabled {
 		flushLogBufferToDiscord()
 	}
 }
 
-// v4 OK
+// FlushLogBufferToDiscord flushes the log buffer to Discord periodically with a configurable "DiscordCharBufferSize" character limit per message.
 func flushLogBufferToDiscord() {
 	if len(config.LogMessageBuffer) == 0 {
 		return // No messages to send
@@ -25,7 +22,8 @@ func flushLogBufferToDiscord() {
 		return
 	}
 
-	const discordMaxMessageLength = 2000
+	discordMaxMessageLength := config.DiscordCharBufferSize
+
 	message := config.LogMessageBuffer
 
 	for len(message) > 0 {

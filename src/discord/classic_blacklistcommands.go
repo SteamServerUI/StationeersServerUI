@@ -10,6 +10,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// ISSUE: File writes are NOT thread safe, so we need to lock the file before writing to it.
+
 func readBlacklist(blackListFilePath string) (string, error) {
 	file, err := os.Open(blackListFilePath)
 	if err != nil {
@@ -43,6 +45,7 @@ func removeFromBlacklist(blacklist, steamID string) string {
 }
 
 func handleBanCommand(s *discordgo.Session, channelID string, content string) {
+
 	// Extract the SteamID from the command
 	parts := strings.Split(content, ":")
 	if len(parts) != 2 {

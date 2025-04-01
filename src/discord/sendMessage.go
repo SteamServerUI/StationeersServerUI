@@ -8,7 +8,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// v4 OK
 func SendMessageToControlChannel(message string) {
 	if !config.IsDiscordEnabled {
 		return
@@ -26,8 +25,7 @@ func SendMessageToControlChannel(message string) {
 	}
 }
 
-// v4 OK
-func sendMessageToStatusChannel(message string) {
+func SendMessageToStatusChannel(message string) {
 	if !config.IsDiscordEnabled {
 		return
 	}
@@ -44,7 +42,24 @@ func sendMessageToStatusChannel(message string) {
 	}
 }
 
-// v4 OK
+func SendMessageToSavesChannel(message string) {
+	if !config.IsDiscordEnabled {
+		return
+	}
+	if config.DiscordSession == nil {
+		fmt.Println("Discord Error: Discord is enabled but session is not initialized")
+		return
+	}
+	//clearMessagesAboveLastN(config.SaveChannelID, 300)
+	_, err := config.DiscordSession.ChannelMessageSend(config.SaveChannelID, message)
+	if err != nil {
+		fmt.Println("Error sending message to saves channel:", err)
+	} else {
+		fmt.Println("Sent message to saves channel:", message)
+	}
+}
+
+// v4 OK, unsused in 4.3
 func sendMessageToErrorChannel(message string) []*discordgo.Message {
 	if !config.IsDiscordEnabled {
 		return nil
@@ -95,77 +110,32 @@ func sendMessageToErrorChannel(message string) []*discordgo.Message {
 	return sentMessages
 }
 
-// v4 OK
-func SendMessageToSavesChannel(message string) {
-	if !config.IsDiscordEnabled {
-		return
-	}
-	if config.DiscordSession == nil {
-		fmt.Println("Discord Error: Discord is enabled but session is not initialized")
-		return
-	}
-	//clearMessagesAboveLastN(config.SaveChannelID, 300)
-	_, err := config.DiscordSession.ChannelMessageSend(config.SaveChannelID, message)
+func sendControlMessage() {
+	messageContent := "Control Panel:\n\nReact with the following to perform actions:\n" +
+		"▶️ Start the server\n\n" +
+		"⏹️ Stop the server\n\n" +
+		"♻️ Restart the server\n\n"
+
+	msg, err := config.DiscordSession.ChannelMessageSend(config.ControlPanelChannelID, messageContent)
 	if err != nil {
-		fmt.Println("Error sending message to saves channel:", err)
-	} else {
-		fmt.Println("Sent message to saves channel:", message)
-	}
-}
-
-// CONNECTION LIST
-// v4 OK
-func updateConnectedPlayersMessage(channelID string) {
-	content := formatConnectedPlayers()
-	sendAndEditMessageInConnectedPlayersChannel(channelID, content)
-}
-
-// v4 OK
-func sendAndEditMessageInConnectedPlayersChannel(channelID, message string) {
-	if !config.IsDiscordEnabled {
+		fmt.Println("Error sending control message:", err)
 		return
 	}
-	if config.DiscordSession == nil {
-		fmt.Println("Discord Error: Discord is enabled but session is not initialized")
-		return
-	}
-	//only clear messages if we are on release branch
-	if config.Branch == "release" || config.Branch == "Release" {
-		clearMessagesAboveLastN(config.ControlChannelID, 1)
-	}
-	if config.ConnectedPlayersMessageID == "" {
-		// Send a new message if there's no existing message to edit
-		msg, err := config.DiscordSession.ChannelMessageSend(channelID, message)
-		if err != nil {
-			fmt.Printf("Error sending message to channel %s: %v\n", channelID, err)
-		} else {
-			config.ConnectedPlayersMessageID = msg.ID
-			fmt.Printf("Sent message to channel %s: %s\n", channelID, message)
-		}
-	} else {
-		// Edit the existing message
-		_, err := config.DiscordSession.ChannelMessageEdit(channelID, config.ConnectedPlayersMessageID, message)
-		if err != nil {
-			fmt.Printf("Error editing message in channel %s: %v\n", channelID, err)
-		} else {
-			fmt.Printf("Updated message in channel %s: %s\n", channelID, message)
-		}
-	}
-}
 
-// BOT STATUS
-// v4 OK
-func updateBotStatus(s *discordgo.Session) {
-	playerCount := len(config.ConnectedPlayers)
-	statusMessage := fmt.Sprintf("%d Employees connected", playerCount)
-	err := s.UpdateGameStatus(0, statusMessage)
-	if err != nil {
-		fmt.Println("Error updating bot status:", err)
+	// Add reactions (acting as buttons) to the control message
+	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "▶️") // Start
+	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "⏹️") // Stop
+	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "♻️") // Restart
+	config.ControlMessageID = msg.ID
+	if config.Branch == "Prod" {
+		clearMessagesAboveLastN(config.ControlPanelChannelID, 1)
+	}
+	if config.Branch != "Prod" {
+		clearMessagesAboveLastN(config.ControlPanelChannelID, 15)
 	}
 }
 
 // CLEAR MESSAGES
-// v4 OK
 func clearMessagesAboveLastN(channelID string, keep int) {
 	go func() {
 		if !config.IsDiscordEnabled {
