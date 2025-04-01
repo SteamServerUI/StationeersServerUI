@@ -2,6 +2,7 @@
 package detection
 
 import (
+	"StationeersServerUI/src/discord"
 	"StationeersServerUI/src/ssestream"
 	"fmt"
 	"strings"
@@ -24,42 +25,50 @@ func DefaultHandlers() map[EventType]Handler {
 			message := fmt.Sprintf("🎮 [Custom Detection] %s", event.Message)
 			fmt.Printf("%s%s%s%s\n", colorMagenta, message, colorReset, colorReset)
 			ssestream.BroadcastDetectionEvent(message)
+			discord.SendMessageToStatusChannel(message)
 		},
 
 		EventServerReady: func(event Event) {
 			message := "🎮 [Gameserver] 🔔 Server is ready to connect!"
 			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorGreen, colorReset)
 			ssestream.BroadcastDetectionEvent(message)
+			discord.SendMessageToStatusChannel(message)
 		},
 		EventServerStarting: func(event Event) {
 			message := "🎮 [Gameserver] 🕑 Server is starting up..."
 			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorYellow, colorReset)
 			ssestream.BroadcastDetectionEvent(message)
+			discord.SendMessageToStatusChannel(message)
 		},
 		EventServerError: func(event Event) {
 			message := "🎮 [Gameserver] ⚠️ Server error detected"
 			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorRed, colorReset)
 			ssestream.BroadcastDetectionEvent(message)
+			discord.SendMessageToStatusChannel(message)
 		},
 		EventSettingsChanged: func(event Event) {
 			message := fmt.Sprintf("🎮 [Gameserver] ⚙️ %s", event.Message)
 			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorYellow, colorReset)
 			ssestream.BroadcastDetectionEvent(message)
+			discord.SendMessageToStatusChannel(message)
 		},
 		EventServerHosted: func(event Event) {
 			message := fmt.Sprintf("🎮 [Gameserver] 🌐 %s", event.Message)
 			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorGreen, colorReset)
 			ssestream.BroadcastDetectionEvent(message)
+			discord.SendMessageToStatusChannel(message)
 		},
 		EventNewGameStarted: func(event Event) {
 			message := fmt.Sprintf("🎮 [Gameserver] 🎲 %s", event.Message)
 			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorGreen, colorReset)
 			ssestream.BroadcastDetectionEvent(message)
+			discord.SendMessageToStatusChannel(message)
 		},
 		EventServerRunning: func(event Event) {
 			message := "🎮 [Gameserver] ✅ Server process has started!"
 			fmt.Printf("%s%s%s%s\n", colorCyan, message, colorGreen, colorReset)
 			ssestream.BroadcastDetectionEvent(message)
+			discord.SendMessageToStatusChannel(message)
 		},
 		EventPlayerConnecting: func(event Event) {
 			if event.PlayerInfo != nil {
@@ -69,6 +78,7 @@ func DefaultHandlers() map[EventType]Handler {
 					colorCyan, colorBlue, message, colorMagenta,
 					colorBlue, event.PlayerInfo.SteamID, colorReset)
 				ssestream.BroadcastDetectionEvent(message)
+				discord.SendMessageToStatusChannel(message)
 			}
 		},
 		EventPlayerReady: func(event Event) {
@@ -79,6 +89,7 @@ func DefaultHandlers() map[EventType]Handler {
 					colorCyan, colorGreen, message, colorMagenta,
 					colorGreen, event.PlayerInfo.SteamID, colorReset)
 				ssestream.BroadcastDetectionEvent(message)
+				discord.SendMessageToStatusChannel(message)
 			}
 		},
 		EventPlayerDisconnect: func(event Event) {
@@ -89,6 +100,7 @@ func DefaultHandlers() map[EventType]Handler {
 					colorCyan, colorYellow, message, colorMagenta,
 					colorYellow, colorReset)
 				ssestream.BroadcastDetectionEvent(message)
+				discord.SendMessageToStatusChannel(message)
 			}
 		},
 		EventWorldSaved: func(event Event) {
@@ -100,6 +112,7 @@ func DefaultHandlers() map[EventType]Handler {
 					colorCyan, colorGreen, message, colorYellow,
 					colorGreen, timeStr, colorReset)
 				ssestream.BroadcastDetectionEvent(message)
+				discord.SendMessageToSavesChannel(message)
 			}
 		},
 		EventException: func(event Event) {
@@ -107,6 +120,7 @@ func DefaultHandlers() map[EventType]Handler {
 			alertMessage := "🎮 [Gameserver] 🚨 Exception detected!"
 			fmt.Printf("%s%s%s%s\n", colorCyan, alertMessage, colorRed, colorReset)
 			ssestream.BroadcastDetectionEvent(alertMessage)
+			discord.SendUntrackedMessageToErrorChannel(alertMessage)
 
 			if event.ExceptionInfo != nil && len(event.ExceptionInfo.StackTrace) > 0 {
 				// Format stack trace as a single-line string for SSE compatibility
@@ -119,6 +133,7 @@ func DefaultHandlers() map[EventType]Handler {
 
 				// Broadcast UI-friendly version
 				ssestream.BroadcastDetectionEvent(detailedMessage)
+				discord.SendUntrackedMessageToErrorChannel(detailedMessage)
 			}
 		},
 	}
