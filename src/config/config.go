@@ -25,6 +25,12 @@ type JsonConfig struct {
 	BlackListFilePath       string `json:"blackListFilePath"`
 	IsDiscordEnabled        bool   `json:"isDiscordEnabled"`
 	ErrorChannelID          string `json:"errorChannelID"`
+	BackupKeepLastN         int    `json:"backupKeepLastN"`
+	BackupKeepDailyFor      int    `json:"backupKeepDailyFor"`
+	BackupKeepWeeklyFor     int    `json:"backupKeepWeeklyFor"`
+	BackupKeepMonthlyFor    int    `json:"backupKeepMonthlyFor"`
+	BackupCleanupInterval   int    `json:"backupCleanupInterval"`
+	BackupWaitTime          int    `json:"backupWaitTime"`
 	GameBranch              string `json:"gameBranch"`
 	ServerName              string `json:"ServerName"`
 	SaveInfo                string `json:"SaveInfo"`
@@ -138,7 +144,7 @@ var (
 	AuthTokenLifetime int // In minutes, e.g., 1440 (24h)
 
 	// Versioning
-	Version = "4.3.17"
+	Version = "4.3.18"
 	Branch     = "nightly-backups-v2"
 	GameBranch string
 )
@@ -191,7 +197,35 @@ func LoadConfig() (*JsonConfig, error) {
 		BackupWorldName = parts[1]
 	}
 
-	// Create dir paths for BackupManager
+	// Backup V2 Defaults
+
+	if jsonconfig.BackupKeepDailyFor <= 0 {
+		jsonconfig.BackupKeepDailyFor = 24
+	}
+
+	if jsonconfig.BackupKeepWeeklyFor <= 0 {
+		jsonconfig.BackupKeepWeeklyFor = 168
+	}
+
+	if jsonconfig.BackupKeepMonthlyFor <= 0 {
+		jsonconfig.BackupKeepMonthlyFor = 730
+	}
+
+	if jsonconfig.BackupCleanupInterval <= 0 {
+		jsonconfig.BackupCleanupInterval = 730
+	}
+
+	if jsonconfig.BackupWaitTime <= 0 {
+		jsonconfig.BackupWaitTime = 30
+	}
+
+	// Create variables for BackupManager
+	BackupKeepLastN = jsonconfig.BackupKeepLastN
+	BackupKeepDailyFor = time.Duration(jsonconfig.BackupKeepDailyFor) * time.Hour
+	BackupKeepWeeklyFor = time.Duration(jsonconfig.BackupKeepWeeklyFor) * time.Hour
+	BackupKeepMonthlyFor = time.Duration(jsonconfig.BackupKeepMonthlyFor) * time.Hour
+	BackupCleanupInterval = time.Duration(jsonconfig.BackupCleanupInterval) * time.Hour
+	BackupWaitTime = time.Duration(jsonconfig.BackupWaitTime) * time.Second
 	ConfiguredBackupDir = filepath.Join("./saves/" + WorldName + "/Backup")
 	ConfiguredSafeBackupDir = filepath.Join("./saves/" + WorldName + "/Safebackups")
 
@@ -243,6 +277,15 @@ func LoadConfig() (*JsonConfig, error) {
 		fmt.Println("LogMessageBuffer:", LogMessageBuffer)
 		fmt.Println("SaveChannelID:", SaveChannelID)
 		fmt.Println("StatusChannelID:", StatusChannelID)
+		fmt.Println("----BACKUP CONFIG VARS----")
+		fmt.Println("BackupKeepLastN:", BackupKeepLastN)
+		fmt.Println("BackupKeepDailyFor:", BackupKeepDailyFor)
+		fmt.Println("BackupKeepWeeklyFor:", BackupKeepWeeklyFor)
+		fmt.Println("BackupKeepMonthlyFor:", BackupKeepMonthlyFor)
+		fmt.Println("BackupCleanupInterval:", BackupCleanupInterval)
+		fmt.Println("ConfiguredBackupDir:", ConfiguredBackupDir)
+		fmt.Println("ConfiguredSafeBackupDir:", ConfiguredSafeBackupDir)
+		fmt.Println("BackupWaitTime:", BackupWaitTime)
 		fmt.Println("----GAMESERVER CONFIG VARS----")
 		fmt.Println("AdditionalParams:", AdditionalParams)
 		fmt.Println("AdminPassword:", AdminPassword)
