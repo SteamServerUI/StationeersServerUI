@@ -30,7 +30,16 @@ func handleBanCommand(s *discordgo.Session, channelID string, content string) {
 	}
 
 	// Check if the SteamID is already in the blacklist
-	if strings.Contains(blacklist, steamID) {
+	entries := strings.Split(blacklist, ",")
+	exists := false
+	for _, entry := range entries {
+		if strings.TrimSpace(entry) == steamID {
+			exists = true
+			break
+		}
+	}
+
+	if exists {
 		s.ChannelMessageSend(channelID, fmt.Sprintf("❌SteamID %s is already banned.", steamID))
 		return
 	}
@@ -67,7 +76,16 @@ func handleUnbanCommand(s *discordgo.Session, channelID string, content string) 
 	}
 
 	// Check if the SteamID is in the blacklist
-	if !strings.Contains(blacklist, steamID) {
+	entries := strings.Split(blacklist, ",")
+	exists := false
+	for _, entry := range entries {
+		if strings.TrimSpace(entry) == steamID {
+			exists = true
+			break
+		}
+	}
+
+	if !exists {
 		s.ChannelMessageSend(channelID, fmt.Sprintf("✅SteamID %s is not banned.", steamID))
 		return
 	}
