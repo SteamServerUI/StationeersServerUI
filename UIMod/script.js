@@ -169,7 +169,7 @@ function getEventClassName(eventText) {
 
 // Backup management
 function fetchBackups() {
-    fetch('/backups')
+    fetch('/api/v2/backups?mode=classic')
         .then(response => response.text())
         .then(data => {
             const backupList = document.getElementById('backupList');
