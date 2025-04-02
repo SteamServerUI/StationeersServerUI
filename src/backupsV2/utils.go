@@ -1,6 +1,7 @@
 package backupsv2
 
 import (
+	"context"
 	"io"
 	"os"
 	"regexp"
@@ -42,4 +43,19 @@ func parseBackupIndex(filename string) int {
 	}
 
 	return index
+}
+
+// NewBackupManager creates a new BackupManager instance
+func NewBackupManager(cfg BackupConfig) *BackupManager {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	if cfg.WaitTime == 0 {
+		cfg.WaitTime = defaultWaitTime
+	}
+
+	return &BackupManager{
+		config: cfg,
+		ctx:    ctx,
+		cancel: cancel,
+	}
 }

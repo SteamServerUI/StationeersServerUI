@@ -1,59 +1,53 @@
-// interface.go
 package backupsv2
 
 import (
 	"StationeersServerUI/src/config"
-	"encoding/json"
 	"fmt"
-	"net/http"
 	"path/filepath"
-	"strconv"
 	"time"
 )
 
+// Global manager instance (consider making this non-global in future)
 var manager *BackupManager
 
-func InitBackupManager() {
-
+// InitBackupManager initializes the backup system
+func InitBackupManager() error {
 	backupDir := filepath.Join("./saves/", config.WorldName, "backup")
 	safeBackupDir := filepath.Join("./saves/", config.WorldName, "Safebackups")
-	backupManager := NewBackupManager(BackupConfig{
+
+	manager = NewBackupManager(BackupConfig{
 		WorldName:     config.WorldName,
 		BackupDir:     backupDir,
 		SafeBackupDir: safeBackupDir,
 		WaitTime:      30 * time.Second,
 	})
-	err := backupManager.Start()
-	if err != nil {
-		fmt.Println("[BACKUPS] Failed to start backups manager: " + err.Error())
-	}
+
+	return manager.Start()
 }
 
-// HTTP handler for listing backups
-func ListBackups(w http.ResponseWriter, r *http.Request) {
-	backups, err := manager.ListBackups()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+// GetBackups returns a list of available backups
+// limit: number of recent backups to return (0 for all)
+func GetBackups(limit int) ([]BackupGroup, error) {
+	if manager == nil {
+		return nil, fmt.Errorf("backup manager not initialized")
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(backups)
+	backups, err := manager.ListBackups(limit)
+	if err != nil {
+		return nil, err
+	}
+
+	if limit > 0 && limit < len(backups) {
+		backups = backups[:limit]
+	}
+
+	return backups, nil
 }
 
-// HTTP handler for restoring backups
-func RestoreBackup(w http.ResponseWriter, r *http.Request) {
-	indexStr := r.URL.Query().Get("index")
-	index, err := strconv.Atoi(indexStr)
-	if err != nil {
-		http.Error(w, "Invalid backup index", http.StatusBadRequest)
-		return
+// RestoreBackupIndex restores a specific backup
+func RestoreBackupIndex(index int) error {
+	if manager == nil {
+		return fmt.Errorf("backup manager not initialized")
 	}
-
-	if err := manager.RestoreBackup(index); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Write([]byte("Backup restored successfully"))
+	return manager.RestoreBackup(index)
 }

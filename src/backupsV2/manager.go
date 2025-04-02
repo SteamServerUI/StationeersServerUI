@@ -2,13 +2,26 @@ package backupsv2
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
+	"sort"
 	"time"
 
 	"StationeersServerUI/src/discord"
 
 	"github.com/fsnotify/fsnotify"
 )
+
+// Initialize sets up required directories
+func (m *BackupManager) Initialize() error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if err := os.MkdirAll(m.config.BackupDir, os.ModePerm); err != nil {
+		return err
+	}
+	return os.MkdirAll(m.config.SafeBackupDir, os.ModePerm)
+}
 
 // Start begins the backup monitoring and cleanup routines
 func (m *BackupManager) Start() error {
@@ -86,5 +99,41 @@ func (m *BackupManager) startCleanupRoutine() {
 				fmt.Printf("Backup cleanup error: %v\n", err)
 			}
 		}
+	}
+}
+
+// ListBackups returns information about available backups
+// limit: number of recent backups to return (0 for all)
+func (m *BackupManager) ListBackups(limit int) ([]BackupGroup, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	groups, err := m.getBackupGroups()
+	if err != nil {
+		return nil, err
+	}
+
+	// Sort by index (newest first)
+	sort.Slice(groups, func(i, j int) bool {
+		return groups[i].Index > groups[j].Index
+	})
+
+	if limit > 0 && limit < len(groups) {
+		groups = groups[:limit]
+	}
+
+	return groups, nil
+}
+
+// Shutdown stops all backup operations
+func (m *BackupManager) Shutdown() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if m.cancel != nil {
+		m.cancel()
+	}
+	if m.watcher != nil {
+		m.watcher.close()
 	}
 }

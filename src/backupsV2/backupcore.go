@@ -2,7 +2,6 @@ package backupsv2
 
 import (
 	"context"
-	"os"
 	"sync"
 	"time"
 )
@@ -45,43 +44,4 @@ type BackupManager struct {
 	watcher *fsWatcher
 	ctx     context.Context
 	cancel  context.CancelFunc
-}
-
-// NewBackupManager creates a new BackupManager instance
-func NewBackupManager(cfg BackupConfig) *BackupManager {
-	ctx, cancel := context.WithCancel(context.Background())
-
-	if cfg.WaitTime == 0 {
-		cfg.WaitTime = defaultWaitTime
-	}
-
-	return &BackupManager{
-		config: cfg,
-		ctx:    ctx,
-		cancel: cancel,
-	}
-}
-
-// Initialize sets up required directories
-func (m *BackupManager) Initialize() error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	if err := os.MkdirAll(m.config.BackupDir, os.ModePerm); err != nil {
-		return err
-	}
-	return os.MkdirAll(m.config.SafeBackupDir, os.ModePerm)
-}
-
-// Shutdown stops all backup operations
-func (m *BackupManager) Shutdown() {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	if m.cancel != nil {
-		m.cancel()
-	}
-	if m.watcher != nil {
-		m.watcher.close()
-	}
 }

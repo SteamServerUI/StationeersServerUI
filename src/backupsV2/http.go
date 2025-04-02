@@ -3,7 +3,6 @@ package backupsv2
 import (
 	"encoding/json"
 	"net/http"
-	"sort"
 	"strconv"
 )
 
@@ -19,7 +18,18 @@ func NewHTTPHandler(manager *BackupManager) *HTTPHandler {
 
 // ListBackupsHandler handles requests to list available backups
 func (h *HTTPHandler) ListBackupsHandler(w http.ResponseWriter, r *http.Request) {
-	backups, err := h.manager.ListBackups()
+	limitStr := r.URL.Query().Get("limit")
+	var limit int
+	if limitStr != "" {
+		var err error
+		limit, err = strconv.Atoi(limitStr)
+		if err != nil {
+			http.Error(w, "Invalid limit parameter", http.StatusBadRequest)
+			return
+		}
+	}
+
+	backups, err := h.manager.ListBackups(limit)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -51,20 +61,42 @@ func (h *HTTPHandler) RestoreBackupHandler(w http.ResponseWriter, r *http.Reques
 	w.Write([]byte("Backup restored successfully"))
 }
 
-// ListBackups returns information about available backups
-func (m *BackupManager) ListBackups() ([]BackupGroup, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	groups, err := m.getBackupGroups()
+// HTTP handler for restoring backups
+func RestoreBackup(w http.ResponseWriter, r *http.Request) {
+	indexStr := r.URL.Query().Get("index")
+	index, err := strconv.Atoi(indexStr)
 	if err != nil {
-		return nil, err
+		http.Error(w, "Invalid backup index", http.StatusBadRequest)
+		return
 	}
 
-	// Sort by index (newest first)
-	sort.Slice(groups, func(i, j int) bool {
-		return groups[i].Index > groups[j].Index
-	})
+	if err := RestoreBackupIndex(index); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	return groups, nil
+	w.Write([]byte("Backup restored successfully"))
+}
+
+// HTTP handler for listing backups
+func ListBackups(w http.ResponseWriter, r *http.Request) {
+	limitStr := r.URL.Query().Get("limit")
+	var limit int
+	if limitStr != "" {
+		var err error
+		limit, err = strconv.Atoi(limitStr)
+		if err != nil {
+			http.Error(w, "Invalid limit parameter", http.StatusBadRequest)
+			return
+		}
+	}
+
+	backups, err := GetBackups(limit)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(backups)
 }
