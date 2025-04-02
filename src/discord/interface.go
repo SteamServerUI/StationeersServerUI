@@ -8,9 +8,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// connectedPlayersMessageID tracks the message ID for editing the connected players message
-var connectedPlayersMessageID string
-
 // StartDiscordBot starts the Discord bot and connects it to the Discord API.
 func StartDiscordBot() {
 	var err error

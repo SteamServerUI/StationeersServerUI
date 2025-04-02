@@ -4,7 +4,13 @@ import (
 	"StationeersServerUI/src/config"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
+)
+
+var (
+	connectedPlayersMessageID string // connectedPlayersMessageID tracks the message ID for editing the connected players message
+	playersMutex              sync.Mutex
 )
 
 func AddToConnectedPlayers(username, steamID string, connectionTime time.Time, players map[string]string) {
@@ -26,8 +32,11 @@ func RemoveFromConnectedPlayers(steamID string, players map[string]string) {
 }
 
 func sendAndEditMessageInConnectedPlayersChannel(channelID, message string) {
+	playersMutex.Lock()
+	defer playersMutex.Unlock()
+
 	if connectedPlayersMessageID == "" {
-		// Send a new message if there’s no existing one
+		// Send a new message if there's no existing one
 		msg, err := config.DiscordSession.ChannelMessageSend(channelID, message)
 		if err != nil {
 			fmt.Printf("[DISCORD] Error sending message to channel %s: %v\n", channelID, err)
