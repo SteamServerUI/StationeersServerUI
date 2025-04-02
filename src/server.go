@@ -2,6 +2,7 @@ package main
 
 import (
 	"StationeersServerUI/src/backups"
+	"StationeersServerUI/src/backupsv2"
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/core"
 	"StationeersServerUI/src/detection"
@@ -61,6 +62,7 @@ func main() {
 	fmt.Println(string(colorBlue), "Starting API services...", string(colorReset))
 	go backups.StartBackupCleanupRoutine()
 	go backups.WatchBackupDir()
+	go backupsv2.InitBackupManager()
 
 	// Set up handlers with auth middleware
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
@@ -106,8 +108,8 @@ func main() {
 	protectedMux.HandleFunc("/api/v2/server/stop", core.StopServer)
 
 	// Backups
-	protectedMux.HandleFunc("/api/v2/backups", backups.ListBackups)
-	protectedMux.HandleFunc("/api/v2/backups/restore", backups.RestoreBackup)
+	protectedMux.HandleFunc("/api/v2/backups", backupsv2.ListBackups)
+	protectedMux.HandleFunc("/api/v2/backups/restore", backupsv2.RestoreBackup)
 
 	// Configuration
 	protectedMux.HandleFunc("/api/v2/saveconfig", core.SaveConfigJSON)
