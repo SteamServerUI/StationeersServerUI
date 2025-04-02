@@ -127,7 +127,7 @@ var (
 	AuthTokenLifetime int // In minutes, e.g., 1440 (24h)
 
 	// Versioning
-	Version    = "4.3.0"
+	Version = "4.3.8"
 	Branch     = "nightly-discord-fixes"
 	GameBranch string
 )

@@ -1,6 +1,9 @@
 package backupsv2
 
 import (
+	"fmt"
+	"path/filepath"
+
 	"github.com/fsnotify/fsnotify"
 )
 
@@ -14,15 +17,21 @@ type fsWatcher struct {
 
 // newFsWatcher creates a new file system watcher
 func newFsWatcher(path string) (*fsWatcher, error) {
+	// Normalize path
+	normalizedPath := filepath.Clean(path)
+	fmt.Printf("Creating watcher for path: %s\n", normalizedPath)
+
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create watcher: %w", err)
 	}
+	fmt.Println("Watcher created successfully")
 
-	if err := watcher.Add(path); err != nil {
+	if err := watcher.Add(normalizedPath); err != nil {
 		watcher.Close()
-		return nil, err
+		return nil, fmt.Errorf("failed to add path %s to watcher: %w", normalizedPath, err)
 	}
+	fmt.Printf("Successfully watching path: %s\n", normalizedPath)
 
 	w := &fsWatcher{
 		watcher: watcher,
@@ -31,9 +40,7 @@ func newFsWatcher(path string) (*fsWatcher, error) {
 		done:    make(chan struct{}),
 	}
 
-	// Start forwarding events and errors
 	go w.forwardEvents()
-
 	return w, nil
 }
 

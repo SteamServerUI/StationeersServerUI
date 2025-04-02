@@ -9,8 +9,8 @@ import (
 
 // GetDefaultConfig returns a properly configured BackupConfig
 func GetDefaultConfig() BackupConfig {
-	backupDir := filepath.Join("./saves/" + config.WorldName + "/backup")
-	safeBackupDir := filepath.Join("./saves/" + config.WorldName + "Safebackups")
+	backupDir := filepath.Join("./saves/" + config.WorldName + "/Backup")
+	safeBackupDir := filepath.Join("./saves/" + config.WorldName + "/Safebackups")
 
 	return BackupConfig{
 		WorldName:     config.WorldName,

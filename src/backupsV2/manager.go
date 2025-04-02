@@ -13,6 +13,12 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
+/*
+The BackupManager manages backup operations. Each instance is independent with its own config and context.
+Background routines (file watching and cleanup) only start when Start() is called. Multiple instances
+can coexist but may conflict if configured with overlapping directories.
+*/
+
 // Initialize sets up required directories
 func (m *BackupManager) Initialize() error {
 	m.mu.Lock()
@@ -70,6 +76,9 @@ func (m *BackupManager) watchBackups() {
 
 // handleNewBackup processes a newly created backup file
 func (m *BackupManager) handleNewBackup(filePath string) {
+	if !isValidBackupFile(filepath.Base(filePath)) {
+		return
+	}
 	go func() {
 		time.Sleep(m.config.WaitTime)
 

@@ -5,6 +5,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 // copyFile copies a file from src to dst
@@ -42,4 +43,10 @@ func parseBackupIndex(filename string) int {
 	}
 
 	return index
+}
+
+func isValidBackupFile(filename string) bool {
+	return strings.Contains(filename, "world") &&
+		(strings.HasSuffix(filename, ".bin") ||
+			strings.HasSuffix(filename, ".xml"))
 }
