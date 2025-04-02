@@ -65,69 +65,66 @@ type CustomDetection struct {
 }
 
 var (
-	DiscordToken              string
-	DiscordSession            *discordgo.Session
-	IsDiscordEnabled          bool
-	ControlChannelID          string
-	StatusChannelID           string
-	LogChannelID              string
-	ErrorChannelID            string
-	ConnectionListChannelID   string
-	SaveChannelID             string
-	ControlPanelChannelID     string
-	IsCleanupEnabled          bool
-	BackupKeepLastN           int
-	BackupKeepDailyFor        time.Duration
-	BackupKeepWeeklyFor       time.Duration
-	BackupKeepMonthlyFor      time.Duration
-	BackupCleanupInterval     time.Duration
-	ConfiguredBackupDir       string
-	ConfiguredSafeBackupDir   string
-	BackupWaitTime            time.Duration
-	ServerName                string
-	ServerMaxPlayers          string
-	ServerPassword            string
-	ServerAuthSecret          string
-	AdminPassword             string
-	GamePort                  string
-	UpdatePort                string
-	LocalIpAddress            string
-	ServerVisible             bool
-	UseSteamP2P               bool
-	BlackListFilePath         string
-	SaveInfo                  string
-	BackupWorldName           string
-	WorldName                 string
-	ExePath                   string
-	TLSCertPath               = "./UIMod/cert.pem"
-	TLSKeyPath                = "./UIMod/key.pem"
-	ConfigPath                = "./UIMod/config.json"
-	GameServerAppID           = "600760"
-	SaveInterval              string
-	AdditionalParams          string
-	AutoPauseServer           bool
-	UPNPEnabled               bool
-	AutoSave                  bool
-	StartLocalHost            bool
-	IsDebugMode               bool
-	IsFirstTimeSetup          bool
-	LogMessageBuffer          string
-	DiscordCharBufferSize     int
-	SSEMessageBufferSize      = 2000
-	MaxSSEConnections         = 20
-	BufferFlushTicker         *time.Ticker
-	ConnectedPlayers          = make(map[string]string)
-	ConnectedPlayersMessageID string
-	ControlMessageID          string
-	ExceptionMessageID        string
-	BackupRestoreMessageID    string
-	Username                  string
-	Password                  string
-	JwtKey                    string
-	AuthTokenLifetime         int
-	Version = "4.3.25"
-	Branch                    = "nightly-backups-v2"
-	GameBranch                string
+	Version                 = "4.3.25"
+	Branch                  = "nightly-backups-v2"
+	GameBranch              string
+	DiscordToken            string
+	DiscordSession          *discordgo.Session
+	IsDiscordEnabled        bool
+	ControlChannelID        string
+	StatusChannelID         string
+	LogChannelID            string
+	ErrorChannelID          string
+	ConnectionListChannelID string
+	SaveChannelID           string
+	ControlPanelChannelID   string
+	IsCleanupEnabled        bool
+	BackupKeepLastN         int
+	BackupKeepDailyFor      time.Duration
+	BackupKeepWeeklyFor     time.Duration
+	BackupKeepMonthlyFor    time.Duration
+	BackupCleanupInterval   time.Duration
+	ConfiguredBackupDir     string
+	ConfiguredSafeBackupDir string
+	BackupWaitTime          time.Duration
+	ServerName              string
+	ServerMaxPlayers        string
+	ServerPassword          string
+	ServerAuthSecret        string
+	AdminPassword           string
+	GamePort                string
+	UpdatePort              string
+	LocalIpAddress          string
+	ServerVisible           bool
+	UseSteamP2P             bool
+	BlackListFilePath       string
+	SaveInfo                string
+	BackupWorldName         string
+	WorldName               string
+	ExePath                 string
+	TLSCertPath             = "./UIMod/cert.pem"
+	TLSKeyPath              = "./UIMod/key.pem"
+	ConfigPath              = "./UIMod/config.json"
+	GameServerAppID         = "600760"
+	SaveInterval            string
+	AdditionalParams        string
+	AutoPauseServer         bool
+	UPNPEnabled             bool
+	AutoSave                bool
+	StartLocalHost          bool
+	IsDebugMode             bool
+	IsFirstTimeSetup        bool
+	LogMessageBuffer        string
+	DiscordCharBufferSize   int
+	SSEMessageBufferSize    = 2000
+	MaxSSEConnections       = 20
+	BufferFlushTicker       *time.Ticker
+	ControlMessageID        string
+	ExceptionMessageID      string
+	Username                string
+	Password                string
+	JwtKey                  string
+	AuthTokenLifetime       int
 )
 
 // LoadConfig loads and initializes the configuration

@@ -95,7 +95,6 @@ func logConfigDetails() {
 
 	logger.Log(LogDebug, "---- DISCORD CONFIG VARS ----")
 	logger.Log(LogDebug, fmt.Sprintf("BlackListFilePath: %s", BlackListFilePath))
-	logger.Log(LogDebug, fmt.Sprintf("ConnectedPlayersMessageID: %s", ConnectedPlayersMessageID))
 	logger.Log(LogDebug, fmt.Sprintf("ConnectionListChannelID: %s", ConnectionListChannelID))
 	logger.Log(LogDebug, fmt.Sprintf("ControlChannelID: %s", ControlChannelID))
 	logger.Log(LogDebug, fmt.Sprintf("ControlPanelChannelID: %s", ControlPanelChannelID))
