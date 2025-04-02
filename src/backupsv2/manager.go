@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/discord"
 
 	"github.com/fsnotify/fsnotify"
 )
@@ -102,7 +101,6 @@ func (m *BackupManager) handleNewBackup(filePath string) {
 		}
 
 		fmt.Printf("Backup successfully copied to safe location: %s\n", dstPath)
-		discord.SendMessageToSavesChannel(fmt.Sprintf("Backup file %s copied to safe location.", dstPath))
 	}()
 }
 

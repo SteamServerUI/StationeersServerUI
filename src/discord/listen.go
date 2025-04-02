@@ -30,10 +30,10 @@ func listenToDiscordMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	case strings.HasPrefix(content, "!restore"):
 		SendMessageToStatusChannel("⚠️Restore command received, flatlining and restoring Server in 5 Seconds. Server will come back online in about 60 Seconds.")
-		handleRestoreCommand(s, m, content)
+		handleRestoreCommand(content)
 
 	case strings.HasPrefix(content, "!list"):
-		handleListCommand(s, m.ChannelID, content)
+		handleListCommand(content)
 
 	case strings.HasPrefix(content, "!update"):
 		handleUpdateCommand(s, m.ChannelID)
