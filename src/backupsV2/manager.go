@@ -32,8 +32,7 @@ func (m *BackupManager) Initialize() error {
 
 // Start begins the backup monitoring and cleanup routines
 func (m *BackupManager) Start() error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
+	fmt.Println("Backup Manager Start initialized")
 
 	if err := m.Initialize(); err != nil {
 		return fmt.Errorf("failed to initialize backup directories: %w", err)
@@ -54,6 +53,9 @@ func (m *BackupManager) Start() error {
 
 // watchBackups monitors the backup directory for new files
 func (m *BackupManager) watchBackups() {
+	fmt.Println("Starting backup file watcher...")
+	defer fmt.Println("Backup file watcher stopped")
+
 	for {
 		select {
 		case <-m.ctx.Done():
@@ -63,6 +65,7 @@ func (m *BackupManager) watchBackups() {
 				return
 			}
 			if event.Op&fsnotify.Create == fsnotify.Create {
+				fmt.Printf("[BACKUP]💾 New backup file detected: %s\n", event.Name)
 				m.handleNewBackup(event.Name)
 			}
 		case err, ok := <-m.watcher.errors:
@@ -81,6 +84,9 @@ func (m *BackupManager) handleNewBackup(filePath string) {
 	}
 	go func() {
 		time.Sleep(m.config.WaitTime)
+
+		m.mu.Lock()
+		defer m.mu.Unlock()
 
 		fileName := filepath.Base(filePath)
 		dstPath := filepath.Join(m.config.SafeBackupDir, fileName)
