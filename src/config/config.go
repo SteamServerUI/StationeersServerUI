@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
@@ -71,6 +72,16 @@ var (
 	SaveChannelID           string
 	ControlPanelChannelID   string
 
+	// Backup system configuration
+	BackupKeepLastN         int
+	BackupKeepDailyFor      time.Duration
+	BackupKeepWeeklyFor     time.Duration
+	BackupKeepMonthlyFor    time.Duration
+	BackupCleanupInterval   time.Duration
+	ConfiguredBackupDir     string
+	ConfiguredSafeBackupDir string
+	BackupWaitTime          time.Duration
+
 	// Server configuration
 	ServerName       string
 	ServerMaxPlayers string
@@ -127,8 +138,8 @@ var (
 	AuthTokenLifetime int // In minutes, e.g., 1440 (24h)
 
 	// Versioning
-	Version = "4.3.13"
-	Branch     = "nightly-discord-fixes"
+	Version = "4.3.17"
+	Branch     = "nightly-backups-v2"
 	GameBranch string
 )
 
@@ -179,6 +190,10 @@ func LoadConfig() (*JsonConfig, error) {
 	if len(parts) > 1 {
 		BackupWorldName = parts[1]
 	}
+
+	// Create dir paths for BackupManager
+	ConfiguredBackupDir = filepath.Join("./saves/" + WorldName + "/Backup")
+	ConfiguredSafeBackupDir = filepath.Join("./saves/" + WorldName + "/Safebackups")
 
 	//set the rest of the config variables from the json config if they are available
 	SaveInfo = jsonconfig.SaveInfo

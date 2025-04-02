@@ -63,21 +63,11 @@ func main() {
 	go legacy.StartBackupCleanupRoutine()
 	go legacy.WatchBackupDir()
 
-	// Backup manager
-	fmt.Println(string(colorBlue), "Initializing backup manager...", string(colorReset))
-	backupConfig := backupsv2.GetDefaultConfig()
-	fmt.Printf(string(colorCyan)+"Backup config: %+v\n"+string(colorReset), backupConfig)
-	BackupMgr := backupsv2.NewBackupManager(backupConfig)
-	if err := BackupMgr.Initialize(); err != nil { // Creates directories if they don’t exist
-		fmt.Printf(string(colorRed)+"Failed to initialize backup manager: %v\n"+string(colorReset), err)
+	backupConfig := backupsv2.GetBackupConfig()
+	if err := backupsv2.InitGlobalBackupManager(backupConfig); err != nil {
+		fmt.Printf(string(colorRed)+"Failed to initialize global backup manager: %v\n"+string(colorReset), err)
 		return
 	}
-	fmt.Println(string(colorCyan), "Backup directories initialized", string(colorReset))
-	if err := BackupMgr.Start(); err != nil {
-		fmt.Printf(string(colorRed)+"Failed to start backup manager: %v\n"+string(colorReset), err)
-		return
-	}
-	fmt.Println(string(colorGreen), "Backup manager ready!", string(colorReset))
 
 	// Set up handlers with auth middleware
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
@@ -123,8 +113,7 @@ func main() {
 	protectedMux.HandleFunc("/api/v2/server/start", core.StartServer)
 	protectedMux.HandleFunc("/api/v2/server/stop", core.StopServer)
 
-	// Backups
-	backupHandler := backupsv2.NewHTTPHandler(BackupMgr)
+	backupHandler := backupsv2.NewHTTPHandler(backupsv2.GlobalBackupManager)
 	protectedMux.HandleFunc("/api/v2/backups", backupHandler.ListBackupsHandler)
 	protectedMux.HandleFunc("/api/v2/backups/restore", backupHandler.RestoreBackupHandler)
 

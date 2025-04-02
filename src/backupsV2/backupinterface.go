@@ -7,8 +7,20 @@ import (
 	"time"
 )
 
-// GetDefaultConfig returns a properly configured BackupConfig
-func GetDefaultConfig() BackupConfig {
+// GlobalBackupManager is the singleton instance of the backup manager
+var GlobalBackupManager *BackupManager
+
+// InitGlobalBackupManager initializes the global backup manager instance
+func InitGlobalBackupManager(config BackupConfig) error {
+	GlobalBackupManager = NewBackupManager(config)
+	if err := GlobalBackupManager.Initialize(); err != nil {
+		return err
+	}
+	return GlobalBackupManager.Start()
+}
+
+// GetBackupConfig returns a properly configured BackupConfig
+func GetBackupConfig() BackupConfig {
 	backupDir := filepath.Join("./saves/" + config.WorldName + "/Backup")
 	safeBackupDir := filepath.Join("./saves/" + config.WorldName + "/Safebackups")
 
