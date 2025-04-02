@@ -2,8 +2,10 @@ package backupsv2
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // HTTPHandler provides HTTP endpoints for backup operations
@@ -35,6 +37,26 @@ func (h *HTTPHandler) ListBackupsHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// Check if classic mode is requested
+	mode := r.URL.Query().Get("mode")
+	if mode == "classic" {
+		// Format the response in the classic format
+		classicResponses := make([]string, 0, len(backups))
+		for _, backup := range backups {
+			// Format according to classic view: "BackupIndex: X, Created: DD.MM.YYYY HH:MM:SS"
+			classicLine := fmt.Sprintf("BackupIndex: %d, Created: %s",
+				backup.Index,
+				backup.ModTime.Format("02.01.2006 15:04:05"))
+			classicResponses = append(classicResponses, classicLine)
+		}
+
+		// Return plain text response for classic mode
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write([]byte(strings.Join(classicResponses, "\n")))
+		return
+	}
+
+	// Default JSON response
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(backups)
 }
