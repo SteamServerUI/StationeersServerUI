@@ -23,10 +23,23 @@ func handleControlReactions(s *discordgo.Session, r *discordgo.MessageReactionAd
 		actionMessage = "🛑Server is Stopping..."
 	case "♻️": // Restart action
 		actionMessage = "♻️Server is restarting..."
-		core.InternalStopServer()
-		//sleep 5 sec
-		time.Sleep(5 * time.Second)
-		core.InternalStartServer()
+		go func() {
+			// Perform stop operation
+			core.InternalStopServer()
+
+			// Non-blocking delay using channel and goroutine
+			delayChan := make(chan bool)
+			go func() {
+				time.Sleep(5 * time.Second)
+				delayChan <- true
+			}()
+
+			// Wait for delay to complete
+			<-delayChan
+
+			// Start server after delay
+			core.InternalStartServer()
+		}()
 
 	default:
 		fmt.Println("Unknown reaction:", r.Emoji.Name)
