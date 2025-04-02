@@ -46,6 +46,9 @@ func newFsWatcher(path string) (*fsWatcher, error) {
 
 // forwardEvents forwards events and errors from the underlying watcher
 func (w *fsWatcher) forwardEvents() {
+	//defer fmt.Println("File watcher event forwarder stopped")
+	//fmt.Println("File watcher event forwarder started")
+
 	for {
 		select {
 		case event, ok := <-w.watcher.Events:
@@ -55,6 +58,7 @@ func (w *fsWatcher) forwardEvents() {
 			}
 			select {
 			case w.events <- event:
+				// Successfully sent event
 			case <-w.done:
 				return
 			}
@@ -65,6 +69,7 @@ func (w *fsWatcher) forwardEvents() {
 			}
 			select {
 			case w.errors <- err:
+				// Successfully sent error
 			case <-w.done:
 				return
 			}
