@@ -8,6 +8,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// connectedPlayersMessageID tracks the message ID for editing the connected players message
+var connectedPlayersMessageID string
+
 // StartDiscordBot starts the Discord bot and connects it to the Discord API.
 func StartDiscordBot() {
 	var err error
@@ -39,7 +42,7 @@ func StartDiscordBot() {
 	fmt.Println("[DISCORD] Bot is now running.")
 	// Start the buffer flush ticker to send the remaining buffer every 5 seconds
 	config.BufferFlushTicker = time.NewTicker(5 * time.Second)
-	SendMessageToStatusChannel("🤖 Bot Version " + config.Version + " Branch " + config.Branch + "connected to Discord.")
+	SendMessageToStatusChannel("🤖 Bot Version " + config.Version + " Branch " + config.Branch + " connected to Discord.")
 	go func() {
 		for range config.BufferFlushTicker.C {
 			flushLogBufferToDiscord()
@@ -49,7 +52,7 @@ func StartDiscordBot() {
 	select {} // Keep the program running
 }
 
-// Updates the bot status with a string message
+// Updates the bot status with a string message (unused in 4.3)
 func UpdateBotStatusWithMessage(message string) {
 	err := config.DiscordSession.UpdateGameStatus(0, message)
 	if err != nil {

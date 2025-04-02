@@ -30,3 +30,15 @@ Please stop the server before using update commands.
 		fmt.Println("Help message sent to control channel.")
 	}
 }
+
+// DEPRECATED
+func handleUpdateCommand(s *discordgo.Session, channelID string) {
+	// Notify that the update process is starting
+	s.ChannelMessageSend(channelID, "🙏Sorry, this feature has been deprecated. Server Updates are now handled automatically at Software Startup. If you are interested in bringing this feature back, please report it on the GitHub repository. We will be happy to implement it.")
+}
+
+// DEPRECATED
+func handleValidateCommand(s *discordgo.Session, channelID string) {
+	// Notify that the update process is starting
+	s.ChannelMessageSend(channelID, "🙏Sorry, this feature has been deprecated. Server File Validation is now handled automatically at Software Startup. If you are interested in bringing this feature back, please report it on the GitHub repository. We will be happy to implement it.")
+}
