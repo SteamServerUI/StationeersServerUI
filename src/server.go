@@ -69,6 +69,12 @@ func main() {
 		return
 	}
 
+	if config.IsCleanupEnabled {
+		fmt.Println(string(colorBlue), "v2 Backup cleanup is enabled.", string(colorReset))
+	}
+
+	fmt.Println(string(colorBlue), "Global backup manager initialized.", string(colorReset))
+
 	// Set up handlers with auth middleware
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
 

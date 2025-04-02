@@ -26,6 +26,7 @@ type JsonConfig struct {
 	IsDiscordEnabled        bool   `json:"isDiscordEnabled"`
 	ErrorChannelID          string `json:"errorChannelID"`
 	BackupKeepLastN         int    `json:"backupKeepLastN"`
+	IsCleanupEnabled        bool   `json:"isCleanupEnabled"`
 	BackupKeepDailyFor      int    `json:"backupKeepDailyFor"`
 	BackupKeepWeeklyFor     int    `json:"backupKeepWeeklyFor"`
 	BackupKeepMonthlyFor    int    `json:"backupKeepMonthlyFor"`
@@ -79,6 +80,7 @@ var (
 	ControlPanelChannelID   string
 
 	// Backup system configuration
+	IsCleanupEnabled        bool
 	BackupKeepLastN         int
 	BackupKeepDailyFor      time.Duration
 	BackupKeepWeeklyFor     time.Duration
@@ -144,7 +146,7 @@ var (
 	AuthTokenLifetime int // In minutes, e.g., 1440 (24h)
 
 	// Versioning
-	Version = "4.3.18"
+	Version = "4.3.20"
 	Branch     = "nightly-backups-v2"
 	GameBranch string
 )
@@ -217,6 +219,10 @@ func LoadConfig() (*JsonConfig, error) {
 
 	if jsonconfig.BackupWaitTime <= 0 {
 		jsonconfig.BackupWaitTime = 30
+	}
+
+	if jsonconfig.IsCleanupEnabled {
+		IsCleanupEnabled = true
 	}
 
 	// Create variables for BackupManager

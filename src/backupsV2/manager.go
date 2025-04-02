@@ -8,6 +8,7 @@ import (
 	"sort"
 	"time"
 
+	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/discord"
 
 	"github.com/fsnotify/fsnotify"
@@ -32,7 +33,6 @@ func (m *BackupManager) Initialize() error {
 
 // Start begins the backup monitoring and cleanup routines
 func (m *BackupManager) Start() error {
-	fmt.Println("Backup Manager Start initialized")
 
 	if err := m.Initialize(); err != nil {
 		return fmt.Errorf("failed to initialize backup directories: %w", err)
@@ -46,6 +46,11 @@ func (m *BackupManager) Start() error {
 	m.watcher = watcher
 
 	go m.watchBackups()
+
+	if config.IsCleanupEnabled {
+		go m.startCleanupRoutine()
+	}
+
 	go m.startCleanupRoutine()
 
 	return nil
@@ -53,8 +58,8 @@ func (m *BackupManager) Start() error {
 
 // watchBackups monitors the backup directory for new files
 func (m *BackupManager) watchBackups() {
-	fmt.Println("Starting backup file watcher...")
-	defer fmt.Println("Backup file watcher stopped")
+	fmt.Println("[BACKUP] Starting backup file watcher...")
+	defer fmt.Println("[BACKUP] Backup file watcher stopped")
 
 	for {
 		select {
