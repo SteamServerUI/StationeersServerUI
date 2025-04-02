@@ -1,6 +1,7 @@
 package backupsv2
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -135,5 +136,20 @@ func (m *BackupManager) Shutdown() {
 	}
 	if m.watcher != nil {
 		m.watcher.close()
+	}
+}
+
+// NewBackupManager creates a new BackupManager instance
+func NewBackupManager(cfg BackupConfig) *BackupManager {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	if cfg.WaitTime == 0 {
+		cfg.WaitTime = defaultWaitTime
+	}
+
+	return &BackupManager{
+		config: cfg,
+		ctx:    ctx,
+		cancel: cancel,
 	}
 }

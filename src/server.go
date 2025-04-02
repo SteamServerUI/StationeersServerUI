@@ -1,13 +1,13 @@
 package main
 
 import (
-	"StationeersServerUI/src/backups"
 	"StationeersServerUI/src/backupsv2"
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/core"
 	"StationeersServerUI/src/detection"
 	"StationeersServerUI/src/discord"
 	"StationeersServerUI/src/install"
+	"StationeersServerUI/src/legacy"
 	"StationeersServerUI/src/security"
 	"StationeersServerUI/src/ssestream"
 	"fmt"
@@ -60,9 +60,14 @@ func main() {
 	go detection.StreamLogs(detector) // Pass the detector to the log stream function
 
 	fmt.Println(string(colorBlue), "Starting API services...", string(colorReset))
-	go backups.StartBackupCleanupRoutine()
-	go backups.WatchBackupDir()
-	go backupsv2.InitBackupManager()
+	go legacy.StartBackupCleanupRoutine()
+	go legacy.WatchBackupDir()
+
+	backupConfig := backupsv2.GetDefaultConfig()
+	backupManager := backupsv2.NewBackupManager(backupConfig)
+	if err := backupManager.Start(); err != nil {
+		fmt.Printf("Failed to start backup manager: %v\n", err)
+	}
 
 	// Set up handlers with auth middleware
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
@@ -94,8 +99,9 @@ func main() {
 	protectedMux.HandleFunc("/start", core.StartServer)
 	protectedMux.HandleFunc("/stop", core.StopServer)
 
-	protectedMux.HandleFunc("/backups", backups.ListBackups)
-	protectedMux.HandleFunc("/restore", backups.RestoreBackup)
+	// V1 API routes stay for now
+	protectedMux.HandleFunc("/backups", legacy.ListBackups)
+	protectedMux.HandleFunc("/restore", legacy.RestoreBackup)
 	protectedMux.HandleFunc("/saveconfigasjson", core.SaveConfigJSON)
 
 	// SSE routes
@@ -108,8 +114,9 @@ func main() {
 	protectedMux.HandleFunc("/api/v2/server/stop", core.StopServer)
 
 	// Backups
-	protectedMux.HandleFunc("/api/v2/backups", backupsv2.ListBackups)
-	protectedMux.HandleFunc("/api/v2/backups/restore", backupsv2.RestoreBackup)
+	backupHandler := backupsv2.NewHTTPHandler(backupManager)
+	protectedMux.HandleFunc("/api/v2/backups", backupHandler.ListBackupsHandler)
+	protectedMux.HandleFunc("/api/v2/backups/restore", backupHandler.RestoreBackupHandler)
 
 	// Configuration
 	protectedMux.HandleFunc("/api/v2/saveconfig", core.SaveConfigJSON)

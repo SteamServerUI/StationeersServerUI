@@ -1,4 +1,4 @@
-package backups
+package legacy
 
 import (
 	"StationeersServerUI/src/config"
