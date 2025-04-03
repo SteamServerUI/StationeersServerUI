@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -21,6 +22,8 @@ const (
 	colorMagenta = "\033[35m"
 	colorCyan    = "\033[36m"
 )
+
+var downloadBranch string // Holds the branch to download from
 
 // Install performs the entire installation process and ensures the server waits for it to complete
 func Install(wg *sync.WaitGroup) {
@@ -71,8 +74,6 @@ func CheckAndDownloadUIMod() {
 
 		if _, err := os.Stat(loginDir); os.IsNotExist(err) {
 			fmt.Println("⚠️ Folder ./UIMod/login/ does not exist. Creating it...")
-
-			// Create the folder
 			err := os.MkdirAll(loginDir, os.ModePerm)
 			if err != nil {
 				fmt.Printf("❌ Error creating folder: %v\n", err)
@@ -82,8 +83,6 @@ func CheckAndDownloadUIMod() {
 
 		if _, err := os.Stat(detectionmanagerDir); os.IsNotExist(err) {
 			fmt.Println("⚠️ Folder ./UIMod/detectionmanager/ does not exist. Creating it...")
-
-			// Create the folder
 			err := os.MkdirAll(detectionmanagerDir, os.ModePerm)
 			if err != nil {
 				fmt.Printf("❌ Error creating folder: %v\n", err)
@@ -91,34 +90,44 @@ func CheckAndDownloadUIMod() {
 			}
 		}
 
-		// List of files to download, using config.Branch
-		files := map[string]string{
-			"apiinfo.html":          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/apiinfo.html", config.Branch),
-			"config.html":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.html", config.Branch),
-			"config.json":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.json", config.Branch),
-			"index.html":            fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/index.html", config.Branch),
-			"script.js":             fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/script.js", config.Branch),
-			"stationeers.png":       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/stationeers.png", config.Branch),
-			"style.css":             fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/style.css", config.Branch),
-			"login.css":             fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.css", config.Branch),
-			"login.js":              fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.js", config.Branch),
-			"login.html":            fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.html", config.Branch),
-			"favicon.ico":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/favicon.ico", config.Branch),
-			"detectionmanager.js":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.js", config.Branch),
-			"detectionmanager.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.html", config.Branch),
-			"detectionmanager.css":  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.css", config.Branch),
+		if config.Branch == "release" || config.Branch == "Release" {
+			downloadBranch = "main"
+		} else {
+			downloadBranch = config.Branch
 		}
+
+		// List of files to download with their destination paths
+		files := map[string]string{
+			workingDir + "apiinfo.html":                   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/apiinfo.html", downloadBranch),
+			workingDir + "config.html":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.html", downloadBranch),
+			workingDir + "config.json":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.json", downloadBranch),
+			workingDir + "index.html":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/index.html", downloadBranch),
+			workingDir + "script.js":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/script.js", downloadBranch),
+			workingDir + "stationeers.png":                fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/stationeers.png", downloadBranch),
+			workingDir + "style.css":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/style.css", downloadBranch),
+			workingDir + "favicon.ico":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/favicon.ico", downloadBranch),
+			loginDir + "login.css":                        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.css", downloadBranch),
+			loginDir + "login.js":                         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.js", downloadBranch),
+			loginDir + "login.html":                       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.html", downloadBranch),
+			detectionmanagerDir + "detectionmanager.js":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.js", downloadBranch),
+			detectionmanagerDir + "detectionmanager.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.html", downloadBranch),
+			detectionmanagerDir + "detectionmanager.css":  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.css", downloadBranch),
+		}
+
 		// Set the first time setup flag to true
 		config.IsFirstTimeSetup = true
+
 		// Download each file
-		for fileName, url := range files {
+		for filepath, url := range files {
+			// Extract just the filename for display purposes
+			fileName := filepath[strings.LastIndex(filepath, "/")+1:]
 			fmt.Printf("Downloading %s... ", fileName)
-			err := downloadFileWithProgress(workingDir+fileName, url)
+			err := downloadFileWithProgress(filepath, url)
 			if err != nil {
-				fmt.Printf("\n❌ Error downloading %s: %v\n", fileName, err)
+				fmt.Printf("\n❌ Error downloading (setup may has been left incomplete) %s: %v\n", fileName, err)
 				return
 			}
-			fmt.Printf("\n✅ Downloaded %s successfully from branch %s\n", fileName, config.Branch)
+			fmt.Printf("\n✅ Downloaded %s successfully from branch %s\n", fileName, downloadBranch)
 		}
 
 		fmt.Println("✅ All files downloaded successfully.")
