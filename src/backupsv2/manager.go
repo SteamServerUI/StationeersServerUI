@@ -50,8 +50,6 @@ func (m *BackupManager) Start() error {
 		go m.startCleanupRoutine()
 	}
 
-	go m.startCleanupRoutine()
-
 	return nil
 }
 
