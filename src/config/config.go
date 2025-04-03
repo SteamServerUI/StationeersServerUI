@@ -66,7 +66,7 @@ type CustomDetection struct {
 }
 
 var (
-	Version                 = "4.3.38"
+	Version = "4.3.40"
 	Branch                  = "nightly-backups-v2"
 	GameBranch              string
 	DiscordToken            string
@@ -131,16 +131,21 @@ var (
 
 // LoadConfig loads and initializes the configuration
 func LoadConfig() (*JsonConfig, error) {
-	file, err := os.Open(ConfigPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open config file: %v", err)
-	}
-	defer file.Close()
-
 	var jsonConfig JsonConfig
-	decoder := json.NewDecoder(file)
-	if err := decoder.Decode(&jsonConfig); err != nil {
-		return nil, fmt.Errorf("failed to decode config: %v", err)
+	file, err := os.Open(ConfigPath)
+	if err == nil {
+		// File exists, proceed to decode it
+		defer file.Close()
+		decoder := json.NewDecoder(file)
+		if err := decoder.Decode(&jsonConfig); err != nil {
+			return nil, fmt.Errorf("failed to decode config: %v", err)
+		}
+	} else if os.IsNotExist(err) {
+		// File is missing, log it and proceed with defaults
+		fmt.Println("Config file does not exist. Using defaults and environment variables.")
+	} else {
+		// Other errors (e.g., permissions), fail immediately
+		return nil, fmt.Errorf("failed to open config file: %v", err)
 	}
 
 	// Initialize logger first
