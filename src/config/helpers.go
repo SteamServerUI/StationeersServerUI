@@ -131,6 +131,11 @@ func logConfigDetails() {
 }
 
 func generateJwtKey() string {
+
+	// ensure we return JwtKey if it's set
+	if len(JwtKey) > 0 {
+		return JwtKey
+	}
 	key := make([]byte, 32)
 	_, err := rand.Read(key)
 	if err != nil {
