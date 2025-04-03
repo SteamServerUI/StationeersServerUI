@@ -27,6 +27,11 @@ func UpdateExecutable() error {
 	// Get current executable name
 	currentExe := filepath.Base(os.Args[0])
 
+	if !config.IsUpdateEnabled {
+		fmt.Println(string(colorYellow), "⚠️ Update check is disabled. Skipping update check.", string(colorReset))
+		return nil
+	}
+
 	if config.Branch != "release" {
 		fmt.Println(string(colorYellow), "⚠️ You are running a development build. Skipping update check.", string(colorReset))
 		return nil

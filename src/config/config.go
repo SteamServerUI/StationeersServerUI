@@ -54,6 +54,7 @@ type JsonConfig struct {
 	JwtKey                  string `json:"JwtKey,omitempty"`
 	AuthTokenLifetime       int    `json:"AuthTokenLifetime,omitempty"`
 	Debug                   bool   `json:"Debug,omitempty"`
+	IsUpdateEnabled         bool   `json:"IsUpdateEnabled,omitempty"`
 }
 
 type CustomDetection struct {
@@ -65,7 +66,7 @@ type CustomDetection struct {
 }
 
 var (
-	Version = "4.3.31"
+	Version                 = "4.3.38"
 	Branch                  = "nightly-backups-v2"
 	GameBranch              string
 	DiscordToken            string
@@ -125,6 +126,7 @@ var (
 	Password                string
 	JwtKey                  string
 	AuthTokenLifetime       int
+	IsUpdateEnabled         bool
 )
 
 // LoadConfig loads and initializes the configuration
@@ -206,6 +208,7 @@ func applyConfig(cfg *JsonConfig) {
 	JwtKey = getString(cfg.JwtKey, "SSUI_JWT_KEY", generateJwtKey())
 	AuthTokenLifetime = getInt(cfg.AuthTokenLifetime, "SSUI_AUTH_TOKEN_LIFETIME", 1440)
 	IsDebugMode = getBool(cfg.Debug, "DEBUG", false)
+	IsUpdateEnabled = getBool(cfg.IsUpdateEnabled, "IS_UPDATE_ENABLED", false)
 
 	// Process SaveInfo
 	parts := strings.Split(SaveInfo, " ")
