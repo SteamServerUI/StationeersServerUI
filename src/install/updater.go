@@ -114,16 +114,17 @@ func downloadNewExecutable(filename, url string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create temp file: %v", err)
 	}
-	defer out.Close()
 
 	// Download from GitHub
 	resp, err := http.Get(url)
 	if err != nil {
+		out.Close()
 		return fmt.Errorf("failed to fetch %s: %v", url, err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		out.Close()
 		return fmt.Errorf("bad response from download: %s", resp.Status)
 	}
 
@@ -131,7 +132,13 @@ func downloadNewExecutable(filename, url string) error {
 	counter := &writeCounter{Total: resp.ContentLength}
 	_, err = io.Copy(out, io.TeeReader(resp.Body, counter))
 	if err != nil {
+		out.Close()
 		return fmt.Errorf("failed to write download to file: %v", err)
+	}
+
+	// Explicitly close the file before renaming
+	if err := out.Close(); err != nil {
+		return fmt.Errorf("failed to close temp file: %v", err)
 	}
 
 	// Rename temp file to final name
