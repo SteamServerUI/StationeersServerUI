@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -31,7 +32,7 @@ func Install(wg *sync.WaitGroup) {
 	fmt.Println(string(colorYellow), "Loading Config for Setup from", configFilePath, string(colorReset))
 	_, err := config.LoadConfig()
 	if err != nil {
-		fmt.Println("⚠️  Config file not found or invalid, downloading stable branch...")
+		fmt.Println("⚠️  Config file not found or invalid...")
 	}
 
 	// Step 1: Check and download the UIMod folder contents
@@ -69,7 +70,7 @@ func CheckAndDownloadUIMod() {
 		}
 
 		if _, err := os.Stat(loginDir); os.IsNotExist(err) {
-			fmt.Println("⚠️ Folder ./UIMod/loginDir does not exist. Creating it...")
+			fmt.Println("⚠️ Folder ./UIMod/login/ does not exist. Creating it...")
 
 			// Create the folder
 			err := os.MkdirAll(loginDir, os.ModePerm)
@@ -94,9 +95,7 @@ func CheckAndDownloadUIMod() {
 		files := map[string]string{
 			"apiinfo.html":          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/apiinfo.html", config.Branch),
 			"config.html":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.html", config.Branch),
-			"furtherconfig.html":    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/furtherconfig.html", config.Branch),
 			"config.json":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.json", config.Branch),
-			"config.xml":            fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.xml", config.Branch),
 			"index.html":            fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/index.html", config.Branch),
 			"script.js":             fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/script.js", config.Branch),
 			"stationeers.png":       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/stationeers.png", config.Branch),
@@ -113,12 +112,13 @@ func CheckAndDownloadUIMod() {
 		config.IsFirstTimeSetup = true
 		// Download each file
 		for fileName, url := range files {
-			err := downloadFile(workingDir+fileName, url)
+			fmt.Printf("Downloading %s... ", fileName)
+			err := downloadFileWithProgress(workingDir+fileName, url)
 			if err != nil {
-				fmt.Printf("❌ Error downloading %s: %v\n", fileName, err)
+				fmt.Printf("\n❌ Error downloading %s: %v\n", fileName, err)
 				return
 			}
-			fmt.Printf("✅ Downloaded %s successfully from branch %s\n", fileName, config.Branch)
+			fmt.Printf("\n✅ Downloaded %s successfully from branch %s\n", fileName, config.Branch)
 		}
 
 		fmt.Println("✅ All files downloaded successfully.")
@@ -148,8 +148,8 @@ func checkAndCreateBlacklist() {
 	}
 }
 
-// downloadFile downloads a file from the given URL and saves it to the given filepath
-func downloadFile(filepath string, url string) error {
+// downloadFileWithProgress downloads a file from the given URL and saves it to the given filepath with progress indication
+func downloadFileWithProgress(filepath string, url string) error {
 	// Create the file
 	out, err := os.Create(filepath)
 	if err != nil {
@@ -169,11 +169,83 @@ func downloadFile(filepath string, url string) error {
 		return fmt.Errorf("bad status: %s", resp.Status)
 	}
 
-	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
+	// Get the total size for progress reporting
+	size := resp.ContentLength
+
+	// Create a counter for tracking progress
+	counter := &writeCounter{
+		Total: size,
+	}
+
+	// Write the body to file with progress tracking
+	_, err = io.Copy(out, io.TeeReader(resp.Body, counter))
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// writeCounter tracks download progress
+type writeCounter struct {
+	Total int64
+	count int64
+}
+
+func (wc *writeCounter) Write(p []byte) (int, error) {
+	n := len(p)
+	wc.count += int64(n)
+	wc.printProgress()
+	return n, nil
+}
+
+func (wc *writeCounter) printProgress() {
+	// If we don't know the total size, just show downloaded bytes
+	if wc.Total <= 0 {
+		fmt.Printf("\r%s downloaded", bytesToHuman(wc.count))
+		return
+	}
+
+	// Calculate percentage with bounds checking
+	percent := float64(wc.count) / float64(wc.Total) * 100
+	if percent > 100 {
+		percent = 100
+	}
+
+	// Create simple progress bar
+	width := 20
+	complete := int(percent / 100 * float64(width))
+
+	progressBar := "["
+	for i := 0; i < width; i++ {
+		if i < complete {
+			progressBar += "="
+		} else if i == complete && complete < width {
+			progressBar += ">"
+		} else {
+			progressBar += " "
+		}
+	}
+	progressBar += "]"
+
+	// Print progress and erase to end of line
+	fmt.Printf("\r%s %.1f%% (%s/%s)",
+		progressBar,
+		percent,
+		bytesToHuman(wc.count),
+		bytesToHuman(wc.Total))
+}
+
+// bytesToHuman converts bytes to human readable format
+func bytesToHuman(bytes int64) string {
+	const unit = 1024
+	if bytes < unit {
+		return strconv.FormatInt(bytes, 10) + " B"
+	}
+	div, exp := int64(unit), 0
+	for n := bytes / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
 }
