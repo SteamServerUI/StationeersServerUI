@@ -17,6 +17,12 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
+/*
+The legacy backup system is no longer used in v4.3. It will be removed in a future release. This feature has been replaced by the new backupsv2 package in v4.3.
+The new system is more robust and has better performance. It also has a cleaner codebase and is easier to maintain.
+As no code is using the legacy backup system, it will be removed eventually, but for now the api routes are still available.
+*/
+
 type backupGroup struct {
 	binFile  string
 	xmlFile  string
@@ -24,13 +30,22 @@ type backupGroup struct {
 	modTime  time.Time
 }
 
+var httpwarnMSG = "WARNING: Deprecated backup endpoint accessed This legacy backup system is obsolete and will be removed. Use /api/v2/backups instead"
+
 func ListBackups(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("X-Deprecated-Warning",
+		"WARNING: This endpoint is DEPRECATED and will be removed in a future release. "+
+			"The legacy backup system is no longer maintained. Please migrate to backupsv2 package immediately.")
+
+	fmt.Println("WARNING: Deprecated endpoint /ListBackups accessed. " +
+		"This legacy backup system is obsolete and will be removed. " +
+		"Use backupsv2 package instead.")
 
 	// Read from the Safebackups folder
 	safeBackupDir := "./saves/" + config.WorldName + "/Safebackups"
 	files, err := os.ReadDir(safeBackupDir)
 	if err != nil {
-		fmt.Println("Error reading Safebackups directory:", err)
+		fmt.Println(httpwarnMSG, "Error reading Safebackups directory:", err)
 		// on error, try to create the directory
 		err = os.MkdirAll(safeBackupDir, os.ModePerm)
 		if err != nil {
@@ -86,9 +101,11 @@ func ListBackups(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(output) == 0 {
-		fmt.Fprint(w, "No valid backup files found in Safebackups directory.")
+		fmt.Fprint(w, httpwarnMSG, "No valid backup files found in Safebackups directory.")
 		return
 	}
+
+	output = append(output, httpwarnMSG)
 
 	response := strings.Join(output, "\n")
 	w.Header().Set("Content-Type", "text/plain")
@@ -130,6 +147,14 @@ func parseBackupIndex(fileName string) int {
 }
 
 func RestoreBackup(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("X-Deprecated-Warning",
+		"WARNING: This endpoint is DEPRECATED and will be removed in a future release. "+
+			"The legacy backup system is no longer maintained. Please migrate to backupsv2 package immediately.")
+
+	fmt.Println("WARNING: Deprecated endpoint /RestoreBackup accessed. " +
+		"This legacy backup system is obsolete and will be removed. " +
+		"Use backupsv2 package instead.")
+
 	indexStr := r.URL.Query().Get("index")
 	if indexStr == "" {
 		http.Error(w, "Index parameter is required", http.StatusBadRequest)
@@ -171,7 +196,7 @@ func RestoreBackup(w http.ResponseWriter, r *http.Request) {
 			if errAlt != nil {
 				// Revert any successful operations if an error occurs
 				revertRestore(restoredFiles, saveDir, safeBackupDir)
-				http.Error(w, fmt.Sprintf("Error restoring file %s and %s: %v", file.backupName, file.backupNameAlt, err), http.StatusInternalServerError)
+				http.Error(w, fmt.Sprintf(httpwarnMSG, " Error restoring file %s and %s: %v", file.backupName, file.backupNameAlt, err), http.StatusInternalServerError)
 				return
 			}
 			backupFile = backupFileAlt
@@ -179,7 +204,7 @@ func RestoreBackup(w http.ResponseWriter, r *http.Request) {
 		restoredFiles[destFile] = backupFile
 	}
 
-	fmt.Fprintf(w, "Backup %d restored successfully.", index)
+	fmt.Fprintf(w, httpwarnMSG, " Backup %d restored successfully.", index)
 }
 
 // copyFile copies a file from src to dst. If dst already exists, it will be overwritten. This is the inteded behavior of the restoreBackup function. We overwrite the destination files with the backup files
