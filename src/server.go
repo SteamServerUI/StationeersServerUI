@@ -108,7 +108,7 @@ func main() {
 	// V1 API routes stay for now
 	protectedMux.HandleFunc("/backups", legacy.ListBackups)
 	protectedMux.HandleFunc("/restore", legacy.RestoreBackup)
-	protectedMux.HandleFunc("/saveconfigasjson", core.SaveConfigJSON)
+	protectedMux.HandleFunc("/saveconfigasjson", core.SaveConfigForm)
 
 	// SSE routes
 	protectedMux.HandleFunc("/console", core.GetLogOutput)
@@ -124,7 +124,7 @@ func main() {
 	protectedMux.HandleFunc("/api/v2/backups/restore", backupHandler.RestoreBackupHandler)
 
 	// Configuration
-	protectedMux.HandleFunc("/api/v2/saveconfig", core.SaveConfigJSON)
+	protectedMux.HandleFunc("/api/v2/saveconfig", core.SaveConfigRestful)
 
 	// Custom Detections
 	protectedMux.HandleFunc("/api/v2/custom-detections", detection.HandleCustomDetection)
