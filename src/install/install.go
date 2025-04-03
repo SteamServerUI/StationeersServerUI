@@ -38,6 +38,11 @@ func Install(wg *sync.WaitGroup) {
 		fmt.Println("⚠️  Config file not found or invalid...")
 	}
 
+	// Step 0:  Check for updates
+	if err := UpdateExecutable(); err != nil {
+		fmt.Printf("❌ Update check went sideways: %v\n", err)
+	}
+
 	// Step 1: Check and download the UIMod folder contents
 	fmt.Println("🔄 Checking UIMod folder contents...")
 	CheckAndDownloadUIMod()
