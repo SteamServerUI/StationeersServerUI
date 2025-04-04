@@ -60,14 +60,13 @@ func main() {
 	go detection.StreamLogs(detector) // Pass the detector to the log stream function
 
 	fmt.Println(string(colorBlue), "Starting API services...", string(colorReset))
+
+	// Enable legacy backup system (async)
 	go legacy.StartBackupCleanupRoutine()
 	go legacy.WatchBackupDir()
 
-	backupConfig := backupsv2.GetBackupConfig()
-	if err := backupsv2.InitGlobalBackupManager(backupConfig); err != nil {
-		fmt.Printf(string(colorRed)+"Failed to initialize global backup manager: %v\n"+string(colorReset), err)
-		return
-	}
+	// Initialize the backup manager with its global Interface
+	backupsv2.ReloadBackupManagerFromConfig()
 
 	if config.IsCleanupEnabled {
 		fmt.Println(string(colorBlue), "v2 Backup cleanup is enabled.", string(colorReset))

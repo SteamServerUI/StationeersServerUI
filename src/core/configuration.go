@@ -1,10 +1,12 @@
 package core
 
 import (
+	"StationeersServerUI/src/backupsv2"
 	"StationeersServerUI/src/config"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"reflect"
@@ -194,7 +196,20 @@ func SaveConfigForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.LoadConfig() // Reload the saved config into globals
+	// Reload the saved config into globals
+	if _, err := config.LoadConfig(); err != nil {
+		log.Printf("Failed to load config: %v", err)
+		return
+	}
+	// Re-Initialize the backup manager with its global Interface
+	if err := backupsv2.ReloadBackupManagerFromConfig(); err != nil {
+		log.Printf("Failed to reload backup manager: %v", err)
+		return
+	}
+	if config.IsDebugMode {
+		fmt.Println("[BACKUP/DEBUG]Config and backup manager reloaded successfully")
+	}
+
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -283,7 +298,19 @@ func SaveConfigRestful(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.LoadConfig() // Reload the saved config into globals
+	// Reload the saved config into globals
+	if _, err := config.LoadConfig(); err != nil {
+		log.Printf("Failed to load config: %v", err)
+		return
+	}
+	// Re-Initialize the backup manager with its global Interface
+	if err := backupsv2.ReloadBackupManagerFromConfig(); err != nil {
+		log.Printf("Failed to reload backup manager: %v", err)
+		return
+	}
+	if config.IsDebugMode {
+		fmt.Println("[BACKUP/DEBUG]Config and backup manager reloaded successfully")
+	}
 
 	// Return success response in JSON format
 	w.Header().Set("Content-Type", "application/json")

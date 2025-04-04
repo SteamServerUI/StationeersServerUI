@@ -11,6 +11,11 @@ var GlobalBackupManager *BackupManager
 
 // InitGlobalBackupManager initializes the global backup manager instance
 func InitGlobalBackupManager(config BackupConfig) error {
+
+	if GlobalBackupManager != nil {
+		GlobalBackupManager.Shutdown()
+	}
+
 	GlobalBackupManager = NewBackupManager(config)
 	if err := GlobalBackupManager.Initialize(); err != nil {
 		return err
@@ -34,4 +39,13 @@ func GetBackupConfig() BackupConfig {
 			CleanupInterval: config.BackupKeepMonthlyFor,
 		},
 	}
+}
+
+// ReloadBackupManagerFromConfig reloads the global backup manager with the current config. This should be called whenever the config is changed.
+func ReloadBackupManagerFromConfig() error {
+	// Create a new backupManager config from the global config
+	backupConfig := GetBackupConfig()
+
+	// Reinitialize the global backup manager with the new config
+	return InitGlobalBackupManager(backupConfig)
 }
