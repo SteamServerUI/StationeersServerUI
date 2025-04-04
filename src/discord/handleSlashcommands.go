@@ -224,7 +224,7 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 			embed := &discordgo.MessageEmbed{
 				Title:       "📜 Backup Archives",
 				Description: fmt.Sprintf("Showing %d-%d of %d backups", i+1, end, len(backups)),
-				Color:       0xFFD700, // Gold for a warm, fancy vibe
+				Color:       0xFFD700,
 				Fields:      []*discordgo.MessageEmbedField{},
 			}
 
