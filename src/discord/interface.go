@@ -8,9 +8,21 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// StartDiscordBot starts the Discord bot and connects it to the Discord API.
-func StartDiscordBot() {
+// InitializeDiscordBot starts or restarts the Discord bot and connects it to the Discord API.
+func InitializeDiscordBot() {
 	var err error
+
+	if config.DiscordSession != nil {
+		if config.IsDebugMode {
+			fmt.Println("[DISCORD] Previous Discord session found, closing it...")
+		}
+		config.DiscordSession.Close()
+	}
+
+	if config.BufferFlushTicker != nil {
+		config.BufferFlushTicker.Stop()
+	}
+
 	config.DiscordSession, err = discordgo.New("Bot " + config.DiscordToken)
 	if err != nil {
 		fmt.Println("[DISCORD] Error creating Discord session:", err)

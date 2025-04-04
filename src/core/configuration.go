@@ -308,8 +308,9 @@ func SaveConfigRestful(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Failed to reload backup manager: %v", err)
 		return
 	}
+
 	if config.IsDebugMode {
-		fmt.Println("[BACKUP/DEBUG]Config and backup manager reloaded successfully")
+		fmt.Println("[BACKUP/DEBUG]Config and backup manager reloaded")
 	}
 
 	// Return success response in JSON format

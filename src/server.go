@@ -53,8 +53,8 @@ func main() {
 
 	// If Discord is enabled, start the Discord bot
 	if config.IsDiscordEnabled {
-		fmt.Println(string(colorGreen), "Starting Discord bot...", string(colorReset))
-		go discord.StartDiscordBot()
+		fmt.Println(string(colorGreen), "Initializing Discord bot...", string(colorReset))
+		go discord.InitializeDiscordBot()
 	}
 
 	go detection.StreamLogs(detector) // Pass the detector to the log stream function
