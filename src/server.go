@@ -96,7 +96,7 @@ func main() {
 	protectedMux := http.NewServeMux()
 	fs := http.FileServer(http.Dir("./UIMod"))
 	protectedMux.Handle("/static/", http.StripPrefix("/static/", fs))
-	protectedMux.HandleFunc("/config", core.HandleConfigJSON)
+	protectedMux.HandleFunc("/config", core.ServeConfigPage)
 	protectedMux.HandleFunc("/detectionmanager", core.ServeDetectionManager)
 	protectedMux.HandleFunc("/", core.ServeIndex)
 
