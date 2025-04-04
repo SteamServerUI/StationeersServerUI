@@ -5,6 +5,7 @@ import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/core"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -127,7 +128,7 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 
 	case "restore":
 		options := i.ApplicationCommandData().Options
-		indexStr := options[0].StringValue() // Required option
+		indexStr := options[0].StringValue()
 		index, err := strconv.Atoi(indexStr)
 		if err != nil {
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -168,7 +169,7 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 		if len(options) > 0 {
 			limitStr := options[0].StringValue()
 			if strings.ToLower(limitStr) == "all" {
-				limit = 0 // 0 means all in ListBackups
+				limit = 0
 			} else {
 				var err error
 				limit, err = strconv.Atoi(limitStr)
@@ -205,21 +206,58 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 			return
 		}
 
-		// Build a table-like response
-		table := "```\nIndex | Created\n------|--------------------\n"
-		for _, backup := range backups {
-			table += fmt.Sprintf("%5d | %s\n", backup.Index, backup.ModTime.Format("2006-01-02 15:04:05"))
-		}
-		table += "```"
+		// Sort backups by ModTime, newest first
+		sort.Slice(backups, func(i, j int) bool {
+			return backups[i].ModTime.After(backups[j].ModTime)
+		})
 
+		// Build embeds, 20 backups per embed
+		batchSize := 20
+		embeds := []*discordgo.MessageEmbed{}
+		for i := 0; i < len(backups); i += batchSize {
+			end := i + batchSize
+			if end > len(backups) {
+				end = len(backups)
+			}
+			batch := backups[i:end]
+
+			embed := &discordgo.MessageEmbed{
+				Title:       "📜 Backup Archives",
+				Description: fmt.Sprintf("Showing %d-%d of %d backups", i+1, end, len(backups)),
+				Color:       0xFFD700, // Gold for a warm, fancy vibe
+				Fields:      []*discordgo.MessageEmbedField{},
+			}
+
+			for _, backup := range batch {
+				embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+					Name:   fmt.Sprintf("📂 Backup #%d", backup.Index),
+					Value:  fmt.Sprintf("⏰ %s", backup.ModTime.Format("January 2, 2006, 3:04 PM")),
+					Inline: false, // One per line
+				})
+			}
+
+			embeds = append(embeds, embed)
+		}
+
+		// Send first embed as interaction response
 		err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: table,
+				Embeds: []*discordgo.MessageEmbed{embeds[0]},
 			},
 		})
 		if err != nil {
-			fmt.Printf("[DISCORD] Error responding to /list: %v\n", err)
+			fmt.Printf("[DISCORD] Error responding to /list with first embed: %v\n", err)
+			return
+		}
+
+		// Send additional embeds
+		for _, embed := range embeds[1:] {
+			time.Sleep(500 * time.Millisecond)
+			_, err = s.ChannelMessageSendEmbed(i.ChannelID, embed)
+			if err != nil {
+				fmt.Printf("[DISCORD] Error sending additional /list embed: %v\n", err)
+			}
 		}
 	}
 }

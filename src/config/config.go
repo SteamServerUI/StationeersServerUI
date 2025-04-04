@@ -66,8 +66,8 @@ type CustomDetection struct {
 }
 
 var (
-	Version = "4.5.5"
-	Branch                  = "nightly-v4-4-0"
+	Version = "4.5.7"
+	Branch                  = "nightly-v4-5-0"
 	GameBranch              string
 	DiscordToken            string
 	DiscordSession          *discordgo.Session
