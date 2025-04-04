@@ -12,6 +12,14 @@ import (
 func StartDiscordBot() {
 	var err error
 	config.DiscordSession, err = discordgo.New("Bot " + config.DiscordToken)
+	if err != nil {
+		fmt.Println("[DISCORD] Error creating Discord session:", err)
+		return
+	}
+
+	// Set intents explicitly: Guilds for channel info, GuildMessages for message handling, GuildMessageReactions for reactions
+	config.DiscordSession.Identify.Intents = discordgo.IntentsGuilds | discordgo.IntentsGuildMessages | discordgo.IntentsGuildMessageReactions | discordgo.IntentsMessageContent
+
 	fmt.Println("[DISCORD] Starting Discord integration...")
 	if config.IsDebugMode {
 		fmt.Println("[DISCORD] Discord token:", config.DiscordToken)
@@ -21,20 +29,18 @@ func StartDiscordBot() {
 		fmt.Println("[DISCORD] LogChannelID:", config.LogChannelID)
 		fmt.Println("[DISCORD] SaveChannelID:", config.SaveChannelID)
 	}
-	if err != nil {
-		fmt.Println("[DISCORD] Error creating Discord session:", err)
-		return
-	}
-	fmt.Println("[DISCORD] Bot is now running and connected")
 
 	config.DiscordSession.AddHandler(listenToDiscordMessages)
 	config.DiscordSession.AddHandler(listenToDiscordReactions)
+	config.DiscordSession.AddHandler(listenToSlashCommands)
 
 	err = config.DiscordSession.Open()
 	if err != nil {
 		fmt.Println("[DISCORD] Error opening Discord connection:", err)
 		return
 	}
+
+	registerSlashCommands(config.DiscordSession)
 
 	fmt.Println("[DISCORD] Bot is now running.")
 	// Start the buffer flush ticker to send the remaining buffer every 5 seconds

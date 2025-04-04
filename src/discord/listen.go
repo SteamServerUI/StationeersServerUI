@@ -3,6 +3,7 @@ package discord
 import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/core"
+	"fmt"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -12,8 +13,17 @@ import (
 func listenToDiscordMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if m.Author.ID == s.State.User.ID || m.ChannelID != config.ControlChannelID {
+		fmt.Println("Ignoring message from", m.Author.Username)
+		fmt.Println("Ignored message:", m.Content)
+		fmt.Println("Message channel:", m.ChannelID)
 		return
 	}
+
+	// log the message if debug is enabled
+
+	fmt.Println("Received message:", m.Content)
+	fmt.Println("Message author:", m.Author.Username)
+	fmt.Println("Message channel:", m.ChannelID)
 
 	content := strings.TrimSpace(m.Content)
 
