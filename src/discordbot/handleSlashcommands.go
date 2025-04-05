@@ -13,6 +13,40 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// EmbedData represents the structure for creating embeds
+type EmbedData struct {
+	Title       string
+	Description string
+	Color       int
+	Fields      []EmbedField
+}
+
+// EmbedField represents a single field in the embed
+type EmbedField struct {
+	Name   string
+	Value  string
+	Inline bool
+}
+
+// generateEmbed creates a Discord embed from EmbedData
+func generateEmbed(data EmbedData) *discordgo.MessageEmbed {
+	fields := make([]*discordgo.MessageEmbedField, len(data.Fields))
+	for i, field := range data.Fields {
+		fields[i] = &discordgo.MessageEmbedField{
+			Name:   field.Name,
+			Value:  field.Value,
+			Inline: field.Inline,
+		}
+	}
+
+	return &discordgo.MessageEmbed{
+		Title:       data.Title,
+		Description: data.Description,
+		Color:       data.Color,
+		Fields:      fields,
+	}
+}
+
 // registerSlashCommands defines and registers slash commands
 func registerSlashCommands(s *discordgo.Session) {
 	commands := []*discordgo.ApplicationCommand{
@@ -78,10 +112,18 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 
 	switch cmdName {
 	case "start":
+		embed := generateEmbed(EmbedData{
+			Title:       "Server Control",
+			Description: "Starting the server...",
+			Color:       0x00FF00, // Green
+			Fields: []EmbedField{
+				{Name: "Status", Value: "🕛 In Progress", Inline: true},
+			},
+		})
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: "🕛Server is starting...",
+				Embeds: []*discordgo.MessageEmbed{embed},
 			},
 		})
 		if err != nil {
@@ -92,10 +134,18 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 		SendMessageToStatusChannel("🕛Start command received from Server Controller, Server is Starting...")
 
 	case "stop":
+		embed := generateEmbed(EmbedData{
+			Title:       "Server Control",
+			Description: "Stopping the server...",
+			Color:       0xFF0000, // Red
+			Fields: []EmbedField{
+				{Name: "Status", Value: "🕛 In Progress", Inline: true},
+			},
+		})
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: "🕛Server is stopping...",
+				Embeds: []*discordgo.MessageEmbed{embed},
 			},
 		})
 		if err != nil {
@@ -106,20 +156,24 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 		SendMessageToStatusChannel("🕛Stop command received from Server Controller, flatlining Server in 5 Seconds...")
 
 	case "help":
-		helpMessage := `
-**Available Commands:**
-- ` + "`/start`" + `: Starts the server.
-- ` + "`/stop`" + `: Stops the server.
-- ` + "`/restore <index>`" + `: Restores a backup at the specified index. Usage: ` + "`/restore 1`" + `.
-- ` + "`/list [limit]`" + `: Lists the most recent backups. Use ` + "`/list all`" + ` or ` + "`/list 3`" + `.
-- ` + "`/help`" + `: Displays this help message.
-- ` + "`!ban:<SteamID>`" + `: Bans a player by their SteamID. Usage: ` + "`!ban:76561198334231312`" + `.
-- ` + "`!unban:<SteamID>`" + `: Unbans a player by their SteamID. Usage: ` + "`!unban:76561198334231312`" + `.
-`
+		embed := generateEmbed(EmbedData{
+			Title:       "Command Help",
+			Description: "Available Commands:",
+			Color:       0x1E90FF, // Blue
+			Fields: []EmbedField{
+				{Name: "/start", Value: "Starts the server", Inline: false},
+				{Name: "/stop", Value: "Stops the server", Inline: false},
+				{Name: "/restore <index>", Value: "Restores a backup at the specified index", Inline: false},
+				{Name: "/list [limit]", Value: "Lists recent backups (default: 5)", Inline: false},
+				{Name: "/help", Value: "Shows this help message", Inline: false},
+				{Name: "!ban:<SteamID>", Value: "Bans a player by SteamID", Inline: false},
+				{Name: "!unban:<SteamID>", Value: "Unbans a player by SteamID", Inline: false},
+			},
+		})
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: helpMessage,
+				Embeds: []*discordgo.MessageEmbed{embed},
 			},
 		})
 		if err != nil {
@@ -131,20 +185,36 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 		indexStr := options[0].StringValue()
 		index, err := strconv.Atoi(indexStr)
 		if err != nil {
+			embed := generateEmbed(EmbedData{
+				Title:       "Restore Failed",
+				Description: "Invalid index provided",
+				Color:       0xFF0000,
+				Fields: []EmbedField{
+					{Name: "Error", Value: "Please provide a valid number", Inline: true},
+				},
+			})
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
-					Content: "❌Invalid index provided for restore.",
+					Embeds: []*discordgo.MessageEmbed{embed},
 				},
 			})
 			SendMessageToStatusChannel("⚠️Restore command received, but not able to restore Server.")
 			return
 		}
 
+		embed := generateEmbed(EmbedData{
+			Title:       "Backup Restore",
+			Description: fmt.Sprintf("Restoring backup #%d...", index),
+			Color:       0xFFA500, // Orange
+			Fields: []EmbedField{
+				{Name: "Status", Value: "🕛 In Progress", Inline: true},
+			},
+		})
 		err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: fmt.Sprintf("🕛Restoring backup %d...", index),
+				Embeds: []*discordgo.MessageEmbed{embed},
 			},
 		})
 		if err != nil {
@@ -174,10 +244,18 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 				var err error
 				limit, err = strconv.Atoi(limitStr)
 				if err != nil || limit < 1 {
+					embed := generateEmbed(EmbedData{
+						Title:       "List Failed",
+						Description: "Invalid limit provided",
+						Color:       0xFF0000,
+						Fields: []EmbedField{
+							{Name: "Error", Value: "Use a number or 'all'", Inline: true},
+						},
+					})
 					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 						Type: discordgo.InteractionResponseChannelMessageWithSource,
 						Data: &discordgo.InteractionResponseData{
-							Content: "❌Invalid limit provided. Use a number or 'all'.",
+							Embeds: []*discordgo.MessageEmbed{embed},
 						},
 					})
 					return
@@ -187,20 +265,34 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 
 		backups, err := backupmgr.GlobalBackupManager.ListBackups(limit)
 		if err != nil {
+			embed := generateEmbed(EmbedData{
+				Title:       "List Failed",
+				Description: "Error fetching backups",
+				Color:       0xFF0000,
+				Fields: []EmbedField{
+					{Name: "Error", Value: "Failed to fetch backup list", Inline: true},
+				},
+			})
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
-					Content: "❌Failed to fetch backup list.",
+					Embeds: []*discordgo.MessageEmbed{embed},
 				},
 			})
 			return
 		}
 
 		if len(backups) == 0 {
+			embed := generateEmbed(EmbedData{
+				Title:       "Backup List",
+				Description: "No backups found",
+				Color:       0xFFD700,
+				Fields:      []EmbedField{},
+			})
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
-					Content: "No backups found.",
+					Embeds: []*discordgo.MessageEmbed{embed},
 				},
 			})
 			return
@@ -221,21 +313,21 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 			}
 			batch := backups[i:end]
 
-			embed := &discordgo.MessageEmbed{
+			fields := make([]EmbedField, len(batch))
+			for j, backup := range batch {
+				fields[j] = EmbedField{
+					Name:   fmt.Sprintf("📂 Backup #%d", backup.Index),
+					Value:  fmt.Sprintf("⏰ %s", backup.ModTime.Format("January 2, 2006, 3:04 PM")),
+					Inline: false,
+				}
+			}
+
+			embed := generateEmbed(EmbedData{
 				Title:       "📜 Backup Archives",
 				Description: fmt.Sprintf("Showing %d-%d of %d backups", i+1, end, len(backups)),
 				Color:       0xFFD700,
-				Fields:      []*discordgo.MessageEmbedField{},
-			}
-
-			for _, backup := range batch {
-				embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
-					Name:   fmt.Sprintf("📂 Backup #%d", backup.Index),
-					Value:  fmt.Sprintf("⏰ %s", backup.ModTime.Format("January 2, 2006, 3:04 PM")),
-					Inline: false, // One per line
-				})
-			}
-
+				Fields:      fields,
+			})
 			embeds = append(embeds, embed)
 		}
 
