@@ -9,6 +9,12 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+/*
+Ban and Unban commands are currently only supported by ![command] commands.
+This file contains the logic for ![command] discord commands using message content instead of proper slash commands.
+This functionality is deprecated and will be removed in a future version as it has been replaced with slash commands entirely.
+*/
+
 // listenToDiscordMessages triggers when any message is sent in the bots scope, regardless of the channel. IF the message is sent in the control channel, and the author is not the bot, process it.
 func listenToDiscordMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
@@ -33,23 +39,22 @@ func listenToDiscordMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 	switch {
 	case strings.HasPrefix(content, "!start"):
 		gamemgr.InternalStartServer()
-		s.ChannelMessageSend(m.ChannelID, "🕛Server is starting...")
+		SendMessageToControlChannel("🕛Server is starting...")
 		SendMessageToStatusChannel("🕛Start command received from Server Controller, Server is Starting...")
 
 	case strings.HasPrefix(content, "!stop"):
 		gamemgr.InternalStopServer()
-		s.ChannelMessageSend(m.ChannelID, "🕛Server is stopping...")
+		SendMessageToControlChannel("🕛Server is stopping...")
 		SendMessageToStatusChannel("🕛Stop command received from Server Controller, flatlining Server in 5 Seconds...")
 
 	case strings.HasPrefix(content, "!restore"):
-		SendMessageToStatusChannel("⚠️Restore command received, flatlining and restoring Server in 5 Seconds. Server will come back online in about 60 Seconds.")
-		handleRestoreCommand(content)
+		handleRestoreCommand()
 
 	case strings.HasPrefix(content, "!list"):
-		handleListCommand(content)
+		handleListCommand()
 
 	case strings.HasPrefix(content, "!update"):
-		handleUpdateCommand(s, m.ChannelID)
+		handleUpdateCommand()
 
 	case strings.HasPrefix(content, "!help"):
 		handleHelpCommand(s, m.ChannelID)
@@ -61,7 +66,7 @@ func listenToDiscordMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 		handleUnbanCommand(s, m.ChannelID, content)
 
 	case strings.HasPrefix(content, "!validate"):
-		handleValidateCommand(s, m.ChannelID)
+		handleValidateCommand()
 	default:
 		// Optionally handle unrecognized commands or ignore them
 	}
@@ -80,7 +85,8 @@ func listenToDiscordReactions(s *discordgo.Session, r *discordgo.MessageReaction
 		return
 	}
 
-	// Check if the reaction was added to the last exception message (not used in v4.3)
+	// Check if the reaction was added to the last sent exception message for attaching restart buttons. Not used in v4.3 as nothing is sending tracked Exception messages to Discord anymore.
+	//  Instead, we now only yoink the exception message to Discord without tracking it, thus there is no onfig.ExceptionMessageID set anymore. Removed as this was a rather unused feature.
 	if r.MessageID == config.ExceptionMessageID {
 		handleExceptionReactions(s, r)
 		return

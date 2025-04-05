@@ -100,7 +100,7 @@ func SendUntrackedMessageToErrorChannel(message string) {
 	}
 }
 
-// unsused in 4.3, needed for having a restart button on the last exception message like in v2. Might remve this in the future, but for now let's keep it.
+// unsused (replaced with SendUntrackedMessageToErrorChannel) in 4.3, needed for having a restart button on the last exception message like in v2. Might remve this in the future, but for now let's keep it.
 func sendMessageToErrorChannel(message string) []*discordgo.Message {
 	if !config.IsDiscordEnabled {
 		return nil
@@ -151,7 +151,7 @@ func sendMessageToErrorChannel(message string) []*discordgo.Message {
 	return sentMessages
 }
 
-func sendControlMessage() {
+func sendControlPanel() {
 	if !config.IsDiscordEnabled {
 		return
 	}
@@ -162,7 +162,7 @@ func sendControlMessage() {
 
 	msg, err := config.DiscordSession.ChannelMessageSend(config.ControlPanelChannelID, messageContent)
 	if err != nil {
-		fmt.Println("Error sending control message:", err)
+		fmt.Println("Error sending control panel:", err)
 		return
 	}
 
@@ -171,11 +171,9 @@ func sendControlMessage() {
 	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "⏹️") // Stop
 	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "♻️") // Restart
 	config.ControlMessageID = msg.ID
-	if config.Branch == "Prod" {
+	if !config.IsDebugMode {
+		// clear alll old Control Panels, except the current one
 		clearMessagesAboveLastN(config.ControlPanelChannelID, 1)
-	}
-	if config.Branch != "Prod" {
-		clearMessagesAboveLastN(config.ControlPanelChannelID, 15)
 	}
 }
 

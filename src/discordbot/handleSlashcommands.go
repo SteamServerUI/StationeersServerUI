@@ -138,7 +138,7 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 			Description: "Starting the server...",
 			Color:       0x00FF00, // Green
 			Fields: []EmbedField{
-				{Name: "Status", Value: "🕛 In Progress", Inline: true},
+				{Name: "Status", Value: "🕛 Recieved", Inline: true},
 			},
 		})
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -160,7 +160,7 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 			Description: "Stopping the server...",
 			Color:       0xFF0000, // Red
 			Fields: []EmbedField{
-				{Name: "Status", Value: "🕛 In Progress", Inline: true},
+				{Name: "Status", Value: "🕛 Recieved", Inline: true},
 			},
 		})
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -250,7 +250,7 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 			Description: fmt.Sprintf("Restoring backup #%d...", index),
 			Color:       0xFFA500, // Orange
 			Fields: []EmbedField{
-				{Name: "Status", Value: "🕛 In Progress", Inline: true},
+				{Name: "Status", Value: "🕛 Recieved", Inline: true},
 			},
 		})
 		err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{

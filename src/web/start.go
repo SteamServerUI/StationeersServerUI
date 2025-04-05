@@ -5,7 +5,6 @@ import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/configchanger"
 	"StationeersServerUI/src/detectionmgr"
-	"StationeersServerUI/src/legacy"
 	"StationeersServerUI/src/security"
 	"fmt"
 	"net/http"
@@ -55,9 +54,6 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/start", StartServer)
 	protectedMux.HandleFunc("/stop", StopServer)
 
-	// V1 API routes stay for now
-	protectedMux.HandleFunc("/backups", legacy.ListBackups)
-	protectedMux.HandleFunc("/restore", legacy.RestoreBackup)
 	protectedMux.HandleFunc("/saveconfigasjson", configchanger.SaveConfigForm)
 
 	// SSE routes

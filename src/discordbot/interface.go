@@ -42,9 +42,9 @@ func InitializeDiscordBot() {
 		fmt.Println("[DISCORD] SaveChannelID:", config.SaveChannelID)
 	}
 
-	config.DiscordSession.AddHandler(listenToDiscordMessages)
-	config.DiscordSession.AddHandler(listenToDiscordReactions)
-	config.DiscordSession.AddHandler(listenToSlashCommands)
+	go config.DiscordSession.AddHandler(listenToDiscordMessages)
+	go config.DiscordSession.AddHandler(listenToDiscordReactions)
+	go config.DiscordSession.AddHandler(listenToSlashCommands)
 
 	err = config.DiscordSession.Open()
 	if err != nil {
@@ -52,7 +52,7 @@ func InitializeDiscordBot() {
 		return
 	}
 
-	registerSlashCommands(config.DiscordSession)
+	go registerSlashCommands(config.DiscordSession)
 
 	fmt.Println("[DISCORD] Bot is now running.")
 	// Start the buffer flush ticker to send the remaining buffer every 5 seconds
@@ -63,7 +63,7 @@ func InitializeDiscordBot() {
 			flushLogBufferToDiscord()
 		}
 	}()
-	sendControlMessage()
+	sendControlPanel()
 	select {} // Keep the program running
 }
 
