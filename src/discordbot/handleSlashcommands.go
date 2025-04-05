@@ -61,7 +61,7 @@ func registerSlashCommands(s *discordgo.Session) {
 		},
 		{
 			Name:        "status",
-			Description: "INOP: Gets the running status of the server",
+			Description: "Gets the running status of the gameserver process",
 		},
 		{
 			Name:        "help",
@@ -249,7 +249,7 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 		isServerRunning := gamemgr.InternalIsServerRunning()
 		embed := generateEmbed(EmbedData{
 			Title:       "Server Status",
-			Description: "Currently inDev, only shows false.",
+			Description: "The gameserver process is currently:",
 			Color:       0x00FF00, // Green
 			Fields: []EmbedField{
 				{Name: "Running:", Value: fmt.Sprintf("%t", isServerRunning), Inline: true},

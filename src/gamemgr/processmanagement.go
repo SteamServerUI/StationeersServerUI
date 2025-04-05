@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 )
 
 var (
@@ -132,14 +133,28 @@ func InternalIsServerRunning() bool {
 		return false
 	}
 
-	// Check if the process is still running
-	// On Windows, Process.Signal with 0 checks if the process exists without sending a signal
-	// On Unix, this also works as a no-op signal to check process existence
-	if err := cmd.Process.Signal(syscall.Signal(0)); err != nil {
-		// If there's an error, the process likely isn't running
-		cmd = nil // Clean up the cmd variable since the process is gone
-		return false
-	}
+	if runtime.GOOS == "windows" {
+		// On Windows, use cmd.Wait with a timeout to check if the process has exited
+		done := make(chan error, 1)
+		go func() {
+			done <- cmd.Wait()
+		}()
 
-	return true
+		select {
+		case <-done:
+			// If Wait completes, the process has exited
+			cmd = nil
+			return false
+		case <-time.After(100 * time.Millisecond):
+			// If it doesn't complete quickly, assume the process is still running
+			return true
+		}
+	} else {
+		// On Unix-like systems, use Signal(0) directly on the original process
+		if err := cmd.Process.Signal(syscall.Signal(0)); err != nil {
+			cmd = nil
+			return false
+		}
+		return true
+	}
 }
