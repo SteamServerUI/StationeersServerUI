@@ -58,8 +58,6 @@ func sendAndEditMessageInConnectedPlayersChannel(channelID, message string) {
 				connectedPlayersMessageID = msg.ID
 				fmt.Printf("[DISCORD] Sent new message after edit failure to channel %s with ID %s\n", channelID, msg.ID)
 			}
-		} else {
-			fmt.Printf("[DISCORD] Updated message in channel %s with ID %s\n", channelID, connectedPlayersMessageID)
 		}
 	}
 }

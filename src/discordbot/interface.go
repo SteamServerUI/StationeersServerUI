@@ -12,24 +12,25 @@ import (
 func InitializeDiscordBot() {
 	var err error
 
+	// Clean up previous session
 	if config.DiscordSession != nil {
 		if config.IsDebugMode {
 			fmt.Println("[DISCORD] Previous Discord session found, closing it...")
 		}
 		config.DiscordSession.Close()
 	}
-
 	if config.BufferFlushTicker != nil {
 		config.BufferFlushTicker.Stop()
 	}
 
+	// Create new session
 	config.DiscordSession, err = discordgo.New("Bot " + config.DiscordToken)
 	if err != nil {
 		fmt.Println("[DISCORD] Error creating Discord session:", err)
 		return
 	}
 
-	// Set intents explicitly: Guilds for channel info, GuildMessages for message handling, GuildMessageReactions for reactions
+	// Set intents
 	config.DiscordSession.Identify.Intents = discordgo.IntentsGuilds | discordgo.IntentsGuildMessages | discordgo.IntentsGuildMessageReactions | discordgo.IntentsMessageContent
 
 	fmt.Println("[DISCORD] Starting Discord integration...")
@@ -42,29 +43,33 @@ func InitializeDiscordBot() {
 		fmt.Println("[DISCORD] SaveChannelID:", config.SaveChannelID)
 	}
 
-	go config.DiscordSession.AddHandler(listenToDiscordMessages)
-	go config.DiscordSession.AddHandler(listenToDiscordReactions)
-	go config.DiscordSession.AddHandler(listenToSlashCommands)
-
+	// Open session first
 	err = config.DiscordSession.Open()
 	if err != nil {
 		fmt.Println("[DISCORD] Error opening Discord connection:", err)
 		return
 	}
 
-	go registerSlashCommands(config.DiscordSession)
+	// Register handlers and commands after session is open
+	config.DiscordSession.AddHandler(listenToDiscordMessages)
+	config.DiscordSession.AddHandler(listenToDiscordReactions)
+	config.DiscordSession.AddHandler(listenToSlashCommands)
+	fmt.Println("[DISCORD] Registering slash commands with Discord, this may take a few seconds...")
+	registerSlashCommands(config.DiscordSession)
 
 	fmt.Println("[DISCORD] Bot is now running.")
-	// Start the buffer flush ticker to send the remaining buffer every 5 seconds
-	config.BufferFlushTicker = time.NewTicker(5 * time.Second)
 	SendMessageToStatusChannel("🤖 Bot Version " + config.Version + " Branch " + config.Branch + " connected to Discord.")
+	sendControlPanel() // Send control panel message to Discord
+	UpdateBotStatusWithMessage("Ready")
+	// Start buffer flush ticker
+	config.BufferFlushTicker = time.NewTicker(5 * time.Second)
 	go func() {
 		for range config.BufferFlushTicker.C {
 			flushLogBufferToDiscord()
 		}
 	}()
-	sendControlPanel()
-	select {} // Keep the program running
+
+	select {} // Keep it running
 }
 
 // Updates the bot status with a string message (unused in 4.3)

@@ -53,10 +53,8 @@ func main() {
 	reloader.ReloadAll()
 
 	if config.IsCleanupEnabled {
-		fmt.Println(string(colorBlue), "v2 Backup cleanup is enabled.", string(colorReset))
+		fmt.Println(string(colorBlue), "Backup cleanup is enabled.", string(colorReset))
 	}
-
-	fmt.Println(string(colorBlue), "Global backup manager initialized.", string(colorReset))
 
 	web.StartWebServer(&wg)
 }

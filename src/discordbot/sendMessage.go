@@ -20,8 +20,6 @@ func SendMessageToControlChannel(message string) {
 	_, err := config.DiscordSession.ChannelMessageSend(config.ControlChannelID, message)
 	if err != nil {
 		fmt.Println("Error sending message to control channel:", err)
-	} else {
-		fmt.Println("Sent message to control channel:", message)
 	}
 }
 
@@ -37,8 +35,6 @@ func SendMessageToStatusChannel(message string) {
 	_, err := config.DiscordSession.ChannelMessageSend(config.StatusChannelID, message)
 	if err != nil {
 		fmt.Println("Error sending message to status channel:", err)
-	} else {
-		fmt.Println("Sent message to status channel:", message)
 	}
 }
 
@@ -54,8 +50,6 @@ func SendMessageToSavesChannel(message string) {
 	_, err := config.DiscordSession.ChannelMessageSend(config.SaveChannelID, message)
 	if err != nil {
 		fmt.Println("Error sending message to saves channel:", err)
-	} else {
-		fmt.Println("Sent message to saves channel:", message)
 	}
 }
 
@@ -201,8 +195,6 @@ func clearMessagesAboveLastN(channelID string, keep int) {
 				err := config.DiscordSession.ChannelMessageDelete(channelID, message.ID)
 				if err != nil {
 					fmt.Printf("Error deleting message %s in channel %s: %v\n", message.ID, channelID, err)
-				} else {
-					fmt.Printf("Deleted message %s in channel %s\n", message.ID, channelID)
 				}
 			}
 		}
