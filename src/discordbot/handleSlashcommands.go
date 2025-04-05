@@ -14,40 +14,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// EmbedData represents the structure for creating embeds
-type EmbedData struct {
-	Title       string
-	Description string
-	Color       int
-	Fields      []EmbedField
-}
-
-// EmbedField represents a single field in the embed
-type EmbedField struct {
-	Name   string
-	Value  string
-	Inline bool
-}
-
-// generateEmbed creates a Discord embed from EmbedData
-func generateEmbed(data EmbedData) *discordgo.MessageEmbed {
-	fields := make([]*discordgo.MessageEmbedField, len(data.Fields))
-	for i, field := range data.Fields {
-		fields[i] = &discordgo.MessageEmbedField{
-			Name:   field.Name,
-			Value:  field.Value,
-			Inline: field.Inline,
-		}
-	}
-
-	return &discordgo.MessageEmbed{
-		Title:       data.Title,
-		Description: data.Description,
-		Color:       data.Color,
-		Fields:      fields,
-	}
-}
-
 // registerSlashCommands defines and registers slash commands if they have not been registered already.
 func registerSlashCommands(s *discordgo.Session) {
 	commands := []*discordgo.ApplicationCommand{
@@ -169,30 +135,6 @@ func registerSlashCommands(s *discordgo.Session) {
 	wg.Wait()
 
 	fmt.Println("[DISCORD] Finished processing slash commands.")
-}
-
-// commandsAreEqual checks if two commands are functionally identical
-func commandsAreEqual(desired, existing *discordgo.ApplicationCommand) bool {
-	if desired.Name != existing.Name || desired.Description != existing.Description {
-		return false
-	}
-
-	// Compare options (nil vs empty slice handling)
-	if len(desired.Options) != len(existing.Options) {
-		return false
-	}
-
-	for i, desiredOpt := range desired.Options {
-		existingOpt := existing.Options[i]
-		if desiredOpt.Type != existingOpt.Type ||
-			desiredOpt.Name != existingOpt.Name ||
-			desiredOpt.Description != existingOpt.Description ||
-			desiredOpt.Required != existingOpt.Required {
-			return false
-		}
-	}
-
-	return true
 }
 
 // listenToSlashCommands handles slash command interactions
@@ -605,4 +547,29 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 		}
 
 	}
+}
+
+// This is used to determine if a slash command needs to be registered with the discord server we are connected to or if it already exists.
+// commandsAreEqual (helper) checks if two discrd commands are functionally identical
+func commandsAreEqual(desired, existing *discordgo.ApplicationCommand) bool {
+	if desired.Name != existing.Name || desired.Description != existing.Description {
+		return false
+	}
+
+	// Compare options (nil vs empty slice handling)
+	if len(desired.Options) != len(existing.Options) {
+		return false
+	}
+
+	for i, desiredOpt := range desired.Options {
+		existingOpt := existing.Options[i]
+		if desiredOpt.Type != existingOpt.Type ||
+			desiredOpt.Name != existingOpt.Name ||
+			desiredOpt.Description != existingOpt.Description ||
+			desiredOpt.Required != existingOpt.Required {
+			return false
+		}
+	}
+
+	return true
 }

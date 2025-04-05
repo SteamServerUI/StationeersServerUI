@@ -10,6 +10,28 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// listenToDiscordReactions triggers when any reaction is added to any message. IF the reaction was added to a controled message, process it.
+func listenToDiscordReactions(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+	// Ignore bot's own reactions
+	if r.UserID == s.State.User.ID {
+		return
+	}
+
+	// Check if the reaction was added to the control message for server control
+	if r.MessageID == config.ControlMessageID {
+		handleControlReactions(s, r)
+		return
+	}
+
+	// Check if the reaction was added to the last sent exception message for attaching restart buttons. Not used in v4.3 as nothing is sending tracked Exception messages to Discord anymore.
+	//  Instead, we now only yoink the exception message to Discord without tracking it, thus there is no onfig.ExceptionMessageID set anymore. Removed as this was a rather unused feature.
+	if r.MessageID == config.ExceptionMessageID {
+		handleExceptionReactions(s, r)
+		return
+	}
+	// Optionally, we could add more message-specific handlers here for other features
+}
+
 func handleControlReactions(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	// handleControlReactions - Handles reactions for server control actions
 	var actionMessage string
