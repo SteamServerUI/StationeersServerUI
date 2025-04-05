@@ -2,7 +2,7 @@ package setup
 
 import (
 	"StationeersServerUI/src/config"
-	"fmt"
+	"StationeersServerUI/src/logger"
 	"io"
 	"os"
 	"os/exec"
@@ -22,40 +22,6 @@ const (
 	SteamCMDWindowsDir = "C:\\SteamCMD"
 )
 
-// Color codes for terminal
-const (
-	ColorReset  = "\033[0m"
-	ColorRed    = "\033[31m"
-	ColorGreen  = "\033[32m"
-	ColorYellow = "\033[33m"
-	ColorBlue   = "\033[34m"
-	ColorPurple = "\033[35m"
-	ColorCyan   = "\033[36m"
-	ColorWhite  = "\033[37m"
-)
-
-// Verbose mode flag - true if not Release branch
-var verbose = config.Branch != "Release"
-
-// logVerbose prints a message only if verbose mode is enabled.
-func logVerbose(message string) {
-	if verbose {
-		fmt.Print(message)
-	}
-}
-
-// logError prints an error message regardless of verbose mode.
-func logError(message string) {
-	fmt.Print(ColorRed + message + ColorReset)
-}
-
-// logSuccess prints a success message only if verbose mode is enabled.
-func logSuccess(message string) {
-	if verbose {
-		fmt.Print(ColorGreen + message + ColorReset)
-	}
-}
-
 // InstallAndRunSteamCMD installs and runs SteamCMD based on the platform (Windows/Linux).
 // It automatically detects the OS and calls the appropriate installation function.
 func InstallAndRunSteamCMD() {
@@ -64,7 +30,7 @@ func InstallAndRunSteamCMD() {
 	} else if runtime.GOOS == "linux" {
 		installSteamCMDLinux()
 	} else {
-		logError("❌ SteamCMD installation is not supported on this OS.\n")
+		logger.Install.Error("❌ SteamCMD installation is not supported on this OS.\n")
 		return
 	}
 }
@@ -72,11 +38,11 @@ func InstallAndRunSteamCMD() {
 func installSteamCMD(platform string, steamCMDDir string, downloadURL string, extractFunc ExtractorFunc) {
 	// Check if SteamCMD is already installed
 	if _, err := os.Stat(steamCMDDir); os.IsNotExist(err) {
-		logVerbose(ColorYellow + "⚠️ SteamCMD not found for " + platform + ", downloading...\n" + ColorReset)
+		logger.Install.Warn("⚠️ SteamCMD not found for " + platform + ", downloading...\n")
 
 		// Create SteamCMD directory
 		if err := createSteamCMDDirectory(steamCMDDir); err != nil {
-			logError("❌ Error creating SteamCMD directory: " + err.Error() + "\n")
+			logger.Install.Error("❌ Error creating SteamCMD directory: " + err.Error() + "\n")
 			return
 		}
 
@@ -84,40 +50,41 @@ func installSteamCMD(platform string, steamCMDDir string, downloadURL string, ex
 		success := false
 		defer func() {
 			if !success {
-				logVerbose(ColorYellow + "⚠️ Cleaning up due to failure...\n" + ColorReset)
+				logger.Install.Warn("⚠️ Cleaning up due to failure...\n")
 				os.RemoveAll(steamCMDDir)
 			}
 		}()
 
 		// Install required libraries
 		if err := installRequiredLibraries(); err != nil {
-			logError("❌ Error installing required libraries: " + err.Error() + "\n")
+			logger.Install.Error("❌ Error installing required libraries: " + err.Error() + "\n")
 			return
 		}
 
 		// Download and extract SteamCMD
 		if err := downloadAndExtractSteamCMD(downloadURL, steamCMDDir, extractFunc); err != nil {
-			logError("❌ " + err.Error() + "\n")
+			logger.Install.Error("❌ " + err.Error() + "\n")
 			return
 		}
 
 		// Set executable permissions for SteamCMD files
 		if err := setExecutablePermissions(steamCMDDir); err != nil {
-			logError("❌ Error setting executable permissions: " + err.Error() + "\n")
+			logger.Install.Error("❌ Error setting executable permissions: " + err.Error() + "\n")
 			return
 		}
 
 		// Verify the steamcmd binary
 		if err := verifySteamCMDBinary(steamCMDDir); err != nil {
-			logError("❌ " + err.Error() + "\n")
+			logger.Install.Error("❌ " + err.Error() + "\n")
 			return
 		}
 
 		// Mark installation as successful
 		success = true
-		logSuccess("✅ SteamCMD installed successfully.\n")
+		logger.Install.Info("✅ SteamCMD installed successfully.\n")
 	} else {
-		logVerbose("✅ SteamCMD is already installed.\n")
+
+		logger.Install.Info("✅ SteamCMD is already installed.\n")
 	}
 
 	// Run SteamCMD
@@ -138,15 +105,15 @@ func installSteamCMDWindows() {
 func runSteamCMD(steamCMDDir string) {
 	currentDir, err := os.Getwd()
 	if err != nil {
-		logError("❌ Error getting current working directory: " + err.Error() + "\n")
+		logger.Install.Error("❌ Error getting current working directory: " + err.Error() + "\n")
 		return
 	}
-	logVerbose("✅ Current working directory: " + currentDir + "\n")
+	logger.Install.Debug("✅ Current working directory: " + currentDir + "\n")
 
 	// Ensure permissions every time if we run on linux
 	if runtime.GOOS != "windows" {
 		if err := setExecutablePermissions(steamCMDDir); err != nil {
-			logError("❌ Error setting executable permissions, your Steamcmd install might be broken: " + err.Error() + "\n")
+			logger.Install.Error("❌ Error setting executable permissions, your Steamcmd install might be broken: " + err.Error() + "\n")
 			return
 		}
 	}
@@ -159,20 +126,21 @@ func runSteamCMD(steamCMDDir string) {
 	cmd.Stderr = os.Stderr
 
 	// Run the command
-	logVerbose(ColorBlue + "🕑 Running SteamCMD...\n" + ColorReset)
+	logger.Install.Info("🕑 Running SteamCMD...\n")
 	err = cmd.Run()
 	if err != nil {
-		logError("❌ Error running SteamCMD: " + err.Error() + "\n")
+		logger.Install.Error("❌ Error running SteamCMD: " + err.Error() + "\n")
 		return
 	}
-	logSuccess("✅ SteamCMD executed successfully.\n")
+	logger.Install.Info("✅ SteamCMD executed successfully.\n")
 }
 
 // buildSteamCMDCommand constructs the SteamCMD command based on the OS.
 func buildSteamCMDCommand(steamCMDDir, currentDir string) *exec.Cmd {
 	//print the config.GameBranch and config.GameServerAppID
-	logVerbose(ColorCyan + "🔍 Game Branch: " + ColorWhite + config.GameBranch + ColorReset + "\n")
-	logVerbose(ColorCyan + "🔍 Game Server App ID: " + ColorWhite + config.GameServerAppID + ColorReset + "\n")
+	logger.Install.Info("🔍 Game Branch: " + config.GameBranch + "\n")
+	logger.Install.Debug("🔍 Game Server App ID: " + config.GameServerAppID + "\n")
+
 	if runtime.GOOS == "windows" {
 		return exec.Command(filepath.Join(steamCMDDir, "steamcmd.exe"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GameServerAppID, "-beta", config.GameBranch, "validate", "+quit")
 	}
@@ -181,6 +149,4 @@ func buildSteamCMDCommand(steamCMDDir, currentDir string) *exec.Cmd {
 		return exec.Command(filepath.Join(steamCMDDir, "steamcmd.sh"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GameServerAppID, "validate", "+quit")
 	}
 	return exec.Command(filepath.Join(steamCMDDir, "steamcmd.sh"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GameServerAppID, "-beta", config.GameBranch, "validate", "+quit")
-	//print the steamcmd command
-
 }

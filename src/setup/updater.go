@@ -39,7 +39,7 @@ func UpdateExecutable() error {
 	}
 
 	// Fetch latest release from GitHub
-	fmt.Println(string(colorCyan), "🕵️‍♂️ Querying GitHub API for the latest release...", string(colorReset))
+	logger.Install.Info("🕵️" + "Querying GitHub API for the latest release...")
 	latestRelease, err := getLatestRelease()
 	if err != nil {
 		return fmt.Errorf("❌ Failed to fetch latest release: %v", err)
@@ -51,11 +51,11 @@ func UpdateExecutable() error {
 		expectedExt = ".x86_64"
 	}
 	expectedExe := fmt.Sprintf("StationeersServerControl%s%s", latestRelease.TagName, expectedExt)
-	fmt.Println(string(colorCyan), "🕵️‍♂️ Expected executable name:", expectedExe, string(colorReset))
+	logger.Install.Info("🕵️" + "Expected executable name: " + expectedExe)
 
 	// Check if we're already up-to-date
 	if currentExe == expectedExe {
-		fmt.Println(string(colorGreen), "🎉 You’re already rocking the latest version:", currentExe, string(colorReset))
+		logger.Install.Info("🎉 You’re already rocking the latest version: " + currentExe)
 		return nil
 	}
 
@@ -72,7 +72,7 @@ func UpdateExecutable() error {
 	}
 
 	// Download the new executable
-	fmt.Println(string(colorCyan), "📡 Found a newer version! Downloading", expectedExe, "...", string(colorReset))
+	logger.Install.Info("📡 Found a newer version! Downloading " + expectedExe + "...")
 	if err := downloadNewExecutable(expectedExe, downloadURL); err != nil {
 		return fmt.Errorf("❌ Failed to download new executable: %v", err)
 	}
@@ -85,7 +85,7 @@ func UpdateExecutable() error {
 	}
 
 	// Launch the new executable and exit
-	fmt.Println(string(colorMagenta), "🚀 Launching the new version and retiring the old one...", string(colorReset))
+	logger.Install.Info("🚀 Launching the new version and retiring the old one...")
 	if err := runAndExit(expectedExe); err != nil {
 		return fmt.Errorf("❌ Couldn’t switch to new executable: %v", err)
 	}
@@ -152,7 +152,7 @@ func downloadNewExecutable(filename, url string) error {
 		return fmt.Errorf("failed to rename temp file to %s: %v", filename, err)
 	}
 
-	fmt.Printf("\n✅ Downloaded %s like a champ!\n", filename)
+	logger.Install.Info("✅ Downloaded " + filename)
 	return nil
 }
 
@@ -178,7 +178,7 @@ func runAndExit(newExe string) error {
 	}
 
 	// Exit gracefully
-	fmt.Println(string(colorYellow), "✨ New version’s live! Catch you on the flip side!", string(colorReset))
+	logger.Install.Warn("✨ New version’s live! Catch you on the flip side!")
 	time.Sleep(500 * time.Millisecond) // Dramatic pause
 	os.Exit(0)
 	return nil

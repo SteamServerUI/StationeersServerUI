@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"StationeersServerUI/src/logger"
 	"archive/tar"
 	"archive/zip"
 	"bytes"
@@ -23,7 +24,7 @@ func createSteamCMDDirectory(steamCMDDir string) error {
 	if err := os.MkdirAll(steamCMDDir, os.ModePerm); err != nil {
 		return fmt.Errorf("failed to create SteamCMD directory: %w", err)
 	}
-	logVerbose("✅ Created SteamCMD directory: " + steamCMDDir + "\n")
+	logger.Install.Debug("✅ Created SteamCMD directory: " + steamCMDDir + "\n")
 	return nil
 }
 
@@ -33,7 +34,7 @@ func downloadAndExtractSteamCMD(downloadURL string, steamCMDDir string, extractF
 	if err := validateURL(downloadURL); err != nil {
 		return fmt.Errorf("invalid download URL: %w", err)
 	}
-	logVerbose("✅ Validated download URL: " + downloadURL + "\n")
+	logger.Install.Debug("✅ Validated download URL: " + downloadURL + "\n")
 
 	// Download SteamCMD with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -43,27 +44,28 @@ func downloadAndExtractSteamCMD(downloadURL string, steamCMDDir string, extractF
 	if err != nil {
 		return fmt.Errorf("error creating HTTP request: %w", err)
 	}
-	logVerbose("✅ Created HTTP request for download.\n")
+	logger.Install.Debug("✅ Created HTTP request for download.\n")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("error downloading SteamCMD: %w", err)
 	}
 	defer resp.Body.Close()
-	logVerbose("✅ Successfully downloaded SteamCMD.\n")
+	logger.Install.Debug("✅ Successfully downloaded SteamCMD.\n")
 
 	// Check for successful HTTP response
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to download SteamCMD: HTTP status %v", resp.Status)
 	}
-	logVerbose("✅ Received HTTP status: " + resp.Status + "\n")
+
+	logger.Install.Debug("✅ Received HTTP status: " + resp.Status + "\n")
 
 	// Read the downloaded content into memory
 	content, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("error reading SteamCMD content: %w", err)
 	}
-	logVerbose("✅ Read SteamCMD content into memory.\n")
+	logger.Install.Debug("✅ Read SteamCMD content into memory.\n")
 
 	// Create a reader for the content
 	contentReader := bytes.NewReader(content)
@@ -72,7 +74,7 @@ func downloadAndExtractSteamCMD(downloadURL string, steamCMDDir string, extractF
 	if err := extractFunc(contentReader, int64(len(content)), steamCMDDir); err != nil {
 		return fmt.Errorf("error extracting SteamCMD: %w", err)
 	}
-	logVerbose("✅ Successfully extracted SteamCMD.\n")
+	logger.Install.Debug("✅ Successfully extracted SteamCMD.\n")
 
 	return nil
 }
@@ -80,7 +82,7 @@ func downloadAndExtractSteamCMD(downloadURL string, steamCMDDir string, extractF
 // setExecutablePermissions sets executable permissions for SteamCMD files.
 func setExecutablePermissions(steamCMDDir string) error {
 	if runtime.GOOS == "windows" {
-		logVerbose("✅ Skipping executable permissions on Windows.\n")
+		logger.Install.Debug("✅ Skipping executable permissions on Windows.\n")
 		return nil
 	}
 	// List of files that need executable permissions
@@ -94,7 +96,7 @@ func setExecutablePermissions(steamCMDDir string) error {
 		if err := os.Chmod(file, 0755); err != nil {
 			return fmt.Errorf("failed to set executable permissions for %s: %w", file, err)
 		}
-		logVerbose("✅ Set executable permissions for: " + file + "\n")
+		logger.Install.Debug("✅ Set executable permissions for: " + file + "\n")
 	}
 
 	return nil
@@ -113,7 +115,7 @@ func verifySteamCMDBinary(steamCMDDir string) error {
 	if _, err := os.Stat(binaryPath); os.IsNotExist(err) {
 		return fmt.Errorf("steamcmd binary not found: %s", binaryPath)
 	}
-	logVerbose("✅ Verified steamcmd binary: " + binaryPath + "\n")
+	logger.Install.Debug("✅ Verified steamcmd binary: " + binaryPath + "\n")
 	return nil
 }
 
@@ -242,7 +244,7 @@ func installRequiredLibraries() error {
 
 	// Check if running inside a Docker container
 	if _, err := os.Stat("/.dockerenv"); err == nil {
-		fmt.Println("Running inside a Docker container, skipping library installation.")
+		logger.Install.Debug("✅ Running inside a Docker container, skipping library installation.\n")
 		return nil
 	}
 
@@ -258,12 +260,12 @@ func installRequiredLibraries() error {
 		// Check if the library is already installed
 		cmd := exec.Command("dpkg", "-s", lib)
 		if err := cmd.Run(); err == nil {
-			logVerbose("✅ Library already installed: " + lib + "\n")
+			logger.Install.Debug("✅ Library already installed: " + lib + "\n")
 			continue // Library is already installed, skip to the next one
 		}
 
 		// Library is not installed, attempt to install it
-		logVerbose("🔄 Installing library: " + lib + "\n")
+		logger.Install.Debug("🔄 Installing library: " + lib + "\n")
 		installCmd := exec.Command("sudo", "apt-get", "install", "-y", lib)
 		installCmd.Stdout = os.Stdout
 		installCmd.Stderr = os.Stderr
@@ -271,7 +273,7 @@ func installRequiredLibraries() error {
 		if err := installCmd.Run(); err != nil {
 			return fmt.Errorf("failed to install library %s: %w", lib, err)
 		}
-		logVerbose("✅ Installed library: " + lib + "\n")
+		logger.Install.Debug("✅ Installed library: " + lib + "\n")
 	}
 
 	return nil
