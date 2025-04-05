@@ -4,8 +4,8 @@ package detectionmgr
 import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/discordbot"
+	"StationeersServerUI/src/logger"
 	"StationeersServerUI/src/ssestream"
-	"fmt"
 )
 
 /*
@@ -21,7 +21,7 @@ func StreamLogs(detector *Detector) {
 	logChan := ssestream.ConsoleStreamManager.AddInternalSubscriber()
 
 	go func() {
-		fmt.Println(string(colorGreen), "Connected to internal log stream.", string(colorReset))
+		logger.Detection.SSE("Connected to internal log stream.")
 		for logMessage := range logChan {
 			if config.IsDiscordEnabled {
 				discordbot.PassLogStreamToDiscordLogBuffer(logMessage)
