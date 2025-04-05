@@ -6,17 +6,11 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
 	"time"
 )
-
-// handler for the /console endpoint
-func GetLogOutput(w http.ResponseWriter, r *http.Request) {
-	ssestream.StartConsoleStream()(w, r)
-}
 
 // readPipe for Windows
 func readPipe(pipe io.ReadCloser) {

@@ -2,6 +2,8 @@ package web
 
 import (
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/gamemgr"
+	"StationeersServerUI/src/ssestream"
 	"fmt"
 	"net/http"
 	"os"
@@ -172,4 +174,42 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprint(w, htmlContent)
+}
+
+// StartServer HTTP handler
+func StartServer(w http.ResponseWriter, r *http.Request) {
+	if err := gamemgr.InternalStartServer(); err != nil {
+		fmt.Fprint(w, err.Error())
+		return
+	}
+	fmt.Fprint(w, "Server started.")
+}
+
+// StopServer HTTP handler
+func StopServer(w http.ResponseWriter, r *http.Request) {
+	if err := gamemgr.InternalStopServer(); err != nil {
+		fmt.Fprint(w, err.Error())
+		return
+	}
+	fmt.Fprint(w, "Server stopped.")
+}
+
+// handler for the /console endpoint
+func GetLogOutput(w http.ResponseWriter, r *http.Request) {
+	StartConsoleStream()(w, r)
+}
+
+// handler for the /console endpoint
+func GetEventOutput(w http.ResponseWriter, r *http.Request) {
+	StartDetectionEventStream()(w, r)
+}
+
+// StartConsoleStream creates an HTTP handler for console log SSE streaming
+func StartConsoleStream() http.HandlerFunc {
+	return ssestream.ConsoleStreamManager.CreateStreamHandler("Console")
+}
+
+// StartDetectionEventStream creates an HTTP handler for detection event SSE streaming
+func StartDetectionEventStream() http.HandlerFunc {
+	return ssestream.EventStreamManager.CreateStreamHandler("Event")
 }

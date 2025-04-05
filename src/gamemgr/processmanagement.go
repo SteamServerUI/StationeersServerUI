@@ -4,7 +4,6 @@ package gamemgr
 import (
 	"StationeersServerUI/src/config"
 	"fmt"
-	"net/http"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -123,22 +122,4 @@ func InternalStopServer() error {
 
 	cmd = nil
 	return nil
-}
-
-// StartServer HTTP handler
-func StartServer(w http.ResponseWriter, r *http.Request) {
-	if err := InternalStartServer(); err != nil {
-		fmt.Fprint(w, err.Error())
-		return
-	}
-	fmt.Fprint(w, "Server started.")
-}
-
-// StopServer HTTP handler
-func StopServer(w http.ResponseWriter, r *http.Request) {
-	if err := InternalStopServer(); err != nil {
-		fmt.Fprint(w, err.Error())
-		return
-	}
-	fmt.Fprint(w, "Server stopped.")
 }

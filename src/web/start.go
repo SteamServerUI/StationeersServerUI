@@ -5,10 +5,8 @@ import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/configchanger"
 	"StationeersServerUI/src/detectionmgr"
-	"StationeersServerUI/src/gamemgr"
 	"StationeersServerUI/src/legacy"
 	"StationeersServerUI/src/security"
-	"StationeersServerUI/src/ssestream"
 	"fmt"
 	"net/http"
 	"net/http/pprof"
@@ -54,8 +52,8 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/", ServeIndex)
 
 	// v1 API routes
-	protectedMux.HandleFunc("/start", gamemgr.StartServer)
-	protectedMux.HandleFunc("/stop", gamemgr.StopServer)
+	protectedMux.HandleFunc("/start", StartServer)
+	protectedMux.HandleFunc("/stop", StopServer)
 
 	// V1 API routes stay for now
 	protectedMux.HandleFunc("/backups", legacy.ListBackups)
@@ -63,13 +61,13 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/saveconfigasjson", configchanger.SaveConfigForm)
 
 	// SSE routes
-	protectedMux.HandleFunc("/console", gamemgr.GetLogOutput)
-	protectedMux.HandleFunc("/events", ssestream.StartDetectionEventStream())
+	protectedMux.HandleFunc("/console", GetLogOutput)
+	protectedMux.HandleFunc("/events", GetEventOutput)
 
 	// v2 API routes that will eventually replace the API routes above, but for now we'll keep v1 (no prefix) for compatibility.
 	// Server Control
-	protectedMux.HandleFunc("/api/v2/server/start", gamemgr.StartServer)
-	protectedMux.HandleFunc("/api/v2/server/stop", gamemgr.StopServer)
+	protectedMux.HandleFunc("/api/v2/server/start", StartServer)
+	protectedMux.HandleFunc("/api/v2/server/stop", StopServer)
 
 	backupHandler := backupmgr.NewHTTPHandler(backupmgr.GlobalBackupManager)
 	protectedMux.HandleFunc("/api/v2/backups", backupHandler.ListBackupsHandler)
