@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -86,20 +87,44 @@ func registerSlashCommands(s *discordgo.Session) {
 					Type:        discordgo.ApplicationCommandOptionString,
 					Name:        "limit",
 					Description: "Number of backups to list or 'all' (default: 5)",
-					Required:    false,
+					Required:    true,
 				},
 			},
 		},
 	}
 
+	fmt.Println("[DISCORD] Registering slash commands with Discord, this may take a few seconds...")
+
+	// Use a WaitGroup to wait for all goroutines to complete
+	var wg sync.WaitGroup
+
 	for _, cmd := range commands {
-		_, err := s.ApplicationCommandCreate(s.State.User.ID, "", cmd)
-		if err != nil {
-			fmt.Printf("[DISCORD] Error registering command %s: %v\n", cmd.Name, err)
-		} else {
-			fmt.Printf("[DISCORD] Successfully registered command: %s\n", cmd.Name)
-		}
+		wg.Add(1)
+		// Launch a goroutine for each command registration
+		go func(cmd *discordgo.ApplicationCommand) {
+			defer wg.Done()
+
+			// Record start time for timing
+			startTime := time.Now()
+
+			// Register the command
+			_, err := s.ApplicationCommandCreate(s.State.User.ID, "", cmd)
+
+			// Calculate duration
+			duration := time.Since(startTime)
+
+			if err != nil {
+				fmt.Printf("[DISCORD] Error registering command %s: %v (took %v)\n", cmd.Name, err, duration)
+			} else {
+				fmt.Printf("[DISCORD] Successfully registered command: %s (took %v)\n", cmd.Name, duration)
+			}
+		}(cmd)
 	}
+
+	// Wait for all registrations to complete
+	wg.Wait()
+
+	fmt.Println("[DISCORD] Finished registering all commands.")
 }
 
 // listenToSlashCommands handles slash command interactions

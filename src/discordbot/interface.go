@@ -54,7 +54,6 @@ func InitializeDiscordBot() {
 	config.DiscordSession.AddHandler(listenToDiscordMessages)
 	config.DiscordSession.AddHandler(listenToDiscordReactions)
 	config.DiscordSession.AddHandler(listenToSlashCommands)
-	fmt.Println("[DISCORD] Registering slash commands with Discord, this may take a few seconds...")
 	registerSlashCommands(config.DiscordSession)
 
 	fmt.Println("[DISCORD] Bot is now running.")
