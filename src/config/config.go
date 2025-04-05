@@ -66,7 +66,7 @@ type CustomDetection struct {
 }
 
 var (
-	Version = "4.5.49"
+	Version                 = "4.5.49"
 	Branch                  = "nightly-v4-5-0"
 	GameBranch              string
 	DiscordToken            string
@@ -147,18 +147,8 @@ func LoadConfig() (*JsonConfig, error) {
 		// Other errors (e.g., permissions), fail immediately
 		return nil, fmt.Errorf("failed to open config file: %v", err)
 	}
-
-	// Initialize logger first
-	logger = NewLogger("CONFIG", jsonConfig.Debug)
-	logger.Log(LogInfo, "Loading configuration")
-
 	// Apply configuration with hierarchy
 	applyConfig(&jsonConfig)
-	logger.debug = IsDebugMode // Sync logger's debug with final IsDebugMode
-	if IsDebugMode {
-		logger.Log(LogDebug, "Debug mode enabled")
-		logConfigDetails()
-	}
 
 	return &jsonConfig, nil
 }
@@ -166,7 +156,6 @@ func LoadConfig() (*JsonConfig, error) {
 // applyConfig applies the configuration with JSON -> env -> fallback hierarchy
 func applyConfig(cfg *JsonConfig) {
 
-	logger.Log(LogDebug, "Applying configuration with JSON -> env -> fallback hierarchy")
 	// Set defaults
 	setDefaults(cfg)
 

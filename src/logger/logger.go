@@ -68,6 +68,10 @@ func (l *Logger) Core(message string) {
 	l.log("CORE", colorYellow, message, false)
 }
 
+func (l *Logger) Config(message string) {
+	l.log("CONFIG", colorYellow, message, false)
+}
+
 func (l *Logger) Install(message string) {
 	l.log("INSTALL", colorCyan, message, false)
 }
@@ -83,6 +87,7 @@ var (
 	Backup    = &Logger{prefix: "BACKUP"}
 	Detection = &Logger{prefix: "DETECT"}
 	Core      = &Logger{prefix: "CORE"}
+	Config    = &Logger{prefix: "CONFIG"}
 	Install   = &Logger{prefix: "INSTALL"}
 	SSE       = &Logger{prefix: "SSE"}
 )
