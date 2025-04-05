@@ -1,9 +1,10 @@
-// reloader.go
-package reloader
+// loader.go
+package loader
 
 import (
 	"StationeersServerUI/src/backupmgr"
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/detectionmgr"
 	"StationeersServerUI/src/discordbot"
 	"log"
 )
@@ -29,8 +30,15 @@ func ReloadBackupManager() {
 }
 
 func ReloadDiscordBot() {
-	// If Discord is enabled, start the Discord bot
 	if config.IsDiscordEnabled {
 		go discordbot.InitializeDiscordBot()
 	}
+}
+
+// The detector should NOT be reloaded, as it is a singleton. Instead, dynamic changes come in via the custom detections manager.
+func InitDetector() {
+	detector := detectionmgr.Start()
+	detectionmgr.RegisterDefaultHandlers(detector)
+	detectionmgr.InitCustomDetectionsManager(detector)
+	go detectionmgr.StreamLogs(detector)
 }

@@ -2,7 +2,7 @@ package configchanger
 
 import (
 	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/reloader"
+	"StationeersServerUI/src/loader"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -73,8 +73,8 @@ func SaveConfigForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Reload using the reloader package
-	reloader.ReloadAll()
+	// Reload using the loader package
+	loader.ReloadAll()
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -164,8 +164,8 @@ func SaveConfigRestful(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Reload using the reloader package
-	reloader.ReloadAll()
+	// Reload using the loader package
+	loader.ReloadAll()
 
 	// Return success response in JSON format
 	w.Header().Set("Content-Type", "application/json")

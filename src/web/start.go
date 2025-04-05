@@ -1,3 +1,4 @@
+// start.go
 package web
 
 import (
@@ -24,6 +25,8 @@ const (
 )
 
 func StartWebServer(wg *sync.WaitGroup) {
+
+	fmt.Println(string(colorCyan), "Starting API services...", string(colorReset))
 	// Set up handlers with auth middleware
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
 

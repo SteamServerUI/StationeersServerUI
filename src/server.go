@@ -1,9 +1,7 @@
 package main
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/detectionmgr"
-	"StationeersServerUI/src/reloader"
+	"StationeersServerUI/src/loader"
 	"StationeersServerUI/src/setup"
 	"StationeersServerUI/src/web"
 	"fmt"
@@ -24,7 +22,7 @@ const (
 func main() {
 	var wg sync.WaitGroup
 
-	fmt.Println(string(colorCyan), "Starting checks...", string(colorReset))
+	fmt.Println(string(colorCyan), "Starting setup...", string(colorReset))
 
 	// Start the installation process and wait for it to complete
 	wg.Add(1)
@@ -33,28 +31,9 @@ func main() {
 	// Wait for the installation to finish before starting the rest of the server
 	wg.Wait()
 
-	fmt.Println(string(colorGreen), "Setup complete!", string(colorReset))
-
-	fmt.Println(string(colorBlue), "Reloading configuration", string(colorReset))
-	config.LoadConfig()
-
-	// Initialize the detection module
-	fmt.Println(string(colorBlue), "Initializing detection module...", string(colorReset))
-	detector := detectionmgr.Start()
-	detectionmgr.RegisterDefaultHandlers(detector)
-	detectionmgr.InitCustomDetectionsManager(detector)
-	fmt.Println(string(colorGreen), "Detection module ready!", string(colorReset))
-
-	go detectionmgr.StreamLogs(detector) // Pass the detector to the log stream function
-
-	fmt.Println(string(colorBlue), "Starting API services...", string(colorReset))
-
-	// Load dicord, backupmgr and detectionmgr using the reloader package
-	reloader.ReloadAll()
-
-	if config.IsCleanupEnabled {
-		fmt.Println(string(colorBlue), "Backup cleanup is enabled.", string(colorReset))
-	}
+	// Load config,discordbot, backupmgr and detectionmgr using the loader package
+	loader.ReloadAll()
+	loader.InitDetector()
 
 	web.StartWebServer(&wg)
 }

@@ -2,6 +2,7 @@ package setup
 
 import (
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/loader"
 	"fmt"
 	"io"
 	"net/http"
@@ -30,13 +31,7 @@ func Install(wg *sync.WaitGroup) {
 	defer wg.Done()             // Signal that installation is complete
 	time.Sleep(1 * time.Second) // Small pause for effect
 
-	workingDir := "./UIMod/"
-	configFilePath := workingDir + "config.json"
-	fmt.Println(string(colorYellow), "Loading Config for Setup from", configFilePath, string(colorReset))
-	_, err := config.LoadConfig()
-	if err != nil {
-		fmt.Println("⚠️  Config file not found or invalid...")
-	}
+	loader.ReloadConfig()
 
 	// Step 0:  Check for updates
 	if err := UpdateExecutable(); err != nil {
@@ -58,7 +53,8 @@ func Install(wg *sync.WaitGroup) {
 	// Step 3: Install and run SteamCMD
 	fmt.Println("🔄 Installing and running SteamCMD...")
 	InstallAndRunSteamCMD()
-	fmt.Println("Thank you for using this Software! 🙏")
+	fmt.Println("Thank you for using StationeersServerUI! 🙏")
+	fmt.Println(string(colorCyan), "Setup complete!", string(colorReset))
 }
 
 func CheckAndDownloadUIMod() {
