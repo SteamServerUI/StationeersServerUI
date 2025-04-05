@@ -2,7 +2,7 @@ package legacy
 
 import (
 	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/discord"
+	"StationeersServerUI/src/discordbot"
 	"fmt"
 	"io"
 	"net/http"
@@ -325,7 +325,7 @@ func copyBackupToSafeLocation(srcFilePath string, safeBackupDir string) {
 		}
 
 		fmt.Println("[BACKUP] 💾 Backup successfully copied to safe location:", dstFilePath)
-		discord.SendMessageToSavesChannel(fmt.Sprintf("Backup file %s copied to safe location.", dstFilePath))
+		discordbot.SendMessageToSavesChannel(fmt.Sprintf("Backup file %s copied to safe location.", dstFilePath))
 	}()
 }
 
