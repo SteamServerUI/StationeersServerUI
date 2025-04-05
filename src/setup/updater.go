@@ -2,6 +2,7 @@ package setup
 
 import (
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/logger"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -28,12 +29,12 @@ func UpdateExecutable() error {
 	currentExe := filepath.Base(os.Args[0])
 
 	if !config.IsUpdateEnabled {
-		fmt.Println(string(colorYellow), "⚠️ Update check is disabled. Skipping update check.", string(colorReset))
+		logger.Install.Warn("⚠️Update check is disabled. Skipping update check.")
 		return nil
 	}
 
 	if config.Branch != "release" {
-		fmt.Println(string(colorYellow), "⚠️ You are running a development build. Skipping update check.", string(colorReset))
+		logger.Install.Warn("⚠️You are running a development build. Skipping update check.")
 		return nil
 	}
 

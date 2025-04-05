@@ -6,7 +6,7 @@ import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/detectionmgr"
 	"StationeersServerUI/src/discordbot"
-	"log"
+	"StationeersServerUI/src/logger"
 )
 
 func ReloadAll() {
@@ -17,21 +17,24 @@ func ReloadAll() {
 
 func ReloadConfig() {
 	if _, err := config.LoadConfig(); err != nil {
-		log.Printf("Failed to load config: %v", err)
+		logger.Core.Error("Failed to load config: " + err.Error())
 		return
 	}
+	logger.Core.Debug("Config reloaded successfully")
 }
 
 func ReloadBackupManager() {
 	if err := backupmgr.ReloadBackupManagerFromConfig(); err != nil {
-		log.Printf("Failed to reload backup manager: %v", err)
+		logger.Backup.Error("Failed to reload backup manager: " + err.Error())
 		return
 	}
+	logger.Backup.Debug("Backup manager reloaded successfully")
 }
 
 func ReloadDiscordBot() {
 	if config.IsDiscordEnabled {
 		go discordbot.InitializeDiscordBot()
+		logger.Discord.Debug("Discord bot reloaded successfully")
 	}
 }
 
@@ -41,4 +44,5 @@ func InitDetector() {
 	detectionmgr.RegisterDefaultHandlers(detector)
 	detectionmgr.InitCustomDetectionsManager(detector)
 	go detectionmgr.StreamLogs(detector)
+	logger.Detection.Debug("Detector loaded successfully")
 }

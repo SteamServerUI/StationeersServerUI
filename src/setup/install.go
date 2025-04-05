@@ -3,6 +3,7 @@ package setup
 import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/loader"
+	"StationeersServerUI/src/logger"
 	"fmt"
 	"io"
 	"net/http"
@@ -35,26 +36,26 @@ func Install(wg *sync.WaitGroup) {
 
 	// Step 0:  Check for updates
 	if err := UpdateExecutable(); err != nil {
-		fmt.Printf("❌ Update check went sideways: %v\n", err)
+		logger.Install.Error("❌Update check went sideways: " + err.Error())
 	}
 
 	// Step 1: Check and download the UIMod folder contents
-	fmt.Println("🔄 Checking UIMod folder contents...")
+	logger.Install.Info("🔄Checking UIMod folder contents...")
 	CheckAndDownloadUIMod()
-	fmt.Println("✅ UIMod folder setup complete.")
+	logger.Install.Info("✅UIMod folder setup complete.")
 	time.Sleep(1 * time.Second)
 
 	// Step 2: Check for Blacklist.txt and create it if it doesn't exist
-	fmt.Println("🔄 Checking for Blacklist.txt...")
+	logger.Install.Info("🔄Checking for Blacklist.txt...")
 	checkAndCreateBlacklist()
-	fmt.Println("✅ Blacklist.txt verified or created.")
+	logger.Install.Info("✅Blacklist.txt verified or created.")
 	time.Sleep(1 * time.Second)
 
 	// Step 3: Install and run SteamCMD
-	fmt.Println("🔄 Installing and running SteamCMD...")
+	logger.Install.Info("🔄Installing and running SteamCMD...")
 	InstallAndRunSteamCMD()
-	fmt.Println("Thank you for using StationeersServerUI! 🙏")
-	fmt.Println(string(colorCyan), "Setup complete!", string(colorReset))
+	logger.Install.Warn("🙏Thank you for using StationeersServerUI!")
+	logger.Install.Info("✅Setup complete!")
 }
 
 func CheckAndDownloadUIMod() {
@@ -64,12 +65,12 @@ func CheckAndDownloadUIMod() {
 
 	// Check if the directory exists
 	if _, err := os.Stat(workingDir); os.IsNotExist(err) {
-		fmt.Println("⚠️ Folder ./UIMod does not exist. Creating it...")
+		logger.Install.Warn("⚠️Folder ./UIMod does not exist. Creating it...")
 
 		// Create the UIMod folder
 		err := os.MkdirAll(workingDir, os.ModePerm)
 		if err != nil {
-			fmt.Printf("❌ Error creating folder: %v\n", err)
+			logger.Install.Error("❌Error creating folder: " + err.Error())
 			return
 		}
 
@@ -77,7 +78,7 @@ func CheckAndDownloadUIMod() {
 			fmt.Println("⚠️ Folder ./UIMod/login/ does not exist. Creating it...")
 			err := os.MkdirAll(loginDir, os.ModePerm)
 			if err != nil {
-				fmt.Printf("❌ Error creating folder: %v\n", err)
+				logger.Install.Error("❌Error creating folder: " + err.Error())
 				return
 			}
 		}
@@ -86,7 +87,7 @@ func CheckAndDownloadUIMod() {
 			fmt.Println("⚠️ Folder ./UIMod/detectionmanager/ does not exist. Creating it...")
 			err := os.MkdirAll(detectionmanagerDir, os.ModePerm)
 			if err != nil {
-				fmt.Printf("❌ Error creating folder: %v\n", err)
+				logger.Install.Error("❌Error creating folder: " + err.Error())
 				return
 			}
 		}
@@ -122,18 +123,18 @@ func CheckAndDownloadUIMod() {
 		for filepath, url := range files {
 			// Extract just the filename for display purposes
 			fileName := filepath[strings.LastIndex(filepath, "/")+1:]
-			fmt.Printf("Downloading %s... ", fileName)
+			logger.Install.Info("Downloading " + fileName + "...")
 			err := downloadFileWithProgress(filepath, url)
 			if err != nil {
-				fmt.Printf("\n❌ Error downloading (setup may has been left incomplete) %s: %v\n", fileName, err)
+				logger.Install.Error("❌Error downloading " + fileName + " (setup may has been left incomplete): " + err.Error())
 				return
 			}
-			fmt.Printf("\n✅ Downloaded %s successfully from branch %s\n", fileName, downloadBranch)
+			logger.Install.Info("✅Downloaded " + fileName + " successfully from branch " + downloadBranch)
 		}
 
-		fmt.Println("✅ All files downloaded successfully.")
+		logger.Install.Info("✅All files downloaded successfully.")
 	} else {
-		fmt.Println("♻️ Folder ./UIMod already exists. Skipping download.")
+		logger.Install.Info("♻️Folder ./UIMod already exists. Skipping download.")
 		config.IsFirstTimeSetup = false
 	}
 }
@@ -148,13 +149,13 @@ func checkAndCreateBlacklist() {
 		perm := os.FileMode(0644) // Still works cross-platform
 		err := os.WriteFile(blacklistFile, []byte("76561197960265728"), perm)
 		if err != nil {
-			fmt.Printf("❌ Error creating Blacklist.txt: %v\n", err)
+			logger.Install.Error("❌Error creating Blacklist.txt: " + err.Error())
 			return
 		}
 
-		fmt.Println("✅ Created Blacklist.txt with dummy steamID64.")
+		logger.Install.Info("✅Created Blacklist.txt with dummy steamID64.")
 	} else {
-		fmt.Println("♻️ Blacklist.txt already exists. Skipping creation.")
+		logger.Install.Info("♻️Blacklist.txt already exists. Skipping creation.")
 	}
 }
 
