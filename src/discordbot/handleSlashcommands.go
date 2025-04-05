@@ -87,6 +87,30 @@ func registerSlashCommands(s *discordgo.Session) {
 					Type:        discordgo.ApplicationCommandOptionString,
 					Name:        "limit",
 					Description: "Number of backups to list or 'all' (default: 5)",
+					Required:    false,
+				},
+			},
+		},
+		{
+			Name:        "bansteamid",
+			Description: "Bans a player by their SteamID. Needs a Server restart to take effect.",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "steamid",
+					Description: "SteamID to ban",
+					Required:    true,
+				},
+			},
+		},
+		{
+			Name:        "unbansteamid",
+			Description: "Unbans a player by their SteamID. Needs a Server restart to take effect.",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "steamid",
+					Description: "SteamID to unban",
 					Required:    true,
 				},
 			},
@@ -278,8 +302,8 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 				{Name: "/restore <index>", Value: "Restores a backup at the specified index", Inline: false},
 				{Name: "/list [limit]", Value: "Lists recent backups (default: 5)", Inline: false},
 				{Name: "/help", Value: "Shows this help message", Inline: false},
-				{Name: "!ban:<SteamID>", Value: "Bans a player by SteamID", Inline: false},
-				{Name: "!unban:<SteamID>", Value: "Unbans a player by SteamID", Inline: false},
+				{Name: "/bansteamid <SteamID>", Value: "Bans a player by SteamID", Inline: false},
+				{Name: "/bansteamid <SteamID>", Value: "Unbans a player by SteamID", Inline: false},
 			},
 		})
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -463,5 +487,122 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 				fmt.Printf("[DISCORD] Error sending additional /list embed: %v\n", err)
 			}
 		}
+
+	case "bansteamid":
+		options := i.ApplicationCommandData().Options
+		if len(options) == 0 {
+			embed := generateEmbed(EmbedData{
+				Title:       "Ban Failed",
+				Description: "No SteamID provided",
+				Color:       0xFF0000,
+				Fields: []EmbedField{
+					{Name: "Error", Value: "Please provide a SteamID", Inline: true},
+				},
+			})
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Embeds: []*discordgo.MessageEmbed{embed},
+				},
+			})
+			return
+		}
+
+		steamID := options[0].StringValue()
+		err := banSteamID(steamID)
+		if err != nil {
+			embed := generateEmbed(EmbedData{
+				Title:       "Ban Failed",
+				Description: fmt.Sprintf("Could not ban SteamID %s", steamID),
+				Color:       0xFF0000,
+				Fields: []EmbedField{
+					{Name: "Error", Value: err.Error(), Inline: true},
+				},
+			})
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Embeds: []*discordgo.MessageEmbed{embed},
+				},
+			})
+			return
+		}
+
+		embed := generateEmbed(EmbedData{
+			Title:       "Player Banned",
+			Description: fmt.Sprintf("SteamID %s has been banned", steamID),
+			Color:       0xFF0000,
+			Fields: []EmbedField{
+				{Name: "Status", Value: "✅ Completed", Inline: true},
+			},
+		})
+		err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Embeds: []*discordgo.MessageEmbed{embed},
+			},
+		})
+		if err != nil {
+			fmt.Printf("[DISCORD] Error responding to /ban: %v\n", err)
+		}
+
+	case "unbansteamid":
+		options := i.ApplicationCommandData().Options
+		if len(options) == 0 {
+			embed := generateEmbed(EmbedData{
+				Title:       "Unban Failed",
+				Description: "No SteamID provided",
+				Color:       0xFF0000,
+				Fields: []EmbedField{
+					{Name: "Error", Value: "Please provide a SteamID", Inline: true},
+				},
+			})
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Embeds: []*discordgo.MessageEmbed{embed},
+				},
+			})
+			return
+		}
+
+		steamID := options[0].StringValue()
+		err := unbanSteamID(steamID)
+		if err != nil {
+			embed := generateEmbed(EmbedData{
+				Title:       "Unban Failed",
+				Description: fmt.Sprintf("Could not unban SteamID %s", steamID),
+				Color:       0xFF0000,
+				Fields: []EmbedField{
+					{Name: "Error", Value: err.Error(), Inline: true},
+				},
+			})
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Embeds: []*discordgo.MessageEmbed{embed},
+				},
+			})
+			return
+		}
+
+		embed := generateEmbed(EmbedData{
+			Title:       "Player Unbanned",
+			Description: fmt.Sprintf("SteamID %s has been unbanned", steamID),
+			Color:       0x00FF00,
+			Fields: []EmbedField{
+				{Name: "Status", Value: "✅ Completed", Inline: true},
+			},
+		})
+		err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Embeds: []*discordgo.MessageEmbed{embed},
+			},
+		})
+		if err != nil {
+			fmt.Printf("[DISCORD] Error responding to /unban: %v\n", err)
+		}
+
 	}
 }

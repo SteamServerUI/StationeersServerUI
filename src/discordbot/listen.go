@@ -40,12 +40,10 @@ func listenToDiscordMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 	case strings.HasPrefix(content, "!start"):
 		gamemgr.InternalStartServer()
 		SendMessageToControlChannel("🕛Server is starting...")
-		SendMessageToStatusChannel("🕛Start command received from Server Controller, Server is Starting...")
 
 	case strings.HasPrefix(content, "!stop"):
 		gamemgr.InternalStopServer()
 		SendMessageToControlChannel("🕛Server is stopping...")
-		SendMessageToStatusChannel("🕛Stop command received from Server Controller, flatlining Server in 5 Seconds...")
 
 	case strings.HasPrefix(content, "!restore"):
 		handleRestoreCommand()
