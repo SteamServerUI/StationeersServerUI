@@ -59,6 +59,10 @@ func registerSlashCommands(s *discordgo.Session) {
 			Description: "Stop the server",
 		},
 		{
+			Name:        "status",
+			Description: "Gets the running status of the server",
+		},
+		{
 			Name:        "help",
 			Description: "Show command help",
 		},
@@ -105,6 +109,23 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 	}
 
 	if i.ChannelID != config.ControlChannelID {
+		embed := generateEmbed(EmbedData{
+			Title:       "Wrong Channel",
+			Description: "Commands must be sent to the configured control channel",
+			Color:       0xFF0000, // Red for error
+			Fields: []EmbedField{
+				{Name: "Accepted Channel", Value: fmt.Sprintf("<#%s>", config.ControlChannelID), Inline: true},
+			},
+		})
+		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Embeds: []*discordgo.MessageEmbed{embed},
+			},
+		})
+		if err != nil {
+			fmt.Printf("[DISCORD] Error responding to wrong channel command: %v\n", err)
+		}
 		return
 	}
 
@@ -154,6 +175,27 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 		}
 		gamemgr.InternalStopServer()
 		SendMessageToStatusChannel("🕛Stop command received from Server Controller, flatlining Server in 5 Seconds...")
+
+	case "status":
+		isServerRunning := gamemgr.InternalIsServerRunning()
+		embed := generateEmbed(EmbedData{
+			Title:       "Server Status",
+			Description: "Currently inDev, only shows false.",
+			Color:       0x00FF00, // Green
+			Fields: []EmbedField{
+				{Name: "Running:", Value: fmt.Sprintf("%t", isServerRunning), Inline: true},
+			},
+		})
+		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Embeds: []*discordgo.MessageEmbed{embed},
+			},
+		})
+		if err != nil {
+			fmt.Printf("[DISCORD] Error responding to /start: %v\n", err)
+			return
+		}
 
 	case "help":
 		embed := generateEmbed(EmbedData{

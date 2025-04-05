@@ -123,3 +123,23 @@ func InternalStopServer() error {
 	cmd = nil
 	return nil
 }
+
+func InternalIsServerRunning() bool {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if cmd == nil || cmd.Process == nil {
+		return false
+	}
+
+	// Check if the process is still running
+	// On Windows, Process.Signal with 0 checks if the process exists without sending a signal
+	// On Unix, this also works as a no-op signal to check process existence
+	if err := cmd.Process.Signal(syscall.Signal(0)); err != nil {
+		// If there's an error, the process likely isn't running
+		cmd = nil // Clean up the cmd variable since the process is gone
+		return false
+	}
+
+	return true
+}
