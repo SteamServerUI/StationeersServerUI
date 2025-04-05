@@ -60,7 +60,7 @@ func InitializeDiscordBot() {
 	fmt.Println("[DISCORD] Bot is now running.")
 	SendMessageToStatusChannel("🤖 Bot Version " + config.Version + " Branch " + config.Branch + " connected to Discord.")
 	sendControlPanel() // Send control panel message to Discord
-	UpdateBotStatusWithMessage("Ready")
+	UpdateBotStatusWithMessage("StationeersServerUI v" + config.Version)
 	// Start buffer flush ticker
 	config.BufferFlushTicker = time.NewTicker(5 * time.Second)
 	go func() {
