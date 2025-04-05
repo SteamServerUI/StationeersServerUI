@@ -246,12 +246,14 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 		SendMessageToStatusChannel("🕛Stop command received from Server Controller, flatlining Server in 5 Seconds...")
 
 	case "status":
+		isRunning := gamemgr.InternalIsServerRunning()
 		embed := generateEmbed(EmbedData{
-			Title:       "Server Status",
-			Description: "The gameserver process is currently:",
-			Color:       0x00FF00, // Green
+			Title:       "🎮 Server Status",
+			Description: "Current process state for the Stationeers game server.\n*Note: 'Started' indicates a running game server process was found,\n but not necessarily that the Server configuration is correct \n or that the server is available to join.*",
+			Color:       map[bool]int{true: 0x00FF00, false: 0xFF0000}[isRunning], // Green if running, Red if not
 			Fields: []EmbedField{
-				{Name: "Running:", Value: fmt.Sprintf("%t", gamemgr.InternalIsServerRunning()), Inline: true},
+				{Name: "Status:", Value: map[bool]string{true: "🟢 Started", false: "🔴 Stopped"}[isRunning], Inline: true},
+				{Name: "Checked:", Value: time.Now().Format("15:04:05 MST"), Inline: true},
 			},
 		})
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
