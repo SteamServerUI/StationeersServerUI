@@ -5,6 +5,7 @@ import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/gamemgr"
 	"fmt"
+	"math/rand"
 	"sort"
 	"strconv"
 	"strings"
@@ -94,7 +95,6 @@ func registerSlashCommands(s *discordgo.Session) {
 	}
 
 	fmt.Println("[DISCORD] Registering slash commands with Discord, this may take a few seconds...")
-
 	// Use a WaitGroup to wait for all goroutines to complete
 	var wg sync.WaitGroup
 
@@ -103,6 +103,10 @@ func registerSlashCommands(s *discordgo.Session) {
 		// Launch a goroutine for each command registration
 		go func(cmd *discordgo.ApplicationCommand) {
 			defer wg.Done()
+
+			// Add a delay before registering each command
+			delay := 10 + rand.Intn(2000)
+			time.Sleep(time.Duration(delay) * time.Millisecond)
 
 			// Record start time for timing
 			startTime := time.Now()
@@ -113,10 +117,14 @@ func registerSlashCommands(s *discordgo.Session) {
 			// Calculate duration
 			duration := time.Since(startTime)
 
-			if err != nil {
-				fmt.Printf("[DISCORD] Error registering command %s: %v (took %v)\n", cmd.Name, err, duration)
-			} else {
-				fmt.Printf("[DISCORD] Successfully registered command: %s (took %v)\n", cmd.Name, duration)
+			if config.IsDebugMode {
+				fmt.Println("[DISCORD] Due to rate limiting, one command always takes 20 seconds to register.")
+				if err != nil {
+					fmt.Printf("[DISCORD] Error registering command %s: %v (took %v)\n", cmd.Name, err, duration)
+
+				} else {
+					fmt.Printf("[DISCORD] Successfully registered command: %s (took %v)\n", cmd.Name, duration)
+				}
 			}
 		}(cmd)
 	}
