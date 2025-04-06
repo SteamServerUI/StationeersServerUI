@@ -2,7 +2,6 @@ package gamemgr
 
 import (
 	"StationeersServerUI/src/config"
-	"fmt"
 	"runtime"
 	"strconv"
 	"strings"
@@ -74,11 +73,5 @@ func buildCommandArgs() []string {
 		args = append(args, config.LocalIpAddress)
 	}
 
-	if config.IsDebugMode {
-		fmt.Println("=== DEBUG: Raw arguments passed to exec.Command ===")
-		for i, arg := range args {
-			fmt.Printf("Arg[%d]: %q\n", i, arg)
-		}
-	}
 	return args
 }

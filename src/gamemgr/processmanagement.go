@@ -3,6 +3,7 @@ package gamemgr
 
 import (
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/logger"
 	"fmt"
 	"os/exec"
 	"runtime"
@@ -18,14 +19,6 @@ var (
 	logDone chan struct{}
 )
 
-const (
-	colorReset  = "\033[0m"
-	colorGreen  = "\033[32m"
-	colorYellow = "\033[33m"
-	colorCyan   = "\033[36m"
-	colorBold   = "\033[1m"
-)
-
 func InternalStartServer() error {
 	mu.Lock()
 	defer mu.Unlock()
@@ -34,16 +27,12 @@ func InternalStartServer() error {
 		return fmt.Errorf("server is already running")
 	}
 
-	if config.IsDebugMode {
-		fmt.Println("Config values:", config.UPNPEnabled, config.StartLocalHost, config.ServerVisible, config.AutoSave, config.AutoPauseServer, config.UseSteamP2P)
-	}
-
 	args := buildCommandArgs()
 	cmd = exec.Command(config.ExePath, args...)
 
-	fmt.Printf("\n%s%s=== GAMESERVER STARTING ===%s\n", colorCyan, colorBold, colorReset)
-	fmt.Printf("• Executable: %s\n", colorGreen+colorBold+config.ExePath+colorReset)
-	fmt.Printf("• Parameters: %s\n", colorYellow+strings.Join(args, " ")+colorReset)
+	logger.Core.Info("=== GAMESERVER STARTING ===")
+	logger.Core.Info("• Executable: " + config.ExePath)
+	logger.Core.Info("• Parameters: " + strings.Join(args, " "))
 
 	if runtime.GOOS == "windows" {
 		stdout, err := cmd.StdoutPipe()
@@ -60,14 +49,14 @@ func InternalStartServer() error {
 			return fmt.Errorf("error starting server: %v", err)
 		}
 		if config.IsDebugMode {
-			fmt.Println("Created pipes")
+			logger.Core.Debug("Created pipes")
 		}
 		// Start reading stdout and stderr pipes on Windows
 		go readPipe(stdout)
 		go readPipe(stderr)
 	} else {
 		if config.IsDebugMode {
-			fmt.Println("Switching to log file for logs as we are on Linux! Hail the Penguin!")
+			logger.Core.Debug("Switching to log file for logs as we are on Linux! Hail the Penguin!")
 		}
 		if logDone != nil {
 			close(logDone) // Close any existing channel
