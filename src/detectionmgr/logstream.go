@@ -21,7 +21,7 @@ func StreamLogs(detector *Detector) {
 	logChan := ssestream.ConsoleStreamManager.AddInternalSubscriber()
 
 	go func() {
-		logger.Detection.SSE("Connected to internal log stream.")
+		logger.Detection.Info("Connected to internal log stream.")
 		for logMessage := range logChan {
 			if config.IsDiscordEnabled {
 				discordbot.PassLogStreamToDiscordLogBuffer(logMessage)

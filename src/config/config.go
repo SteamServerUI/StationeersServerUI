@@ -54,6 +54,8 @@ type JsonConfig struct {
 	JwtKey                  string `json:"JwtKey,omitempty"`
 	AuthTokenLifetime       int    `json:"AuthTokenLifetime,omitempty"`
 	Debug                   bool   `json:"Debug,omitempty"`
+	CreateSSUILogFile       bool   `json:"CreateSSUILogFile,omitempty"`
+	LogLevel                int    `json:"LogLevel,omitempty"`
 	IsUpdateEnabled         bool   `json:"IsUpdateEnabled,omitempty"`
 }
 
@@ -66,8 +68,8 @@ type CustomDetection struct {
 }
 
 var (
-	Version                 = "4.5.49"
-	Branch                  = "nightly-v4-5-0"
+	Version = "4.6.1"
+	Branch                  = "nightly-dependencies"
 	GameBranch              string
 	DiscordToken            string
 	DiscordSession          *discordgo.Session
@@ -114,6 +116,8 @@ var (
 	AutoSave                bool
 	StartLocalHost          bool
 	IsDebugMode             bool
+	CreateSSUILogFile       bool
+	LogLevel                int
 	IsFirstTimeSetup        bool
 	LogMessageBuffer        string
 	DiscordCharBufferSize   int
@@ -202,6 +206,8 @@ func applyConfig(cfg *JsonConfig) {
 	JwtKey = getString(cfg.JwtKey, "SSUI_JWT_KEY", generateJwtKey())
 	AuthTokenLifetime = getInt(cfg.AuthTokenLifetime, "SSUI_AUTH_TOKEN_LIFETIME", 1440)
 	IsDebugMode = getBool(cfg.Debug, "DEBUG", false)
+	CreateSSUILogFile = getBool(cfg.CreateSSUILogFile, "CREATE_SSUI_LOGFILE", true)
+	LogLevel = getInt(cfg.LogLevel, "LOG_LEVEL", 20)
 	IsUpdateEnabled = getBool(cfg.IsUpdateEnabled, "IS_UPDATE_ENABLED", false)
 
 	// Process SaveInfo
