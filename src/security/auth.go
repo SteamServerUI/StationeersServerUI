@@ -111,7 +111,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			}
 			http.Error(w, "Unauthorized - Invalid token", http.StatusUnauthorized)
 			if config.IsDebugMode {
-				logger.Auth.Warn("Unauthorized Request - Invalid token")
+				logger.Security.Warn("Unauthorized Request - Invalid token")
 			}
 			return
 		}
