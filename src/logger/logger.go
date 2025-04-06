@@ -90,4 +90,5 @@ var (
 	Config    = &Logger{prefix: "CONFIG"}
 	Install   = &Logger{prefix: "INSTALL"}
 	SSE       = &Logger{prefix: "SSE"}
+	Auth      = &Logger{prefix: "AUTH"}
 )
