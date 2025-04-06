@@ -20,7 +20,7 @@ type fsWatcher struct {
 func newFsWatcher(path string) (*fsWatcher, error) {
 	// Normalize path
 	normalizedPath := filepath.Clean(path)
-	fmt.Printf("Creating watcher for path: %s\n", normalizedPath)
+	logger.Backup.Info("Creating watcher for path: " + normalizedPath)
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -32,7 +32,7 @@ func newFsWatcher(path string) (*fsWatcher, error) {
 		watcher.Close()
 		return nil, fmt.Errorf("failed to add path %s to watcher: %w", normalizedPath, err)
 	}
-	fmt.Printf("Successfully watching path: %s\n", normalizedPath)
+	logger.Backup.Info("Successfully watching path: " + normalizedPath)
 
 	w := &fsWatcher{
 		watcher: watcher,

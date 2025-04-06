@@ -95,11 +95,11 @@ func (m *BackupManager) handleNewBackup(filePath string) {
 		dstPath := filepath.Join(m.config.SafeBackupDir, fileName)
 
 		if err := copyFile(filePath, dstPath); err != nil {
-			fmt.Printf("Error copying backup %s: %v\n", fileName, err)
+			logger.Backup.Error("Error copying backup " + fileName + ": " + err.Error())
 			return
 		}
 
-		fmt.Printf("Backup successfully copied to safe location: %s\n", dstPath)
+		logger.Backup.Info("Backup successfully copied to safe location: " + dstPath)
 	}()
 }
 
@@ -114,7 +114,7 @@ func (m *BackupManager) startCleanupRoutine() {
 			return
 		case <-ticker.C:
 			if err := m.Cleanup(); err != nil {
-				fmt.Printf("Backup cleanup error: %v\n", err)
+				logger.Backup.Error("Backup cleanup error: " + err.Error())
 			}
 		}
 	}

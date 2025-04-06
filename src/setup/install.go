@@ -213,7 +213,7 @@ func (wc *writeCounter) Write(p []byte) (int, error) {
 func (wc *writeCounter) printProgress() {
 	// If we don't know the total size, just show downloaded bytes
 	if wc.Total <= 0 {
-		fmt.Printf("\r%s downloaded", bytesToHuman(wc.count))
+		logger.Backup.Info(fmt.Sprintf("\r%s downloaded", bytesToHuman(wc.count)))
 		return
 	}
 
@@ -240,11 +240,12 @@ func (wc *writeCounter) printProgress() {
 	progressBar += "]"
 
 	// Print progress and erase to end of line
-	fmt.Printf("\r%s %.1f%% (%s/%s)",
+
+	logger.Backup.Info(fmt.Sprintf("\r%s %.1f%% (%s/%s)",
 		progressBar,
 		percent,
 		bytesToHuman(wc.count),
-		bytesToHuman(wc.Total))
+		bytesToHuman(wc.Total)))
 }
 
 // bytesToHuman converts bytes to human readable format

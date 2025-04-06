@@ -1,6 +1,7 @@
 package backupmgr
 
 import (
+	"StationeersServerUI/src/logger"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -50,7 +51,7 @@ func (m *BackupManager) cleanBackupDir() error {
 
 		if info.ModTime().Before(cutoff) {
 			if err := os.Remove(fullPath); err != nil {
-				fmt.Printf("Failed to remove old backup %s: %v\n", fullPath, err)
+				logger.Backup.Error("Failed to remove old backup " + fullPath + ": " + err.Error())
 			}
 		}
 	}
@@ -173,7 +174,7 @@ func (m *BackupManager) deleteBackupGroup(group BackupGroup) {
 	for _, file := range []string{group.BinFile, group.XMLFile, group.MetaFile} {
 		if file != "" {
 			if err := os.Remove(file); err != nil {
-				fmt.Printf("Failed to delete backup file %s: %v\n", file, err)
+				logger.Backup.Error("Failed to delete backup file " + file + ": " + err.Error())
 			}
 		}
 	}
