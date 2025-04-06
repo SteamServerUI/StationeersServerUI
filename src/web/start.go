@@ -6,8 +6,8 @@ import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/configchanger"
 	"StationeersServerUI/src/detectionmgr"
+	"StationeersServerUI/src/logger"
 	"StationeersServerUI/src/security"
-	"fmt"
 	"net/http"
 	"net/http/pprof"
 	"sync"
@@ -26,7 +26,7 @@ const (
 
 func StartWebServer(wg *sync.WaitGroup) {
 
-	fmt.Println(string(colorCyan), "Starting API services...", string(colorReset))
+	logger.Web.Info("Starting API services...")
 	// Set up handlers with auth middleware
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
 
@@ -86,21 +86,21 @@ func StartWebServer(wg *sync.WaitGroup) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		fmt.Println(string(colorYellow), "Starting the HTTP server on port 8443...", string(colorReset))
-		fmt.Println(string(colorGreen), "UI available at: https://0.0.0.0:8443 or https://localhost:8443", string(colorReset))
+		logger.Web.Info("Starting the HTTP server on port 8443...")
+		logger.Web.Info("UI available at: https://0.0.0.0:8443 or https://localhost:8443")
 		if config.IsFirstTimeSetup {
-			fmt.Println(string(colorMagenta), "For first time Setup, follow the instructions on:", string(colorReset))
-			fmt.Println(string(colorMagenta), "https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup", string(colorReset))
-			fmt.Println(string(colorMagenta), "Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)", string(colorReset))
+			logger.Web.Warn("For first time Setup, follow the instructions on:")
+			logger.Web.Warn("https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup")
+			logger.Web.Warn("Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)")
 		}
 		// Ensure TLS certs are ready
 		if err := security.EnsureTLSCerts(); err != nil {
-			fmt.Printf(string(colorRed)+"Error setting up TLS certificates: %v\n"+string(colorReset), err)
+			logger.Web.Error("Error setting up TLS certificates: " + err.Error())
 			//os.Exit(1)
 		}
 		err := http.ListenAndServeTLS("0.0.0.0:8443", config.TLSCertPath, config.TLSKeyPath, mux)
 		if err != nil {
-			fmt.Printf(string(colorRed)+"Error starting HTTPS server: %v\n"+string(colorReset), err)
+			logger.Web.Error("Error starting HTTPS server: " + err.Error())
 		}
 	}()
 
@@ -112,10 +112,10 @@ func StartWebServer(wg *sync.WaitGroup) {
 			pprofMux := http.NewServeMux()
 			// Register pprof handler
 			pprofMux.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
-			fmt.Println(string(colorRed), "⚠️Starting pprof server on :6060/debug/pprof", string(colorReset))
+			logger.Web.Warn("⚠️Starting pprof server on :6060/debug/pprof")
 			err := http.ListenAndServe("0.0.0.0:6060", pprofMux)
 			if err != nil {
-				fmt.Printf(string(colorRed)+"Error starting pprof server: %v\n"+string(colorReset), err)
+				logger.Web.Error("Error starting pprof server: " + err.Error())
 			}
 		}()
 	}

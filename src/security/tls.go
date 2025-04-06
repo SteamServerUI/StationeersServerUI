@@ -37,7 +37,6 @@ func EnsureTLSCerts() error {
 
 		// Check if expired or near expiry (within 10 days of 90-day validity)
 		if time.Now().After(cert.NotAfter) || time.Now().Add(10*24*time.Hour).After(cert.NotAfter) {
-			fmt.Println("Certificate expired or near expiry, regenerating...")
 			logger.Security.Warn("Certificate expired or near expiry, regenerating...")
 		} else {
 			// Cert is valid, we’re done

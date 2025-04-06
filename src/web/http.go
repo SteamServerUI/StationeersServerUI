@@ -3,6 +3,7 @@ package web
 import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/gamemgr"
+	"StationeersServerUI/src/logger"
 	"StationeersServerUI/src/ssestream"
 	"fmt"
 	"net/http"
@@ -145,24 +146,24 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		"{{AdminPassword}}":                 config.AdminPassword,
 		"{{GamePort}}":                      config.GamePort,
 		"{{UpdatePort}}":                    config.UpdatePort,
-		"{{UPNPEnabled}}":                   fmt.Sprintf("%v", config.UPNPEnabled), //unused, but maybe useful for future use
+		"{{UPNPEnabled}}":                   fmt.Sprintf("%v", config.UPNPEnabled),
 		"{{UPNPEnabledTrueSelected}}":       upnpTrueSelected,
 		"{{UPNPEnabledFalseSelected}}":      upnpFalseSelected,
-		"{{AutoSave}}":                      fmt.Sprintf("%v", config.AutoSave), //all of them
+		"{{AutoSave}}":                      fmt.Sprintf("%v", config.AutoSave),
 		"{{AutoSaveTrueSelected}}":          autoSaveTrueSelected,
 		"{{AutoSaveFalseSelected}}":         autoSaveFalseSelected,
 		"{{SaveInterval}}":                  config.SaveInterval,
-		"{{AutoPauseServer}}":               fmt.Sprintf("%v", config.AutoPauseServer), //all of them
+		"{{AutoPauseServer}}":               fmt.Sprintf("%v", config.AutoPauseServer),
 		"{{AutoPauseServerTrueSelected}}":   autoPauseTrueSelected,
 		"{{AutoPauseServerFalseSelected}}":  autoPauseFalseSelected,
 		"{{LocalIpAddress}}":                config.LocalIpAddress,
-		"{{StartLocalHost}}":                fmt.Sprintf("%v", config.StartLocalHost), //all of them
+		"{{StartLocalHost}}":                fmt.Sprintf("%v", config.StartLocalHost),
 		"{{StartLocalHostTrueSelected}}":    startLocalTrueSelected,
 		"{{StartLocalHostFalseSelected}}":   startLocalFalseSelected,
-		"{{ServerVisible}}":                 fmt.Sprintf("%v", config.ServerVisible), //all of them
+		"{{ServerVisible}}":                 fmt.Sprintf("%v", config.ServerVisible),
 		"{{ServerVisibleTrueSelected}}":     serverVisibleTrueSelected,
 		"{{ServerVisibleFalseSelected}}":    serverVisibleFalseSelected,
-		"{{UseSteamP2P}}":                   fmt.Sprintf("%v", config.UseSteamP2P), //all of them
+		"{{UseSteamP2P}}":                   fmt.Sprintf("%v", config.UseSteamP2P),
 		"{{UseSteamP2PTrueSelected}}":       steamP2PTrueSelected,
 		"{{UseSteamP2PFalseSelected}}":      steamP2PFalseSelected,
 		"{{ExePath}}":                       config.ExePath,
@@ -179,19 +180,20 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 // StartServer HTTP handler
 func StartServer(w http.ResponseWriter, r *http.Request) {
 	if err := gamemgr.InternalStartServer(); err != nil {
-		fmt.Fprint(w, err.Error())
+		logger.Web.Core("Error starting server: " + err.Error())
 		return
 	}
-	fmt.Fprint(w, "Server started.")
+	logger.Web.Core("Server started.")
 }
 
 // StopServer HTTP handler
 func StopServer(w http.ResponseWriter, r *http.Request) {
 	if err := gamemgr.InternalStopServer(); err != nil {
 		fmt.Fprint(w, err.Error())
+		logger.Web.Core("Error stopping server: " + err.Error())
 		return
 	}
-	fmt.Fprint(w, "Server stopped.")
+	logger.Web.Core("Server stopped.")
 }
 
 // handler for the /console endpoint

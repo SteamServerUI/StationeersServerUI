@@ -3,7 +3,6 @@ package discordbot
 import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/logger"
-	"fmt"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -16,7 +15,7 @@ func InitializeDiscordBot() {
 	// Clean up previous session
 	if config.DiscordSession != nil {
 		if config.IsDebugMode {
-			fmt.Println("[DISCORD] Previous Discord session found, closing it...")
+			logger.Discord.Debug("Previous Discord session found, closing it...")
 		}
 		config.DiscordSession.Close()
 	}
@@ -27,7 +26,7 @@ func InitializeDiscordBot() {
 	// Create new session
 	config.DiscordSession, err = discordgo.New("Bot " + config.DiscordToken)
 	if err != nil {
-		fmt.Println("[DISCORD] Error creating Discord session:", err)
+		logger.Discord.Error("Error creating Discord session: " + err.Error())
 		return
 	}
 
@@ -45,7 +44,7 @@ func InitializeDiscordBot() {
 	// Open session first
 	err = config.DiscordSession.Open()
 	if err != nil {
-		fmt.Println("[DISCORD] Error opening Discord connection:", err)
+		logger.Discord.Error("Error opening Discord connection: " + err.Error())
 		return
 	}
 
@@ -55,7 +54,6 @@ func InitializeDiscordBot() {
 	config.DiscordSession.AddHandler(listenToSlashCommands)
 	registerSlashCommands(config.DiscordSession)
 
-	fmt.Println("[DISCORD] Bot is now running.")
 	logger.Discord.Info("Bot is now running.")
 	SendMessageToStatusChannel("🤖 Bot Version " + config.Version + " Branch " + config.Branch + " connected to Discord.")
 	sendControlPanel() // Send control panel message to Discord
@@ -75,6 +73,6 @@ func InitializeDiscordBot() {
 func UpdateBotStatusWithMessage(message string) {
 	err := config.DiscordSession.UpdateGameStatus(0, message)
 	if err != nil {
-		fmt.Println("Error updating bot status:", err)
+		logger.Discord.Error("Error updating bot status: " + err.Error())
 	}
 }

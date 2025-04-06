@@ -1,6 +1,7 @@
 package backupmgr
 
 import (
+	"StationeersServerUI/src/logger"
 	"fmt"
 	"path/filepath"
 
@@ -25,7 +26,7 @@ func newFsWatcher(path string) (*fsWatcher, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create watcher: %w", err)
 	}
-	fmt.Println("Watcher created successfully")
+	logger.Backup.Info("Watcher created successfully")
 
 	if err := watcher.Add(normalizedPath); err != nil {
 		watcher.Close()
@@ -46,8 +47,6 @@ func newFsWatcher(path string) (*fsWatcher, error) {
 
 // forwardEvents forwards events and errors from the underlying watcher
 func (w *fsWatcher) forwardEvents() {
-	//defer fmt.Println("File watcher event forwarder stopped")
-	//fmt.Println("File watcher event forwarder started")
 
 	for {
 		select {

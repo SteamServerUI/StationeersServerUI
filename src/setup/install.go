@@ -75,7 +75,7 @@ func CheckAndDownloadUIMod() {
 		}
 
 		if _, err := os.Stat(loginDir); os.IsNotExist(err) {
-			fmt.Println("⚠️ Folder ./UIMod/login/ does not exist. Creating it...")
+			logger.Install.Warn("⚠️Folder ./UIMod/login/ does not exist. Creating it...")
 			err := os.MkdirAll(loginDir, os.ModePerm)
 			if err != nil {
 				logger.Install.Error("❌Error creating folder: " + err.Error())
@@ -84,7 +84,7 @@ func CheckAndDownloadUIMod() {
 		}
 
 		if _, err := os.Stat(detectionmanagerDir); os.IsNotExist(err) {
-			fmt.Println("⚠️ Folder ./UIMod/detectionmanager/ does not exist. Creating it...")
+			logger.Install.Warn("⚠️Folder ./UIMod/detectionmanager/ does not exist. Creating it...")
 			err := os.MkdirAll(detectionmanagerDir, os.ModePerm)
 			if err != nil {
 				logger.Install.Error("❌Error creating folder: " + err.Error())

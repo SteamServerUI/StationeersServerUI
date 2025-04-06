@@ -102,9 +102,6 @@ func tailLogFile(logFilePath string) {
 		defer pipe.Close() // Close pipe when goroutine exits
 		for scanner.Scan() {
 			output := scanner.Text()
-			//if config.IsDebugMode {
-			//	fmt.Println("DEBUG: Read from tail -F:", output)
-			//}
 			ssestream.BroadcastConsoleOutput(output)
 		}
 		if err := scanner.Err(); err != nil {

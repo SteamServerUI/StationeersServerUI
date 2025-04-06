@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/logger"
 
 	"github.com/fsnotify/fsnotify"
 )
@@ -55,8 +56,8 @@ func (m *BackupManager) Start() error {
 
 // watchBackups monitors the backup directory for new files
 func (m *BackupManager) watchBackups() {
-	fmt.Println("[BACKUP] Starting backup file watcher...")
-	defer fmt.Println("[BACKUP] Backup file watcher stopped")
+	logger.Backup.Info("Starting backup file watcher...")
+	defer logger.Backup.Info("Backup file watcher stopped")
 
 	for {
 		select {
@@ -67,14 +68,14 @@ func (m *BackupManager) watchBackups() {
 				return
 			}
 			if event.Op&fsnotify.Create == fsnotify.Create {
-				fmt.Printf("[BACKUP]💾 New backup file detected: %s\n", event.Name)
+				logger.Backup.Info("New backup file detected: " + event.Name)
 				m.handleNewBackup(event.Name)
 			}
 		case err, ok := <-m.watcher.errors:
 			if !ok {
 				return
 			}
-			fmt.Printf("Backup watcher error: %v\n", err)
+			logger.Backup.Error("Backup watcher error: " + err.Error())
 		}
 	}
 }
