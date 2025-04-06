@@ -2,8 +2,8 @@
 package ssestream
 
 import (
+	"StationeersServerUI/src/logger"
 	"fmt"
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -15,17 +15,6 @@ import (
 // SSE spec (WHATWG HTML): https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events
 // Workaround: Use HTTP/2 (RFC 7540, Section 5.1.2) for up to 100 streams: https://datatracker.ietf.org/doc/html/rfc7540#section-5.1.2
 // I spent way too much time on this thinking it would be the backend blocking requests. It's not.
-
-// ANSI color codes for logging
-const (
-	colorReset   = "\033[0m"
-	colorRed     = "\033[31m"
-	colorGreen   = "\033[32m"
-	colorYellow  = "\033[33m"
-	colorBlue    = "\033[34m"
-	colorMagenta = "\033[35m"
-	colorCyan    = "\033[36m"
-)
 
 // Client represents a connected SSE client
 type Client struct {
@@ -86,8 +75,7 @@ func (m *SSEManager) CreateStreamHandler(streamType string) http.HandlerFunc {
 		_, err := fmt.Fprintf(w, "data: %s Stream Connected\n\n", streamType)
 		if err != nil {
 			m.removeClient(client)
-			log.Printf("%s🖥️ [%s/Stream] ⚠️ Failed to send initial message: %v%s",
-				colorRed, streamType, err, colorReset)
+			logger.SSE.Error(" ⚠️ Failed to send initial message: " + err.Error())
 			return
 		}
 		flusher.Flush()
@@ -118,8 +106,7 @@ func (m *SSEManager) streamMessages(
 		case msg := <-client.messages:
 			_, err := fmt.Fprintf(w, "data: %s\n\n", msg)
 			if err != nil {
-				log.Printf("%s🖥️ [%s/Stream] ❌ Failed to send message: %v%s",
-					colorRed, streamType, err, colorReset)
+				logger.SSE.Error(" ❌ Failed to send message: " + err.Error())
 				return
 			}
 			flusher.Flush()
@@ -141,7 +128,7 @@ func (m *SSEManager) Broadcast(message string) {
 			// Message sent successfully
 		default:
 			// Client channel is full, log and skip
-			log.Printf("%s🖥️ [Stream] ⏳ Message dropped for slow client%s", colorMagenta, colorReset)
+			logger.SSE.Warn("⏳ Message dropped for slow client")
 		}
 	}
 }
