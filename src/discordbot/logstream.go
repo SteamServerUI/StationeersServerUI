@@ -2,7 +2,7 @@ package discordbot
 
 import (
 	"StationeersServerUI/src/config"
-	"fmt"
+	"StationeersServerUI/src/logger"
 )
 
 // PassLogMessageToDiscordLogBuffer is called from the detection module to add a log message to the buffer.
@@ -36,7 +36,7 @@ func flushLogBufferToDiscord() {
 		// Send the chunk to Discord
 		_, err := config.DiscordSession.ChannelMessageSend(config.LogChannelID, message[:chunkSize])
 		if err != nil {
-			fmt.Println("Error sending log to Discord:", err)
+			logger.Discord.Error("Error sending log to Discord: " + err.Error())
 			break
 		}
 

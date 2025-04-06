@@ -2,7 +2,7 @@ package discordbot
 
 import (
 	"StationeersServerUI/src/config"
-	"fmt"
+	"StationeersServerUI/src/logger"
 	"sync"
 	"time"
 
@@ -78,12 +78,12 @@ func registerSlashCommands(s *discordgo.Session) {
 		},
 	}
 
-	fmt.Println("[DISCORD] Checking and registering slash commands with Discord...")
+	logger.Discord.Info("Checking and registering slash commands with Discord...")
 
 	// Fetch existing commands from Discord
 	existingCmds, err := s.ApplicationCommands(s.State.User.ID, "")
 	if err != nil {
-		fmt.Printf("[DISCORD] Failed to fetch existing commands: %v\n", err)
+		logger.Discord.Error("Failed to fetch existing commands: " + err.Error())
 		return
 	}
 
@@ -105,7 +105,7 @@ func registerSlashCommands(s *discordgo.Session) {
 			wg.Add(1)
 			commandsToRegister <- desiredCmd
 		} else if config.IsDebugMode {
-			fmt.Printf("[DISCORD] Command %s already up-to-date, skipping\n", desiredCmd.Name)
+			logger.Discord.Debug("Command " + desiredCmd.Name + " already up-to-date, skipping")
 		}
 	}
 	close(commandsToRegister)
@@ -118,9 +118,9 @@ func registerSlashCommands(s *discordgo.Session) {
 			duration := time.Since(startTime)
 
 			if err != nil {
-				fmt.Printf("[DISCORD] Error registering command %s: %v (took %v)\n", cmd.Name, err, duration)
+				logger.Discord.Error("Error registering command " + cmd.Name + ": " + err.Error())
 			} else if config.IsDebugMode {
-				fmt.Printf("[DISCORD] Successfully registered command %s (took %v)\n", cmd.Name, duration)
+				logger.Discord.Debug("Successfully registered command " + cmd.Name + " took:" + duration.String())
 			}
 			wg.Done()
 		}
@@ -128,8 +128,7 @@ func registerSlashCommands(s *discordgo.Session) {
 
 	// Wait for all registrations to finish
 	wg.Wait()
-
-	fmt.Println("[DISCORD] Finished processing slash commands.")
+	logger.Discord.Info("Finished processing slash commands.")
 }
 
 // This is used to determine if a slash command needs to be registered with the discord server we are connected to or if it already exists.

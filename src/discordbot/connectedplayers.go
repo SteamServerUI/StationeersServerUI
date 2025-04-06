@@ -2,6 +2,7 @@ package discordbot
 
 import (
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/logger"
 	"fmt"
 	"strings"
 	"sync"
@@ -15,7 +16,7 @@ var (
 
 func AddToConnectedPlayers(username, steamID string, connectionTime time.Time, players map[string]string) {
 	if !config.IsDiscordEnabled || config.DiscordSession == nil {
-		fmt.Println("[DISCORD] Discord not enabled or session not initialized")
+		logger.Discord.Debug("Discord not enabled or session not initialized")
 		return
 	}
 	content := formatConnectedPlayers(players)
@@ -24,7 +25,7 @@ func AddToConnectedPlayers(username, steamID string, connectionTime time.Time, p
 
 func RemoveFromConnectedPlayers(steamID string, players map[string]string) {
 	if !config.IsDiscordEnabled || config.DiscordSession == nil {
-		fmt.Println("[DISCORD] Discord not enabled or session not initialized")
+		logger.Discord.Debug("Discord not enabled or session not initialized")
 		return
 	}
 	content := formatConnectedPlayers(players)
@@ -39,24 +40,24 @@ func sendAndEditMessageInConnectedPlayersChannel(channelID, message string) {
 		// Send a new message if there's no existing one
 		msg, err := config.DiscordSession.ChannelMessageSend(channelID, message)
 		if err != nil {
-			fmt.Printf("[DISCORD] Error sending message to channel %s: %v\n", channelID, err)
+			logger.Discord.Error("Error sending message to channel " + channelID + ": " + err.Error())
 			return
 		}
 		connectedPlayersMessageID = msg.ID
-		fmt.Printf("[DISCORD] Sent new message to channel %s with ID %s\n", channelID, msg.ID)
+		logger.Discord.Debug("Sent new message to channel " + channelID)
 	} else {
 		// Edit the existing message
 		_, err := config.DiscordSession.ChannelMessageEdit(channelID, connectedPlayersMessageID, message)
 		if err != nil {
-			fmt.Printf("[DISCORD] Error editing message in channel %s: %v\n", channelID, err)
+			logger.Discord.Error("Error editing message in channel " + channelID + ": " + err.Error())
 			// If editing fails (e.g., message deleted), reset and try sending a new one
 			connectedPlayersMessageID = ""
 			msg, err := config.DiscordSession.ChannelMessageSend(channelID, message)
 			if err != nil {
-				fmt.Printf("[DISCORD] Error sending fallback message to channel %s: %v\n", channelID, err)
+				logger.Discord.Error("Error sending fallback message to channel " + channelID + ": " + err.Error())
 			} else {
 				connectedPlayersMessageID = msg.ID
-				fmt.Printf("[DISCORD] Sent new message after edit failure to channel %s with ID %s\n", channelID, msg.ID)
+				logger.Discord.Debug("Sent new message after edit failure to channel " + channelID)
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import (
 	"StationeersServerUI/src/backupmgr"
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/gamemgr"
+	"StationeersServerUI/src/logger"
 	"fmt"
 	"sort"
 	"strconv"
@@ -41,7 +42,7 @@ func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate)
 	if handler, ok := handlers[cmd]; ok {
 		data := EmbedData{Title: "Command Error", Color: 0xFF0000}
 		if err := handler(s, i, data); err != nil {
-			fmt.Printf("[DISCORD] Error handling %s: %v\n", cmd, err)
+			logger.Discord.Error("Error handling " + cmd + ": " + err.Error())
 		}
 	}
 }

@@ -6,6 +6,7 @@ import (
 
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/gamemgr"
+	"StationeersServerUI/src/logger"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -64,14 +65,14 @@ func handleControlReactions(s *discordgo.Session, r *discordgo.MessageReactionAd
 		}()
 
 	default:
-		fmt.Println("Unknown reaction:", r.Emoji.Name)
+		logger.Discord.Debug("Unknown reaction: " + r.Emoji.Name)
 		return
 	}
 
 	// Get the user who triggered the action
 	user, err := s.User(r.UserID)
 	if err != nil {
-		fmt.Printf("Error fetching user details: %v\n", err)
+		logger.Discord.Error("Error fetching user details: " + err.Error())
 		return
 	}
 	username := user.Username
@@ -82,7 +83,7 @@ func handleControlReactions(s *discordgo.Session, r *discordgo.MessageReactionAd
 	// Remove the reaction after processing
 	err = s.MessageReactionRemove(config.ControlPanelChannelID, r.MessageID, r.Emoji.APIName(), r.UserID)
 	if err != nil {
-		fmt.Printf("Error removing reaction: %v\n", err)
+		logger.Discord.Error("Error removing reaction: " + err.Error())
 	}
 }
 
@@ -99,14 +100,14 @@ func handleExceptionReactions(s *discordgo.Session, r *discordgo.MessageReaction
 		gamemgr.InternalStartServer()
 
 	default:
-		fmt.Println("Unknown reaction:", r.Emoji.Name)
+		logger.Discord.Debug("Unknown reaction: " + r.Emoji.Name)
 		return
 	}
 
 	// Get the user who triggered the action
 	user, err := s.User(r.UserID)
 	if err != nil {
-		fmt.Printf("Error fetching user details: %v\n", err)
+		logger.Discord.Error("Error fetching user details:\n" + err.Error())
 		return
 	}
 	username := user.Username
@@ -117,6 +118,6 @@ func handleExceptionReactions(s *discordgo.Session, r *discordgo.MessageReaction
 	// Remove the reaction after processing
 	err = s.MessageReactionRemove(config.ErrorChannelID, r.MessageID, r.Emoji.APIName(), r.UserID)
 	if err != nil {
-		fmt.Printf("Error removing reaction: %v\n", err)
+		logger.Discord.Error("Error removing reaction: " + err.Error())
 	}
 }

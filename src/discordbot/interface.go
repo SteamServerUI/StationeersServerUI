@@ -2,6 +2,7 @@ package discordbot
 
 import (
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/logger"
 	"fmt"
 	"time"
 
@@ -33,15 +34,13 @@ func InitializeDiscordBot() {
 	// Set intents
 	config.DiscordSession.Identify.Intents = discordgo.IntentsGuilds | discordgo.IntentsGuildMessages | discordgo.IntentsGuildMessageReactions | discordgo.IntentsMessageContent
 
-	fmt.Println("[DISCORD] Starting Discord integration...")
-	if config.IsDebugMode {
-		fmt.Println("[DISCORD] Discord token:", config.DiscordToken)
-		fmt.Println("[DISCORD] ControlChannelID:", config.ControlChannelID)
-		fmt.Println("[DISCORD] StatusChannelID:", config.StatusChannelID)
-		fmt.Println("[DISCORD] ConnectionListChannelID:", config.ConnectionListChannelID)
-		fmt.Println("[DISCORD] LogChannelID:", config.LogChannelID)
-		fmt.Println("[DISCORD] SaveChannelID:", config.SaveChannelID)
-	}
+	logger.Discord.Info("Starting Discord integration...")
+	logger.Discord.Debug("Discord token: " + config.DiscordToken)
+	logger.Discord.Debug("ControlChannelID: " + config.ControlChannelID)
+	logger.Discord.Debug("StatusChannelID: " + config.StatusChannelID)
+	logger.Discord.Debug("ConnectionListChannelID: " + config.ConnectionListChannelID)
+	logger.Discord.Debug("LogChannelID: " + config.LogChannelID)
+	logger.Discord.Debug("SaveChannelID: " + config.SaveChannelID)
 
 	// Open session first
 	err = config.DiscordSession.Open()
@@ -57,6 +56,7 @@ func InitializeDiscordBot() {
 	registerSlashCommands(config.DiscordSession)
 
 	fmt.Println("[DISCORD] Bot is now running.")
+	logger.Discord.Info("Bot is now running.")
 	SendMessageToStatusChannel("🤖 Bot Version " + config.Version + " Branch " + config.Branch + " connected to Discord.")
 	sendControlPanel() // Send control panel message to Discord
 	UpdateBotStatusWithMessage("StationeersServerUI v" + config.Version)
