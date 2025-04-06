@@ -13,10 +13,23 @@ import (
 	"strings"
 )
 
+const (
+	// ANSI color codes for styling terminal output
+	colorReset   = "\033[0m"
+	colorRed     = "\033[31m"
+	colorGreen   = "\033[32m"
+	colorYellow  = "\033[33m"
+	colorBlue    = "\033[34m"
+	colorMagenta = "\033[35m"
+	colorCyan    = "\033[36m"
+)
+
 func main() {
+	fmt.Printf("%s=== Starting Build Pipeline ===%s\n", colorCyan, colorReset)
 
 	// Load the config
 	config.LoadConfig()
+	fmt.Printf("%s✓ Configuration loaded%s\n", colorGreen, colorReset)
 
 	// Increment the version
 	newVersion := incrementVersion("src/config/config.go")
@@ -30,8 +43,13 @@ func main() {
 		{"linux", "amd64"},
 	}
 
+	// Clean up old executables
+	cleanupOldExecutables(newVersion)
+
 	// Build for each platform
 	for _, platform := range platforms {
+		fmt.Printf("%s\nBuilding for %s/%s...%s\n", colorBlue, platform.os, platform.arch, colorReset)
+
 		// Set OS and architecture for cross-compilation
 		os.Setenv("GOOS", platform.os)
 		os.Setenv("GOARCH", platform.arch)
@@ -44,7 +62,7 @@ func main() {
 			outputName = fmt.Sprintf("StationeersServerControl%s_%s", newVersion, config.Branch)
 		}
 
-		// Append .exe only on Windows
+		// Append appropriate extension based on platform
 		if platform.os == "windows" {
 			outputName += ".exe"
 		}
@@ -58,18 +76,21 @@ func main() {
 		// Capture any output or errors
 		cmdOutput, err := cmd.CombinedOutput()
 		if err != nil {
-			log.Fatalf("Build failed for %s-%s: %s\nOutput: %s", platform.os, platform.arch, err, string(cmdOutput))
+			fmt.Printf("%s✗ Build failed for %s/%s:%s %s\nOutput: %s\n",
+				colorRed, platform.os, platform.arch, colorReset, err, string(cmdOutput))
+			log.Fatalf("Build process terminated")
 		}
 
-		fmt.Printf("Build successful for %s-%s! Output: %s\n", platform.os, platform.arch, outputName)
+		fmt.Printf("%s✓ Build successful!%s Created: %s%s%s\n",
+			colorGreen, colorReset, colorYellow, outputName, colorReset)
 	}
-
-	// Clean up old .exe files that follow the pattern "StationeersServerControl*"
-	cleanupOldExecutables(newVersion)
+	fmt.Printf("%s\n=== Build Pipeline Completed ===%s\n", colorCyan, colorReset)
 }
 
 // incrementVersion function to increment the version in config.go
 func incrementVersion(configFile string) string {
+	fmt.Printf("%sUpdating version...%s\n", colorBlue, colorReset)
+
 	// Read the content of the config.go file
 	content, err := os.ReadFile(configFile)
 	if err != nil {
@@ -89,8 +110,6 @@ func incrementVersion(configFile string) string {
 
 	// Increment the patch version
 	patch++
-
-	// Construct the new version
 	newVersion := fmt.Sprintf("%d.%d.%d", major, minor, patch)
 
 	// Replace the old version with the new version
@@ -102,43 +121,46 @@ func incrementVersion(configFile string) string {
 		log.Fatalf("Failed to write updated version to config.go: %s", err)
 	}
 
-	fmt.Printf("Version updated to %s\n", newVersion)
+	fmt.Printf("%s✓ Version updated from %s.%s.%s to %s%s\n",
+		colorGreen, matches[1], matches[2], matches[3], newVersion, colorReset)
 	return newVersion
 }
 
 // Modified cleanupOldExecutables to handle both Windows and Linux executables
 func cleanupOldExecutables(buildVersion string) {
+	fmt.Printf("%s\nCleaning up old executables...%s\n", colorBlue, colorReset)
+
 	currentVersion := buildVersion
-	// Get the current directory
 	dir := "."
 
-	// Get a list of all files in the directory
 	files, err := os.ReadDir(dir)
 	if err != nil {
 		log.Fatalf("Failed to read directory: %s", err)
 	}
 
-	// Loop through the files and delete old executables
+	deletedCount := 0
 	for _, file := range files {
 		filename := file.Name()
-		// Check for both .exe and Linux executables
 		if filepath.Ext(filename) == ".exe" || filepath.Ext(filename) == ".x86_64" {
 			match, _ := filepath.Match("StationeersServerControl*", filename)
-			if match {
-				// Skip deletion if the filename contains the current version
-				if strings.Contains(filename, currentVersion) {
-					continue
-				}
-
+			if match && !strings.Contains(filename, currentVersion) {
 				exePath := filepath.Join(dir, filename)
-				fmt.Printf("Deleting old executable: %s\n", exePath)
+				fmt.Printf("%s- Removing: %s%s%s\n", colorMagenta, colorYellow, exePath, colorReset)
+
 				err := os.Remove(exePath)
 				if err != nil {
-					log.Printf("Failed to delete %s: %s", exePath, err)
+					fmt.Printf("%s✗ Failed to delete %s: %s%s\n", colorRed, exePath, err, colorReset)
 				} else {
-					fmt.Printf("Successfully deleted: %s\n", exePath)
+					fmt.Printf("%s✓ Deleted successfully%s\n", colorGreen, colorReset)
+					deletedCount++
 				}
 			}
 		}
+	}
+
+	if deletedCount == 0 {
+		fmt.Printf("%sNo old executables found to clean up%s\n", colorYellow, colorReset)
+	} else {
+		fmt.Printf("%s✓ Cleaned up %d old executable(s)%s\n", colorGreen, deletedCount, colorReset)
 	}
 }
