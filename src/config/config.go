@@ -68,7 +68,7 @@ type CustomDetection struct {
 }
 
 var (
-	Version = "4.6.1"
+	Version                 = "4.6.4"
 	Branch                  = "nightly-dependencies"
 	GameBranch              string
 	DiscordToken            string
@@ -206,7 +206,7 @@ func applyConfig(cfg *JsonConfig) {
 	JwtKey = getString(cfg.JwtKey, "SSUI_JWT_KEY", generateJwtKey())
 	AuthTokenLifetime = getInt(cfg.AuthTokenLifetime, "SSUI_AUTH_TOKEN_LIFETIME", 1440)
 	IsDebugMode = getBool(cfg.Debug, "DEBUG", false)
-	CreateSSUILogFile = getBool(cfg.CreateSSUILogFile, "CREATE_SSUI_LOGFILE", true)
+	CreateSSUILogFile = getBool(cfg.CreateSSUILogFile, "CREATE_SSUI_LOGFILE", false)
 	LogLevel = getInt(cfg.LogLevel, "LOG_LEVEL", 20)
 	IsUpdateEnabled = getBool(cfg.IsUpdateEnabled, "IS_UPDATE_ENABLED", false)
 

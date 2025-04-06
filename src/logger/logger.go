@@ -87,16 +87,46 @@ func (l *Logger) log(entry logEntry) {
 	}
 }
 
-// writeToFile appends logs to a file, avoiding recursion
 func (l *Logger) writeToFile(logLine string) {
-	file, err := os.OpenFile("./UIMod/ssui.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Printf("%s%s [ERROR/LOGGER] Failed to open log file: %v%s\n", colorRed, time.Now().Format("2006-01-02 15:04:05"), err, colorReset)
+	// Retry settings
+	const maxRetries = 5
+	const retryDelay = 100 * time.Millisecond
+
+	// Retry loop with timeout
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		// Open file with proper flags
+		file, err := os.OpenFile("./UIMod/ssui.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err == nil {
+			// Successfully opened file, proceed with writing
+			defer file.Close()
+			if _, err := file.WriteString(logLine); err != nil {
+				fmt.Printf("%s%s [ERROR/LOGGER] Failed to write to log file: %v%s\n",
+					colorRed,
+					time.Now().Format("2006-01-02 15:04:05"),
+					err,
+					colorReset)
+			}
+			return
+		}
+
+		// If the error is due to the directory not existing
+		if os.IsNotExist(err) {
+			if attempt == maxRetries-1 {
+				// Last attempt failed, ditch the log line
+				return
+			}
+			// Wait before retrying
+			time.Sleep(retryDelay)
+			continue
+		}
+
+		// For other errors, log and exit immediately
+		fmt.Printf("%s%s [ERROR/LOGGER] Failed to open log file: %v%s\n",
+			colorRed,
+			time.Now().Format("2006-01-02 15:04:05"),
+			err,
+			colorReset)
 		return
-	}
-	defer file.Close()
-	if _, err := file.WriteString(logLine); err != nil {
-		fmt.Printf("%s%s [ERROR/LOGGER] Failed to write to log file: %v%s\n", colorRed, time.Now().Format("2006-01-02 15:04:05"), err, colorReset)
 	}
 }
 
