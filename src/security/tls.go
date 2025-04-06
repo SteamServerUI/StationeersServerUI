@@ -2,6 +2,7 @@ package security
 
 import (
 	"StationeersServerUI/src/config"
+	"StationeersServerUI/src/logger"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -36,7 +37,7 @@ func EnsureTLSCerts() error {
 
 		// Check if expired or near expiry (within 10 days of 90-day validity)
 		if time.Now().After(cert.NotAfter) || time.Now().Add(10*24*time.Hour).After(cert.NotAfter) {
-			fmt.Println("Certificate expired or near expiry, regenerating...")
+			logger.Security.Warn("Certificate expired or near expiry, regenerating...")
 		} else {
 			// Cert is valid, we’re done
 			return nil
@@ -48,7 +49,7 @@ func EnsureTLSCerts() error {
 		return fmt.Errorf("failed to generate self-signed cert: %v", err)
 	}
 
-	fmt.Println("Generated new self-signed TLS certificates at", config.TLSCertPath, "and", config.TLSKeyPath)
+	logger.Security.Info("Generated new self-signed TLS certificates at " + config.TLSCertPath + " and " + config.TLSKeyPath)
 	return nil
 }
 

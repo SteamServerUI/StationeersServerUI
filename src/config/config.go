@@ -1,11 +1,10 @@
-// config.go
 package config
 
 import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"runtime"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -24,6 +23,13 @@ type JsonConfig struct {
 	BlackListFilePath       string `json:"blackListFilePath"`
 	IsDiscordEnabled        bool   `json:"isDiscordEnabled"`
 	ErrorChannelID          string `json:"errorChannelID"`
+	BackupKeepLastN         int    `json:"backupKeepLastN"`
+	IsCleanupEnabled        bool   `json:"isCleanupEnabled"`
+	BackupKeepDailyFor      int    `json:"backupKeepDailyFor"`
+	BackupKeepWeeklyFor     int    `json:"backupKeepWeeklyFor"`
+	BackupKeepMonthlyFor    int    `json:"backupKeepMonthlyFor"`
+	BackupCleanupInterval   int    `json:"backupCleanupInterval"`
+	BackupWaitTime          int    `json:"backupWaitTime"`
 	GameBranch              string `json:"gameBranch"`
 	ServerName              string `json:"ServerName"`
 	SaveInfo                string `json:"SaveInfo"`
@@ -47,11 +53,24 @@ type JsonConfig struct {
 	Password                string `json:"Password,omitempty"`
 	JwtKey                  string `json:"JwtKey,omitempty"`
 	AuthTokenLifetime       int    `json:"AuthTokenLifetime,omitempty"`
-	Debug                   bool   `json:"Debug,omitempty"` //Optional, default false
+	Debug                   bool   `json:"Debug,omitempty"`
+	CreateSSUILogFile       bool   `json:"CreateSSUILogFile,omitempty"`
+	LogLevel                int    `json:"LogLevel,omitempty"`
+	IsUpdateEnabled         bool   `json:"IsUpdateEnabled,omitempty"`
+}
+
+type CustomDetection struct {
+	ID        string `json:"id"`
+	Type      string `json:"type"`
+	Pattern   string `json:"pattern"`
+	EventType string `json:"eventType"`
+	Message   string `json:"message"`
 }
 
 var (
-	// Discord-related settings
+	Version = "4.6.5"
+	Branch                  = "nightly-dependencies"
+	GameBranch              string
 	DiscordToken            string
 	DiscordSession          *discordgo.Session
 	IsDiscordEnabled        bool
@@ -62,110 +81,137 @@ var (
 	ConnectionListChannelID string
 	SaveChannelID           string
 	ControlPanelChannelID   string
-
-	// Server configuration
-	ServerName       string
-	ServerMaxPlayers string
-	ServerPassword   string
-	ServerAuthSecret string
-	AdminPassword    string
-	GamePort         string
-	UpdatePort       string
-	LocalIpAddress   string
-	ServerVisible    bool
-	UseSteamP2P      bool
-
-	// File paths and constants
-	BlackListFilePath string
-	SaveInfo          string // Save folder name, optionally with backup name ("WorldName BackupName")
-	BackupWorldName   string // Only Backup world name
-	WorldName         string // Only World name
-	ExePath           string
-	TLSCertPath       = "./UIMod/cert.pem"
-	TLSKeyPath        = "./UIMod/key.pem"
-	ConfigPath        = "./UIMod/config.json"
-	GameServerAppID   = "600760" // Steam App ID for Stationeers Dedicated Server
-
-	// Runtime settings
-	SaveInterval     string
-	AdditionalParams string
-	AutoPauseServer  bool
-	UPNPEnabled      bool
-	AutoSave         bool
-	StartLocalHost   bool
-	TLSEnabled       bool
-	IsDebugMode      bool
-	IsFirstTimeSetup bool
-
-	// Logging and buffers
-	LogMessageBuffer      string
-	DiscordCharBufferSize int
-	SSEMessageBufferSize  = 2000
-	MaxSSEConnections     = 20
-	BufferFlushTicker     *time.Ticker
-
-	// Player tracking
-	ConnectedPlayers          = make(map[string]string) // SteamID -> Username
-	ConnectedPlayersMessageID string
-
-	// Message IDs
-	ControlMessageID       string
-	ExceptionMessageID     string
-	BackupRestoreMessageID string
-
-	// Authentication
-	Username          string
-	Password          string
-	JwtKey            string
-	AuthTokenLifetime int // In minutes, e.g., 1440 (24h)
-
-	// Versioning
-	Version = "4.1.12"
-	Branch     = "release"
-	GameBranch string
+	IsCleanupEnabled        bool
+	BackupKeepLastN         int
+	BackupKeepDailyFor      time.Duration
+	BackupKeepWeeklyFor     time.Duration
+	BackupKeepMonthlyFor    time.Duration
+	BackupCleanupInterval   time.Duration
+	ConfiguredBackupDir     string
+	ConfiguredSafeBackupDir string
+	BackupWaitTime          time.Duration
+	ServerName              string
+	ServerMaxPlayers        string
+	ServerPassword          string
+	ServerAuthSecret        string
+	AdminPassword           string
+	GamePort                string
+	UpdatePort              string
+	LocalIpAddress          string
+	ServerVisible           bool
+	UseSteamP2P             bool
+	BlackListFilePath       string
+	SaveInfo                string
+	BackupWorldName         string
+	WorldName               string
+	ExePath                 string
+	TLSCertPath             = "./UIMod/cert.pem"
+	TLSKeyPath              = "./UIMod/key.pem"
+	ConfigPath              = "./UIMod/config.json"
+	GameServerAppID         = "600760"
+	SaveInterval            string
+	AdditionalParams        string
+	AutoPauseServer         bool
+	UPNPEnabled             bool
+	AutoSave                bool
+	StartLocalHost          bool
+	IsDebugMode             bool
+	CreateSSUILogFile       bool
+	LogLevel                int
+	IsFirstTimeSetup        bool
+	LogMessageBuffer        string
+	DiscordCharBufferSize   int
+	SSEMessageBufferSize    = 2000
+	MaxSSEConnections       = 20
+	BufferFlushTicker       *time.Ticker
+	ControlMessageID        string
+	ExceptionMessageID      string
+	Username                string
+	Password                string
+	JwtKey                  string
+	AuthTokenLifetime       int
+	IsUpdateEnabled         bool
 )
 
+// LoadConfig loads and initializes the configuration
 func LoadConfig() (*JsonConfig, error) {
-
+	var jsonConfig JsonConfig
 	file, err := os.Open(ConfigPath)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	var jsonconfig JsonConfig
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&jsonconfig)
-	if err != nil {
-		return nil, err
-	}
-
-	// Set the default executable path if not specified in the config file
-	if jsonconfig.ExePath == "" {
-		if runtime.GOOS == "windows" {
-			jsonconfig.ExePath = "./rocketstation_DedicatedServer.exe"
-		} else {
-			jsonconfig.ExePath = "./rocketstation_DedicatedServer.x86_64"
+	if err == nil {
+		// File exists, proceed to decode it
+		defer file.Close()
+		decoder := json.NewDecoder(file)
+		if err := decoder.Decode(&jsonConfig); err != nil {
+			return nil, fmt.Errorf("failed to decode config: %v", err)
 		}
+	} else if os.IsNotExist(err) {
+		// File is missing, log it and proceed with defaults
+		fmt.Println("Config file does not exist. Using defaults and environment variables.")
+	} else {
+		// Other errors (e.g., permissions), fail immediately
+		return nil, fmt.Errorf("failed to open config file: %v", err)
 	}
+	// Apply configuration with hierarchy
+	applyConfig(&jsonConfig)
 
-	if jsonconfig.DiscordCharBufferSize <= 0 {
-		jsonconfig.DiscordCharBufferSize = 1000 // Default to 1000 characters
-	}
+	return &jsonConfig, nil
+}
 
-	if jsonconfig.GameBranch == "" {
-		jsonconfig.GameBranch = "public" //default to public release of Stationeers if no value is set from the config file
-	}
+// applyConfig applies the configuration with JSON -> env -> fallback hierarchy
+func applyConfig(cfg *JsonConfig) {
 
-	// Get secrets from env vars, json or defaults
-	GetSecretsFromEnv(jsonconfig)
+	// Set defaults
+	setDefaults(cfg)
 
-	if jsonconfig.SaveInfo == "" {
-		jsonconfig.SaveInfo = "Moon Moon"
-	}
+	// Apply values with hierarchy
+	DiscordToken = getString(cfg.DiscordToken, "DISCORD_TOKEN", "")
+	ControlChannelID = getString(cfg.ControlChannelID, "CONTROL_CHANNEL_ID", "")
+	StatusChannelID = getString(cfg.StatusChannelID, "STATUS_CHANNEL_ID", "")
+	ConnectionListChannelID = getString(cfg.ConnectionListChannelID, "CONNECTION_LIST_CHANNEL_ID", "")
+	LogChannelID = getString(cfg.LogChannelID, "LOG_CHANNEL_ID", "")
+	SaveChannelID = getString(cfg.SaveChannelID, "SAVE_CHANNEL_ID", "")
+	ControlPanelChannelID = getString(cfg.ControlPanelChannelID, "CONTROL_PANEL_CHANNEL_ID", "")
+	DiscordCharBufferSize = getInt(cfg.DiscordCharBufferSize, "DISCORD_CHAR_BUFFER_SIZE", 1000)
+	BlackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "")
+	IsDiscordEnabled = getBool(cfg.IsDiscordEnabled, "IS_DISCORD_ENABLED", false)
+	ErrorChannelID = getString(cfg.ErrorChannelID, "ERROR_CHANNEL_ID", "")
+	BackupKeepLastN = getInt(cfg.BackupKeepLastN, "BACKUP_KEEP_LAST_N", 0)
+	IsCleanupEnabled = getBool(cfg.IsCleanupEnabled, "IS_CLEANUP_ENABLED", false)
+	BackupKeepDailyFor = time.Duration(getInt(cfg.BackupKeepDailyFor, "BACKUP_KEEP_DAILY_FOR", 24)) * time.Hour
+	BackupKeepWeeklyFor = time.Duration(getInt(cfg.BackupKeepWeeklyFor, "BACKUP_KEEP_WEEKLY_FOR", 168)) * time.Hour
+	BackupKeepMonthlyFor = time.Duration(getInt(cfg.BackupKeepMonthlyFor, "BACKUP_KEEP_MONTHLY_FOR", 730)) * time.Hour
+	BackupCleanupInterval = time.Duration(getInt(cfg.BackupCleanupInterval, "BACKUP_CLEANUP_INTERVAL", 730)) * time.Hour
+	BackupWaitTime = time.Duration(getInt(cfg.BackupWaitTime, "BACKUP_WAIT_TIME", 30)) * time.Second
+	GameBranch = getString(cfg.GameBranch, "GAME_BRANCH", "public")
+	ServerName = getString(cfg.ServerName, "SERVER_NAME", "")
+	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "Moon Moon")
+	ServerMaxPlayers = getString(cfg.ServerMaxPlayers, "SERVER_MAX_PLAYERS", "")
+	ServerPassword = getString(cfg.ServerPassword, "SERVER_PASSWORD", "")
+	ServerAuthSecret = getString(cfg.ServerAuthSecret, "SERVER_AUTH_SECRET", "")
+	AdminPassword = getString(cfg.AdminPassword, "ADMIN_PASSWORD", "")
+	GamePort = getString(cfg.GamePort, "GAME_PORT", "")
+	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "")
+	UPNPEnabled = getBool(cfg.UPNPEnabled, "UPNP_ENABLED", false)
+	AutoSave = getBool(cfg.AutoSave, "AUTO_SAVE", false)
+	SaveInterval = getString(cfg.SaveInterval, "SAVE_INTERVAL", "")
+	AutoPauseServer = getBool(cfg.AutoPauseServer, "AUTO_PAUSE_SERVER", false)
+	LocalIpAddress = getString(cfg.LocalIpAddress, "LOCAL_IP_ADDRESS", "")
+	StartLocalHost = getBool(cfg.StartLocalHost, "START_LOCAL_HOST", false)
+	ServerVisible = getBool(cfg.ServerVisible, "SERVER_VISIBLE", false)
+	UseSteamP2P = getBool(cfg.UseSteamP2P, "USE_STEAM_P2P", false)
+	ExePath = getString(cfg.ExePath, "EXE_PATH", getDefaultExePath())
+	AdditionalParams = getString(cfg.AdditionalParams, "ADDITIONAL_PARAMS", "")
+	Username = getString(cfg.Username, "SSUI_USERNAME", "admin")
+	Password = getString(cfg.Password, "SSUI_PASSWORD", "password")
+	JwtKey = getString(cfg.JwtKey, "SSUI_JWT_KEY", generateJwtKey())
+	AuthTokenLifetime = getInt(cfg.AuthTokenLifetime, "SSUI_AUTH_TOKEN_LIFETIME", 1440)
+	IsDebugMode = getBool(cfg.Debug, "DEBUG", false)
+	CreateSSUILogFile = getBool(cfg.CreateSSUILogFile, "CREATE_SSUI_LOGFILE", false)
+	LogLevel = getInt(cfg.LogLevel, "LOG_LEVEL", 20)
+	IsUpdateEnabled = getBool(cfg.IsUpdateEnabled, "IS_UPDATE_ENABLED", false)
 
-	//set BackupWorldName and WorldName from SaveInfo, wich is in the format "WorldName BackupName" for argument handling.
-	parts := strings.Split(jsonconfig.SaveInfo, " ")
+	// Process SaveInfo
+	parts := strings.Split(SaveInfo, " ")
 	if len(parts) > 0 {
 		WorldName = parts[0]
 	}
@@ -173,86 +219,7 @@ func LoadConfig() (*JsonConfig, error) {
 		BackupWorldName = parts[1]
 	}
 
-	//set the rest of the config variables from the json config if they are available
-	SaveInfo = jsonconfig.SaveInfo
-	DiscordToken = jsonconfig.DiscordToken
-	ControlChannelID = jsonconfig.ControlChannelID
-	StatusChannelID = jsonconfig.StatusChannelID
-	LogChannelID = jsonconfig.LogChannelID
-	ConnectionListChannelID = jsonconfig.ConnectionListChannelID
-	SaveChannelID = jsonconfig.SaveChannelID
-	BlackListFilePath = jsonconfig.BlackListFilePath
-	ControlPanelChannelID = jsonconfig.ControlPanelChannelID
-	IsDiscordEnabled = jsonconfig.IsDiscordEnabled
-	ErrorChannelID = jsonconfig.ErrorChannelID
-	GameBranch = jsonconfig.GameBranch
-	ServerName = jsonconfig.ServerName
-	ServerMaxPlayers = jsonconfig.ServerMaxPlayers
-	ServerPassword = jsonconfig.ServerPassword
-	ServerAuthSecret = jsonconfig.ServerAuthSecret
-	AdminPassword = jsonconfig.AdminPassword
-	GamePort = jsonconfig.GamePort
-	UpdatePort = jsonconfig.UpdatePort
-	UPNPEnabled = jsonconfig.UPNPEnabled
-	AutoSave = jsonconfig.AutoSave
-	SaveInterval = jsonconfig.SaveInterval
-	AutoPauseServer = jsonconfig.AutoPauseServer
-	LocalIpAddress = jsonconfig.LocalIpAddress
-	StartLocalHost = jsonconfig.StartLocalHost
-	ServerVisible = jsonconfig.ServerVisible
-	UseSteamP2P = jsonconfig.UseSteamP2P
-	ExePath = jsonconfig.ExePath
-	AdditionalParams = jsonconfig.AdditionalParams
-	IsDebugMode = jsonconfig.Debug
-	DiscordCharBufferSize = jsonconfig.DiscordCharBufferSize
-
-	if jsonconfig.Debug {
-		fmt.Println("----DISCORD CONFIG VARS----")
-		fmt.Println("BlackListFilePath:", BlackListFilePath)
-		fmt.Println("ConnectedPlayersMessageID:", ConnectedPlayersMessageID)
-		fmt.Println("ConnectionListChannelID:", ConnectionListChannelID)
-		fmt.Println("ControlChannelID:", ControlChannelID)
-		fmt.Println("ControlPanelChannelID:", ControlPanelChannelID)
-		fmt.Println("DiscordCharBufferSize:", DiscordCharBufferSize)
-		fmt.Println("DiscordToken:", DiscordToken)
-		fmt.Println("ErrorChannelID:", ErrorChannelID)
-		fmt.Println("IsDiscordEnabled:", IsDiscordEnabled)
-		fmt.Println("LogChannelID:", LogChannelID)
-		fmt.Println("LogMessageBuffer:", LogMessageBuffer)
-		fmt.Println("SaveChannelID:", SaveChannelID)
-		fmt.Println("StatusChannelID:", StatusChannelID)
-		fmt.Println("----GAMESERVER CONFIG VARS----")
-		fmt.Println("AdditionalParams:", AdditionalParams)
-		fmt.Println("AdminPassword:", AdminPassword)
-		fmt.Println("AutoPauseServer:", AutoPauseServer)
-		fmt.Println("AutoSave:", AutoSave)
-		fmt.Println("BackupWorldName:", BackupWorldName)
-		fmt.Println("ExePath:", ExePath)
-		fmt.Println("GameBranch:", GameBranch)
-		fmt.Println("GamePort:", GamePort)
-		fmt.Println("LocalIpAddress:", LocalIpAddress)
-		fmt.Println("SaveInfo:", SaveInfo)
-		fmt.Println("SaveInterval:", SaveInterval)
-		fmt.Println("ServerAuthSecret:", ServerAuthSecret)
-		fmt.Println("ServerMaxPlayers:", ServerMaxPlayers)
-		fmt.Println("ServerName:", ServerName)
-		fmt.Println("ServerPassword:", ServerPassword)
-		fmt.Println("ServerVisible:", ServerVisible)
-		fmt.Println("StartLocalHost:", StartLocalHost)
-		fmt.Println("UpdatePort:", UpdatePort)
-		fmt.Println("UPNPEnabled:", UPNPEnabled)
-		fmt.Println("UseSteamP2P:", UseSteamP2P)
-		fmt.Println("WorldName:", WorldName)
-		fmt.Println("----AUTHENTICATION CONFIG VARS----")
-		fmt.Println("AuthTokenLifetime:", AuthTokenLifetime)
-		fmt.Println("JwtKey:", JwtKey)
-		fmt.Println("Password:", Password)
-		fmt.Println("Username:", Username)
-		fmt.Println("----MISC CONFIG VARS----")
-		fmt.Println("Branch:", Branch)
-		fmt.Println("GameServerAppID:", GameServerAppID)
-		fmt.Println("Version:", Version)
-	}
-
-	return &jsonconfig, nil
+	// Set backup paths
+	ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "Backup")
+	ConfiguredSafeBackupDir = filepath.Join("./saves/", WorldName, "Safebackups")
 }

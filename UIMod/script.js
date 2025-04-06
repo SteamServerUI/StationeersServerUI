@@ -169,7 +169,7 @@ function getEventClassName(eventText) {
 
 // Backup management
 function fetchBackups() {
-    fetch('/backups')
+    fetch('/api/v2/backups?mode=classic')
         .then(response => response.text())
         .then(data => {
             const backupList = document.getElementById('backupList');
@@ -195,7 +195,7 @@ function extractIndex(backupText) {
 
 function restoreBackup(index) {
     const status = document.getElementById('status');
-    fetch(`/restore?index=${index}`)
+    fetch(`/api/v2/backups/restore?index=${index}`)
         .then(response => response.text())
         .then(data => {
             status.hidden = false;
