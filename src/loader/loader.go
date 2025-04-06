@@ -24,9 +24,8 @@ func ReloadConfig() {
 	}
 	logger.Core.Debug("Config reloaded successfully")
 
-	if config.IsDebugMode {
-		PrintConfigDetails()
-	}
+	PrintConfigDetails()
+
 }
 
 func ReloadBackupManager() {

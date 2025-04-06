@@ -165,10 +165,7 @@ func sendControlPanel() {
 	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "⏹️") // Stop
 	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "♻️") // Restart
 	config.ControlMessageID = msg.ID
-	if !config.IsDebugMode {
-		// clear alll old Control Panels, except the current one
-		clearMessagesAboveLastN(config.ControlPanelChannelID, 1)
-	}
+	clearMessagesAboveLastN(config.ControlPanelChannelID, 1) // Clear all old control panel messages
 }
 
 // This function is used to clear messages above the last N messages in a channel. If you call this with 5, it will clear all messages in the channel besides the most recent 5.

@@ -54,20 +54,17 @@ func handleUnbanCommand() {
 func listenToDiscordMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if m.Author.ID == s.State.User.ID || m.ChannelID != config.ControlChannelID {
-		if config.IsDebugMode {
-			logger.Discord.Debug("Ignoring message from " + m.Author.Username)
-			logger.Discord.Debug("Ignored message: " + m.Content)
-			logger.Discord.Debug("Message channel: " + m.ChannelID)
-		}
+		logger.Discord.Debug("Ignoring message from " + m.Author.Username)
+		logger.Discord.Debug("Ignored message: " + m.Content)
+		logger.Discord.Debug("Message channel: " + m.ChannelID)
+
 		return
 	}
 
 	// log the message if debug is enabled
-	if config.IsDebugMode {
-		logger.Discord.Debug("Ignoring message from " + m.Author.Username)
-		logger.Discord.Debug("Ignored message: " + m.Content)
-		logger.Discord.Debug("Message channel: " + m.ChannelID)
-	}
+	logger.Discord.Debug("Ignoring message from " + m.Author.Username)
+	logger.Discord.Debug("Ignored message: " + m.Content)
+	logger.Discord.Debug("Message channel: " + m.ChannelID)
 
 	content := strings.TrimSpace(m.Content)
 

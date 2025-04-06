@@ -68,7 +68,7 @@ type CustomDetection struct {
 }
 
 var (
-	Version                 = "4.6.4"
+	Version = "4.6.5"
 	Branch                  = "nightly-dependencies"
 	GameBranch              string
 	DiscordToken            string

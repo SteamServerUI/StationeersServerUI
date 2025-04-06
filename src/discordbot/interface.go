@@ -14,9 +14,7 @@ func InitializeDiscordBot() {
 
 	// Clean up previous session
 	if config.DiscordSession != nil {
-		if config.IsDebugMode {
-			logger.Discord.Debug("Previous Discord session found, closing it...")
-		}
+		logger.Discord.Debug("Previous Discord session found, closing it...")
 		config.DiscordSession.Close()
 	}
 	if config.BufferFlushTicker != nil {

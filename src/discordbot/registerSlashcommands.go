@@ -1,7 +1,6 @@
 package discordbot
 
 import (
-	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/logger"
 	"sync"
 	"time"
@@ -104,9 +103,10 @@ func registerSlashCommands(s *discordgo.Session) {
 		if needsUpdate {
 			wg.Add(1)
 			commandsToRegister <- desiredCmd
-		} else if config.IsDebugMode {
-			logger.Discord.Debug("Command " + desiredCmd.Name + " already up-to-date, skipping")
 		}
+
+		logger.Discord.Debug("Command " + desiredCmd.Name + " already up-to-date, skipping")
+
 	}
 	close(commandsToRegister)
 
@@ -119,9 +119,8 @@ func registerSlashCommands(s *discordgo.Session) {
 
 			if err != nil {
 				logger.Discord.Error("Error registering command " + cmd.Name + ": " + err.Error())
-			} else if config.IsDebugMode {
-				logger.Discord.Debug("Successfully registered command " + cmd.Name + " took:" + duration.String())
 			}
+			logger.Discord.Debug("Successfully registered command " + cmd.Name + " took:" + duration.String())
 			wg.Done()
 		}
 	}()

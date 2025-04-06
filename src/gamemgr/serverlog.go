@@ -1,7 +1,6 @@
 package gamemgr
 
 import (
-	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/logger"
 	"StationeersServerUI/src/ssestream"
 	"bufio"
@@ -23,9 +22,7 @@ func readPipe(pipe io.ReadCloser) {
 		ssestream.BroadcastConsoleOutput(output)
 	}
 	if err := scanner.Err(); err != nil {
-		if config.IsDebugMode {
-			logger.Core.Debug("Pipe error: " + err.Error())
-		}
+		logger.Core.Debug("Pipe error: " + err.Error())
 		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reading pipe: %v", err))
 	}
 	logger.Core.Debug("Pipe closed")
@@ -49,17 +46,13 @@ func tailLogFile(logFilePath string) {
 		if _, err := os.Stat(logFilePath); err == nil {
 			break // File exists, proceed
 		}
-		if config.IsDebugMode {
-			logger.Core.Debug("Log file " + logFilePath + " not found, retrying in 1s (" + strconv.Itoa(i+1) + "/10)")
-		}
+		logger.Core.Debug("Log file " + logFilePath + " not found, retrying in 1s (" + strconv.Itoa(i+1) + "/10)")
 		time.Sleep(1 * time.Second)
 	}
 
 	// If file still doesn't exist, give up and report
 	if _, err := os.Stat(logFilePath); os.IsNotExist(err) {
-		if config.IsDebugMode {
-			logger.Core.Debug("Log file " + logFilePath + " still not found after retries")
-		}
+		logger.Core.Debug("Log file " + logFilePath + " still not found after retries")
 		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Log file %s not found after retries", logFilePath))
 		return
 	}
@@ -68,18 +61,14 @@ func tailLogFile(logFilePath string) {
 	cmd := exec.Command("tail", "-F", logFilePath)
 	pipe, err := cmd.StdoutPipe()
 	if err != nil {
-		if config.IsDebugMode {
-			logger.Core.Debug("Error creating stdout pipe for tail: " + err.Error())
-		}
+		logger.Core.Debug("Error creating stdout pipe for tail: " + err.Error())
 		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error starting tail -F: %v", err))
 		return
 	}
 
 	// Start the command
 	if err := cmd.Start(); err != nil {
-		if config.IsDebugMode {
-			logger.Core.Debug("Error starting tail -F: " + err.Error())
-		}
+		logger.Core.Debug("Error starting tail -F: " + err.Error())
 		ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error starting tail -F: %v", err))
 		return
 	}
@@ -87,15 +76,13 @@ func tailLogFile(logFilePath string) {
 	// Clean up when done
 	defer func() {
 		cmd.Process.Kill() // Kill tail when logDone triggers
-		if err := cmd.Wait(); err != nil && config.IsDebugMode {
+		if err := cmd.Wait(); err != nil {
 			logger.Core.Debug("Tail process exited with: " + err.Error())
 		}
 	}()
 
 	scanner := bufio.NewScanner(pipe)
-	if config.IsDebugMode {
-		logger.Core.Debug("Started tailing log file with tail -F")
-	}
+	logger.Core.Debug("Started tailing log file with tail -F")
 
 	// Goroutine to read and broadcast tail output
 	go func() {
@@ -105,16 +92,16 @@ func tailLogFile(logFilePath string) {
 			ssestream.BroadcastConsoleOutput(output)
 		}
 		if err := scanner.Err(); err != nil {
-			if config.IsDebugMode {
-				logger.Core.Debug("Error reading tail -F output: " + err.Error())
-			}
+
+			logger.Core.Debug("Error reading tail -F output: " + err.Error())
+
 			ssestream.BroadcastConsoleOutput(fmt.Sprintf("Error reading tail -F output: %v", err))
 		}
 	}()
 
 	// Wait for logDone signal to stop
 	<-logDone
-	if config.IsDebugMode {
-		logger.Core.Debug("Received logDone signal, stopping tail -F")
-	}
+
+	logger.Core.Debug("Received logDone signal, stopping tail -F")
+
 }

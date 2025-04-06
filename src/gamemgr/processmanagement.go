@@ -48,16 +48,15 @@ func InternalStartServer() error {
 		if err := cmd.Start(); err != nil {
 			return fmt.Errorf("error starting server: %v", err)
 		}
-		if config.IsDebugMode {
-			logger.Core.Debug("Created pipes")
-		}
+		logger.Core.Debug("Created pipes")
+
 		// Start reading stdout and stderr pipes on Windows
 		go readPipe(stdout)
 		go readPipe(stderr)
 	} else {
-		if config.IsDebugMode {
-			logger.Core.Debug("Switching to log file for logs as we are on Linux! Hail the Penguin!")
-		}
+
+		logger.Core.Debug("Switching to log file for logs as we are on Linux! Hail the Penguin!")
+
 		if logDone != nil {
 			close(logDone) // Close any existing channel
 		}
