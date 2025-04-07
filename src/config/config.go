@@ -68,7 +68,7 @@ type CustomDetection struct {
 }
 
 var (
-	Version = "4.6.6"
+	Version                 = "4.6.6"
 	Branch                  = "release"
 	GameBranch              string
 	DiscordToken            string
@@ -172,7 +172,7 @@ func applyConfig(cfg *JsonConfig) {
 	SaveChannelID = getString(cfg.SaveChannelID, "SAVE_CHANNEL_ID", "")
 	ControlPanelChannelID = getString(cfg.ControlPanelChannelID, "CONTROL_PANEL_CHANNEL_ID", "")
 	DiscordCharBufferSize = getInt(cfg.DiscordCharBufferSize, "DISCORD_CHAR_BUFFER_SIZE", 1000)
-	BlackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "")
+	BlackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "./Blacklist.txt")
 	IsDiscordEnabled = getBool(cfg.IsDiscordEnabled, "IS_DISCORD_ENABLED", false)
 	ErrorChannelID = getString(cfg.ErrorChannelID, "ERROR_CHANNEL_ID", "")
 	BackupKeepLastN = getInt(cfg.BackupKeepLastN, "BACKUP_KEEP_LAST_N", 0)
