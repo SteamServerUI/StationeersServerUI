@@ -21,14 +21,25 @@ let detectionEventSource = null;
 
 // Utility function for typing text
 function typeText(element, speed) {
+    // Check if typing is already in progress
+    if (element.dataset.isTyping === 'true') {
+        // Optionally, clear the previous timeout (requires storing it)
+        clearTimeout(element.dataset.timeoutId);
+    }
+
     const fullText = element.textContent;
     element.textContent = '';
+    element.dataset.isTyping = 'true'; // Mark as typing
     let i = 0;
     
     const typeChar = () => {
         if (i < fullText.length) {
             element.textContent += fullText.charAt(i++);
-            setTimeout(typeChar, speed);
+            const timeoutId = setTimeout(typeChar, speed);
+            element.dataset.timeoutId = timeoutId; // Store timeout ID
+        } else {
+            element.dataset.isTyping = 'false'; // Done typing
+            delete element.dataset.timeoutId;
         }
     };
     typeChar();
@@ -36,15 +47,23 @@ function typeText(element, speed) {
 
 // Utility function for typing text with a callback
 function typeTextWithCallback(element, text, speed, callback) {
+    if (element.dataset.isTyping === 'true') {
+        clearTimeout(element.dataset.timeoutId);
+    }
+
     element.textContent = '';
+    element.dataset.isTyping = 'true';
     let i = 0;
     
     const typeChar = () => {
         if (i < text.length) {
             element.textContent += text.charAt(i++);
-            setTimeout(typeChar, speed);
-        } else if (callback) {
-            setTimeout(callback, 50);
+            const timeoutId = setTimeout(typeChar, speed);
+            element.dataset.timeoutId = timeoutId;
+        } else {
+            element.dataset.isTyping = 'false';
+            delete element.dataset.timeoutId;
+            if (callback) setTimeout(callback, 50);
         }
     };
     typeChar();

@@ -137,7 +137,7 @@ func InternalStopServer() error {
 	if isWindows {
 		// On Windows, just kill the process directly
 		if killErr := cmd.Process.Kill(); killErr != nil {
-			return fmt.Errorf("error stopping server: %v", killErr)
+			return nil
 		}
 	} else {
 		// On Linux/Unix, try SIGTERM first for graceful shutdown
