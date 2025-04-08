@@ -128,8 +128,7 @@ func InternalStopServer() error {
 	defer mu.Unlock()
 
 	if !internalIsServerRunningNoLock() {
-		logger.Core.Info("Server not running or already stopped")
-		return nil
+		return fmt.Errorf("server not running")
 	}
 
 	// Process is running, stop it

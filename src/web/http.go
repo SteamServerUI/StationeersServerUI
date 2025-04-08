@@ -193,6 +193,11 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 func StopServer(w http.ResponseWriter, r *http.Request) {
 	logger.Web.Debug("Received stop request from API")
 	if err := gamemgr.InternalStopServer(); err != nil {
+		if err.Error() == "server not running" {
+			fmt.Fprint(w, "Server was not running or was already stopped")
+			logger.Web.Core("Server not running or was already stopped")
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		logger.Web.Core("Error stopping server: " + err.Error())
 		return
