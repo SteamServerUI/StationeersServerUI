@@ -5,8 +5,10 @@ import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/logger"
 	"fmt"
+	"os"
 	"os/exec"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -19,11 +21,57 @@ var (
 	logDone chan struct{}
 )
 
+// InternalIsServerRunning checks if the server process is running.
+// Safe to call standalone as it manages its own locking.
+func InternalIsServerRunning() bool {
+	mu.Lock()
+	defer mu.Unlock()
+	return internalIsServerRunningNoLock()
+}
+
+// internalIsServerRunningNoLock checks if the server process is running.
+// Caller must hold mu.Lock().
+func internalIsServerRunningNoLock() bool {
+	if cmd == nil || cmd.Process == nil {
+		return false
+	}
+
+	if runtime.GOOS == "windows" {
+		done := make(chan error, 1)
+		go func() { done <- cmd.Wait() }()
+		select {
+		case err := <-done:
+			if err != nil && strings.Contains(err.Error(), "Wait was already called") {
+				logger.Core.Debug("Wait already called, assuming process is dead")
+			}
+			cmd = nil
+			return false
+		case <-time.After(50 * time.Millisecond):
+			// Double-check with os.FindProcess
+			if proc, err := os.FindProcess(cmd.Process.Pid); err == nil {
+				if err := proc.Signal(os.Kill); err != nil {
+					cmd = nil
+					return false
+				}
+			}
+			return true
+		}
+	} else {
+		// On Unix-like systems, use Signal(0)
+		if err := cmd.Process.Signal(syscall.Signal(0)); err != nil {
+			logger.Core.Debug("Signal(0) failed, assuming process is dead: " + err.Error())
+			cmd = nil
+			return false
+		}
+		return true
+	}
+}
+
 func InternalStartServer() error {
 	mu.Lock()
 	defer mu.Unlock()
 
-	if cmd != nil && cmd.Process != nil {
+	if internalIsServerRunningNoLock() {
 		return fmt.Errorf("server is already running")
 	}
 
@@ -48,6 +96,7 @@ func InternalStartServer() error {
 		if err := cmd.Start(); err != nil {
 			return fmt.Errorf("error starting server: %v", err)
 		}
+		logger.Core.Debug("Server process started with PID:" + strconv.Itoa(cmd.Process.Pid))
 		logger.Core.Debug("Created pipes")
 
 		// Start reading stdout and stderr pipes on Windows
@@ -65,6 +114,7 @@ func InternalStartServer() error {
 		if err := cmd.Start(); err != nil {
 			return fmt.Errorf("error starting server: %v", err)
 		}
+		logger.Core.Debug("Server process started with PID:" + strconv.Itoa(cmd.Process.Pid))
 
 		// Start tailing the debug.log file on Linux
 		go tailLogFile("./debug.log")
@@ -77,10 +127,11 @@ func InternalStopServer() error {
 	mu.Lock()
 	defer mu.Unlock()
 
-	if cmd == nil || cmd.Process == nil {
-		return fmt.Errorf("server is not running")
+	if !internalIsServerRunningNoLock() {
+		return fmt.Errorf("server not running")
 	}
 
+	// Process is running, stop it
 	isWindows := runtime.GOOS == "windows"
 
 	if isWindows {
@@ -111,38 +162,4 @@ func InternalStopServer() error {
 
 	cmd = nil
 	return nil
-}
-
-func InternalIsServerRunning() bool {
-	mu.Lock()
-	defer mu.Unlock()
-
-	if cmd == nil || cmd.Process == nil {
-		return false
-	}
-
-	if runtime.GOOS == "windows" {
-		// On Windows, use cmd.Wait with a timeout to check if the process has exited
-		done := make(chan error, 1)
-		go func() {
-			done <- cmd.Wait()
-		}()
-
-		select {
-		case <-done:
-			// If Wait completes, the process has exited
-			cmd = nil
-			return false
-		case <-time.After(100 * time.Millisecond):
-			// If it doesn't complete quickly, assume the process is still running
-			return true
-		}
-	} else {
-		// On Unix-like systems, use Signal(0) directly on the original process
-		if err := cmd.Process.Signal(syscall.Signal(0)); err != nil {
-			cmd = nil
-			return false
-		}
-		return true
-	}
 }
