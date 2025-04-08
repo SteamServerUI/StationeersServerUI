@@ -180,19 +180,22 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 // StartServer HTTP handler
 func StartServer(w http.ResponseWriter, r *http.Request) {
 	if err := gamemgr.InternalStartServer(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		logger.Web.Core("Error starting server: " + err.Error())
 		return
 	}
+	fmt.Fprint(w, "Server started.")
 	logger.Web.Core("Server started.")
 }
 
 // StopServer HTTP handler
 func StopServer(w http.ResponseWriter, r *http.Request) {
 	if err := gamemgr.InternalStopServer(); err != nil {
-		fmt.Fprint(w, err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		logger.Web.Core("Error stopping server: " + err.Error())
 		return
 	}
+	fmt.Fprint(w, "Server stopped.")
 	logger.Web.Core("Server stopped.")
 }
 

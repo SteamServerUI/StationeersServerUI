@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os/exec"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -48,6 +49,7 @@ func InternalStartServer() error {
 		if err := cmd.Start(); err != nil {
 			return fmt.Errorf("error starting server: %v", err)
 		}
+		logger.Core.Debug("Server process started with PID:" + strconv.Itoa(cmd.Process.Pid))
 		logger.Core.Debug("Created pipes")
 
 		// Start reading stdout and stderr pipes on Windows
@@ -65,6 +67,7 @@ func InternalStartServer() error {
 		if err := cmd.Start(); err != nil {
 			return fmt.Errorf("error starting server: %v", err)
 		}
+		logger.Core.Debug("Server process started with PID:" + strconv.Itoa(cmd.Process.Pid))
 
 		// Start tailing the debug.log file on Linux
 		go tailLogFile("./debug.log")
@@ -81,6 +84,18 @@ func InternalStopServer() error {
 		return fmt.Errorf("server is not running")
 	}
 
+	// Check if the process is still running
+	if err := cmd.Process.Signal(syscall.Signal(0)); err != nil {
+		// Process already exited, clean up
+		logger.Core.Info("Process already finished, cleaning up")
+		if waitErr := cmd.Wait(); waitErr != nil && !strings.Contains(waitErr.Error(), "exit status") {
+			return fmt.Errorf("error during server shutdown: %v", waitErr)
+		}
+		cmd = nil
+		return nil
+	}
+
+	// Process is running, stop it
 	isWindows := runtime.GOOS == "windows"
 
 	if isWindows {
