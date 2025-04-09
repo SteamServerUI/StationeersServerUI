@@ -16,50 +16,77 @@ import (
 
 // githubRelease represents the structure of a GitHub release response
 type githubRelease struct {
-	TagName string `json:"tag_name"`
-	Assets  []struct {
+	TagName    string `json:"tag_name"`
+	Prerelease bool   `json:"prerelease"`
+	Assets     []struct {
 		Name string `json:"name"`
 		URL  string `json:"browser_download_url"`
 	} `json:"assets"`
 }
 
+// Version holds semantic version components
+type Version struct {
+	Major int
+	Minor int
+	Patch int
+}
+
 // UpdateExecutable checks for and applies the latest release from GitHub
 func UpdateExecutable() error {
-	// Get current executable name
-	currentExe := filepath.Base(os.Args[0])
-
 	if !config.IsUpdateEnabled {
-		logger.Install.Warn("⚠️Update check is disabled. Skipping update check.")
+		logger.Install.Warn("⚠️ Update check is disabled. Skipping update check.")
 		return nil
 	}
 
 	if config.Branch != "release" {
-		logger.Install.Warn("⚠️You are running a development build. Skipping update check.")
+		logger.Install.Warn("⚠️ You are running a development build. Skipping update check.")
 		return nil
 	}
 
-	// Fetch latest release from GitHub
-	logger.Install.Info("🕵️" + "Querying GitHub API for the latest release...")
+	logger.Install.Info("🕵️ Querying GitHub API for the latest release...")
 	latestRelease, err := getLatestRelease()
 	if err != nil {
 		return fmt.Errorf("❌ Failed to fetch latest release: %v", err)
 	}
 
-	// Determine expected executable name based on platform
+	// Parse current and latest versions
+	currentVer, err := parseVersion(config.Version)
+	if err != nil {
+		return fmt.Errorf("❌ Failed to parse current version %s: %v", config.Version, err)
+	}
+	latestVer, err := parseVersion(latestRelease.TagName)
+	if err != nil {
+		return fmt.Errorf("❌ Failed to parse latest version %s: %v", latestRelease.TagName, err)
+	}
+
+	logger.Install.Info(fmt.Sprintf("Current version: %s, Latest version: %s", config.Version, latestRelease.TagName))
+
+	// Check pre-release status
+	if latestRelease.Prerelease && !config.AllowPrereleaseUpdates {
+		logger.Install.Warn(fmt.Sprintf("⚠️ Latest version %s is a pre-release. Enable 'AllowPrerelease' in config to update.", latestRelease.TagName))
+		return nil
+	}
+
+	// Check if we should update
+	updateReason, shouldUpdate := shouldUpdate(currentVer, latestVer)
+	if !shouldUpdate {
+		switch updateReason {
+		case "up-to-date":
+			logger.Install.Info("🎉 No update needed: you’re already on the latest version.")
+		case "major-update":
+			logger.Install.Warn(fmt.Sprintf("⚠️ Latest version %s is a major update from %s. Enable 'AllowMajorUpdates' in config to proceed.", latestRelease.TagName, config.Version))
+		}
+		return nil
+	}
+
+	// Proceed with update
 	expectedExt := ".exe"
 	if runtime.GOOS != "windows" {
 		expectedExt = ".x86_64"
 	}
 	expectedExe := fmt.Sprintf("StationeersServerControl%s%s", latestRelease.TagName, expectedExt)
-	logger.Install.Info("🕵️" + "Expected executable name: " + expectedExe)
 
-	// Check if we're already up-to-date
-	if currentExe == expectedExe {
-		logger.Install.Info("🎉 You’re already rocking the latest version: " + currentExe)
-		return nil
-	}
-
-	// Find the matching asset in the release
+	// Find the asset
 	var downloadURL string
 	for _, asset := range latestRelease.Assets {
 		if asset.Name == expectedExe {
@@ -68,29 +95,59 @@ func UpdateExecutable() error {
 		}
 	}
 	if downloadURL == "" {
-		return fmt.Errorf("❌ No matching asset found for %s in latest release", expectedExe)
+		return fmt.Errorf("❌ No matching asset found for %s", expectedExe)
 	}
 
-	// Download the new executable
-	logger.Install.Info("📡 Found a newer version! Downloading " + expectedExe + "...")
+	// Download and replace
+	logger.Install.Info(fmt.Sprintf("📡 Updating from %s to %s...", config.Version, latestRelease.TagName))
 	if err := downloadNewExecutable(expectedExe, downloadURL); err != nil {
-		return fmt.Errorf("❌ Failed to download new executable: %v", err)
+		logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: %v. Keeping version %s.", err, config.Version))
+		return err
 	}
 
 	// Set executable permissions on Linux
 	if runtime.GOOS != "windows" {
 		if err := os.Chmod(expectedExe, 0755); err != nil {
-			return fmt.Errorf("❌ Couldn’t make %s executable: %v", expectedExe, err)
+			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t make %s executable: %v. Keeping version %s.", expectedExe, err, config.Version))
+			return err
 		}
 	}
 
 	// Launch the new executable and exit
 	logger.Install.Info("🚀 Launching the new version and retiring the old one...")
 	if err := runAndExit(expectedExe); err != nil {
-		return fmt.Errorf("❌ Couldn’t switch to new executable: %v", err)
+		logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t launch %s: %v. Keeping version %s.", expectedExe, err, config.Version))
+		return err
 	}
 
 	return nil
+}
+
+// parseVersion parses a version string (e.g., "4.6.10") into a Version struct
+func parseVersion(v string) (Version, error) {
+	var ver Version
+	_, err := fmt.Sscanf(v, "%d.%d.%d", &ver.Major, &ver.Minor, &ver.Patch)
+	if err != nil {
+		return Version{}, fmt.Errorf("invalid version format: %s", v)
+	}
+	return ver, nil
+}
+
+// shouldUpdate determines if an update should proceed, returning reason if not
+func shouldUpdate(current, latest Version) (string, bool) {
+	// Check if already up-to-date or older
+	if latest.Major < current.Major ||
+		(latest.Major == current.Major && latest.Minor < current.Minor) ||
+		(latest.Major == current.Major && latest.Minor == current.Minor && latest.Patch <= current.Patch) {
+		return "up-to-date", false
+	}
+
+	// Check if it’s a major update and not allowed
+	if current.Major != latest.Major && !config.AllowMajorUpdates {
+		return "major-update", false
+	}
+
+	return "", true
 }
 
 // getLatestRelease fetches the latest release info from GitHub API
@@ -120,6 +177,7 @@ func downloadNewExecutable(filename, url string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create temp file: %v", err)
 	}
+	defer os.Remove(tmpFile) // Clean up .tmp on any failure after creation
 
 	// Download from GitHub
 	resp, err := http.Get(url)

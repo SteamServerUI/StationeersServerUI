@@ -57,6 +57,8 @@ type JsonConfig struct {
 	CreateSSUILogFile       bool   `json:"CreateSSUILogFile,omitempty"`
 	LogLevel                int    `json:"LogLevel,omitempty"`
 	IsUpdateEnabled         bool   `json:"IsUpdateEnabled,omitempty"`
+	AllowPrereleaseUpdates  bool   `json:"AllowPrereleaseUpdates,omitempty"`
+	AllowMajorUpdates       bool   `json:"AllowMajorUpdates,omitempty"`
 }
 
 type CustomDetection struct {
@@ -68,7 +70,7 @@ type CustomDetection struct {
 }
 
 var (
-	Version = "4.6.10"
+	Version = "4.6.11"
 	Branch                  = "release"
 	GameBranch              string
 	DiscordToken            string
@@ -131,6 +133,8 @@ var (
 	JwtKey                  string
 	AuthTokenLifetime       int
 	IsUpdateEnabled         bool
+	AllowPrereleaseUpdates  bool
+	AllowMajorUpdates       bool
 )
 
 // LoadConfig loads and initializes the configuration
@@ -209,6 +213,8 @@ func applyConfig(cfg *JsonConfig) {
 	CreateSSUILogFile = getBool(cfg.CreateSSUILogFile, "CREATE_SSUI_LOGFILE", false)
 	LogLevel = getInt(cfg.LogLevel, "LOG_LEVEL", 20)
 	IsUpdateEnabled = getBool(cfg.IsUpdateEnabled, "IS_UPDATE_ENABLED", false)
+	AllowPrereleaseUpdates = getBool(cfg.AllowPrereleaseUpdates, "ALLOW_PRERELEASE_UPDATES", false)
+	AllowMajorUpdates = getBool(cfg.AllowMajorUpdates, "ALLOW_MAJOR_UPDATES", false)
 
 	// Process SaveInfo
 	parts := strings.Split(SaveInfo, " ")
