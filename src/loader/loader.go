@@ -59,7 +59,7 @@ func PrintConfigDetails() {
 	logger.Config.Debug(fmt.Sprintf("GameBranch: %s", config.GameBranch))
 	logger.Config.Debug("IsDiscordEnabled: " + strconv.FormatBool(config.IsDiscordEnabled))
 	logger.Config.Debug("IsCleanupEnabled: " + strconv.FormatBool(config.IsCleanupEnabled))
-	logger.Config.Debug("IsDebugMode: " + strconv.FormatBool(config.IsDebugMode))
+	logger.Config.Debug("IsDebugMode (pprof Server and LogLevel 10): " + strconv.FormatBool(config.IsDebugMode))
 	logger.Config.Debug("IsFirstTimeSetup: " + strconv.FormatBool(config.IsFirstTimeSetup))
 
 	logger.Config.Debug("---- DISCORD CONFIG VARS ----")

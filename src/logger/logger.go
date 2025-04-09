@@ -58,7 +58,7 @@ type logEntry struct {
 func (l *Logger) shouldLog(severity int) bool {
 	effectiveLevel := config.LogLevel
 	if config.IsDebugMode && effectiveLevel < DEBUG {
-		effectiveLevel = DEBUG // Force DEBUG if IsDebugMode is true
+		effectiveLevel = 10 // Force DEBUG if IsDebugMode is true
 	}
 	// Add subsystem filtering later if needed via config
 	return severity >= effectiveLevel
