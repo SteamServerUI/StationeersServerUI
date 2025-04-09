@@ -70,7 +70,7 @@ type CustomDetection struct {
 }
 
 var (
-	Version = "4.6.11"
+	Version                 = "4.6.13"
 	Branch                  = "release"
 	GameBranch              string
 	DiscordToken            string
@@ -212,7 +212,7 @@ func applyConfig(cfg *JsonConfig) {
 	IsDebugMode = getBool(cfg.Debug, "DEBUG", false)
 	CreateSSUILogFile = getBool(cfg.CreateSSUILogFile, "CREATE_SSUI_LOGFILE", false)
 	LogLevel = getInt(cfg.LogLevel, "LOG_LEVEL", 20)
-	IsUpdateEnabled = getBool(cfg.IsUpdateEnabled, "IS_UPDATE_ENABLED", false)
+	IsUpdateEnabled = getBool(cfg.IsUpdateEnabled, "IS_UPDATE_ENABLED", true)
 	AllowPrereleaseUpdates = getBool(cfg.AllowPrereleaseUpdates, "ALLOW_PRERELEASE_UPDATES", false)
 	AllowMajorUpdates = getBool(cfg.AllowMajorUpdates, "ALLOW_MAJOR_UPDATES", false)
 

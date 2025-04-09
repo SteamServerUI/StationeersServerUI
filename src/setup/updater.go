@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 )
 
@@ -74,7 +75,7 @@ func UpdateExecutable() error {
 		case "up-to-date":
 			logger.Install.Info("🎉 No update needed: you’re already on the latest version.")
 		case "major-update":
-			logger.Install.Warn(fmt.Sprintf("⚠️ Latest version %s is a major update from %s. Enable 'AllowMajorUpdates' in config to proceed.", latestRelease.TagName, config.Version))
+			logger.Install.Warn(fmt.Sprintf("⚠️ Latest version %s is a major update from %s. Major Updates include Breaking changes in this project. Read the release notes and backup your Server folder before updating. Enable 'AllowMajorUpdates' in config to proceed.", latestRelease.TagName, config.Version))
 		}
 		return nil
 	}
@@ -123,12 +124,17 @@ func UpdateExecutable() error {
 	return nil
 }
 
-// parseVersion parses a version string (e.g., "4.6.10") into a Version struct
+// parseVersion parses a version string (e.g., "4.6.10") into a Version struct and tries to handle a few culprits too
 func parseVersion(v string) (Version, error) {
+	v = strings.TrimPrefix(v, "v")
+	if idx := strings.Index(v, "-"); idx != -1 {
+		v = v[:idx]
+	}
+
 	var ver Version
 	_, err := fmt.Sscanf(v, "%d.%d.%d", &ver.Major, &ver.Minor, &ver.Patch)
 	if err != nil {
-		return Version{}, fmt.Errorf("invalid version format: %s", v)
+		return Version{}, fmt.Errorf("no valid X.Y.Z in tag: %s", v)
 	}
 	return ver, nil
 }
