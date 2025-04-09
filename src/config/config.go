@@ -49,16 +49,16 @@ type JsonConfig struct {
 	UseSteamP2P             bool   `json:"UseSteamP2P"`
 	ExePath                 string `json:"ExePath"`
 	AdditionalParams        string `json:"AdditionalParams"`
-	Username                string `json:"Username,omitempty"`
-	Password                string `json:"Password,omitempty"`
-	JwtKey                  string `json:"JwtKey,omitempty"`
-	AuthTokenLifetime       int    `json:"AuthTokenLifetime,omitempty"`
-	Debug                   bool   `json:"Debug,omitempty"`
-	CreateSSUILogFile       bool   `json:"CreateSSUILogFile,omitempty"`
-	LogLevel                int    `json:"LogLevel,omitempty"`
-	IsUpdateEnabled         bool   `json:"IsUpdateEnabled,omitempty"`
-	AllowPrereleaseUpdates  bool   `json:"AllowPrereleaseUpdates,omitempty"`
-	AllowMajorUpdates       bool   `json:"AllowMajorUpdates,omitempty"`
+	Username                string `json:"Username"`
+	Password                string `json:"Password"`
+	JwtKey                  string `json:"JwtKey"`
+	AuthTokenLifetime       int    `json:"AuthTokenLifetime"`
+	Debug                   bool   `json:"Debug"`
+	CreateSSUILogFile       bool   `json:"CreateSSUILogFile"`
+	LogLevel                int    `json:"LogLevel"`
+	IsUpdateEnabled         bool   `json:"IsUpdateEnabled"`
+	AllowPrereleaseUpdates  bool   `json:"AllowPrereleaseUpdates"`
+	AllowMajorUpdates       bool   `json:"AllowMajorUpdates"`
 }
 
 type CustomDetection struct {
@@ -70,7 +70,7 @@ type CustomDetection struct {
 }
 
 var (
-	Version                 = "4.6.13"
+	Version                 = "4.6.15"
 	Branch                  = "release"
 	GameBranch              string
 	DiscordToken            string
@@ -164,9 +164,6 @@ func LoadConfig() (*JsonConfig, error) {
 // applyConfig applies the configuration with JSON -> env -> fallback hierarchy
 func applyConfig(cfg *JsonConfig) {
 
-	// Set defaults
-	setDefaults(cfg)
-
 	// Apply values with hierarchy
 	DiscordToken = getString(cfg.DiscordToken, "DISCORD_TOKEN", "")
 	ControlChannelID = getString(cfg.ControlChannelID, "CONTROL_CHANNEL_ID", "")
@@ -179,7 +176,7 @@ func applyConfig(cfg *JsonConfig) {
 	BlackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "./Blacklist.txt")
 	IsDiscordEnabled = getBool(cfg.IsDiscordEnabled, "IS_DISCORD_ENABLED", false)
 	ErrorChannelID = getString(cfg.ErrorChannelID, "ERROR_CHANNEL_ID", "")
-	BackupKeepLastN = getInt(cfg.BackupKeepLastN, "BACKUP_KEEP_LAST_N", 0)
+	BackupKeepLastN = getInt(cfg.BackupKeepLastN, "BACKUP_KEEP_LAST_N", 2000)
 	IsCleanupEnabled = getBool(cfg.IsCleanupEnabled, "IS_CLEANUP_ENABLED", false)
 	BackupKeepDailyFor = time.Duration(getInt(cfg.BackupKeepDailyFor, "BACKUP_KEEP_DAILY_FOR", 24)) * time.Hour
 	BackupKeepWeeklyFor = time.Duration(getInt(cfg.BackupKeepWeeklyFor, "BACKUP_KEEP_WEEKLY_FOR", 168)) * time.Hour
@@ -187,22 +184,22 @@ func applyConfig(cfg *JsonConfig) {
 	BackupCleanupInterval = time.Duration(getInt(cfg.BackupCleanupInterval, "BACKUP_CLEANUP_INTERVAL", 730)) * time.Hour
 	BackupWaitTime = time.Duration(getInt(cfg.BackupWaitTime, "BACKUP_WAIT_TIME", 30)) * time.Second
 	GameBranch = getString(cfg.GameBranch, "GAME_BRANCH", "public")
-	ServerName = getString(cfg.ServerName, "SERVER_NAME", "")
+	ServerName = getString(cfg.ServerName, "SERVER_NAME", "Stationeers Server UI")
 	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "Moon Moon")
-	ServerMaxPlayers = getString(cfg.ServerMaxPlayers, "SERVER_MAX_PLAYERS", "")
+	ServerMaxPlayers = getString(cfg.ServerMaxPlayers, "SERVER_MAX_PLAYERS", "6")
 	ServerPassword = getString(cfg.ServerPassword, "SERVER_PASSWORD", "")
 	ServerAuthSecret = getString(cfg.ServerAuthSecret, "SERVER_AUTH_SECRET", "")
 	AdminPassword = getString(cfg.AdminPassword, "ADMIN_PASSWORD", "")
-	GamePort = getString(cfg.GamePort, "GAME_PORT", "")
-	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "")
+	GamePort = getString(cfg.GamePort, "GAME_PORT", "27016")
+	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27017")
 	UPNPEnabled = getBool(cfg.UPNPEnabled, "UPNP_ENABLED", false)
-	AutoSave = getBool(cfg.AutoSave, "AUTO_SAVE", false)
-	SaveInterval = getString(cfg.SaveInterval, "SAVE_INTERVAL", "")
-	AutoPauseServer = getBool(cfg.AutoPauseServer, "AUTO_PAUSE_SERVER", false)
+	AutoSave = getBool(cfg.AutoSave, "AUTO_SAVE", true)
+	SaveInterval = getString(cfg.SaveInterval, "SAVE_INTERVAL", "300")
+	AutoPauseServer = getBool(cfg.AutoPauseServer, "AUTO_PAUSE_SERVER", true)
 	LocalIpAddress = getString(cfg.LocalIpAddress, "LOCAL_IP_ADDRESS", "")
-	StartLocalHost = getBool(cfg.StartLocalHost, "START_LOCAL_HOST", false)
-	ServerVisible = getBool(cfg.ServerVisible, "SERVER_VISIBLE", false)
-	UseSteamP2P = getBool(cfg.UseSteamP2P, "USE_STEAM_P2P", false)
+	StartLocalHost = getBool(cfg.StartLocalHost, "START_LOCAL_HOST", true)
+	ServerVisible = getBool(cfg.ServerVisible, "SERVER_VISIBLE", true)
+	UseSteamP2P = getBool(cfg.UseSteamP2P, "USE_STEAM_P2P", true)
 	ExePath = getString(cfg.ExePath, "EXE_PATH", getDefaultExePath())
 	AdditionalParams = getString(cfg.AdditionalParams, "ADDITIONAL_PARAMS", "")
 	Username = getString(cfg.Username, "SSUI_USERNAME", "admin")

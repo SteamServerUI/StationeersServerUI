@@ -52,36 +52,6 @@ func getDefaultExePath() string {
 	return "./rocketstation_DedicatedServer.x86_64"
 }
 
-func setDefaults(cfg *JsonConfig) {
-	if cfg.ExePath == "" {
-		cfg.ExePath = getDefaultExePath()
-	}
-	if cfg.DiscordCharBufferSize <= 0 {
-		cfg.DiscordCharBufferSize = 1000
-	}
-	if cfg.GameBranch == "" {
-		cfg.GameBranch = "public"
-	}
-	if cfg.SaveInfo == "" {
-		cfg.SaveInfo = "Moon Moon"
-	}
-	if cfg.BackupKeepDailyFor <= 0 {
-		cfg.BackupKeepDailyFor = 24
-	}
-	if cfg.BackupKeepWeeklyFor <= 0 {
-		cfg.BackupKeepWeeklyFor = 168
-	}
-	if cfg.BackupKeepMonthlyFor <= 0 {
-		cfg.BackupKeepMonthlyFor = 730
-	}
-	if cfg.BackupCleanupInterval <= 0 {
-		cfg.BackupCleanupInterval = 730
-	}
-	if cfg.BackupWaitTime <= 0 {
-		cfg.BackupWaitTime = 30
-	}
-}
-
 func generateJwtKey() string {
 
 	// ensure we return JwtKey if it's set
