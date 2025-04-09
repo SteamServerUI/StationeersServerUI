@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -116,9 +117,17 @@ func UpdateExecutable() error {
 
 	// Launch the new executable and exit
 	logger.Install.Info("🚀 Launching the new version and retiring the old one...")
-	if err := runAndExit(expectedExe); err != nil {
-		logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t launch %s: %v. Keeping version %s.", expectedExe, err, config.Version))
-		return err
+	if runtime.GOOS == "windows" {
+		if err := runAndExit(expectedExe); err != nil {
+			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t launch %s: %v. Keeping version %s.", expectedExe, err, config.Version))
+			return err
+		}
+	}
+	if runtime.GOOS == "linux" {
+		if err := runAndExitLinux(expectedExe); err != nil {
+			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t launch %s: %v. Keeping version %s.", expectedExe, err, config.Version))
+			return err
+		}
 	}
 
 	return nil
@@ -245,5 +254,25 @@ func runAndExit(newExe string) error {
 	logger.Install.Warn("✨ New version’s live! Catch you on the flip side!")
 	time.Sleep(500 * time.Millisecond) // Dramatic pause
 	os.Exit(0)
+	return nil
+}
+
+func runAndExitLinux(newExe string) error {
+	absPath, err := filepath.Abs(newExe)
+	if err != nil {
+		return fmt.Errorf("❌ Couldn’t resolve path to %s: %v", newExe, err)
+	}
+
+	// Use syscall.Exec to replace the current process
+	logger.Install.Warn("✨ New version’s live! Catch you on the flip side!")
+	time.Sleep(500 * time.Millisecond)
+
+	// Replace the current process with the new executable
+	err = syscall.Exec(absPath, []string{absPath}, os.Environ())
+	if err != nil {
+		return fmt.Errorf("❌ Failed to exec new executable: %v", err)
+	}
+
+	// This line is never reached if Exec succeeds
 	return nil
 }
