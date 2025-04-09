@@ -42,8 +42,9 @@ func StartWebServer(wg *sync.WaitGroup) {
 		w.Header().Set("Content-Type", "text/css")
 		http.ServeFile(w, r, "./UIMod/login/login.css")
 	})
-	mux.HandleFunc("/auth/login", security.LoginHandler) // Token issuer
-	mux.HandleFunc("/auth/logout", security.LogoutHandler)
+	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
+	mux.HandleFunc("/auth/logout", LogoutHandler)
+	mux.HandleFunc("/setup/register", SetupRegisterHandler) // Setup user registration
 
 	// Protected routes (wrapped with middleware)
 	protectedMux := http.NewServeMux()
@@ -80,7 +81,7 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/api/v2/custom-detections/delete/", detectionmgr.HandleDeleteCustomDetection)
 
 	// Apply middleware only to protected routes
-	mux.Handle("/", security.AuthMiddleware(protectedMux)) // Wrap protected routes under root
+	mux.Handle("/", AuthMiddleware(protectedMux)) // Wrap protected routes under root
 
 	// Start HTTP server
 	wg.Add(1)

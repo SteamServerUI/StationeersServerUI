@@ -12,53 +12,55 @@ import (
 )
 
 type JsonConfig struct {
-	DiscordToken            string `json:"discordToken"`
-	ControlChannelID        string `json:"controlChannelID"`
-	StatusChannelID         string `json:"statusChannelID"`
-	ConnectionListChannelID string `json:"connectionListChannelID"`
-	LogChannelID            string `json:"logChannelID"`
-	SaveChannelID           string `json:"saveChannelID"`
-	ControlPanelChannelID   string `json:"controlPanelChannelID"`
-	DiscordCharBufferSize   int    `json:"DiscordCharBufferSize"`
-	BlackListFilePath       string `json:"blackListFilePath"`
-	IsDiscordEnabled        bool   `json:"isDiscordEnabled"`
-	ErrorChannelID          string `json:"errorChannelID"`
-	BackupKeepLastN         int    `json:"backupKeepLastN"`
-	IsCleanupEnabled        bool   `json:"isCleanupEnabled"`
-	BackupKeepDailyFor      int    `json:"backupKeepDailyFor"`
-	BackupKeepWeeklyFor     int    `json:"backupKeepWeeklyFor"`
-	BackupKeepMonthlyFor    int    `json:"backupKeepMonthlyFor"`
-	BackupCleanupInterval   int    `json:"backupCleanupInterval"`
-	BackupWaitTime          int    `json:"backupWaitTime"`
-	GameBranch              string `json:"gameBranch"`
-	ServerName              string `json:"ServerName"`
-	SaveInfo                string `json:"SaveInfo"`
-	ServerMaxPlayers        string `json:"ServerMaxPlayers"`
-	ServerPassword          string `json:"ServerPassword"`
-	ServerAuthSecret        string `json:"ServerAuthSecret"`
-	AdminPassword           string `json:"AdminPassword"`
-	GamePort                string `json:"GamePort"`
-	UpdatePort              string `json:"UpdatePort"`
-	UPNPEnabled             bool   `json:"UPNPEnabled"`
-	AutoSave                bool   `json:"AutoSave"`
-	SaveInterval            string `json:"SaveInterval"`
-	AutoPauseServer         bool   `json:"AutoPauseServer"`
-	LocalIpAddress          string `json:"LocalIpAddress"`
-	StartLocalHost          bool   `json:"StartLocalHost"`
-	ServerVisible           bool   `json:"ServerVisible"`
-	UseSteamP2P             bool   `json:"UseSteamP2P"`
-	ExePath                 string `json:"ExePath"`
-	AdditionalParams        string `json:"AdditionalParams"`
-	Username                string `json:"Username"`
-	Password                string `json:"Password"`
-	JwtKey                  string `json:"JwtKey"`
-	AuthTokenLifetime       int    `json:"AuthTokenLifetime"`
-	Debug                   bool   `json:"Debug"`
-	CreateSSUILogFile       bool   `json:"CreateSSUILogFile"`
-	LogLevel                int    `json:"LogLevel"`
-	IsUpdateEnabled         bool   `json:"IsUpdateEnabled"`
-	AllowPrereleaseUpdates  bool   `json:"AllowPrereleaseUpdates"`
-	AllowMajorUpdates       bool   `json:"AllowMajorUpdates"`
+	DiscordToken            string            `json:"discordToken"`
+	ControlChannelID        string            `json:"controlChannelID"`
+	StatusChannelID         string            `json:"statusChannelID"`
+	ConnectionListChannelID string            `json:"connectionListChannelID"`
+	LogChannelID            string            `json:"logChannelID"`
+	SaveChannelID           string            `json:"saveChannelID"`
+	ControlPanelChannelID   string            `json:"controlPanelChannelID"`
+	DiscordCharBufferSize   int               `json:"DiscordCharBufferSize"`
+	BlackListFilePath       string            `json:"blackListFilePath"`
+	IsDiscordEnabled        bool              `json:"isDiscordEnabled"`
+	ErrorChannelID          string            `json:"errorChannelID"`
+	BackupKeepLastN         int               `json:"backupKeepLastN"`
+	IsCleanupEnabled        bool              `json:"isCleanupEnabled"`
+	BackupKeepDailyFor      int               `json:"backupKeepDailyFor"`
+	BackupKeepWeeklyFor     int               `json:"backupKeepWeeklyFor"`
+	BackupKeepMonthlyFor    int               `json:"backupKeepMonthlyFor"`
+	BackupCleanupInterval   int               `json:"backupCleanupInterval"`
+	BackupWaitTime          int               `json:"backupWaitTime"`
+	GameBranch              string            `json:"gameBranch"`
+	ServerName              string            `json:"ServerName"`
+	SaveInfo                string            `json:"SaveInfo"`
+	ServerMaxPlayers        string            `json:"ServerMaxPlayers"`
+	ServerPassword          string            `json:"ServerPassword"`
+	ServerAuthSecret        string            `json:"ServerAuthSecret"`
+	AdminPassword           string            `json:"AdminPassword"`
+	GamePort                string            `json:"GamePort"`
+	UpdatePort              string            `json:"UpdatePort"`
+	UPNPEnabled             bool              `json:"UPNPEnabled"`
+	AutoSave                bool              `json:"AutoSave"`
+	SaveInterval            string            `json:"SaveInterval"`
+	AutoPauseServer         bool              `json:"AutoPauseServer"`
+	LocalIpAddress          string            `json:"LocalIpAddress"`
+	StartLocalHost          bool              `json:"StartLocalHost"`
+	ServerVisible           bool              `json:"ServerVisible"`
+	UseSteamP2P             bool              `json:"UseSteamP2P"`
+	ExePath                 string            `json:"ExePath"`
+	AdditionalParams        string            `json:"AdditionalParams"`
+	Username                string            `json:"Username"`
+	Password                string            `json:"Password"`
+	Users                   map[string]string `json:"users"`       // Map of username to hashed password
+	AuthEnabled             bool              `json:"authEnabled"` // Toggle for enabling/disabling auth
+	JwtKey                  string            `json:"JwtKey"`
+	AuthTokenLifetime       int               `json:"AuthTokenLifetime"`
+	Debug                   bool              `json:"Debug"`
+	CreateSSUILogFile       bool              `json:"CreateSSUILogFile"`
+	LogLevel                int               `json:"LogLevel"`
+	IsUpdateEnabled         bool              `json:"IsUpdateEnabled"`
+	AllowPrereleaseUpdates  bool              `json:"AllowPrereleaseUpdates"`
+	AllowMajorUpdates       bool              `json:"AllowMajorUpdates"`
 }
 
 type CustomDetection struct {
@@ -70,7 +72,7 @@ type CustomDetection struct {
 }
 
 var (
-	Version = "4.7.4"
+	Version = "4.8.2"
 	Branch                  = "release"
 	GameBranch              string
 	DiscordToken            string
@@ -130,6 +132,9 @@ var (
 	ExceptionMessageID      string
 	Username                string
 	Password                string
+	Users                   map[string]string
+	AuthEnabled             bool
+	SetupDone               = false
 	JwtKey                  string
 	AuthTokenLifetime       int
 	IsUpdateEnabled         bool
@@ -204,6 +209,8 @@ func applyConfig(cfg *JsonConfig) {
 	AdditionalParams = getString(cfg.AdditionalParams, "ADDITIONAL_PARAMS", "")
 	Username = getString(cfg.Username, "SSUI_USERNAME", "admin")
 	Password = getString(cfg.Password, "SSUI_PASSWORD", "password")
+	Users = getUsers(cfg.Users, "SSUI_USERS", map[string]string{})
+	AuthEnabled = getBool(cfg.AuthEnabled, "SSUI_AUTH_ENABLED", false)
 	JwtKey = getString(cfg.JwtKey, "SSUI_JWT_KEY", generateJwtKey())
 	AuthTokenLifetime = getInt(cfg.AuthTokenLifetime, "SSUI_AUTH_TOKEN_LIFETIME", 1440)
 	IsDebugMode = getBool(cfg.Debug, "DEBUG", false)
