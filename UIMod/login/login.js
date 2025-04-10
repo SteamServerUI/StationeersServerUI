@@ -173,4 +173,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    const skipBtn = document.getElementById('skip-btn');
+    if (skipBtn) {
+        skipBtn.addEventListener('click', () => {
+            showNotification('Skipping setup - proceeding without authentication', 'success');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000); // Short delay to show notification
+        });
+    }
 });

@@ -144,7 +144,11 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		SameSite: http.SameSiteStrictMode,
 	})
-
+	accept := r.Header.Get("Accept")
+	if accept != "" && strings.Contains(accept, "text/html") {
+		http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
+		return
+	}
 	// For API requests, return success response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

@@ -33,7 +33,7 @@
         <div class="form-container">
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="username">Username</label>
+                    <label for="username">{{if .IsFirstTimeSetup}}New Username{{else if eq .Path "/changeuser"}}Username to Add/Update{{else}}Username{{end}}</label>
                     <input 
                         type="text" 
                         id="username" 
@@ -41,19 +41,19 @@
                         required 
                         placeholder="Enter your username"
                     >
-                    <div class="input-info">Your server access credentials</div>
+                    <div class="input-info">{{if .IsFirstTimeSetup}}New Username{{else if eq .Path "/changeuser"}}Username to Add/Update{{else}}Username{{end}}</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password">{{if .IsFirstTimeSetup}}New Password{{else if eq .Path "/changeuser"}}New Password{{else}}Password{{end}}</label>
                     <input 
-                        type="password" 
+                        type="{{if .IsFirstTimeSetup}}text{{else}}password{{end}}" 
                         id="password" 
                         name="password" 
                         required 
                         placeholder="Enter your password"
                     >
-                    <div class="input-info">Secure access required</div>
+                    <div class="input-info">{{if .IsFirstTimeSetup}}New Password{{else if eq .Path "/changeuser"}}New Password{{else}}Password{{end}}</div>
                 </div>
 
                 <div class="form-actions">
@@ -63,7 +63,10 @@
                         class="login-button"
                     >
                     {{if .IsFirstTimeSetup}}
-                    <button type="button" id="finalize-btn">Finalize Setup</button>
+                </br>
+                    <button type="button" id="finalize-btn" class="login-button">Finalize Setup</button>
+                </br>
+                    <button type="button" id="skip-btn" class="login-button">Skip Setup</button>
                     {{end}}
                 </div>
                 <input type="hidden" id="mode" value="{{if .IsFirstTimeSetup}}setup{{else if eq .Path "/changeuser"}}changeuser{{else}}login{{end}}">
@@ -71,7 +74,7 @@
         </div>
 
         <footer>
-            <p>If you don't know how to {{if .IsFirstTimeSetup}}set up{{else}}login or have any issues{{end}}, please visit the First Time Setup page on the wiki.</p>
+            <p>If you don't know how to {{if .IsFirstTimeSetup}}set up{{else}}login or have any issues{{end}}, please visit the "Users System" page on the Github Wiki.</p>
         </footer>
     </main>
 
