@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (mode === 'changeuser') {
             url = '/api/v2/auth/adduser';
         } else {
-            url = '/api/v2/auth/login';
+            url = '/auth/login';
         }
 
         try {
