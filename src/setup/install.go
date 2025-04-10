@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os" // Added for filepath.Dir
 	fp "path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -195,7 +196,6 @@ func checkAndUpdateFile(filepath, url string) {
 
 		remoteHash, err := getFileHash(repoOwner, repoName, branch, filePath)
 		if err != nil {
-			logger.Install.Error("❌Error getting hash for " + fileName + ": " + err.Error())
 			return
 		}
 
@@ -238,22 +238,17 @@ func computeGitBlobSHA1(filepath string) (string, error) {
 
 // getFileHash fetches the file hash from GitHub API
 func getFileHash(repoOwner, repoName, branch, filePath string) (string, error) {
-	// Construct the GitHub API URL for the file
 	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/contents/%s?ref=%s",
 		repoOwner, repoName, filePath, branch)
 
-	// Create a request with appropriate headers
 	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
 		return "", err
 	}
 
-	// Add headers for GitHub API (optional: add authorization if needed for higher rate limits)
 	req.Header.Add("Accept", "application/vnd.github.v3+json")
-	// If you have a GitHub token:
-	// req.Header.Add("Authorization", "token YOUR_GITHUB_TOKEN")
+	// Optional: req.Header.Add("Authorization", "token YOUR_GITHUB_TOKEN")
 
-	// Send the request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -262,14 +257,16 @@ func getFileHash(repoOwner, repoName, branch, filePath string) (string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		if err := handleRateLimitErrors(resp); err != nil {
+			return "", err
+		}
+		logger.Install.Error(fmt.Sprintf("❌Request failed with status: %s", resp.Status))
 		return "", fmt.Errorf("bad status: %s", resp.Status)
 	}
 
-	// Parse the response
 	var fileInfo struct {
 		SHA string `json:"sha"`
 	}
-
 	if err := json.NewDecoder(resp.Body).Decode(&fileInfo); err != nil {
 		return "", err
 	}
@@ -277,22 +274,50 @@ func getFileHash(repoOwner, repoName, branch, filePath string) (string, error) {
 	return fileInfo.SHA, nil
 }
 
-// getETag fetches the ETag from a HEAD request to the remote URL
-func getETag(url string) (string, error) {
-	resp, err := http.Head(url)
+// handleRateLimitErrors processes GitHub API rate limit errors
+func handleRateLimitErrors(resp *http.Response) error {
+	if resp.StatusCode != http.StatusForbidden {
+		return nil
+	}
+
+	// Check secondary rate limit
+	if retryAfter := resp.Header.Get("Retry-After"); retryAfter != "" {
+		return handleSecondaryRateLimit(retryAfter, resp.Status)
+	}
+
+	// Check primary rate limit
+	if remaining := resp.Header.Get("x-ratelimit-remaining"); remaining == "0" {
+		return handlePrimaryRateLimit(resp.Header.Get("x-ratelimit-reset"), resp.Status)
+	}
+
+	// Generic 403 error
+	logger.Install.Error("❌Forbidden request, no specific rate limit info available")
+	return fmt.Errorf("bad status: %s", resp.Status)
+}
+
+// handleSecondaryRateLimit processes secondary rate limit exceeded errors
+func handleSecondaryRateLimit(retryAfter, status string) error {
+	waitSeconds, err := strconv.Atoi(retryAfter)
 	if err != nil {
-		return "", err
+		logger.Install.Error(fmt.Sprintf("❌Failed to parse Retry-After header: %v", err))
+		return fmt.Errorf("bad status: %s, failed to parse Retry-After: %v", status, err)
 	}
-	defer resp.Body.Close() // Ensure body is closed even for HEAD requests
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("bad status: %s", resp.Status)
+	errMsg := fmt.Sprintf("Github API secondary rate limit exceeded. (too many requests in a short time). Retry after %d seconds", waitSeconds)
+	logger.Install.Error("❌" + errMsg)
+	return fmt.Errorf("bad status: %s, %s", status, errMsg)
+}
+
+// handlePrimaryRateLimit processes primary rate limit exceeded errors
+func handlePrimaryRateLimit(reset, status string) error {
+	resetInt, err := strconv.ParseInt(reset, 10, 64)
+	if err != nil {
+		logger.Install.Error(fmt.Sprintf("❌Failed to parse x-ratelimit-reset header: %v", err))
+		return fmt.Errorf("bad status: %s, failed to parse x-ratelimit-reset: %v", status, err)
 	}
-	etag := resp.Header.Get("ETag")
-	if etag == "" {
-		return "", fmt.Errorf("no ETag found")
-	}
-	// Remove quotes from ETag, as GitHub provides it as "hash"
-	return strings.Trim(etag, "\""), nil
+	resetTime := time.Unix(resetInt, 0).UTC()
+	errMsg := fmt.Sprintf("Github ratelimit exceeded: hourly request quota of 60 calls reached. Resets at %s", resetTime.Format(time.RFC1123))
+	logger.Install.Warn("🧱" + errMsg)
+	return fmt.Errorf("bad status: %s, %s", status, errMsg)
 }
 
 // downloadFile downloads a file from the given URL to the specified filepath
