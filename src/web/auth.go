@@ -14,6 +14,8 @@ import (
 	"time"
 )
 
+var setupReminderCount = 0 // to limit the number of setup reminders shown to the user
+
 func ServeLoginTemplate(w http.ResponseWriter, r *http.Request) {
 	type TemplateData struct {
 		IsFirstTimeSetup bool
@@ -95,8 +97,10 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !config.AuthEnabled {
 			if config.IsFirstTimeSetup {
-				http.Redirect(w, r, "/setup", http.StatusTemporaryRedirect)
-				return
+				if setupReminderCount < 1 {
+					http.Redirect(w, r, "/setup", http.StatusTemporaryRedirect)
+					setupReminderCount++
+				}
 			}
 			next.ServeHTTP(w, r)
 			return
@@ -223,8 +227,8 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - Setup already finalized"})
 		return
 	}
-
-	if config.Users == nil {
+	//check if users map is nil or empty
+	if config.Users == nil || len(config.Users) == 0 {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - No users registered - cannot finalize setup at this time"})
