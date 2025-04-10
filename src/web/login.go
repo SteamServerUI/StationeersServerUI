@@ -17,11 +17,22 @@ import (
 var setupReminderCount = 0 // to limit the number of setup reminders shown to the user
 
 func ServeLoginTemplate(w http.ResponseWriter, r *http.Request) {
+	// Define a struct for all template data
 	type TemplateData struct {
 		IsFirstTimeSetup bool
 		Path             string
+		Title            string
+		HeaderTitle      string
+		UsernameLabel    string
+		PasswordLabel    string
+		PasswordType     string
+		SubmitButtonText string
+		Mode             string
+		ShowExtraButtons bool
+		FooterText       string
 	}
 
+	// Parse the template
 	tmpl, err := template.ParseFiles("./UIMod/login/login.html")
 	if err != nil {
 		logger.Web.Error("Failed to parse login template: %v" + err.Error())
@@ -29,11 +40,47 @@ func ServeLoginTemplate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Determine dynamic values based on path and setup state
+	path := r.URL.Path
 	data := TemplateData{
 		IsFirstTimeSetup: config.IsFirstTimeSetup,
-		Path:             r.URL.Path,
+		Path:             path,
 	}
 
+	switch {
+	case config.IsFirstTimeSetup && path == "/setup":
+		data.Title = "Stationeers Server UI - Setup"
+		data.HeaderTitle = "User Setup"
+		data.UsernameLabel = "New Username"
+		data.PasswordLabel = "New Password"
+		data.PasswordType = "text"
+		data.SubmitButtonText = "Register"
+		data.Mode = "setup"
+		data.ShowExtraButtons = true
+		data.FooterText = "If you don't know how to set up, please visit the \"Users System\" page on the Github Wiki."
+	case path == "/changeuser":
+		data.Title = "Stationeers Server UI - Manage Users"
+		data.HeaderTitle = "Manage Users"
+		data.UsernameLabel = "Username to Add/Update"
+		data.PasswordLabel = "New Password"
+		data.PasswordType = "password"
+		data.SubmitButtonText = "Add/Update User"
+		data.Mode = "changeuser"
+		data.ShowExtraButtons = false
+		data.FooterText = "If you don't know how to login or have any issues, please visit the \"Users System\" page on the Github Wiki."
+	default: // Default to login
+		data.Title = "Stationeers Server UI - Login"
+		data.HeaderTitle = "Login"
+		data.UsernameLabel = "Username"
+		data.PasswordLabel = "Password"
+		data.PasswordType = "password"
+		data.SubmitButtonText = "Login"
+		data.Mode = "login"
+		data.ShowExtraButtons = false
+		data.FooterText = "If you don't know how to login or have any issues, please visit the \"Users System\" page on the Github Wiki."
+	}
+
+	// Serve the template
 	w.Header().Set("Content-Type", "text/html")
 	if err := tmpl.Execute(w, data); err != nil {
 		logger.Web.Error("Failed to execute login template: %v" + err.Error())
