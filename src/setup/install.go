@@ -4,12 +4,14 @@ import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/loader"
 	"StationeersServerUI/src/logger"
-	"bytes"
+	"crypto/sha1"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"os"
-	"strconv"
+	"os" // Added for filepath.Dir
+	fp "path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -24,7 +26,7 @@ func Install(wg *sync.WaitGroup) {
 
 	loader.ReloadConfig()
 
-	// Step 0:  Check for updates
+	// Step 0: Check for updates
 	if err := UpdateExecutable(); err != nil {
 		logger.Install.Error("❌Update check went sideways: " + err.Error())
 	}
@@ -54,7 +56,7 @@ func CheckAndDownloadUIMod() {
 	detectionmanagerDir := "./UIMod/detectionmanager/"
 
 	// Set branch
-	if config.Branch == "Release" || config.Branch == "release" {
+	if config.Branch == "release" || config.Branch == "Release" {
 		downloadBranch = "main"
 	} else {
 		downloadBranch = config.Branch
@@ -105,7 +107,7 @@ func CheckAndDownloadUIMod() {
 		logger.Install.Info(fmt.Sprintf("IsFirstTimeSetup: %v", config.IsFirstTimeSetup))
 		if config.IsUpdateEnabled {
 			logger.Install.Info("🔍Validating UIMod files for updates...")
-			if config.Branch == " Release" || config.Branch == "Release" {
+			if config.Branch == "release" || config.Branch == "Release" {
 				downloadBranch = "main"
 				updateFilesIfDifferent(files)
 			} else {
@@ -118,70 +120,206 @@ func CheckAndDownloadUIMod() {
 	}
 }
 
-// downloadAllFiles downloads all files in the provided map
+// downloadAllFiles downloads all files in the provided map concurrently
 func downloadAllFiles(files map[string]string) {
+	var wg sync.WaitGroup
 	for filepath, url := range files {
-		fileName := filepath[strings.LastIndex(filepath, "/")+1:]
-		logger.Install.Info("Downloading " + fileName + "...")
-		err := downloadFileWithProgress(filepath, url)
-		if err != nil {
-			logger.Install.Error("❌Error downloading " + fileName + " (setup may be incomplete): " + err.Error())
-			return
-		}
-		logger.Install.Info("✅Downloaded " + fileName + " successfully from branch " + downloadBranch)
+		wg.Add(1)
+		go func(filepath, url string) {
+			defer wg.Done()
+			fileName := filepath[strings.LastIndex(filepath, "/")+1:]
+			logger.Install.Info("Downloading " + fileName + "...")
+			err := downloadFile(filepath, url)
+			if err != nil {
+				logger.Install.Error("❌Error downloading " + fileName + ": " + err.Error())
+			} else {
+				logger.Install.Info("✅Downloaded " + fileName + " successfully from branch " + downloadBranch)
+			}
+		}(filepath, url)
 	}
+	wg.Wait()
 	logger.Install.Info("✅All files downloaded successfully.")
 }
 
-// updateFilesIfDifferent checks for differences and updates files if necessary
+// updateFilesIfDifferent checks for differences and updates files if necessary using concurrency
 func updateFilesIfDifferent(files map[string]string) {
+	var wg sync.WaitGroup
 	for filepath, url := range files {
 		fileName := filepath[strings.LastIndex(filepath, "/")+1:]
 		if fileName == "config.json" {
-			continue
+			continue // Skip updating config.json to preserve local changes
 		}
-		// Check if local file exists
-		localData, err := os.ReadFile(filepath)
-		if err != nil && !os.IsNotExist(err) {
-			logger.Install.Error("❌Error reading local file " + fileName + ": " + err.Error())
-			continue
-		}
+		wg.Add(1)
+		go func(filepath, url string) {
+			defer wg.Done()
+			checkAndUpdateFile(filepath, url)
+		}(filepath, url)
+	}
+	wg.Wait()
+	logger.Install.Info("✅File validation and update check complete.")
+}
 
-		// Fetch remote content
-		resp, err := http.Get(url)
+// checkAndUpdateFile checks if a file needs updating by comparing its SHA-1 hash with the remote ETag
+func checkAndUpdateFile(filepath, url string) {
+	fileName := filepath[strings.LastIndex(filepath, "/")+1:]
+
+	if _, err := os.Stat(filepath); os.IsNotExist(err) {
+		// File doesn't exist locally, download it
+		logger.Install.Info("Downloading " + fileName + "...")
+		err := downloadFile(filepath, url)
 		if err != nil {
-			logger.Install.Error("❌Error fetching remote file " + fileName + ": " + err.Error())
-			continue
+			logger.Install.Error("❌Error downloading " + fileName + ": " + err.Error())
+		} else {
+			logger.Install.Info("✅Downloaded " + fileName + " successfully")
 		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
-			logger.Install.Info("Using branch: " + downloadBranch)
-			logger.Install.Info("URL: " + url)
-			logger.Install.Error("❌Bad status for " + fileName + ": " + resp.Status)
-			continue
-		}
-
-		remoteData, err := io.ReadAll(resp.Body)
+	} else {
+		// File exists, check if it needs updating
+		localHash, err := computeGitBlobSHA1(filepath)
 		if err != nil {
-			logger.Install.Error("❌Error reading remote file " + fileName + ": " + err.Error())
-			continue
+			logger.Install.Error("❌Error computing hash for " + fileName + ": " + err.Error())
+			return
 		}
 
-		// Compare local and remote content
-		if os.IsNotExist(err) || !bytes.Equal(localData, remoteData) {
+		// Extract the necessary parts from URL to build the API call
+		// Example URL: https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/UIMod/index.html
+		urlParts := strings.Split(url, "/")
+		if len(urlParts) < 7 {
+			logger.Install.Error("❌Invalid URL format: " + url)
+			return
+		}
+
+		repoOwner := urlParts[3]
+		repoName := urlParts[4]
+		branch := urlParts[5]
+		filePath := strings.Join(urlParts[6:], "/")
+
+		remoteHash, err := getFileHash(repoOwner, repoName, branch, filePath)
+		if err != nil {
+			logger.Install.Error("❌Error getting hash for " + fileName + ": " + err.Error())
+			return
+		}
+
+		logger.Install.Info("Local hash for " + fileName + ": " + localHash)
+		logger.Install.Info("Remote hash for " + fileName + ": " + remoteHash)
+
+		if localHash != remoteHash {
 			logger.Install.Info("🔄Updating " + fileName + " due to differences...")
-			err = downloadFileWithProgress(filepath, url)
+			err := downloadFile(filepath, url)
 			if err != nil {
 				logger.Install.Error("❌Error updating " + fileName + ": " + err.Error())
-				continue
+			} else {
+				logger.Install.Info("✅Updated " + fileName + " successfully from branch " + downloadBranch)
 			}
-			logger.Install.Info("✅Updated " + fileName + " successfully from branch " + downloadBranch)
 		} else {
 			logger.Install.Info("✅" + fileName + " is up-to-date.")
 		}
 	}
-	logger.Install.Info("✅File validation and update check complete.")
+}
+
+func computeGitBlobSHA1(filepath string) (string, error) {
+	// Read the file content
+	content, err := os.ReadFile(filepath)
+	if err != nil {
+		return "", err
+	}
+
+	// Create the blob header (format: "blob " + content length + null byte)
+	header := fmt.Sprintf("blob %d\x00", len(content))
+
+	// Combine header and content
+	blobData := append([]byte(header), content...)
+
+	// Compute SHA-1 hash
+	hash := sha1.New()
+	hash.Write(blobData)
+
+	return hex.EncodeToString(hash.Sum(nil)), nil
+}
+
+// getFileHash fetches the file hash from GitHub API
+func getFileHash(repoOwner, repoName, branch, filePath string) (string, error) {
+	// Construct the GitHub API URL for the file
+	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/contents/%s?ref=%s",
+		repoOwner, repoName, filePath, branch)
+
+	// Create a request with appropriate headers
+	req, err := http.NewRequest("GET", apiURL, nil)
+	if err != nil {
+		return "", err
+	}
+
+	// Add headers for GitHub API (optional: add authorization if needed for higher rate limits)
+	req.Header.Add("Accept", "application/vnd.github.v3+json")
+	// If you have a GitHub token:
+	// req.Header.Add("Authorization", "token YOUR_GITHUB_TOKEN")
+
+	// Send the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("bad status: %s", resp.Status)
+	}
+
+	// Parse the response
+	var fileInfo struct {
+		SHA string `json:"sha"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&fileInfo); err != nil {
+		return "", err
+	}
+
+	return fileInfo.SHA, nil
+}
+
+// getETag fetches the ETag from a HEAD request to the remote URL
+func getETag(url string) (string, error) {
+	resp, err := http.Head(url)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close() // Ensure body is closed even for HEAD requests
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("bad status: %s", resp.Status)
+	}
+	etag := resp.Header.Get("ETag")
+	if etag == "" {
+		return "", fmt.Errorf("no ETag found")
+	}
+	// Remove quotes from ETag, as GitHub provides it as "hash"
+	return strings.Trim(etag, "\""), nil
+}
+
+// downloadFile downloads a file from the given URL to the specified filepath
+func downloadFile(filepath, url string) error {
+	// Ensure the directory exists
+	dir := fp.Dir(filepath)
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return err
+	}
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	// Fetch the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bad status: %s", resp.Status)
+	}
+	// Write to file
+	_, err = io.Copy(out, resp.Body)
+	return err
 }
 
 // checkAndCreateBlacklist ensures Blacklist.txt exists in the root directory
@@ -202,107 +340,4 @@ func checkAndCreateBlacklist() {
 	} else {
 		logger.Install.Info("♻️Blacklist.txt already exists. Skipping creation.")
 	}
-}
-
-// downloadFileWithProgress downloads a file from the given URL and saves it to the given filepath with progress indication
-func downloadFileWithProgress(filepath string, url string) error {
-	// Create the file
-	out, err := os.Create(filepath)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	// Get the data
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	// Check server response
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("bad status: %s", resp.Status)
-	}
-
-	// Get the total size for progress reporting
-	size := resp.ContentLength
-
-	// Create a counter for tracking progress
-	counter := &writeCounter{
-		Total: size,
-	}
-
-	// Write the body to file with progress tracking
-	_, err = io.Copy(out, io.TeeReader(resp.Body, counter))
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// writeCounter tracks download progress
-type writeCounter struct {
-	Total int64
-	count int64
-}
-
-func (wc *writeCounter) Write(p []byte) (int, error) {
-	n := len(p)
-	wc.count += int64(n)
-	wc.printProgress()
-	return n, nil
-}
-
-func (wc *writeCounter) printProgress() {
-	// If we don't know the total size, just show downloaded bytes
-	if wc.Total <= 0 {
-		logger.Backup.Info(fmt.Sprintf("\r%s downloaded", bytesToHuman(wc.count)))
-		return
-	}
-
-	// Calculate percentage with bounds checking
-	percent := float64(wc.count) / float64(wc.Total) * 100
-	if percent > 100 {
-		percent = 100
-	}
-
-	// Create simple progress bar
-	width := 20
-	complete := int(percent / 100 * float64(width))
-
-	progressBar := "["
-	for i := 0; i < width; i++ {
-		if i < complete {
-			progressBar += "="
-		} else if i == complete && complete < width {
-			progressBar += ">"
-		} else {
-			progressBar += " "
-		}
-	}
-	progressBar += "]"
-
-	// Print progress and erase to end of line
-
-	logger.Backup.Info(fmt.Sprintf("\r%s %.1f%% (%s/%s)",
-		progressBar,
-		percent,
-		bytesToHuman(wc.count),
-		bytesToHuman(wc.Total)))
-}
-
-// bytesToHuman converts bytes to human readable format
-func bytesToHuman(bytes int64) string {
-	const unit = 1024
-	if bytes < unit {
-		return strconv.FormatInt(bytes, 10) + " B"
-	}
-	div, exp := int64(unit), 0
-	for n := bytes / unit; n >= unit; n /= unit {
-		div *= unit
-		exp++
-	}
-	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
 }
