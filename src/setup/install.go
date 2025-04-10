@@ -4,6 +4,7 @@ import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/loader"
 	"StationeersServerUI/src/logger"
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,17 +13,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-)
-
-const (
-	// ANSI color codes for styling terminal output
-	colorReset   = "\033[0m"
-	colorRed     = "\033[31m"
-	colorGreen   = "\033[32m"
-	colorYellow  = "\033[33m"
-	colorBlue    = "\033[34m"
-	colorMagenta = "\033[35m"
-	colorCyan    = "\033[36m"
 )
 
 var downloadBranch string // Holds the branch to download from
@@ -63,80 +53,135 @@ func CheckAndDownloadUIMod() {
 	loginDir := "./UIMod/login/"
 	detectionmanagerDir := "./UIMod/detectionmanager/"
 
+	// Set branch
+	if config.Branch == "Release" || config.Branch == "release" {
+		downloadBranch = "main"
+	} else {
+		downloadBranch = config.Branch
+	}
+	logger.Install.Info("Using branch: " + downloadBranch)
+
+	// Define file mappings
+	files := map[string]string{
+		workingDir + "apiinfo.html":                   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/apiinfo.html", downloadBranch),
+		workingDir + "config.html":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.html", downloadBranch),
+		workingDir + "config.json":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.json", downloadBranch),
+		workingDir + "index.html":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/index.html", downloadBranch),
+		workingDir + "script.js":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/script.js", downloadBranch),
+		workingDir + "stationeers.png":                fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/stationeers.png", downloadBranch),
+		workingDir + "style.css":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/style.css", downloadBranch),
+		workingDir + "favicon.ico":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/favicon.ico", downloadBranch),
+		loginDir + "login.css":                        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.css", downloadBranch),
+		loginDir + "login.js":                         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.js", downloadBranch),
+		loginDir + "login.html":                       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.html", downloadBranch),
+		detectionmanagerDir + "detectionmanager.js":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.js", downloadBranch),
+		detectionmanagerDir + "detectionmanager.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.html", downloadBranch),
+		detectionmanagerDir + "detectionmanager.css":  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.css", downloadBranch),
+	}
+
 	// Check if the directory exists
 	if _, err := os.Stat(workingDir); os.IsNotExist(err) {
 		logger.Install.Warn("⚠️Folder ./UIMod does not exist. Creating it...")
 
-		// Create the UIMod folder
-		err := os.MkdirAll(workingDir, os.ModePerm)
+		// Create directories
+		for _, dir := range []string{workingDir, loginDir, detectionmanagerDir} {
+			if _, err := os.Stat(dir); os.IsNotExist(err) {
+				err := os.MkdirAll(dir, os.ModePerm)
+				if err != nil {
+					logger.Install.Error("❌Error creating folder: " + err.Error())
+					return
+				}
+				logger.Install.Warn("⚠️Created folder: " + dir)
+			}
+		}
+
+		// Initial download
+		config.IsFirstTimeSetup = true
+		downloadAllFiles(files)
+	} else {
+		// Directory exists
+		config.IsFirstTimeSetup = false
+		logger.Install.Info(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
+		logger.Install.Info(fmt.Sprintf("IsFirstTimeSetup: %v", config.IsFirstTimeSetup))
+		if config.IsUpdateEnabled {
+			logger.Install.Info("🔍Validating UIMod files for updates...")
+			if config.Branch == " Release" || config.Branch == "Release" {
+				downloadBranch = "main"
+				updateFilesIfDifferent(files)
+			} else {
+				downloadBranch = config.Branch
+				updateFilesIfDifferent(files)
+			}
+		} else {
+			logger.Install.Info("♻️Folder ./UIMod already exists. Updates disabled, skipping validation.")
+		}
+	}
+}
+
+// downloadAllFiles downloads all files in the provided map
+func downloadAllFiles(files map[string]string) {
+	for filepath, url := range files {
+		fileName := filepath[strings.LastIndex(filepath, "/")+1:]
+		logger.Install.Info("Downloading " + fileName + "...")
+		err := downloadFileWithProgress(filepath, url)
 		if err != nil {
-			logger.Install.Error("❌Error creating folder: " + err.Error())
+			logger.Install.Error("❌Error downloading " + fileName + " (setup may be incomplete): " + err.Error())
 			return
 		}
-
-		if _, err := os.Stat(loginDir); os.IsNotExist(err) {
-			logger.Install.Warn("⚠️Folder ./UIMod/login/ does not exist. Creating it...")
-			err := os.MkdirAll(loginDir, os.ModePerm)
-			if err != nil {
-				logger.Install.Error("❌Error creating folder: " + err.Error())
-				return
-			}
-		}
-
-		if _, err := os.Stat(detectionmanagerDir); os.IsNotExist(err) {
-			logger.Install.Warn("⚠️Folder ./UIMod/detectionmanager/ does not exist. Creating it...")
-			err := os.MkdirAll(detectionmanagerDir, os.ModePerm)
-			if err != nil {
-				logger.Install.Error("❌Error creating folder: " + err.Error())
-				return
-			}
-		}
-
-		if config.Branch == "release" || config.Branch == "Release" {
-			downloadBranch = "main"
-		} else {
-			downloadBranch = config.Branch
-		}
-
-		// List of files to download with their destination paths
-		files := map[string]string{
-			workingDir + "apiinfo.html":                   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/apiinfo.html", downloadBranch),
-			workingDir + "config.html":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.html", downloadBranch),
-			workingDir + "config.json":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.json", downloadBranch),
-			workingDir + "index.html":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/index.html", downloadBranch),
-			workingDir + "script.js":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/script.js", downloadBranch),
-			workingDir + "stationeers.png":                fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/stationeers.png", downloadBranch),
-			workingDir + "style.css":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/style.css", downloadBranch),
-			workingDir + "favicon.ico":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/favicon.ico", downloadBranch),
-			loginDir + "login.css":                        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.css", downloadBranch),
-			loginDir + "login.js":                         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.js", downloadBranch),
-			loginDir + "login.html":                       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.html", downloadBranch),
-			detectionmanagerDir + "detectionmanager.js":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.js", downloadBranch),
-			detectionmanagerDir + "detectionmanager.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.html", downloadBranch),
-			detectionmanagerDir + "detectionmanager.css":  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.css", downloadBranch),
-		}
-
-		// Set the first time setup flag to true
-		config.IsFirstTimeSetup = true
-
-		// Download each file
-		for filepath, url := range files {
-			// Extract just the filename for display purposes
-			fileName := filepath[strings.LastIndex(filepath, "/")+1:]
-			logger.Install.Info("Downloading " + fileName + "...")
-			err := downloadFileWithProgress(filepath, url)
-			if err != nil {
-				logger.Install.Error("❌Error downloading " + fileName + " (setup may has been left incomplete): " + err.Error())
-				return
-			}
-			logger.Install.Info("✅Downloaded " + fileName + " successfully from branch " + downloadBranch)
-		}
-
-		logger.Install.Info("✅All files downloaded successfully.")
-	} else {
-		logger.Install.Info("♻️Folder ./UIMod already exists. Skipping download.")
-		config.IsFirstTimeSetup = false
+		logger.Install.Info("✅Downloaded " + fileName + " successfully from branch " + downloadBranch)
 	}
+	logger.Install.Info("✅All files downloaded successfully.")
+}
+
+// updateFilesIfDifferent checks for differences and updates files if necessary
+func updateFilesIfDifferent(files map[string]string) {
+	for filepath, url := range files {
+		fileName := filepath[strings.LastIndex(filepath, "/")+1:]
+		if fileName == "config.json" {
+			continue
+		}
+		// Check if local file exists
+		localData, err := os.ReadFile(filepath)
+		if err != nil && !os.IsNotExist(err) {
+			logger.Install.Error("❌Error reading local file " + fileName + ": " + err.Error())
+			continue
+		}
+
+		// Fetch remote content
+		resp, err := http.Get(url)
+		if err != nil {
+			logger.Install.Error("❌Error fetching remote file " + fileName + ": " + err.Error())
+			continue
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			logger.Install.Info("Using branch: " + downloadBranch)
+			logger.Install.Info("URL: " + url)
+			logger.Install.Error("❌Bad status for " + fileName + ": " + resp.Status)
+			continue
+		}
+
+		remoteData, err := io.ReadAll(resp.Body)
+		if err != nil {
+			logger.Install.Error("❌Error reading remote file " + fileName + ": " + err.Error())
+			continue
+		}
+
+		// Compare local and remote content
+		if os.IsNotExist(err) || !bytes.Equal(localData, remoteData) {
+			logger.Install.Info("🔄Updating " + fileName + " due to differences...")
+			err = downloadFileWithProgress(filepath, url)
+			if err != nil {
+				logger.Install.Error("❌Error updating " + fileName + ": " + err.Error())
+				continue
+			}
+			logger.Install.Info("✅Updated " + fileName + " successfully from branch " + downloadBranch)
+		} else {
+			logger.Install.Info("✅" + fileName + " is up-to-date.")
+		}
+	}
+	logger.Install.Info("✅File validation and update check complete.")
 }
 
 // checkAndCreateBlacklist ensures Blacklist.txt exists in the root directory
