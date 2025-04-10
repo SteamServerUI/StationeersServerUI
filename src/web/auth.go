@@ -224,6 +224,13 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if config.Users == nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - No users registered - cannot finalize setup at this time"})
+		return
+	}
+
 	// Load existing config to update it
 	newConfig, err := config.LoadConfig()
 	if err != nil {
