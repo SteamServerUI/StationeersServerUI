@@ -20,19 +20,19 @@ type fsWatcher struct {
 func newFsWatcher(path string) (*fsWatcher, error) {
 	// Normalize path
 	normalizedPath := filepath.Clean(path)
-	logger.Backup.Info("Creating watcher for path: " + normalizedPath)
+	logger.Backup.Debug("Creating watcher for path: " + normalizedPath)
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create watcher: %w", err)
 	}
-	logger.Backup.Info("Watcher created successfully")
+	logger.Backup.Debug("Watcher created successfully")
 
 	if err := watcher.Add(normalizedPath); err != nil {
 		watcher.Close()
 		return nil, fmt.Errorf("failed to add path %s to watcher: %w", normalizedPath, err)
 	}
-	logger.Backup.Info("Successfully watching path: " + normalizedPath)
+	logger.Backup.Debug("Successfully watching path: " + normalizedPath)
 
 	w := &fsWatcher{
 		watcher: watcher,
