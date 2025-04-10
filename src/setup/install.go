@@ -22,8 +22,7 @@ var downloadBranch string // Holds the branch to download from
 
 // Install performs the entire installation process and ensures the server waits for it to complete
 func Install(wg *sync.WaitGroup) {
-	defer wg.Done()             // Signal that installation is complete
-	time.Sleep(1 * time.Second) // Small pause for effect
+	defer wg.Done() // Signal that installation is complete
 
 	loader.ReloadConfig()
 
@@ -36,14 +35,11 @@ func Install(wg *sync.WaitGroup) {
 	logger.Install.Info("🔄Checking UIMod folder contents...")
 	CheckAndDownloadUIMod()
 	logger.Install.Info("✅UIMod folder setup complete.")
-	time.Sleep(1 * time.Second)
-
 	// Step 2: Check for Blacklist.txt and create it if it doesn't exist
 	logger.Install.Info("🔄Checking for Blacklist.txt...")
 	checkAndCreateBlacklist()
 	logger.Install.Info("✅Blacklist.txt verified or created.")
-	time.Sleep(1 * time.Second)
-
+	time.Sleep(2 * time.Second) // Small pause to let the user read potential errors
 	// Step 3: Install and run SteamCMD
 	logger.Install.Info("🔄Installing and running SteamCMD...")
 	InstallAndRunSteamCMD()
