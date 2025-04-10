@@ -10,10 +10,7 @@
 <body>
     <div id="space-background"></div>
     <div id="planet-container"></div>
-    
-    <div class="breakout-container">
-        <!-- Breakout bars will be dynamically created here -->
-    </div>
+    <div class="breakout-container"></div>
 
     <div id="preloader">
         <div class="preloader-content">
@@ -31,30 +28,38 @@
         </header>
         
         <div class="form-container">
+            {{if .StepMessage}}
+            <p class="step-message">{{.StepMessage}}</p>
+            {{end}}
             <form id="loginForm">
+                {{if ne .UsernameLabel ""}}
                 <div class="form-group">
-                    <label for="username">{{.UsernameLabel}}</label>
+                    <label for="input-field">{{.UsernameLabel}}</label>
                     <input 
                         type="text" 
-                        id="username" 
-                        name="username" 
-                        required 
-                        placeholder="Enter your username"
+                        id="input-field" 
+                        name="input-field" 
+                        {{if eq .Step "3"}}type="number" min="2" max="20"{{else}}type="text"{{end}}
+                        placeholder="Enter {{.UsernameLabel}}"
+                        {{if ne .Step "5"}}required{{end}}
                     >
                     <div class="input-info">{{.UsernameLabel}}</div>
                 </div>
+                {{end}}
 
+                {{if ne .PasswordLabel ""}}
                 <div class="form-group">
                     <label for="password">{{.PasswordLabel}}</label>
                     <input 
                         type="{{.PasswordType}}" 
                         id="password" 
                         name="password" 
-                        required 
-                        placeholder="Enter your password"
+                        placeholder="Enter {{.PasswordLabel}}"
+                        required
                     >
                     <div class="input-info">{{.PasswordLabel}}</div>
                 </div>
+                {{end}}
 
                 <div class="form-actions">
                     <input 
@@ -64,12 +69,17 @@
                     >
                     {{if .ShowExtraButtons}}
                     <br/>
+                    {{if eq .Step "6"}}
                     <button type="button" id="finalize-btn" class="finalize-btn">Finalize Setup</button>
+                    {{else}}
+                    <button type="button" id="next-btn" class="login-button" style="display: none;">Next Step</button>
+                    {{end}}
                     <br/>
-                    <button type="button" id="skip-btn" class="skip-btn">Skip Setup</button>
+                    <button type="button" id="skip-btn" class="skip-btn">Skip</button>
                     {{end}}
                 </div>
                 <input type="hidden" id="mode" value="{{.Mode}}">
+                <input type="hidden" id="step" value="{{.Step}}">
             </form>
         </div>
 
