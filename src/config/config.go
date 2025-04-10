@@ -72,8 +72,8 @@ type CustomDetection struct {
 }
 
 var (
-	Version = "4.8.2"
-	Branch                  = "release"
+	Version = "4.8.4"
+	Branch                  = "nightly-auth"
 	GameBranch              string
 	DiscordToken            string
 	DiscordSession          *discordgo.Session
@@ -134,7 +134,6 @@ var (
 	Password                string
 	Users                   map[string]string
 	AuthEnabled             bool
-	SetupDone               = false
 	JwtKey                  string
 	AuthTokenLifetime       int
 	IsUpdateEnabled         bool

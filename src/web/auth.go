@@ -4,6 +4,7 @@ package web
 import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/configchanger"
+	"StationeersServerUI/src/loader"
 	"StationeersServerUI/src/logger"
 	"StationeersServerUI/src/security"
 	"encoding/json"
@@ -114,15 +115,8 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// SetupRegisterHandler registers new users (for initial setup)
-func SetupRegisterHandler(w http.ResponseWriter, r *http.Request) {
-	if config.SetupDone {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusForbidden)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Forbidden - Setup already completed"})
-		return
-	}
-
+// RegisterUserHandler registers new users
+func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	var creds security.UserCredentials
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
@@ -172,4 +166,42 @@ func SetupRegisterHandler(w http.ResponseWriter, r *http.Request) {
 		"message":  "User registered successfully",
 		"username": creds.Username,
 	})
+}
+
+// SetupFinalizeHandler marks setup as complete
+func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
+	// Check if setup is already done
+	if !config.IsFirstTimeSetup {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - Setup already finalized"})
+		return
+	}
+
+	// Load existing config to update it
+	newConfig, err := config.LoadConfig()
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error - Failed to load config"})
+		return
+	}
+
+	config.IsFirstTimeSetup = false
+	newConfig.AuthEnabled = true
+	err = configchanger.SaveConfig(newConfig)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error - Failed to save config"})
+		return
+	}
+	logger.Web.Core("User Setup finalized successfully")
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{
+		"message":      "Setup finalized successfully",
+		"restart_hint": "Please restart the application to fully apply authentication settings",
+	})
+	loader.ReloadConfig()
 }

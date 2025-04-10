@@ -13,17 +13,6 @@ import (
 	"sync"
 )
 
-const (
-	// ANSI color codes for styling terminal output
-	colorReset   = "\033[0m"
-	colorRed     = "\033[31m"
-	colorGreen   = "\033[32m"
-	colorYellow  = "\033[33m"
-	colorBlue    = "\033[34m"
-	colorMagenta = "\033[35m"
-	colorCyan    = "\033[36m"
-)
-
 func StartWebServer(wg *sync.WaitGroup) {
 
 	logger.Web.Info("Starting API services...")
@@ -44,7 +33,10 @@ func StartWebServer(wg *sync.WaitGroup) {
 	})
 	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
 	mux.HandleFunc("/auth/logout", LogoutHandler)
-	mux.HandleFunc("/setup/register", SetupRegisterHandler) // Setup user registration
+	if config.IsFirstTimeSetup {
+		mux.HandleFunc("/api/v2/auth/setup/register", RegisterUserHandler) // user registration
+		mux.HandleFunc("/api/v2/auth/setup/finalize", SetupFinalizeHandler)
+	}
 
 	// Protected routes (wrapped with middleware)
 	protectedMux := http.NewServeMux()
@@ -79,6 +71,11 @@ func StartWebServer(wg *sync.WaitGroup) {
 	// Custom Detections
 	protectedMux.HandleFunc("/api/v2/custom-detections", detectionmgr.HandleCustomDetection)
 	protectedMux.HandleFunc("/api/v2/custom-detections/delete/", detectionmgr.HandleDeleteCustomDetection)
+
+	// Authentication
+	if !config.IsFirstTimeSetup {
+		protectedMux.HandleFunc("/api/v2/auth/register", RegisterUserHandler) // user registration and change password
+	}
 
 	// Apply middleware only to protected routes
 	mux.Handle("/", AuthMiddleware(protectedMux)) // Wrap protected routes under root
