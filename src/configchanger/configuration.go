@@ -12,6 +12,25 @@ import (
 	"strconv"
 )
 
+// SaveConfig writes the given config to file and reloads it
+func SaveConfig(cfg *config.JsonConfig) error {
+	file, err := os.Create(config.ConfigPath)
+	if err != nil {
+		return fmt.Errorf("error creating config.json: %v", err)
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(cfg); err != nil {
+		return fmt.Errorf("error encoding config.json: %v", err)
+	}
+
+	// Reload using the loader package
+	loader.ReloadAll()
+	return nil
+}
+
 func SaveConfigForm(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -50,31 +69,24 @@ func SaveConfigForm(w http.ResponseWriter, r *http.Request) {
 		}
 
 		field := v.Field(i)
-		switch field.Kind() {
+		fieldType := field.Type()
+
+		switch fieldType.Kind() {
 		case reflect.String:
 			field.SetString(formValue) // Set the value, even if it's empty to allow clearing the field
-		case reflect.Bool:
-			field.SetBool(formValue == "true")
+		case reflect.Ptr:
+			if fieldType.Elem().Kind() == reflect.Bool {
+				newBool := formValue == "true"       // Convert form value to bool
+				field.Set(reflect.ValueOf(&newBool)) // Set the pointer to the new bool
+			}
 		}
 	}
 
-	// Save the updated config to file
-	file, err := os.Create(config.ConfigPath)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error creating config.json: %v", err), http.StatusInternalServerError)
+	// Save the updated config
+	if err := SaveConfig(existingConfig); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer file.Close()
-
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(existingConfig); err != nil {
-		http.Error(w, fmt.Sprintf("Error encoding config.json: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// Reload using the loader package
-	loader.ReloadAll()
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -120,19 +132,20 @@ func SaveConfigRestful(w http.ResponseWriter, r *http.Request) {
 		}
 
 		field := v.Field(i)
-		switch field.Kind() {
+		fieldType := field.Type()
+
+		switch fieldType.Kind() {
 		case reflect.String:
-			// Convert value to string if possible
 			if strValue, ok := value.(string); ok {
 				field.SetString(strValue)
 			}
-		case reflect.Bool:
-			// Convert value to bool if possible
-			if boolValue, ok := value.(bool); ok {
-				field.SetBool(boolValue)
+		case reflect.Ptr:
+			if fieldType.Elem().Kind() == reflect.Bool {
+				if boolValue, ok := value.(bool); ok {
+					field.Set(reflect.ValueOf(&boolValue)) // Set the pointer to the new bool
+				}
 			}
 		case reflect.Int:
-			// Handle integers - this was missing in the original handler
 			switch v := value.(type) {
 			case float64: // JSON numbers are parsed as float64 by default
 				field.SetInt(int64(v))
@@ -141,31 +154,31 @@ func SaveConfigRestful(w http.ResponseWriter, r *http.Request) {
 			case int64:
 				field.SetInt(v)
 			case string:
-				// Try to convert string to int if provided as string
 				if intValue, err := strconv.ParseInt(v, 10, 64); err == nil {
 					field.SetInt(intValue)
+				}
+			}
+		case reflect.Map:
+			// Handle map fields like Users (map[string]string)
+			if mapValue, ok := value.(map[string]interface{}); ok {
+				if field.Type() == reflect.TypeOf(map[string]string{}) {
+					newMap := make(map[string]string)
+					for k, v := range mapValue {
+						if strVal, ok := v.(string); ok {
+							newMap[k] = strVal
+						}
+					}
+					field.Set(reflect.ValueOf(newMap))
 				}
 			}
 		}
 	}
 
-	// Save the updated config to file
-	file, err := os.Create(config.ConfigPath)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error creating config.json: %v", err), http.StatusInternalServerError)
+	// Save the updated config
+	if err := SaveConfig(existingConfig); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer file.Close()
-
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(existingConfig); err != nil {
-		http.Error(w, fmt.Sprintf("Error encoding config.json: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// Reload using the loader package
-	loader.ReloadAll()
 
 	// Return success response in JSON format
 	w.Header().Set("Content-Type", "application/json")

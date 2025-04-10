@@ -13,17 +13,6 @@ import (
 	"sync"
 )
 
-const (
-	// ANSI color codes for styling terminal output
-	colorReset   = "\033[0m"
-	colorRed     = "\033[31m"
-	colorGreen   = "\033[32m"
-	colorYellow  = "\033[33m"
-	colorBlue    = "\033[34m"
-	colorMagenta = "\033[35m"
-	colorCyan    = "\033[36m"
-)
-
 func StartWebServer(wg *sync.WaitGroup) {
 
 	logger.Web.Info("Starting API services...")
@@ -31,9 +20,6 @@ func StartWebServer(wg *sync.WaitGroup) {
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
 
 	// Unprotected auth routes
-	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./UIMod/login/login.html")
-	})
 	mux.HandleFunc("/login/login.js", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/javascript")
 		http.ServeFile(w, r, "./UIMod/login/login.js")
@@ -42,8 +28,14 @@ func StartWebServer(wg *sync.WaitGroup) {
 		w.Header().Set("Content-Type", "text/css")
 		http.ServeFile(w, r, "./UIMod/login/login.css")
 	})
-	mux.HandleFunc("/auth/login", security.LoginHandler) // Token issuer
-	mux.HandleFunc("/auth/logout", security.LogoutHandler)
+	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
+	mux.HandleFunc("/auth/logout", LogoutHandler)
+	mux.HandleFunc("/login", ServeLoginTemplate)
+	if config.IsFirstTimeSetup {
+		mux.HandleFunc("/api/v2/auth/setup/register", RegisterUserHandler) // user registration
+		mux.HandleFunc("/api/v2/auth/setup/finalize", SetupFinalizeHandler)
+		mux.HandleFunc("/setup", ServeLoginTemplate)
+	}
 
 	// Protected routes (wrapped with middleware)
 	protectedMux := http.NewServeMux()
@@ -79,8 +71,14 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/api/v2/custom-detections", detectionmgr.HandleCustomDetection)
 	protectedMux.HandleFunc("/api/v2/custom-detections/delete/", detectionmgr.HandleDeleteCustomDetection)
 
+	// Authentication
+	protectedMux.HandleFunc("/changeuser", ServeLoginTemplate)
+	if !config.IsFirstTimeSetup {
+		protectedMux.HandleFunc("/api/v2/auth/adduser", RegisterUserHandler) // user registration and change password
+	}
+
 	// Apply middleware only to protected routes
-	mux.Handle("/", security.AuthMiddleware(protectedMux)) // Wrap protected routes under root
+	mux.Handle("/", AuthMiddleware(protectedMux)) // Wrap protected routes under root
 
 	// Start HTTP server
 	wg.Add(1)
@@ -89,9 +87,9 @@ func StartWebServer(wg *sync.WaitGroup) {
 		logger.Web.Info("Starting the HTTP server on port 8443...")
 		logger.Web.Info("UI available at: https://0.0.0.0:8443 or https://localhost:8443")
 		if config.IsFirstTimeSetup {
-			logger.Web.Warn("For first time Setup, follow the instructions on:")
-			logger.Web.Warn("https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup")
-			logger.Web.Warn("Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)")
+			logger.Web.Error("For first-time setup, visit the UI to configure a user or skip authentication.")
+			logger.Web.Warn("Fill the Username and Password fields, then click Register User and when done Finalize Setup.")
+			logger.Web.Warn("For more details, check the GitHub Wiki: https://github.com/JacksonTheMaster/StationeersServerUI/wiki")
 		}
 		// Ensure TLS certs are ready
 		if err := security.EnsureTLSCerts(); err != nil {

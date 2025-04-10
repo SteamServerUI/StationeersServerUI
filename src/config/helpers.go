@@ -9,6 +9,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"strings"
 )
 
 func getString(jsonVal, envKey, defaultVal string) string {
@@ -33,9 +34,9 @@ func getInt(jsonVal int, envKey string, defaultVal int) int {
 	return defaultVal
 }
 
-func getBool(jsonVal bool, envKey string, defaultVal bool) bool {
-	if jsonVal {
-		return true
+func getBool(jsonVal *bool, envKey string, defaultVal bool) bool {
+	if jsonVal != nil {
+		return *jsonVal
 	}
 	if envVal := os.Getenv(envKey); envVal != "" {
 		if val, err := strconv.ParseBool(envVal); err == nil {
@@ -43,6 +44,28 @@ func getBool(jsonVal bool, envKey string, defaultVal bool) bool {
 		}
 	}
 	return defaultVal
+}
+
+// getUsers retrieves a map[string]string with JSON -> env -> default hierarchy
+func getUsers(jsonValue map[string]string, envKey string, defaultValue map[string]string) map[string]string {
+	if jsonValue != nil {
+		return jsonValue
+	}
+	if envValue := os.Getenv(envKey); envValue != "" {
+		// Expect env var as "user1:hash1,user2:hash2"
+		users := make(map[string]string)
+		pairs := strings.Split(envValue, ",")
+		for _, pair := range pairs {
+			parts := strings.SplitN(pair, ":", 2)
+			if len(parts) == 2 {
+				users[parts[0]] = parts[1]
+			}
+		}
+		if len(users) > 0 {
+			return users
+		}
+	}
+	return defaultValue
 }
 
 func getDefaultExePath() string {

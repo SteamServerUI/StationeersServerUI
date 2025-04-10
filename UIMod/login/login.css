@@ -175,6 +175,82 @@ input[type="password"]:focus {
     left: 100%;
 }
 
+.finalize-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: rgba(255, 217, 0, 0.2);
+    color: var(--secondary, #FFD900);
+    border: 2px solid var(--secondary, #FFD900);
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin: 10px 0;
+    letter-spacing: 1px;
+}
+
+.finalize-btn:hover {
+    background-color: var(--secondary, #FFD900);
+    color: #000;
+    box-shadow: 0 0 30px rgba(255, 217, 0, 0.6);
+    transform: translateY(-3px);
+}
+
+.finalize-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 217, 0, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.finalize-btn:hover::before {
+    left: 100%;
+}
+
+.skip-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: rgba(150, 150, 150, 0.1);
+    color: var(--tertiary, #AAA);
+    border: 2px dashed var(--tertiary, #AAA);
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin: 10px 0;
+    font-size: 0.9em;
+}
+
+.skip-btn:hover {
+    background-color: rgba(150, 150, 150, 0.3);
+    color: #FFF;
+    box-shadow: 0 0 15px rgba(150, 150, 150, 0.4);
+    transform: translateY(-2px);
+}
+
+.skip-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(150, 150, 150, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.skip-btn:hover::before {
+    left: 100%;
+}
+
 footer {
     text-align: center;
     margin-top: 30px;

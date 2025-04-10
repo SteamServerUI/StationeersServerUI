@@ -91,45 +91,95 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
+        const mode = document.getElementById('mode').value;
+
+        let url;
+        if (mode === 'setup') {
+            url = '/api/v2/auth/setup/register';
+        } else if (mode === 'changeuser') {
+            url = '/api/v2/auth/adduser';
+        } else {
+            url = '/auth/login';
+        }
 
         try {
-            const response = await fetch('/auth/login', {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'HTTP2-Settings': 'AAEAAQABAAAAAQAAAAEAAAAAAAEAxABAAQAA' // HTTP/2 SETTINGS 
+                    'HTTP2-Settings': 'AAEAAQABAAAAAQAAAAEAAAAAAAEAxABAAQAA'
                 },
                 body: JSON.stringify({ username, password })
             });
 
+            const data = await response.json();
             if (response.ok) {
-                // Show success notification
-                showNotification('Login Successful! Preparing launch...', 'success');
-
-                // Start preloading
-                showPreloader();
-                const preloadSuccess = await preloadNextPage();
-
-                // Redirect after animations
-                setTimeout(() => {
-                    if (preloadSuccess) {
-                        hidePreloader();
-                        window.location.href = '/';
-                    } else {
-                        showNotification('Preload failed. Redirecting anyway.', 'error');
-                        window.location.href = '/';
-                    }
-                }, 600); // fake loading time to avoid flickering, will be replaced with a proper preloader later
+                if (mode === 'login') {
+                    showNotification('Login Successful! Preparing launch...', 'success');
+                    showPreloader();
+                    const preloadSuccess = await preloadNextPage();
+                    setTimeout(() => {
+                        if (preloadSuccess) {
+                            hidePreloader();
+                            window.location.href = '/';
+                        } else {
+                            showNotification('Preload failed. Redirecting anyway.', 'error');
+                            window.location.href = '/';
+                        }
+                    }, 600);
+                } else if (mode === 'setup') {
+                    showNotification('User registered successfully! Finalize setup to complete.', 'success');
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                } else { // changeuser
+                    const message = data.message || 'User updated successfully!';
+                    showNotification(message, 'success');
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                }
             } else {
-                const errorData = await response.json();
-                const errorMessage = errorData.message || 'Login failed! Please check your credentials.';
-                
-                // Show error notification
+                const errorMessage = data.error || 'Action failed! Please check your input.';
                 showNotification(errorMessage);
             }
         } catch (error) {
-            console.error('Login error:', error);   
-            showNotification('Login error. Please try again.');
+            console.error('Form submission error:', error);
+            showNotification('Error occurred. Please try again.');
         }
     });
+    const finalizeBtn = document.getElementById('finalize-btn');
+    if (finalizeBtn) {
+        finalizeBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/v2/auth/setup/finalize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'HTTP2-Settings': 'AAEAAQABAAAAAQAAAAEAAAAAAAEAxABAAQAA'
+                    }
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    showNotification(`${data.message}\n${data.restart_hint}`, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000); // Give user time to read restart hint
+                } else {
+                    showNotification(data.error || 'Finalize failed!');
+                }
+            } catch (error) {
+                console.error('Finalize error:', error);
+                showNotification('Error finalizing setup. Please try again.');
+            }
+        });
+    }
+    const skipBtn = document.getElementById('skip-btn');
+    if (skipBtn) {
+        skipBtn.addEventListener('click', () => {
+            showNotification('Skipping setup - proceeding without authentication', 'success');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000); // Short delay to show notification
+        });
+    }
 });

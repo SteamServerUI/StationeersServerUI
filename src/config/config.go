@@ -12,53 +12,53 @@ import (
 )
 
 type JsonConfig struct {
-	DiscordToken            string `json:"discordToken"`
-	ControlChannelID        string `json:"controlChannelID"`
-	StatusChannelID         string `json:"statusChannelID"`
-	ConnectionListChannelID string `json:"connectionListChannelID"`
-	LogChannelID            string `json:"logChannelID"`
-	SaveChannelID           string `json:"saveChannelID"`
-	ControlPanelChannelID   string `json:"controlPanelChannelID"`
-	DiscordCharBufferSize   int    `json:"DiscordCharBufferSize"`
-	BlackListFilePath       string `json:"blackListFilePath"`
-	IsDiscordEnabled        bool   `json:"isDiscordEnabled"`
-	ErrorChannelID          string `json:"errorChannelID"`
-	BackupKeepLastN         int    `json:"backupKeepLastN"`
-	IsCleanupEnabled        bool   `json:"isCleanupEnabled"`
-	BackupKeepDailyFor      int    `json:"backupKeepDailyFor"`
-	BackupKeepWeeklyFor     int    `json:"backupKeepWeeklyFor"`
-	BackupKeepMonthlyFor    int    `json:"backupKeepMonthlyFor"`
-	BackupCleanupInterval   int    `json:"backupCleanupInterval"`
-	BackupWaitTime          int    `json:"backupWaitTime"`
-	GameBranch              string `json:"gameBranch"`
-	ServerName              string `json:"ServerName"`
-	SaveInfo                string `json:"SaveInfo"`
-	ServerMaxPlayers        string `json:"ServerMaxPlayers"`
-	ServerPassword          string `json:"ServerPassword"`
-	ServerAuthSecret        string `json:"ServerAuthSecret"`
-	AdminPassword           string `json:"AdminPassword"`
-	GamePort                string `json:"GamePort"`
-	UpdatePort              string `json:"UpdatePort"`
-	UPNPEnabled             bool   `json:"UPNPEnabled"`
-	AutoSave                bool   `json:"AutoSave"`
-	SaveInterval            string `json:"SaveInterval"`
-	AutoPauseServer         bool   `json:"AutoPauseServer"`
-	LocalIpAddress          string `json:"LocalIpAddress"`
-	StartLocalHost          bool   `json:"StartLocalHost"`
-	ServerVisible           bool   `json:"ServerVisible"`
-	UseSteamP2P             bool   `json:"UseSteamP2P"`
-	ExePath                 string `json:"ExePath"`
-	AdditionalParams        string `json:"AdditionalParams"`
-	Username                string `json:"Username"`
-	Password                string `json:"Password"`
-	JwtKey                  string `json:"JwtKey"`
-	AuthTokenLifetime       int    `json:"AuthTokenLifetime"`
-	Debug                   bool   `json:"Debug"`
-	CreateSSUILogFile       bool   `json:"CreateSSUILogFile"`
-	LogLevel                int    `json:"LogLevel"`
-	IsUpdateEnabled         bool   `json:"IsUpdateEnabled"`
-	AllowPrereleaseUpdates  bool   `json:"AllowPrereleaseUpdates"`
-	AllowMajorUpdates       bool   `json:"AllowMajorUpdates"`
+	DiscordToken            string            `json:"discordToken"`
+	ControlChannelID        string            `json:"controlChannelID"`
+	StatusChannelID         string            `json:"statusChannelID"`
+	ConnectionListChannelID string            `json:"connectionListChannelID"`
+	LogChannelID            string            `json:"logChannelID"`
+	SaveChannelID           string            `json:"saveChannelID"`
+	ControlPanelChannelID   string            `json:"controlPanelChannelID"`
+	DiscordCharBufferSize   int               `json:"DiscordCharBufferSize"`
+	BlackListFilePath       string            `json:"blackListFilePath"`
+	IsDiscordEnabled        *bool             `json:"isDiscordEnabled"`
+	ErrorChannelID          string            `json:"errorChannelID"`
+	BackupKeepLastN         int               `json:"backupKeepLastN"`
+	IsCleanupEnabled        *bool             `json:"isCleanupEnabled"`
+	BackupKeepDailyFor      int               `json:"backupKeepDailyFor"`
+	BackupKeepWeeklyFor     int               `json:"backupKeepWeeklyFor"`
+	BackupKeepMonthlyFor    int               `json:"backupKeepMonthlyFor"`
+	BackupCleanupInterval   int               `json:"backupCleanupInterval"`
+	BackupWaitTime          int               `json:"backupWaitTime"`
+	GameBranch              string            `json:"gameBranch"`
+	ServerName              string            `json:"ServerName"`
+	SaveInfo                string            `json:"SaveInfo"`
+	ServerMaxPlayers        string            `json:"ServerMaxPlayers"`
+	ServerPassword          string            `json:"ServerPassword"`
+	ServerAuthSecret        string            `json:"ServerAuthSecret"`
+	AdminPassword           string            `json:"AdminPassword"`
+	GamePort                string            `json:"GamePort"`
+	UpdatePort              string            `json:"UpdatePort"`
+	UPNPEnabled             *bool             `json:"UPNPEnabled"`
+	AutoSave                *bool             `json:"AutoSave"`
+	SaveInterval            string            `json:"SaveInterval"`
+	AutoPauseServer         *bool             `json:"AutoPauseServer"`
+	LocalIpAddress          string            `json:"LocalIpAddress"`
+	StartLocalHost          *bool             `json:"StartLocalHost"`
+	ServerVisible           *bool             `json:"ServerVisible"`
+	UseSteamP2P             *bool             `json:"UseSteamP2P"`
+	ExePath                 string            `json:"ExePath"`
+	AdditionalParams        string            `json:"AdditionalParams"`
+	Users                   map[string]string `json:"users"`       // Map of username to hashed password
+	AuthEnabled             *bool             `json:"authEnabled"` // Toggle for enabling/disabling auth
+	JwtKey                  string            `json:"JwtKey"`
+	AuthTokenLifetime       int               `json:"AuthTokenLifetime"`
+	Debug                   *bool             `json:"Debug"`
+	CreateSSUILogFile       *bool             `json:"CreateSSUILogFile"`
+	LogLevel                int               `json:"LogLevel"`
+	IsUpdateEnabled         *bool             `json:"IsUpdateEnabled"`
+	AllowPrereleaseUpdates  *bool             `json:"AllowPrereleaseUpdates"`
+	AllowMajorUpdates       *bool             `json:"AllowMajorUpdates"`
 }
 
 type CustomDetection struct {
@@ -70,8 +70,8 @@ type CustomDetection struct {
 }
 
 var (
-	Version = "4.7.4"
-	Branch                  = "release"
+	Version = "5.0.17"
+	Branch                  = "nightly-auth"
 	GameBranch              string
 	DiscordToken            string
 	DiscordSession          *discordgo.Session
@@ -128,8 +128,8 @@ var (
 	BufferFlushTicker       *time.Ticker
 	ControlMessageID        string
 	ExceptionMessageID      string
-	Username                string
-	Password                string
+	Users                   map[string]string
+	AuthEnabled             bool
 	JwtKey                  string
 	AuthTokenLifetime       int
 	IsUpdateEnabled         bool
@@ -163,7 +163,6 @@ func LoadConfig() (*JsonConfig, error) {
 
 // applyConfig applies the configuration with JSON -> env -> fallback hierarchy
 func applyConfig(cfg *JsonConfig) {
-
 	// Apply values with hierarchy
 	DiscordToken = getString(cfg.DiscordToken, "DISCORD_TOKEN", "")
 	ControlChannelID = getString(cfg.ControlChannelID, "CONTROL_CHANNEL_ID", "")
@@ -174,10 +173,18 @@ func applyConfig(cfg *JsonConfig) {
 	ControlPanelChannelID = getString(cfg.ControlPanelChannelID, "CONTROL_PANEL_CHANNEL_ID", "")
 	DiscordCharBufferSize = getInt(cfg.DiscordCharBufferSize, "DISCORD_CHAR_BUFFER_SIZE", 1000)
 	BlackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "./Blacklist.txt")
-	IsDiscordEnabled = getBool(cfg.IsDiscordEnabled, "IS_DISCORD_ENABLED", false)
+
+	isDiscordEnabledVal := getBool(cfg.IsDiscordEnabled, "IS_DISCORD_ENABLED", false)
+	IsDiscordEnabled = isDiscordEnabledVal
+	cfg.IsDiscordEnabled = &isDiscordEnabledVal
+
 	ErrorChannelID = getString(cfg.ErrorChannelID, "ERROR_CHANNEL_ID", "")
 	BackupKeepLastN = getInt(cfg.BackupKeepLastN, "BACKUP_KEEP_LAST_N", 2000)
-	IsCleanupEnabled = getBool(cfg.IsCleanupEnabled, "IS_CLEANUP_ENABLED", false)
+
+	isCleanupEnabledVal := getBool(cfg.IsCleanupEnabled, "IS_CLEANUP_ENABLED", false)
+	IsCleanupEnabled = isCleanupEnabledVal
+	cfg.IsCleanupEnabled = &isCleanupEnabledVal
+
 	BackupKeepDailyFor = time.Duration(getInt(cfg.BackupKeepDailyFor, "BACKUP_KEEP_DAILY_FOR", 24)) * time.Hour
 	BackupKeepWeeklyFor = time.Duration(getInt(cfg.BackupKeepWeeklyFor, "BACKUP_KEEP_WEEKLY_FOR", 168)) * time.Hour
 	BackupKeepMonthlyFor = time.Duration(getInt(cfg.BackupKeepMonthlyFor, "BACKUP_KEEP_MONTHLY_FOR", 730)) * time.Hour
@@ -192,26 +199,67 @@ func applyConfig(cfg *JsonConfig) {
 	AdminPassword = getString(cfg.AdminPassword, "ADMIN_PASSWORD", "")
 	GamePort = getString(cfg.GamePort, "GAME_PORT", "27016")
 	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27017")
-	UPNPEnabled = getBool(cfg.UPNPEnabled, "UPNP_ENABLED", false)
-	AutoSave = getBool(cfg.AutoSave, "AUTO_SAVE", true)
+
+	upnpEnabledVal := getBool(cfg.UPNPEnabled, "UPNP_ENABLED", false)
+	UPNPEnabled = upnpEnabledVal
+	cfg.UPNPEnabled = &upnpEnabledVal
+
+	autoSaveVal := getBool(cfg.AutoSave, "AUTO_SAVE", true)
+	AutoSave = autoSaveVal
+	cfg.AutoSave = &autoSaveVal
+
 	SaveInterval = getString(cfg.SaveInterval, "SAVE_INTERVAL", "300")
-	AutoPauseServer = getBool(cfg.AutoPauseServer, "AUTO_PAUSE_SERVER", true)
+
+	autoPauseServerVal := getBool(cfg.AutoPauseServer, "AUTO_PAUSE_SERVER", true)
+	AutoPauseServer = autoPauseServerVal
+	cfg.AutoPauseServer = &autoPauseServerVal
+
 	LocalIpAddress = getString(cfg.LocalIpAddress, "LOCAL_IP_ADDRESS", "")
-	StartLocalHost = getBool(cfg.StartLocalHost, "START_LOCAL_HOST", true)
-	ServerVisible = getBool(cfg.ServerVisible, "SERVER_VISIBLE", true)
-	UseSteamP2P = getBool(cfg.UseSteamP2P, "USE_STEAM_P2P", true)
+
+	startLocalHostVal := getBool(cfg.StartLocalHost, "START_LOCAL_HOST", true)
+	StartLocalHost = startLocalHostVal
+	cfg.StartLocalHost = &startLocalHostVal
+
+	serverVisibleVal := getBool(cfg.ServerVisible, "SERVER_VISIBLE", true)
+	ServerVisible = serverVisibleVal
+	cfg.ServerVisible = &serverVisibleVal
+
+	useSteamP2PVal := getBool(cfg.UseSteamP2P, "USE_STEAM_P2P", true)
+	UseSteamP2P = useSteamP2PVal
+	cfg.UseSteamP2P = &useSteamP2PVal
+
 	ExePath = getString(cfg.ExePath, "EXE_PATH", getDefaultExePath())
 	AdditionalParams = getString(cfg.AdditionalParams, "ADDITIONAL_PARAMS", "")
-	Username = getString(cfg.Username, "SSUI_USERNAME", "admin")
-	Password = getString(cfg.Password, "SSUI_PASSWORD", "password")
+	Users = getUsers(cfg.Users, "SSUI_USERS", map[string]string{})
+
+	authEnabledVal := getBool(cfg.AuthEnabled, "SSUI_AUTH_ENABLED", false)
+	AuthEnabled = authEnabledVal
+	cfg.AuthEnabled = &authEnabledVal
+
 	JwtKey = getString(cfg.JwtKey, "SSUI_JWT_KEY", generateJwtKey())
 	AuthTokenLifetime = getInt(cfg.AuthTokenLifetime, "SSUI_AUTH_TOKEN_LIFETIME", 1440)
-	IsDebugMode = getBool(cfg.Debug, "DEBUG", false)
-	CreateSSUILogFile = getBool(cfg.CreateSSUILogFile, "CREATE_SSUI_LOGFILE", false)
+
+	debugVal := getBool(cfg.Debug, "DEBUG", false)
+	IsDebugMode = debugVal
+	cfg.Debug = &debugVal
+
+	createSSUILogFileVal := getBool(cfg.CreateSSUILogFile, "CREATE_SSUI_LOGFILE", false)
+	CreateSSUILogFile = createSSUILogFileVal
+	cfg.CreateSSUILogFile = &createSSUILogFileVal
+
 	LogLevel = getInt(cfg.LogLevel, "LOG_LEVEL", 20)
-	IsUpdateEnabled = getBool(cfg.IsUpdateEnabled, "IS_UPDATE_ENABLED", true)
-	AllowPrereleaseUpdates = getBool(cfg.AllowPrereleaseUpdates, "ALLOW_PRERELEASE_UPDATES", false)
-	AllowMajorUpdates = getBool(cfg.AllowMajorUpdates, "ALLOW_MAJOR_UPDATES", false)
+
+	isUpdateEnabledVal := getBool(cfg.IsUpdateEnabled, "IS_UPDATE_ENABLED", true)
+	IsUpdateEnabled = isUpdateEnabledVal
+	cfg.IsUpdateEnabled = &isUpdateEnabledVal
+
+	allowPrereleaseUpdatesVal := getBool(cfg.AllowPrereleaseUpdates, "ALLOW_PRERELEASE_UPDATES", false)
+	AllowPrereleaseUpdates = allowPrereleaseUpdatesVal
+	cfg.AllowPrereleaseUpdates = &allowPrereleaseUpdatesVal
+
+	allowMajorUpdatesVal := getBool(cfg.AllowMajorUpdates, "ALLOW_MAJOR_UPDATES", false)
+	AllowMajorUpdates = allowMajorUpdatesVal
+	cfg.AllowMajorUpdates = &allowMajorUpdatesVal
 
 	// Process SaveInfo
 	parts := strings.Split(SaveInfo, " ")

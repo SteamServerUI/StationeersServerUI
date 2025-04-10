@@ -22,7 +22,7 @@ func ReloadConfig() {
 		logger.Core.Error("Failed to load config: " + err.Error())
 		return
 	}
-	logger.Core.Debug("Config reloaded successfully")
+	logger.Core.Info("Config reloaded successfully")
 
 	PrintConfigDetails()
 
@@ -33,13 +33,13 @@ func ReloadBackupManager() {
 		logger.Backup.Error("Failed to reload backup manager: " + err.Error())
 		return
 	}
-	logger.Backup.Debug("Backup manager reloaded successfully")
+	logger.Backup.Info("Backup manager reloaded successfully")
 }
 
 func ReloadDiscordBot() {
 	if config.IsDiscordEnabled {
 		go discordbot.InitializeDiscordBot()
-		logger.Discord.Debug("Discord bot reloaded successfully")
+		logger.Discord.Info("Discord bot reloaded successfully")
 	}
 }
 
@@ -49,7 +49,7 @@ func InitDetector() {
 	detectionmgr.RegisterDefaultHandlers(detector)
 	detectionmgr.InitCustomDetectionsManager(detector)
 	go detectionmgr.StreamLogs(detector)
-	logger.Detection.Debug("Detector loaded successfully")
+	logger.Detection.Info("Detector loaded successfully")
 }
 
 func PrintConfigDetails() {
@@ -89,8 +89,6 @@ func PrintConfigDetails() {
 	logger.Config.Debug("---- AUTHENTICATION CONFIG VARS ----")
 	logger.Config.Debug(fmt.Sprintf("AuthTokenLifetime: %d", config.AuthTokenLifetime))
 	logger.Config.Debug(fmt.Sprintf("JwtKey: %s", config.JwtKey))
-	logger.Config.Debug(fmt.Sprintf("Password: %s", config.Password))
-	logger.Config.Debug(fmt.Sprintf("Username: %s", config.Username))
 
 	logger.Config.Debug("---- MISC CONFIG VARS ----")
 	logger.Config.Debug(fmt.Sprintf("Branch: %s", config.Branch))
