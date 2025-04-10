@@ -20,9 +20,6 @@ func StartWebServer(wg *sync.WaitGroup) {
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
 
 	// Unprotected auth routes
-	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./UIMod/login/login.html")
-	})
 	mux.HandleFunc("/login/login.js", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/javascript")
 		http.ServeFile(w, r, "./UIMod/login/login.js")
@@ -33,9 +30,11 @@ func StartWebServer(wg *sync.WaitGroup) {
 	})
 	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
 	mux.HandleFunc("/auth/logout", LogoutHandler)
+	mux.HandleFunc("/login", ServeLoginTemplate)
 	if config.IsFirstTimeSetup {
 		mux.HandleFunc("/api/v2/auth/setup/register", RegisterUserHandler) // user registration
 		mux.HandleFunc("/api/v2/auth/setup/finalize", SetupFinalizeHandler)
+		mux.HandleFunc("/setup", ServeLoginTemplate)
 	}
 
 	// Protected routes (wrapped with middleware)
@@ -73,6 +72,7 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/api/v2/custom-detections/delete/", detectionmgr.HandleDeleteCustomDetection)
 
 	// Authentication
+	protectedMux.HandleFunc("/changeuser", ServeLoginTemplate)
 	if !config.IsFirstTimeSetup {
 		protectedMux.HandleFunc("/api/v2/auth/adduser", RegisterUserHandler) // user registration and change password
 	}

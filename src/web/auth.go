@@ -10,8 +10,34 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"text/template"
 	"time"
 )
+
+func ServeLoginTemplate(w http.ResponseWriter, r *http.Request) {
+	type TemplateData struct {
+		IsFirstTimeSetup bool
+		Path             string
+	}
+
+	tmpl, err := template.ParseFiles("./UIMod/login/login.html")
+	if err != nil {
+		logger.Web.Error("Failed to parse login template: %v" + err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	data := TemplateData{
+		IsFirstTimeSetup: config.IsFirstTimeSetup,
+		Path:             r.URL.Path,
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+	if err := tmpl.Execute(w, data); err != nil {
+		logger.Web.Error("Failed to execute login template: %v" + err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+}
 
 // LoginHandler issues a JWT cookie
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
