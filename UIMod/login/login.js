@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }, 600);
                 } else if (mode === 'setup') {
-                    showNotification('User registered successfully!', 'success');
+                    showNotification('User registered successfully! Finalize setup to complete.', 'success');
                     document.getElementById('username').value = '';
                     document.getElementById('password').value = '';
                 } else { // changeuser

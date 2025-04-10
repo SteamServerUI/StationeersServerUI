@@ -94,6 +94,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !config.AuthEnabled {
+			if config.IsFirstTimeSetup {
+				http.Redirect(w, r, "/setup", http.StatusTemporaryRedirect)
+				return
+			}
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -243,7 +247,7 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{
 		"message":      "Setup finalized successfully",
-		"restart_hint": "Please restart the application to fully apply authentication settings",
+		"restart_hint": "You will be redirected to the login page...",
 	})
 	loader.ReloadConfig()
 }
