@@ -74,7 +74,7 @@ func StartWebServer(wg *sync.WaitGroup) {
 
 	// Authentication
 	if !config.IsFirstTimeSetup {
-		protectedMux.HandleFunc("/api/v2/auth/register", RegisterUserHandler) // user registration and change password
+		protectedMux.HandleFunc("/api/v2/auth/adduser", RegisterUserHandler) // user registration and change password
 	}
 
 	// Apply middleware only to protected routes

@@ -89,8 +89,6 @@ func PrintConfigDetails() {
 	logger.Config.Debug("---- AUTHENTICATION CONFIG VARS ----")
 	logger.Config.Debug(fmt.Sprintf("AuthTokenLifetime: %d", config.AuthTokenLifetime))
 	logger.Config.Debug(fmt.Sprintf("JwtKey: %s", config.JwtKey))
-	logger.Config.Debug(fmt.Sprintf("Password: %s", config.Password))
-	logger.Config.Debug(fmt.Sprintf("Username: %s", config.Username))
 
 	logger.Config.Debug("---- MISC CONFIG VARS ----")
 	logger.Config.Debug(fmt.Sprintf("Branch: %s", config.Branch))

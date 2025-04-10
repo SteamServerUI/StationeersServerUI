@@ -9,6 +9,7 @@ import (
 	"StationeersServerUI/src/security"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -66,7 +67,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 // AuthMiddleware protects routes with cookie-based JWT
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Check auth toggle (assumed in config later)
 		if !config.AuthEnabled {
 			next.ServeHTTP(w, r)
 			return
@@ -74,15 +74,28 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		cookie, err := r.Cookie("AuthToken")
 		if err != nil {
+			// Browser redirect check
+			accept := r.Header.Get("Accept")
+			if accept != "" && strings.Contains(accept, "text/html") {
+				http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
+				return
+			}
+			// API response
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusUnauthorized)
 			json.NewEncoder(w).Encode(map[string]string{"error": "Unauthorized - No token"})
 			return
 		}
 
-		// Validate JWT using security package
 		valid, err := security.ValidateJWT(cookie.Value)
 		if err != nil || !valid {
+			// Browser redirect check
+			accept := r.Header.Get("Accept")
+			if accept != "" && strings.Contains(accept, "text/html") {
+				http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
+				return
+			}
+			// API response
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusUnauthorized)
 			json.NewEncoder(w).Encode(map[string]string{"error": "Unauthorized - Invalid token"})
@@ -90,7 +103,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// Token valid, proceed
 		next.ServeHTTP(w, r)
 	})
 }
