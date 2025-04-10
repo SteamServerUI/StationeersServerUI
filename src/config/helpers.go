@@ -34,9 +34,9 @@ func getInt(jsonVal int, envKey string, defaultVal int) int {
 	return defaultVal
 }
 
-func getBool(jsonVal bool, envKey string, defaultVal bool) bool {
-	if jsonVal {
-		return true
+func getBool(jsonVal *bool, envKey string, defaultVal bool) bool {
+	if jsonVal != nil {
+		return *jsonVal
 	}
 	if envVal := os.Getenv(envKey); envVal != "" {
 		if val, err := strconv.ParseBool(envVal); err == nil {

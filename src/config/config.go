@@ -21,10 +21,10 @@ type JsonConfig struct {
 	ControlPanelChannelID   string            `json:"controlPanelChannelID"`
 	DiscordCharBufferSize   int               `json:"DiscordCharBufferSize"`
 	BlackListFilePath       string            `json:"blackListFilePath"`
-	IsDiscordEnabled        bool              `json:"isDiscordEnabled"`
+	IsDiscordEnabled        *bool             `json:"isDiscordEnabled"`
 	ErrorChannelID          string            `json:"errorChannelID"`
 	BackupKeepLastN         int               `json:"backupKeepLastN"`
-	IsCleanupEnabled        bool              `json:"isCleanupEnabled"`
+	IsCleanupEnabled        *bool             `json:"isCleanupEnabled"`
 	BackupKeepDailyFor      int               `json:"backupKeepDailyFor"`
 	BackupKeepWeeklyFor     int               `json:"backupKeepWeeklyFor"`
 	BackupKeepMonthlyFor    int               `json:"backupKeepMonthlyFor"`
@@ -39,28 +39,28 @@ type JsonConfig struct {
 	AdminPassword           string            `json:"AdminPassword"`
 	GamePort                string            `json:"GamePort"`
 	UpdatePort              string            `json:"UpdatePort"`
-	UPNPEnabled             bool              `json:"UPNPEnabled"`
-	AutoSave                bool              `json:"AutoSave"`
+	UPNPEnabled             *bool             `json:"UPNPEnabled"`
+	AutoSave                *bool             `json:"AutoSave"`
 	SaveInterval            string            `json:"SaveInterval"`
-	AutoPauseServer         bool              `json:"AutoPauseServer"`
+	AutoPauseServer         *bool             `json:"AutoPauseServer"`
 	LocalIpAddress          string            `json:"LocalIpAddress"`
-	StartLocalHost          bool              `json:"StartLocalHost"`
-	ServerVisible           bool              `json:"ServerVisible"`
-	UseSteamP2P             bool              `json:"UseSteamP2P"`
+	StartLocalHost          *bool             `json:"StartLocalHost"`
+	ServerVisible           *bool             `json:"ServerVisible"`
+	UseSteamP2P             *bool             `json:"UseSteamP2P"`
 	ExePath                 string            `json:"ExePath"`
 	AdditionalParams        string            `json:"AdditionalParams"`
 	Username                string            `json:"Username"`
 	Password                string            `json:"Password"`
 	Users                   map[string]string `json:"users"`       // Map of username to hashed password
-	AuthEnabled             bool              `json:"authEnabled"` // Toggle for enabling/disabling auth
+	AuthEnabled             *bool             `json:"authEnabled"` // Toggle for enabling/disabling auth
 	JwtKey                  string            `json:"JwtKey"`
 	AuthTokenLifetime       int               `json:"AuthTokenLifetime"`
-	Debug                   bool              `json:"Debug"`
-	CreateSSUILogFile       bool              `json:"CreateSSUILogFile"`
+	Debug                   *bool             `json:"Debug"`
+	CreateSSUILogFile       *bool             `json:"CreateSSUILogFile"`
 	LogLevel                int               `json:"LogLevel"`
-	IsUpdateEnabled         bool              `json:"IsUpdateEnabled"`
-	AllowPrereleaseUpdates  bool              `json:"AllowPrereleaseUpdates"`
-	AllowMajorUpdates       bool              `json:"AllowMajorUpdates"`
+	IsUpdateEnabled         *bool             `json:"IsUpdateEnabled"`
+	AllowPrereleaseUpdates  *bool             `json:"AllowPrereleaseUpdates"`
+	AllowMajorUpdates       *bool             `json:"AllowMajorUpdates"`
 }
 
 type CustomDetection struct {
@@ -72,7 +72,7 @@ type CustomDetection struct {
 }
 
 var (
-	Version                 = "5.0.9"
+	Version = "5.0.11"
 	Branch                  = "nightly-auth"
 	GameBranch              string
 	DiscordToken            string

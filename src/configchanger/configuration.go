@@ -69,11 +69,16 @@ func SaveConfigForm(w http.ResponseWriter, r *http.Request) {
 		}
 
 		field := v.Field(i)
-		switch field.Kind() {
+		fieldType := field.Type()
+
+		switch fieldType.Kind() {
 		case reflect.String:
 			field.SetString(formValue) // Set the value, even if it's empty to allow clearing the field
-		case reflect.Bool:
-			field.SetBool(formValue == "true")
+		case reflect.Ptr:
+			if fieldType.Elem().Kind() == reflect.Bool {
+				newBool := formValue == "true"       // Convert form value to bool
+				field.Set(reflect.ValueOf(&newBool)) // Set the pointer to the new bool
+			}
 		}
 	}
 
@@ -127,14 +132,18 @@ func SaveConfigRestful(w http.ResponseWriter, r *http.Request) {
 		}
 
 		field := v.Field(i)
-		switch field.Kind() {
+		fieldType := field.Type()
+
+		switch fieldType.Kind() {
 		case reflect.String:
 			if strValue, ok := value.(string); ok {
 				field.SetString(strValue)
 			}
-		case reflect.Bool:
-			if boolValue, ok := value.(bool); ok {
-				field.SetBool(boolValue)
+		case reflect.Ptr:
+			if fieldType.Elem().Kind() == reflect.Bool {
+				if boolValue, ok := value.(bool); ok {
+					field.Set(reflect.ValueOf(&boolValue)) // Set the pointer to the new bool
+				}
 			}
 		case reflect.Int:
 			switch v := value.(type) {

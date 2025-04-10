@@ -227,6 +227,7 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - Setup already finalized"})
 		return
 	}
+
 	//check if users map is nil or empty
 	if config.Users == nil || len(config.Users) == 0 {
 		w.Header().Set("Content-Type", "application/json")
@@ -244,8 +245,12 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Mark setup as complete and enable auth
 	config.IsFirstTimeSetup = false
-	newConfig.AuthEnabled = true
+	isTrue := true
+	newConfig.AuthEnabled = &isTrue // Set the pointer to true
+
+	// Save the updated config
 	err = configchanger.SaveConfig(newConfig)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -253,6 +258,7 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error - Failed to save config"})
 		return
 	}
+
 	logger.Web.Core("User Setup finalized successfully")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
