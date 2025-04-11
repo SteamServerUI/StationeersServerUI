@@ -63,6 +63,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Convert yes/no, true/false, 1/0 to boolean strings for config
+    function booleanToConfig(value) {
+        if (typeof value === 'string') {
+            value = value.trim().toLowerCase();
+            if (value === 'yes' || value === 'true' || value === '1') {
+                return "true";
+            } else if (value === 'no' || value === 'false' || value === '0') {
+                return "false";
+            }
+        }
+        return "false"; // Default to false if invalid input
+    }
+
     // Form submission
     const form = document.getElementById('loginForm');
     form.addEventListener('submit', async (e) => {
@@ -70,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const step = document.getElementById('step').value;
         const mode = document.getElementById('mode').value;
         const configField = document.getElementById('config-field').value;
-        const nextStep = document.getElementById('next-step').value;
+        let nextStep = document.getElementById('next-step').value;
 
         if (step === "welcome") {
             window.location.href = `/setup?step=${nextStep}`;
@@ -83,14 +96,50 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Handle branching based on Discord enabled/disabled
+        if (step === "discord_enabled") {
+            const userInput = document.getElementById('input-field').value.trim().toLowerCase();
+            nextStep = (userInput === 'yes' || userInput === 'true' || userInput === '1') 
+                ? 'discord_token' 
+                : 'network_config_choice'; // Skip Discord setup if not enabled
+        }
+        
+        // Handle branching based on network config choice
+        if (step === "network_config_choice") {
+            const userInput = document.getElementById('input-field').value.trim().toLowerCase();
+            nextStep = (userInput === 'yes' || userInput === 'true' || userInput === '1') 
+                ? 'game_port' 
+                : 'admin_account'; // Skip network config if not desired
+            
+            // No need to save this choice to config
+            if (nextStep === 'admin_account') {
+                // Skip directly without saving
+                window.location.href = `/setup?step=${nextStep}`;
+                return;
+            } else if (nextStep === 'game_port') {
+                // Also skip without saving but go to game port config
+                window.location.href = `/setup?step=${nextStep}`;
+                return;
+            }
+        }
+
         let url, body;
         
         // Handle setup steps
         if (configField && step !== "admin_account") {
             url = '/api/v2/saveconfig';
-            body = JSON.stringify({
-                [configField]: document.getElementById('input-field').value
-            });
+            
+            // Handle boolean conversion for yes/no fields
+            if (configField === "IsDiscordEnabled" || configField === "UPNPEnabled" || 
+                configField === "ServerVisible" || configField === "UseSteamP2P") {
+                body = JSON.stringify({
+                    [configField]: booleanToConfig(document.getElementById('input-field').value)
+                });
+            } else {
+                body = JSON.stringify({
+                    [configField]: document.getElementById('input-field').value
+                });
+            }
         } else if (step === "admin_account") { // User setup
             url = '/api/v2/auth/setup/register';
             body = JSON.stringify({
@@ -107,6 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             showPreloader();
+            // If we're on a step that doesn't need to save data
+            if (!url) {
+                hidePreloader();
+                window.location.href = `/setup?step=${nextStep}`;
+                return;
+            }
+
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -149,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (skipBtn) {
         skipBtn.addEventListener('click', () => {
             const step = document.getElementById('step').value;
-            const nextStep = document.getElementById('next-step').value;
+            let nextStep = document.getElementById('next-step').value;
             
             if (step === "welcome") {
                 window.location.href = '/';
@@ -161,6 +217,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 showNotification('Setup completed, Auth disabled!', 'success');
                 setTimeout(() => window.location.href = '/', 1000);
                 return;
+            }
+            
+            // Custom skip logic for branching steps
+            if (step === "discord_enabled") {
+                nextStep = "network_config_choice"; // Skip all Discord setup
+            } else if (step === "network_config_choice") {
+                nextStep = "admin_account"; // Skip all network config
             }
             
             window.location.href = `/setup?step=${nextStep}`;
