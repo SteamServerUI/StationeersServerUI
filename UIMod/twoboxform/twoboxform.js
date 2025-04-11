@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Form submission
-    const form = document.getElementById('loginForm');
+    const form = document.getElementById('two-box-form');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const step = document.getElementById('step').value;
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Handle branching based on Discord enabled/disabled
         if (step === "discord_enabled") {
-            const userInput = document.getElementById('input-field').value.trim().toLowerCase();
+            const userInput = document.getElementById('primary-field').value.trim().toLowerCase();
             nextStep = (userInput === 'yes' || userInput === 'true' || userInput === '1') 
                 ? 'discord_token' 
                 : 'network_config_choice'; // Skip Discord setup if not enabled
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Handle branching based on network config choice
         if (step === "network_config_choice") {
-            const userInput = document.getElementById('input-field').value.trim().toLowerCase();
+            const userInput = document.getElementById('primary-field').value.trim().toLowerCase();
             nextStep = (userInput === 'yes' || userInput === 'true' || userInput === '1') 
                 ? 'game_port' 
                 : 'admin_account'; // Skip network config if not desired
@@ -133,24 +133,24 @@ document.addEventListener('DOMContentLoaded', () => {
             if (configField === "IsDiscordEnabled" || configField === "UPNPEnabled" || 
                 configField === "ServerVisible" || configField === "UseSteamP2P") {
                 body = JSON.stringify({
-                    [configField]: booleanToConfig(document.getElementById('input-field').value)
+                    [configField]: booleanToConfig(document.getElementById('primary-field').value)
                 });
             } else {
                 body = JSON.stringify({
-                    [configField]: document.getElementById('input-field').value
+                    [configField]: document.getElementById('primary-field').value
                 });
             }
         } else if (step === "admin_account") { // User setup
             url = '/api/v2/auth/setup/register';
             body = JSON.stringify({
-                username: document.getElementById('input-field').value,
-                password: document.getElementById('password').value
+                username: document.getElementById('primary-field').value,
+                password: document.getElementById('secondary-field').value
             });
         } else { // Login or changeuser
             url = mode === 'changeuser' ? '/api/v2/auth/adduser' : '/auth/login';
             body = JSON.stringify({
-                username: document.getElementById('input-field').value,
-                password: document.getElementById('password').value
+                username: document.getElementById('primary-field').value,
+                password: document.getElementById('secondary-field').value
             });
         }
 

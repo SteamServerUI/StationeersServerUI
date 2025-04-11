@@ -49,7 +49,7 @@ func Install(wg *sync.WaitGroup) {
 
 func CheckAndDownloadUIMod() {
 	workingDir := "./UIMod/"
-	loginDir := "./UIMod/login/"
+	formDir := "./UIMod/twoboxform/"
 	detectionmanagerDir := "./UIMod/detectionmanager/"
 
 	// Set branch
@@ -71,9 +71,9 @@ func CheckAndDownloadUIMod() {
 		workingDir + "style.css":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/style.css", downloadBranch),
 		workingDir + "favicon.ico":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/favicon.ico", downloadBranch),
 		workingDir + "config-styles.css":              fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config-styles.css", downloadBranch),
-		loginDir + "login.css":                        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.css", downloadBranch),
-		loginDir + "login.js":                         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.js", downloadBranch),
-		loginDir + "login.html":                       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.html", downloadBranch),
+		formDir + "twoboxform.css":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.css", downloadBranch),
+		formDir + "twoboxform.js":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.js", downloadBranch),
+		formDir + "twoboxform.html":                   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.html", downloadBranch),
 		detectionmanagerDir + "detectionmanager.js":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.js", downloadBranch),
 		detectionmanagerDir + "detectionmanager.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.html", downloadBranch),
 		detectionmanagerDir + "detectionmanager.css":  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.css", downloadBranch),
@@ -84,7 +84,7 @@ func CheckAndDownloadUIMod() {
 		logger.Install.Warn("⚠️Folder ./UIMod does not exist. Creating it...")
 
 		// Create directories
-		for _, dir := range []string{workingDir, loginDir, detectionmanagerDir} {
+		for _, dir := range []string{workingDir, formDir, detectionmanagerDir} {
 			if _, err := os.Stat(dir); os.IsNotExist(err) {
 				err := os.MkdirAll(dir, os.ModePerm)
 				if err != nil {

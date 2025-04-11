@@ -50,7 +50,7 @@ body {
     z-index: -1;
 }
 
-.login-container {
+.two-box-form-container {
     width: 100%;
     max-width: 500px;
     background-color: #1b1b2f8f;
@@ -66,7 +66,7 @@ body {
     transition: all 0.5s ease;
 }
 
-.login-container:hover {
+.two-box-form-container:hover {
     transform: rotateX(0deg) scale(1.02);
     box-shadow: 0 25px 80px rgba(0, 255, 171, 0.5);
 }
@@ -139,7 +139,7 @@ input[type="password"]:focus {
     font-style: italic;
 }
 
-.login-button {
+.two-box-form-button {
     width: 100%;
     padding: 12px;
     background-color: rgba(0, 255, 171, 0.2);
@@ -153,14 +153,14 @@ input[type="password"]:focus {
     overflow: hidden;
 }
 
-.login-button:hover {
+.two-box-form-button:hover {
     background-color: var(--primary);
     color: #000;
     box-shadow: 0 0 30px var(--primary-glow);
     transform: translateY(-3px);
 }
 
-.login-button::before {
+.two-box-form-button::before {
     content: '';
     position: absolute;
     top: 0;
@@ -171,7 +171,7 @@ input[type="password"]:focus {
     transition: left 0.5s ease;
 }
 
-.login-button:hover::before {
+.two-box-form-button:hover::before {
     left: 100%;
 }
 
@@ -472,7 +472,7 @@ footer {
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
-    .login-container {
+    .two-box-form-container {
         width: 90%;
         padding: 20px;
         margin: 20px;

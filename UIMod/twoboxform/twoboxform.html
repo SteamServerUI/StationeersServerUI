@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.Title}}</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/login/login.css">
+    <link rel="stylesheet" href="/twoboxform/twoboxform.css">
 </head>
 <body>
     <div id="space-background"></div>
@@ -20,7 +20,7 @@
         </div>
     </div>
     
-    <main class="login-container">
+    <main class="two-box-form-container">
         <header>
             <h1>Stationeers Server UI</h1>
             <br/>
@@ -43,28 +43,28 @@
             </div>
             {{end}}
             
-            <form id="loginForm">
-                {{if ne .UsernameLabel ""}}
+            <form id="two-box-form">
+                {{if ne .PrimaryLabel ""}}
                 <div class="form-group">
-                    <label for="input-field">{{.UsernameLabel}}</label>
+                    <label for="primary-field">{{.PrimaryLabel}}</label>
                     <input 
                         type="text"
-                        id="input-field" 
-                        name="input-field" 
-                        placeholder="{{.UsernamePlaceholder}}"
+                        id="primary-field" 
+                        name="primary-field" 
+                        placeholder="{{.PrimaryPlaceholderText}}"
                         required
                     >
                 </div>
                 {{end}}
 
-                {{if ne .PasswordLabel ""}}
+                {{if ne .SecondaryLabel ""}}
                 <div class="form-group">
-                    <label for="password">{{.PasswordLabel}}</label>
+                    <label for="secondary-field">{{.SecondaryLabel}}</label>
                     <input 
-                        type="{{.PasswordType}}" 
-                        id="password" 
-                        name="password" 
-                        placeholder="{{.PasswordPlaceholder}}"
+                        type="{{.SecondaryLabelType}}" 
+                        id="secondary-field" 
+                        name="secondary-field" 
+                        placeholder="{{.SecondaryPlaceholderText}}"
                         required
                     >
                 </div>
@@ -74,7 +74,7 @@
                     <input 
                         type="submit" 
                         value="{{.SubmitButtonText}}" 
-                        class="login-button"
+                        class="two-box-form-button"
                     >
                     
                     {{if .ShowExtraButtons}}
@@ -95,6 +95,6 @@
         </footer>
     </main>
 
-    <script src="/login/login.js"></script>
+    <script src="/twoboxform/twoboxform.js"></script>
 </body>
 </html>

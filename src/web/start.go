@@ -20,17 +20,17 @@ func StartWebServer(wg *sync.WaitGroup) {
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
 
 	// Unprotected auth routes
-	mux.HandleFunc("/login/login.js", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/twoboxform/form.js", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/javascript")
-		http.ServeFile(w, r, "./UIMod/login/login.js")
+		http.ServeFile(w, r, "./UIMod/twoboxform/form.js")
 	})
-	mux.HandleFunc("/login/login.css", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/twoboxform/form.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/css")
-		http.ServeFile(w, r, "./UIMod/login/login.css")
+		http.ServeFile(w, r, "./UIMod/twoboxform/form.css")
 	})
 	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
 	mux.HandleFunc("/auth/logout", LogoutHandler)
-	mux.HandleFunc("/login", ServeLoginTemplate)
+	mux.HandleFunc("/login", ServeTwoBoxFormTemplate)
 
 	// Protected routes (wrapped with middleware)
 	protectedMux := http.NewServeMux()
@@ -67,11 +67,11 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/api/v2/custom-detections/delete/", detectionmgr.HandleDeleteCustomDetection)
 
 	// Authentication
-	protectedMux.HandleFunc("/changeuser", ServeLoginTemplate)
+	protectedMux.HandleFunc("/changeuser", ServeTwoBoxFormTemplate)
 	protectedMux.HandleFunc("/api/v2/auth/adduser", RegisterUserHandler) // user registration and change password
 
 	// Setup
-	protectedMux.HandleFunc("/setup", ServeLoginTemplate)
+	protectedMux.HandleFunc("/setup", ServeTwoBoxFormTemplate)
 	protectedMux.HandleFunc("/api/v2/auth/setup/register", RegisterUserHandler) // user registration
 	protectedMux.HandleFunc("/api/v2/auth/setup/finalize", SetupFinalizeHandler)
 
