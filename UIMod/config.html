@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Server Configuration</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/config-styles.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
 
@@ -19,161 +20,195 @@
 
         <div class="tab-container">
             <div class="tab-buttons">
-                <button class="tab-button active" onclick="showTab('server-config-tab')">Server Config</button>
-                <button class="tab-button" onclick="showTab('discord-config-tab')">Discord Integration</button>
-                <button class="tab-button" onclick="window.location.href = '/detectionmanager'">Detection Manager</button>
+                <button class="tab-button active" onclick="showTab('server-config-tab')">
+                    <span class="icon server-icon"></span>Server Config
+                </button>
+                <button class="tab-button" onclick="showTab('discord-config-tab')">
+                    <span class="icon discord-icon"></span>Discord Integration
+                </button>
+                <button class="tab-button" onclick="window.location.href = '/detectionmanager'">
+                    <span class="icon detection-icon"></span>Detection Manager
+                </button>
             </div>
         </div>
 
         <div id="server-config-tab" class="tab-content active">
             <div class="grid-container">
-                <form id="server-config-form" action="/saveconfigasjson" method="post">
-                    <div class="channel-grid">
-                        <div class="form-group">
-                            <label for="ServerName">Server Name:</label>
-                            <input type="text" id="ServerName" name="ServerName" value="{{ServerName}}">
-                            <div class="input-info">Name displayed in server list</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="SaveInfo">Save File Name:</label>
-                            <input type="text" id="SaveInfo" name="SaveInfo" value="{{SaveInfo}}"
-                                pattern="^[A-Z].*(\s[A-Z].*)?$" required>
-                            <div class="input-info">Name of save folder. Must be capitalized. Optially, provide the
-                                World type to generate. (MyMoonMap Moon)</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="ServerMaxPlayers">Max Players:</label>
-                            <input type="text" id="ServerMaxPlayers" name="ServerMaxPlayers"
-                                value="{{ServerMaxPlayers}}" pattern="^\S*$" required>
-                            <div class="input-info">Maximum number of players allowed</div>
-                        </div>
-
-                        <div class="form-group password-field">
-                            <label for="ServerPassword">Server Password:</label>
-                            <input type="text" id="ServerPassword" name="ServerPassword" value="{{ServerPassword}}"
-                                pattern="^\S*$">
-                            <div class="input-info">Leave empty for no password</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="ServerAuthSecret">Server Auth Secret:</label>
-                            <input type="text" id="ServerAuthSecret" name="ServerAuthSecret"
-                                value="{{ServerAuthSecret}}">
-                            <div class="input-info">Authentication secret for the server (optional)</div>
-                        </div>
-
-                        <div class="form-group password-field">
-                            <label for="AdminPassword">Admin Password:</label>
-                            <input type="text" id="AdminPassword" name="AdminPassword" value="{{AdminPassword}}"
-                                pattern="^\S*$">
-                            <div class="input-info">Currently not functioning in recent Stationeers builds</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="GamePort">Game Port:</label>
-                            <input type="text" id="GamePort" name="GamePort" value="{{GamePort}}" pattern="^\S*$"
-                                required>
-                            <div class="input-info">Default: 27500</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="UpdatePort">Update Port:</label>
-                            <input type="text" id="UpdatePort" name="UpdatePort" value="{{UpdatePort}}" pattern="^\S*$"
-                                required>
-                            <div class="input-info">Default: 27015</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="UPNPEnabled">UPNP Enabled:</label>
-                            <select id="UPNPEnabled" name="UPNPEnabled" required>
-                                <option value="true" {{UPNPEnabledTrueSelected}}>TRUE</option>
-                                <option value="false" {{UPNPEnabledFalseSelected}}>FALSE</option>
-                            </select>
-                            <div class="input-info">Enable automatic UPNP port forwarding</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="AutoSave">Auto Save:</label>
-                            <select id="AutoSave" name="AutoSave" required>
-                                <option value="true" {{AutoSaveTrueSelected}}>TRUE</option>
-                                <option value="false" {{AutoSaveFalseSelected}}>FALSE</option>
-                            </select>
-                            <div class="input-info">Set to TRUE to enable automatic saving</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="SaveInterval">Save Interval:</label>
-                            <input type="text" id="SaveInterval" name="SaveInterval" value="{{SaveInterval}}"
-                                pattern="^\S*$" required>
-                            <div class="input-info">Time in seconds between saves</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="AutoPauseServer">Auto Pause Server:</label>
-                            <select id="AutoPauseServer" name="AutoPauseServer" required>
-                                <option value="true" {{AutoPauseServerTrueSelected}}>TRUE</option>
-                                <option value="false" {{AutoPauseServerFalseSelected}}>FALSE</option>
-                            </select>
-                            <div class="input-info">Automatically pause server when no players are connected</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="LocalIpAddress">Local IP Address:</label>
-                            <input type="text" id="LocalIpAddress" name="LocalIpAddress" value="{{LocalIpAddress}}"
-                                pattern="^\S*$" required>
-                            <div class="input-info">IP address to bind to</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="StartLocalHost">Start Local Host:</label>
-                            <select id="StartLocalHost" name="StartLocalHost" required>
-                                <option value="true" {{StartLocalHostTrueSelected}}>TRUE</option>
-                                <option value="false" {{StartLocalHostFalseSelected}}>FALSE</option>
-                            </select>
-                            <div class="input-info">Set to TRUE to listen only on local network</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="ServerVisible">Server Visible:</label>
-                            <select id="ServerVisible" name="ServerVisible" required>
-                                <option value="true" {{ServerVisibleTrueSelected}}>TRUE</option>
-                                <option value="false" {{ServerVisibleFalseSelected}}>FALSE</option>
-                            </select>
-                            <div class="input-info">Set to TRUE to list server publicly</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="UseSteamP2P">Use Steam P2P:</label>
-                            <select id="UseSteamP2P" name="UseSteamP2P" required>
-                                <option value="true" {{UseSteamP2PTrueSelected}}>TRUE</option>
-                                <option value="false" {{UseSteamP2PFalseSelected}}>FALSE</option>
-                            </select>
-                            <div class="input-info">Enable Steam Peer-to-Peer networking</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="ExePath">Server Executable Path:</label>
-                            <input type="text" id="ExePath" name="ExePath" value="{{ExePath}}" readonly>
-                            <div class="input-info">System path to server executable</div>
-                            <div class="input-info">Not editable from the UI for security reasons, but you can edit it
-                                manually in the config.json file.</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="AdditionalParams">Additional Parameters:</label>
-                            <input type="text" id="AdditionalParams" name="AdditionalParams"
-                                value="{{AdditionalParams}}">
-                            <div class="input-info">Format: CustomParam1 Value1 CustomParam2 Value2</div>
-                        </div>
+                <div class="wizard-button-container">
+                    <button class="wizard-button" onclick="window.location.href = '/setup'">
+                        <span class="wizard-icon"></span>
+                        <span class="wizard-text">Configuration Wizard</span>
+                    </button>
+                </div>
+                <div class="config-sections">
+                    <div class="section-navigation">
+                        <button class="section-nav-button active" data-section="basic-settings">Basic Settings</button>
+                        <button class="section-nav-button" data-section="network-settings">Network Settings</button>
+                        <button class="section-nav-button" data-section="advanced-settings">Advanced Settings</button>
                     </div>
-                    <div class="form-actions">
-                        <button type="button" class="back-button" onclick="window.location.href = '/'"></button>
-                        <button type="button" class="save-button"
-                            onclick="document.getElementById('server-config-form').submit()"></button>
-                    </div>
-                </form>
+                
+                    <form id="server-config-form" action="/saveconfigasjson" method="post">
+                        <div id="basic-settings" class="config-section active">
+                            <h3 class="section-title">Basic Server Settings</h3>
+                            <div class="channel-grid">
+                                <div class="form-group">
+                                    <label for="ServerName">Server Name:</label>
+                                    <input type="text" id="ServerName" name="ServerName" value="{{ServerName}}">
+                                    <div class="input-info">Name displayed in server list</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="SaveInfo">Save File Name:</label>
+                                    <input type="text" id="SaveInfo" name="SaveInfo" value="{{SaveInfo}}"
+                                        pattern="^[A-Z].*(\s[A-Z].*)?$" required>
+                                    <div class="input-info">Name of save folder. Must be capitalized. Optionally, provide the
+                                        World type to generate. (MyMoonMap Moon)</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ServerMaxPlayers">Max Players:</label>
+                                    <input type="text" id="ServerMaxPlayers" name="ServerMaxPlayers"
+                                        value="{{ServerMaxPlayers}}" pattern="^\S*$" required>
+                                    <div class="input-info">Maximum number of players allowed</div>
+                                </div>
+
+                                <div class="form-group password-field">
+                                    <label for="ServerPassword">Server Password:</label>
+                                    <input type="text" id="ServerPassword" name="ServerPassword" value="{{ServerPassword}}"
+                                        pattern="^\S*$">
+                                    <div class="input-info">Leave empty for no password</div>
+                                </div>
+
+                                <div class="form-group password-field">
+                                    <label for="AdminPassword">Admin Password:</label>
+                                    <input type="text" id="AdminPassword" name="AdminPassword" value="{{AdminPassword}}"
+                                        pattern="^\S*$">
+                                    <div class="input-info">Server Admin Password</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="AutoSave">Auto Save:</label>
+                                    <select id="AutoSave" name="AutoSave" required>
+                                        <option value="true" {{AutoSaveTrueSelected}}>TRUE</option>
+                                        <option value="false" {{AutoSaveFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">Set to TRUE to enable automatic saving</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="SaveInterval">Save Interval:</label>
+                                    <input type="text" id="SaveInterval" name="SaveInterval" value="{{SaveInterval}}"
+                                        pattern="^\S*$" required>
+                                    <div class="input-info">Time in seconds between saves</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="AutoPauseServer">Auto Pause Server:</label>
+                                    <select id="AutoPauseServer" name="AutoPauseServer" required>
+                                        <option value="true" {{AutoPauseServerTrueSelected}}>TRUE</option>
+                                        <option value="false" {{AutoPauseServerFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">Automatically pause server when no players are connected</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="network-settings" class="config-section">
+                            <h3 class="section-title">Network Configuration</h3>
+                            <div class="channel-grid">
+                                <div class="form-group">
+                                    <label for="GamePort">Game Port:</label>
+                                    <input type="text" id="GamePort" name="GamePort" value="{{GamePort}}" pattern="^\S*$"
+                                        required>
+                                    <div class="input-info">Default: 27016</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="UpdatePort">Update Port:</label>
+                                    <input type="text" id="UpdatePort" name="UpdatePort" value="{{UpdatePort}}" pattern="^\S*$"
+                                        required>
+                                    <div class="input-info">Default: 27017</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="UPNPEnabled">UPNP Enabled:</label>
+                                    <select id="UPNPEnabled" name="UPNPEnabled" required>
+                                        <option value="true" {{UPNPEnabledTrueSelected}}>TRUE</option>
+                                        <option value="false" {{UPNPEnabledFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">Enable automatic UPNP port forwarding</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="LocalIpAddress">Local IP Address:</label>
+                                    <input type="text" id="LocalIpAddress" name="LocalIpAddress" value="{{LocalIpAddress}}"
+                                        pattern="^\S*$" required>
+                                    <div class="input-info">IP address to bind to</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="StartLocalHost">Start Local Host:</label>
+                                    <select id="StartLocalHost" name="StartLocalHost" required>
+                                        <option value="true" {{StartLocalHostTrueSelected}}>TRUE</option>
+                                        <option value="false" {{StartLocalHostFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">Set to TRUE to listen only on local network</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ServerVisible">Server Visible:</label>
+                                    <select id="ServerVisible" name="ServerVisible" required>
+                                        <option value="true" {{ServerVisibleTrueSelected}}>TRUE</option>
+                                        <option value="false" {{ServerVisibleFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">Set to TRUE to list server publicly</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="UseSteamP2P">Use Steam P2P:</label>
+                                    <select id="UseSteamP2P" name="UseSteamP2P" required>
+                                        <option value="true" {{UseSteamP2PTrueSelected}}>TRUE</option>
+                                        <option value="false" {{UseSteamP2PFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">Enable Steam Peer-to-Peer networking</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="advanced-settings" class="config-section">
+                            <h3 class="section-title">Advanced Configuration</h3>
+                            <div class="channel-grid">
+                                <div class="form-group">
+                                    <label for="ServerAuthSecret">Server Auth Secret:</label>
+                                    <input type="text" id="ServerAuthSecret" name="ServerAuthSecret"
+                                        value="{{ServerAuthSecret}}">
+                                    <div class="input-info">Authentication secret for the server (optional)</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ExePath">Server Executable Path:</label>
+                                    <input type="text" id="ExePath" name="ExePath" value="{{ExePath}}" readonly>
+                                    <div class="input-info">System path to server executable</div>
+                                    <div class="input-info">Not editable from the UI for security reasons, but you can edit it
+                                        manually in the config.json file.</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="AdditionalParams">Additional Parameters:</label>
+                                    <input type="text" id="AdditionalParams" name="AdditionalParams"
+                                        value="{{AdditionalParams}}">
+                                    <div class="input-info">Format: CustomParam1 Value1 CustomParam2 Value2</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="back-button" onclick="window.location.href = '/'"></button>
+                            <button type="button" class="save-button"
+                                onclick="document.getElementById('server-config-form').submit()"></button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -269,8 +304,6 @@
                         target="_blank">GitHub repository</a></p>
             </div>
         </div>
-
-
     </main>
     <footer>
         <div class="copyright">Copyright &copy; 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a> Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.</div>
@@ -306,6 +339,28 @@
         if (document.getElementById('isDiscordEnabled').value === 'false') {
             document.querySelector('.discord-container').classList.add('disabled');
         }
+
+        // Section navigation
+        document.querySelectorAll('.section-nav-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Hide all sections
+                document.querySelectorAll('.config-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Remove active class from all buttons
+                document.querySelectorAll('.section-nav-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Show the selected section
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Add active class to the clicked button
+                this.classList.add('active');
+            });
+        });
     </script>
 </body>
 
