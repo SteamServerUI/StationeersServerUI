@@ -42,13 +42,18 @@
                 </div>
                 <div class="config-sections">
                     <div class="section-navigation">
-                        <button class="section-nav-button active" data-section="basic-settings">Basic Settings</button>
+                        <button class="section-nav-button" data-section="basic-settings">Basic Settings</button>
                         <button class="section-nav-button" data-section="network-settings">Network Settings</button>
                         <button class="section-nav-button" data-section="advanced-settings">Advanced Settings</button>
                     </div>
                 
                     <form id="server-config-form" action="/saveconfigasjson" method="post">
-                        <div id="basic-settings" class="config-section active">
+                        <div id="select-prompt" style="text-align: center; margin: 30px 0; color: var(--primary); font-family: 'Share Tech Mono', monospace;">
+                            <h3>Please select a configuration section above</h3>
+                            <p>Alternatively, use the Configuration Wizard to configure the server.</p>
+                        </div>
+                        
+                        <div id="basic-settings" class="config-section">
                             <h3 class="section-title">Basic Server Settings</h3>
                             <div class="channel-grid">
                                 <div class="form-group">
@@ -347,6 +352,9 @@
                 document.querySelectorAll('.config-section').forEach(section => {
                     section.classList.remove('active');
                 });
+                
+                // Hide the prompt message when a section is selected
+                document.getElementById('select-prompt').style.display = 'none';
                 
                 // Remove active class from all buttons
                 document.querySelectorAll('.section-nav-button').forEach(btn => {
