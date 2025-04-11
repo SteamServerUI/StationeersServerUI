@@ -18,19 +18,22 @@ var setupReminderCount = 0 // to limit the number of setup reminders shown to th
 
 func ServeLoginTemplate(w http.ResponseWriter, r *http.Request) {
 	type TemplateData struct {
-		IsFirstTimeSetup bool
-		Path             string
-		Title            string
-		HeaderTitle      string
-		StepMessage      string
-		UsernameLabel    string // Reused as generic label for steps 1-4, then username for step 5
-		PasswordLabel    string // Only used in step 5
-		PasswordType     string
-		SubmitButtonText string
-		Mode             string
-		ShowExtraButtons bool
-		FooterText       string
-		Step             string // New field for step tracking
+		IsFirstTimeSetup    bool
+		Path                string
+		Title               string
+		HeaderTitle         string
+		StepMessage         string
+		UsernameLabel       string
+		PasswordLabel       string
+		PasswordType        string
+		SubmitButtonText    string
+		SkipButtonText      string
+		Mode                string
+		ShowExtraButtons    bool
+		FooterText          string
+		Step                string
+		UsernamePlaceholder string
+		PasswordPlaceholder string
 	}
 
 	tmpl, err := template.ParseFiles("./UIMod/login/login.html")
@@ -43,7 +46,7 @@ func ServeLoginTemplate(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	step := r.URL.Query().Get("step")
 	if step == "" && config.IsFirstTimeSetup {
-		step = "1" // Start at step 1 for first-time setup
+		step = "welcome" // Start with welcome page for first-time setup
 	}
 
 	data := TemplateData{
@@ -58,69 +61,92 @@ func ServeLoginTemplate(w http.ResponseWriter, r *http.Request) {
 		data.Mode = "setup"
 		data.ShowExtraButtons = true
 		switch step {
-		case "1":
-			data.Title = "Stationeers Server UI - Setup (1/6)"
-			data.HeaderTitle = "Server Setup"
-			data.StepMessage = "Give your server a name (e.g., ‘My Cool Server’)."
-			data.UsernameLabel = "Server Name"
-			data.PasswordLabel = "" // Hide password field
-			data.PasswordType = "hidden"
-			data.SubmitButtonText = "Save"
-		case "2":
-			data.Title = "Stationeers Server UI - Setup (2/6)"
-			data.HeaderTitle = "Server Setup"
-			data.StepMessage = "Set a save identifier (e.g., ‘world1’)."
-			data.UsernameLabel = "Save Identifier"
-			data.PasswordLabel = ""
-			data.PasswordType = "hidden"
-			data.SubmitButtonText = "Save"
-		case "3":
-			data.Title = "Stationeers Server UI - Setup (3/6)"
-			data.HeaderTitle = "Server Setup"
-			data.StepMessage = "How many players? (e.g., 2-20)"
-			data.UsernameLabel = "Max Players"
-			data.PasswordLabel = ""
-			data.PasswordType = "hidden"
-			data.SubmitButtonText = "Save"
-		case "4":
-			data.Title = "Stationeers Server UI - Setup (4/6)"
-			data.HeaderTitle = "Server Setup"
-			data.StepMessage = "Set a server password (leave blank for public)."
-			data.UsernameLabel = "Server Password"
-			data.PasswordLabel = ""
-			data.PasswordType = "hidden"
-			data.SubmitButtonText = "Save"
-		case "5":
-			data.Title = "Stationeers Server UI - Setup (5/6)"
-			data.HeaderTitle = "Admin Setup"
-			data.StepMessage = "Set up your admin account."
-			data.UsernameLabel = "New Username"
-			data.PasswordLabel = "New Password"
-			data.PasswordType = "password"
-			data.SubmitButtonText = "Save"
-		case "6":
-			data.Title = "Stationeers Server UI - Setup (6/6)"
-			data.HeaderTitle = "Confirm Setup"
-			data.StepMessage = "Review your setup below. Ready to finalize?"
-			data.UsernameLabel = "" // Hide inputs, show summary in JS
-			data.PasswordLabel = ""
-			data.PasswordType = "hidden"
-			data.SubmitButtonText = "Finalize Setup"
-		default:
-			data.Title = "Stationeers Server UI - Setup"
-			data.HeaderTitle = "Welcome"
-			data.StepMessage = "Let’s set up your server and admin account!"
+		case "welcome":
+			data.Title = "Stationeers Server UI"
+			data.HeaderTitle = ""
+			data.StepMessage = ""
 			data.UsernameLabel = ""
 			data.PasswordLabel = ""
 			data.PasswordType = "hidden"
 			data.SubmitButtonText = "Start Setup"
-			data.Step = "0"
+			data.SkipButtonText = "Skip Setup"
+		case "1":
+			data.Title = "Stationeers Server UI"
+			data.HeaderTitle = "Setup (1/5)"
+			data.StepMessage = "Give your server a name like 'Space Station 13'"
+			data.UsernamePlaceholder = "My Stationeers Server with UI"
+			data.UsernameLabel = "Server Name"
+			data.PasswordLabel = ""
+			data.PasswordType = "hidden"
+			data.SubmitButtonText = "Save & Continue"
+			data.SkipButtonText = "Skip"
+		case "2":
+			data.Title = "Stationeers Server UI"
+			data.HeaderTitle = "Setup (2/5)"
+			data.StepMessage = "Set a save identifier like 'SpaceStation13 Moon'. Capitalitze the first letter of each word. Possible World types can be found in the Stationeers Wiki or the Stationeers Server UI GitHub Wiki. "
+			data.UsernamePlaceholder = "Requires a SaveName, accepts optional WorldType"
+			data.UsernameLabel = "Save Identifier"
+			data.PasswordLabel = ""
+			data.PasswordType = "hidden"
+			data.SubmitButtonText = "Save & Continue"
+			data.SkipButtonText = "Skip"
+		case "3":
+			data.Title = "Stationeers Server UI"
+			data.HeaderTitle = "Setup (3/5)"
+			data.StepMessage = "Choose the maximum number of players that can connect to the server."
+			data.UsernamePlaceholder = "8"
+			data.UsernameLabel = "Max Players"
+			data.PasswordLabel = ""
+			data.PasswordType = "hidden"
+			data.SubmitButtonText = "Save & Continue"
+			data.SkipButtonText = "Skip"
+		case "4":
+			data.Title = "Stationeers Server UI"
+			data.HeaderTitle = "Setup (4/5)"
+			data.StepMessage = "Set a gameserver password or skip this step."
+			data.UsernamePlaceholder = "Server Password"
+			data.UsernameLabel = "Server Password"
+			data.PasswordLabel = ""
+			data.PasswordType = "hidden"
+			data.SubmitButtonText = "Save & Continue"
+			data.SkipButtonText = "Skip"
+		case "5":
+			data.Title = "Stationeers Server UI"
+			data.HeaderTitle = "Setup (5/5)"
+			data.StepMessage = "Set up your admin account."
+			data.UsernamePlaceholder = "Username"
+			data.UsernameLabel = "Username"
+			data.PasswordLabel = "Password"
+			data.PasswordPlaceholder = "Password"
+			data.PasswordType = "password"
+			data.SubmitButtonText = "Save & Continue"
+			data.SkipButtonText = "Skip Authentication"
+		case "finalize":
+			data.Title = "Stationeers Server UI - Finalize Setup"
+			data.HeaderTitle = ""
+			data.StepMessage = "Ready to finalize?"
+			data.UsernameLabel = ""
+			data.PasswordLabel = ""
+			data.PasswordType = "hidden"
+			data.SubmitButtonText = "Return to Setup"
+			data.SkipButtonText = "Skip Authentication"
+		default:
+			// Redirect to welcome page if step is invalid
+			data.Title = "Stationeers Server UI"
+			data.HeaderTitle = ""
+			data.StepMessage = ""
+			data.UsernameLabel = ""
+			data.PasswordLabel = ""
+			data.PasswordType = "hidden"
+			data.SubmitButtonText = "Start Setup"
+			data.Step = "welcome"
 		}
 	case path == "/changeuser":
 		data.Title = "Stationeers Server UI - Manage Users"
 		data.HeaderTitle = "Manage Users"
 		data.UsernameLabel = "Username to Add/Update"
 		data.PasswordLabel = "New Password"
+		data.PasswordPlaceholder = "Password"
 		data.PasswordType = "password"
 		data.SubmitButtonText = "Add/Update User"
 		data.Mode = "changeuser"
@@ -130,6 +156,8 @@ func ServeLoginTemplate(w http.ResponseWriter, r *http.Request) {
 		data.HeaderTitle = "Login"
 		data.UsernameLabel = "Username"
 		data.PasswordLabel = "Password"
+		data.UsernamePlaceholder = "Enter Username"
+		data.PasswordPlaceholder = "Enter Password"
 		data.PasswordType = "password"
 		data.SubmitButtonText = "Login"
 		data.Mode = "login"

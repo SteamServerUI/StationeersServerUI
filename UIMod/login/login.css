@@ -251,6 +251,15 @@ input[type="password"]:focus {
     left: 100%;
 }
 
+.step-message {
+    font-size: 1.1rem;
+    margin-top: 5px;
+    margin-bottom: 25px;
+    font-style: italic;
+    text-align: center;
+    text-wrap: pretty;
+}
+
 footer {
     text-align: center;
     margin-top: 30px;

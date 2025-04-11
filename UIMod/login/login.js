@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createPlanet(planetContainer, 30, 1250, 60, 'rgba(50, 150, 250, 0.6)');
     createPlanet(planetContainer, 70, 350, 30, 'rgba(200, 150, 200, 0.7)');
 
-    // Notification function (unchanged)
+    // Notification function
     function showNotification(message, type = 'error') {
         const existingNotification = document.querySelector('.notification');
         if (existingNotification) existingNotification.remove();
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
 
-    // Preloader functions (unchanged)
+    // Preloader functions
     function showPreloader() {
         document.getElementById('preloader').classList.add('show');
     }
@@ -70,24 +70,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const step = document.getElementById('step').value;
         const mode = document.getElementById('mode').value;
 
-        if (step === "0") { // Welcome step
+        if (step === "welcome") {
             window.location.href = '/setup?step=1';
             return;
         }
 
-        let url, body;
-        if (step === "5") { // User setup
+        if (step === "finalize") {
+            // Return to first step of setup
+            window.location.href = '/setup?step=1';
+            return;
+        }
+
+        let url, body, nextStep;
+        
+        // Handle setup steps
+        if (step >= "1" && step <= "4") {
+            url = '/api/v2/saveconfig';
+            const key = ["ServerName", "SaveInfo", "ServerMaxPlayers", "ServerPassword"][parseInt(step) - 1];
+            body = JSON.stringify({
+                [key]: document.getElementById('input-field').value
+            });
+            nextStep = parseInt(step) + 1;
+        } else if (step === "5") { // User setup
             url = '/api/v2/auth/setup/register';
             body = JSON.stringify({
                 username: document.getElementById('input-field').value,
                 password: document.getElementById('password').value
             });
-        } else if (step >= "1" && step <= "4") { // Config steps
-            url = '/api/v2/saveconfig';
-            const key = ["ServerName", "SaveInfo", "ServerMaxPlayers", "ServerPassword"][step - 1];
-            body = JSON.stringify({
-                [key]: document.getElementById('input-field').value
-            });
+            nextStep = "finalize";
         } else { // Login or changeuser
             url = mode === 'changeuser' ? '/api/v2/auth/adduser' : '/auth/login';
             body = JSON.stringify({
@@ -97,87 +107,96 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
+            showPreloader();
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: body
             });
             const data = await response.json();
+            
             if (response.ok) {
-                if (step === "5") {
-                    showNotification('Admin account saved!', 'success');
-                    showNextStepButton();
-                } else if (step >= "1" && step <= "4") {
-                    showNotification('Config saved!', 'success');
-                    showNextStepButton();
+                if (step >= "1" && step <= "5") {
+                    hidePreloader();
+                    showNotification(step === "5" ? 'Admin account saved!' : 'Config saved!', 'success');
+                    setTimeout(() => {
+                        window.location.href = `/setup?step=${nextStep}`;
+                    }, 800);
                 } else if (mode === 'login') {
                     showNotification('Login Successful!', 'success');
-                    showPreloader();
-                    const preloadSuccess = await preloadNextPage();
+                    await preloadNextPage();
                     setTimeout(() => {
                         hidePreloader();
                         window.location.href = '/';
                     }, 600);
                 } else { // changeuser
+                    hidePreloader();
                     showNotification(data.message || 'User updated!', 'success');
                     form.reset();
                 }
             } else {
+                hidePreloader();
                 showNotification(data.error || 'Action failed!', 'error');
             }
         } catch (error) {
+            hidePreloader();
             console.error('Error:', error);
             showNotification('Something went wrong!', 'error');
         }
     });
-
-    // Finalize button
-    const finalizeBtn = document.getElementById('finalize-btn');
-    if (finalizeBtn) {
-        finalizeBtn.addEventListener('click', async () => {
-            try {
-                const finalizeResponse = await fetch('/api/v2/auth/setup/finalize', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const data = await finalizeResponse.json();
-                if (finalizeResponse.ok) {
-                    showNotification(`${data.message}\n${data.restart_hint}`, 'success');
-                    setTimeout(() => window.location.href = '/login', 2000);
-                } else {
-                    showNotification(data.error || 'Finalize failed!', 'error');
-                }
-            } catch (error) {
-                console.error('Finalize error:', error);
-                showNotification('Error finalizing setup!', 'error');
-            }
-        });
-    }
 
     // Skip button
     const skipBtn = document.getElementById('skip-btn');
     if (skipBtn) {
         skipBtn.addEventListener('click', () => {
             const step = document.getElementById('step').value;
-            const nextStep = parseInt(step) + 1;
-            if (nextStep > 6) {
-                showNotification('Setup skipped!', 'success');
-                setTimeout(() => window.location.href = '/', 1000);
-            } else {
-                window.location.href = `/setup?step=${nextStep}`;
+            
+            if (step === "welcome") {
+                window.location.href = '/';
+                return;
             }
+            
+            let nextStep;
+            if (step === "finalize") {
+                // Go to login page when skipping from finalize
+                showNotification('Setup completed, Auth disabled!', 'success');
+                setTimeout(() => window.location.href = '/', 1000);
+                return;
+            } else {
+                nextStep = parseInt(step) + 1;
+                if (nextStep > 5) {
+                    nextStep = "finalize";
+                }
+            }
+            
+            window.location.href = `/setup?step=${nextStep}`;
         });
     }
 
-    // Show Next Step button
-    function showNextStepButton() {
-        const nextBtn = document.getElementById('next-btn');
-        if (nextBtn) {
-            nextBtn.style.display = 'block';
-            nextBtn.onclick = () => {
-                const step = parseInt(document.getElementById('step').value);
-                window.location.href = `/setup?step=${step + 1}`;
-            };
+    // Finalize button - now appears on the finalize page
+    document.addEventListener('click', async (e) => {
+        if (e.target && e.target.id === 'finalize-btn') {
+            try {
+                showPreloader();
+                const finalizeResponse = await fetch('/api/v2/auth/setup/finalize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await finalizeResponse.json();
+                
+                if (finalizeResponse.ok) {
+                    hidePreloader();
+                    showNotification(`${data.message}\n${data.restart_hint}`, 'success');
+                    setTimeout(() => window.location.href = '/login', 2000);
+                } else {
+                    hidePreloader();
+                    showNotification(data.error || 'Finalize failed!', 'error');
+                }
+            } catch (error) {
+                hidePreloader();
+                console.error('Finalize error:', error);
+                showNotification('Error finalizing setup!', 'error');
+            }
         }
-    }
+    });
 });
