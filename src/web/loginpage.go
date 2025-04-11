@@ -54,7 +54,7 @@ func ServeLoginTemplate(w http.ResponseWriter, r *http.Request) {
 
 	path := r.URL.Path
 	stepID := r.URL.Query().Get("step")
-	if stepID == "" && config.IsFirstTimeSetup {
+	if stepID == "" {
 		stepID = "welcome" // Start with welcome page for first-time setup
 	}
 
@@ -406,7 +406,7 @@ func ServeLoginTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch {
-	case config.IsFirstTimeSetup && (path == "/setup" || path == "/"):
+	case path == "/setup":
 		data.Mode = "setup"
 		data.ShowExtraButtons = true
 
