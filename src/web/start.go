@@ -31,11 +31,6 @@ func StartWebServer(wg *sync.WaitGroup) {
 	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
 	mux.HandleFunc("/auth/logout", LogoutHandler)
 	mux.HandleFunc("/login", ServeLoginTemplate)
-	if config.IsFirstTimeSetup {
-		mux.HandleFunc("/api/v2/auth/setup/register", RegisterUserHandler) // user registration
-		mux.HandleFunc("/api/v2/auth/setup/finalize", SetupFinalizeHandler)
-		mux.HandleFunc("/setup", ServeLoginTemplate)
-	}
 
 	// Protected routes (wrapped with middleware)
 	protectedMux := http.NewServeMux()
@@ -73,9 +68,12 @@ func StartWebServer(wg *sync.WaitGroup) {
 
 	// Authentication
 	protectedMux.HandleFunc("/changeuser", ServeLoginTemplate)
-	if !config.IsFirstTimeSetup {
-		protectedMux.HandleFunc("/api/v2/auth/adduser", RegisterUserHandler) // user registration and change password
-	}
+	protectedMux.HandleFunc("/api/v2/auth/adduser", RegisterUserHandler) // user registration and change password
+
+	// Setup
+	protectedMux.HandleFunc("/setup", ServeLoginTemplate)
+	protectedMux.HandleFunc("/api/v2/auth/setup/register", RegisterUserHandler) // user registration
+	protectedMux.HandleFunc("/api/v2/auth/setup/finalize", SetupFinalizeHandler)
 
 	// Apply middleware only to protected routes
 	mux.Handle("/", AuthMiddleware(protectedMux)) // Wrap protected routes under root
