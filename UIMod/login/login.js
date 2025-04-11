@@ -69,35 +69,34 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const step = document.getElementById('step').value;
         const mode = document.getElementById('mode').value;
+        const configField = document.getElementById('config-field').value;
+        const nextStep = document.getElementById('next-step').value;
 
         if (step === "welcome") {
-            window.location.href = '/setup?step=1';
+            window.location.href = `/setup?step=${nextStep}`;
             return;
         }
 
         if (step === "finalize") {
-            // Return to first step of setup
-            window.location.href = '/setup?step=1';
+            // Return to first setup step
+            window.location.href = `/setup?step=${nextStep}`;
             return;
         }
 
-        let url, body, nextStep;
+        let url, body;
         
         // Handle setup steps
-        if (step >= "1" && step <= "4") {
+        if (configField && step !== "admin_account") {
             url = '/api/v2/saveconfig';
-            const key = ["ServerName", "SaveInfo", "ServerMaxPlayers", "ServerPassword"][parseInt(step) - 1];
             body = JSON.stringify({
-                [key]: document.getElementById('input-field').value
+                [configField]: document.getElementById('input-field').value
             });
-            nextStep = parseInt(step) + 1;
-        } else if (step === "5") { // User setup
+        } else if (step === "admin_account") { // User setup
             url = '/api/v2/auth/setup/register';
             body = JSON.stringify({
                 username: document.getElementById('input-field').value,
                 password: document.getElementById('password').value
             });
-            nextStep = "finalize";
         } else { // Login or changeuser
             url = mode === 'changeuser' ? '/api/v2/auth/adduser' : '/auth/login';
             body = JSON.stringify({
@@ -116,9 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             
             if (response.ok) {
-                if (step >= "1" && step <= "5") {
+                if (configField || step === "admin_account") { // Any setup step
                     hidePreloader();
-                    showNotification(step === "5" ? 'Admin account saved!' : 'Config saved!', 'success');
+                    showNotification(step === "admin_account" ? 'Admin account saved!' : 'Config saved!', 'success');
                     setTimeout(() => {
                         window.location.href = `/setup?step=${nextStep}`;
                     }, 800);
@@ -150,23 +149,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (skipBtn) {
         skipBtn.addEventListener('click', () => {
             const step = document.getElementById('step').value;
+            const nextStep = document.getElementById('next-step').value;
             
             if (step === "welcome") {
                 window.location.href = '/';
                 return;
             }
             
-            let nextStep;
             if (step === "finalize") {
                 // Go to login page when skipping from finalize
                 showNotification('Setup completed, Auth disabled!', 'success');
                 setTimeout(() => window.location.href = '/', 1000);
                 return;
-            } else {
-                nextStep = parseInt(step) + 1;
-                if (nextStep > 5) {
-                    nextStep = "finalize";
-                }
             }
             
             window.location.href = `/setup?step=${nextStep}`;
