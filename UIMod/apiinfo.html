@@ -8,6 +8,7 @@
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
 <body>
+    <div id="space-background"></div>
     <header>
         <img src="/static/stationeers.png" alt="Stationeers Banner" id="banner">
     </header>
@@ -16,7 +17,7 @@
             
         <div class="api-overview">
             <p>This server provides a complete REST API alongside the HTML interface. All UI actions map to API endpoints, allowing full programmatic control.</p>
-            <p class="highlight-text">Check out the events section tab on the main page for more clear information about server events that were detected.</p>
+            <p class="highlight-text">Check out the Github Wiki for more information about the API and how to use it.</p>
         </div>
         
         <div class="api-section">
@@ -36,6 +37,18 @@
                             <a href="/config" class="endpoint-link">/config</a>
                             <div class="endpoint-desc">Configuration page</div>
                         </li>
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/setup" class="endpoint-link">/setup</a>
+                            <div class="endpoint-desc">Configuration Wizzard</div>
+                        </li>
+                    </ul>
+                </div>
+                
+
+                <div class="endpoint">
+                    <h3>More UI Pages</h3>
+                    <ul class="api-list">
                         <li>
                             <div class="method get">GET</div>
                             <a href="/detectionmanager" class="endpoint-link">/detectionmanager</a>
@@ -81,6 +94,32 @@
                 </div>
                 
                 <div class="endpoint">
+                    <h3>Server Control</h3>
+                    <ul class="api-list">
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/start" class="endpoint-link">/start</a>
+                            <div class="endpoint-desc">Start the game server</div>
+                        </li>
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/stop" class="endpoint-link">/stop</a>
+                            <div class="endpoint-desc">Stop the game server</div>
+                        </li>
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/api/v2/server/start" class="endpoint-link">/api/v2/server/start</a>
+                            <div class="endpoint-desc">The same as /start</div>
+                        </li>
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/api/v2/server/stop" class="endpoint-link">/api/v2/server/stop</a>
+                            <div class="endpoint-desc">The same as /stop</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="endpoint">
                     <h3>Authentication</h3>
                     <ul class="api-list">
                         <li>
@@ -97,80 +136,6 @@
                             <div class="method post">POST</div>
                             <span class="endpoint-link">/api/v2/auth/adduser</span>
                             <div class="endpoint-desc">Add a new user or change password (JSON body)</div>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="endpoint">
-                    <h3>First-Time Setup</h3>
-                    <ul class="api-list">
-                        <li>
-                            <div class="method post">POST</div>
-                            <span class="endpoint-link">/api/v2/auth/setup/register</span>
-                            <div class="endpoint-desc">Register initial user during first-time setup</div>
-                        </li>
-                        <li>
-                            <div class="method post">POST</div>
-                            <span class="endpoint-link">/api/v2/auth/setup/finalize</span>
-                            <div class="endpoint-desc">Finalize first-time setup</div>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="endpoint">
-                    <h3>Server Control</h3>
-                    <ul class="api-list">
-                        <li>
-                            <div class="method get">GET</div>
-                            <a href="/start" class="endpoint-link">/start</a>
-                            <div class="endpoint-desc">Start the game server (legacy v1)</div>
-                        </li>
-                        <li>
-                            <div class="method get">GET</div>
-                            <a href="/stop" class="endpoint-link">/stop</a>
-                            <div class="endpoint-desc">Stop the game server (legacy v1)</div>
-                        </li>
-                        <li>
-                            <div class="method get">GET</div>
-                            <a href="/api/v2/server/start" class="endpoint-link">/api/v2/server/start</a>
-                            <div class="endpoint-desc">Start the game server (v2)</div>
-                        </li>
-                        <li>
-                            <div class="method get">GET</div>
-                            <a href="/api/v2/server/stop" class="endpoint-link">/api/v2/server/stop</a>
-                            <div class="endpoint-desc">Stop the game server (v2)</div>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="endpoint">
-                    <h3>Information Streams</h3>
-                    <ul class="api-list">
-                        <li>
-                            <div class="method get">GET</div>
-                            <a href="/console" class="endpoint-link">/console</a>
-                            <div class="endpoint-desc">Server console output stream (SSE)</div>
-                        </li>
-                        <li>
-                            <div class="method get">GET</div>
-                            <a href="/events" class="endpoint-link">/events</a>
-                            <div class="endpoint-desc">Server events stream (SSE)</div>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div class="endpoint">
-                    <h3>Configuration</h3>
-                    <ul class="api-list">
-                        <li>
-                            <div class="method post">POST</div>
-                            <span class="endpoint-link">/saveconfigasjson</span>
-                            <div class="endpoint-desc">Save server configuration (Form data, legacy)</div>
-                        </li>
-                        <li>
-                            <div class="method post">POST</div>
-                            <span class="endpoint-link">/api/v2/saveconfig</span>
-                            <div class="endpoint-desc">Save server configuration (JSON body)</div>
                         </li>
                     </ul>
                 </div>
@@ -195,33 +160,38 @@
                         </li>
                     </ul>
                 </div>
-            </div>
-        </div>
 
-        <div class="api-section">
-            <h2>API Request Examples</h2>
-            <div class="code-block">
-                <h3>Authentication Example</h3>
-                <pre><code>POST /auth/login
-Content-Type: application/json
+                <div class="endpoint">
+                    <h3>Configuration</h3>
+                    <ul class="api-list">
+                        <li>
+                            <div class="method post">POST</div>
+                            <span class="endpoint-link">/saveconfigasjson</span>
+                            <div class="endpoint-desc">Save server configuration (Form data, legacy)</div>
+                        </li>
+                        <li>
+                            <div class="method post">POST</div>
+                            <span class="endpoint-link">/api/v2/saveconfig</span>
+                            <div class="endpoint-desc">Save server configuration (JSON body)</div>
+                        </li>
+                    </ul>
+                </div>
 
-{
-    "username": "admin",
-    "password": "password"
-}</code></pre>
-            </div>
-
-            <div class="code-block">
-                <h3>Custom Detection Example</h3>
-                <pre><code>POST /api/v2/custom-detections
-Content-Type: application/json
-
-{
-  "type": "regex",
-  "pattern": "Player (.+) has reached level (\\d+)",
-  "eventType": "CUSTOM_DETECTION",
-  "message": "Player {1} reached level {2}!"
-}</code></pre>
+                <div class="endpoint">
+                    <h3>Information Streams</h3>
+                    <ul class="api-list">
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/console" class="endpoint-link">/console</a>
+                            <div class="endpoint-desc">Server console output stream (SSE)</div>
+                        </li>
+                        <li>
+                            <div class="method get">GET</div>
+                            <a href="/events" class="endpoint-link">/events</a>
+                            <div class="endpoint-desc">Server events stream (SSE)</div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
         
