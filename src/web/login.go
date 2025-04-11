@@ -194,13 +194,6 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 
 // SetupFinalizeHandler marks setup as complete
 func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
-	// Check if setup is already done
-	if !config.IsFirstTimeSetup {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - Setup already finalized"})
-		return
-	}
 
 	//check if users map is nil or empty
 	if config.Users == nil || len(config.Users) == 0 {
