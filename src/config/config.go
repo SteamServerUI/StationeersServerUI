@@ -11,8 +11,8 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.1.7"
-	Branch  = "nightly-uimodfolder-steamline"
+	Version = "5.1.10"
+	Branch  = "nightly-logger"
 )
 
 type JsonConfig struct {
@@ -63,6 +63,7 @@ type JsonConfig struct {
 	IsUpdateEnabled         *bool             `json:"IsUpdateEnabled"`
 	AllowPrereleaseUpdates  *bool             `json:"AllowPrereleaseUpdates"`
 	AllowMajorUpdates       *bool             `json:"AllowMajorUpdates"`
+	SubsystemFilters        []string          `json:"subsystemFilters"`
 }
 
 type CustomDetection struct {
@@ -196,6 +197,8 @@ func applyConfig(cfg *JsonConfig) {
 	allowMajorUpdatesVal := getBool(cfg.AllowMajorUpdates, "ALLOW_MAJOR_UPDATES", false)
 	AllowMajorUpdates = allowMajorUpdatesVal
 	cfg.AllowMajorUpdates = &allowMajorUpdatesVal
+
+	SubsystemFilters = getStringSlice(cfg.SubsystemFilters, "SUBSYSTEM_FILTERS", []string{})
 
 	// Process SaveInfo
 	parts := strings.Split(SaveInfo, " ")

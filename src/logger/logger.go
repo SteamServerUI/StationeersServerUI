@@ -9,6 +9,20 @@ import (
 	"StationeersServerUI/src/config"
 )
 
+// Logger instances
+var (
+	Main      = &Logger{prefix: SYS_MAIN}
+	Web       = &Logger{prefix: SYS_WEB}
+	Discord   = &Logger{prefix: SYS_DISCORD}
+	Backup    = &Logger{prefix: SYS_BACKUP}
+	Detection = &Logger{prefix: SYS_DETECT}
+	Core      = &Logger{prefix: SYS_CORE}
+	Config    = &Logger{prefix: SYS_CONFIG}
+	Install   = &Logger{prefix: SYS_INSTALL}
+	SSE       = &Logger{prefix: SYS_SSE}
+	Security  = &Logger{prefix: SYS_SECURITY}
+)
+
 // Severity Levels
 const (
 	DEBUG = 10 // Fine-grained debugging
@@ -17,7 +31,7 @@ const (
 	ERROR = 40 // Critical errors
 )
 
-// Subsystems (not levels, just identifiers)
+// Subsystems
 const (
 	SYS_MAIN     = "MAIN"
 	SYS_WEB      = "WEB"
@@ -31,7 +45,6 @@ const (
 	SYS_SECURITY = "SECURITY"
 )
 
-// ANSI color codes
 const (
 	colorReset   = "\033[0m"
 	colorRed     = "\033[31m"
@@ -41,6 +54,20 @@ const (
 	colorMagenta = "\033[35m"
 	colorCyan    = "\033[36m"
 )
+
+// Subsystem color map (distinct colors, cohesive vibe)
+var subsystemColors = map[string]string{
+	SYS_MAIN:     colorBlue,    // Calm, default system
+	SYS_WEB:      colorCyan,    // Clean, UI-related
+	SYS_DISCORD:  colorMagenta, // Flashy, chatty subsystem
+	SYS_BACKUP:   colorGreen,   // Safe, reliable vibe
+	SYS_DETECT:   colorYellow,  // Attention-grabbing for detection
+	SYS_CORE:     colorMagenta, // Critical, stands out
+	SYS_CONFIG:   colorYellow,  // Warning-like, config tweaks
+	SYS_INSTALL:  colorBlue,    // Matches MAIN, setup-related
+	SYS_SSE:      colorCyan,    // Matches WEB, streaming vibe
+	SYS_SECURITY: colorRed,     // Screams "pay attention"
+}
 
 type Logger struct {
 	mu     sync.Mutex
@@ -54,13 +81,27 @@ type logEntry struct {
 	message  string
 }
 
-// shouldLog checks severity against config.LogLevel
+// shouldLog checks severity and subsystem filters
 func (l *Logger) shouldLog(severity int) bool {
+	// Subsystem filtering first
+	if len(config.SubsystemFilters) > 0 {
+		allowed := false
+		for _, sub := range config.SubsystemFilters {
+			if sub == l.prefix {
+				allowed = true
+				break
+			}
+		}
+		if !allowed {
+			return false // Subsystem not in filter, skip it
+		}
+	}
+
+	// Existing severity logic
 	effectiveLevel := config.LogLevel
 	if config.IsDebugMode && effectiveLevel < DEBUG {
 		effectiveLevel = 10 // Force DEBUG if IsDebugMode is true
 	}
-	// Add subsystem filtering later if needed via config
 	return severity >= effectiveLevel
 }
 
@@ -74,8 +115,13 @@ func (l *Logger) log(entry logEntry) {
 	}
 
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
+	// Use subsystem color by default, override with severity color if set
+	entryColor := subsystemColors[l.prefix]
+	if entry.color != colorReset {
+		entryColor = entry.color
+	}
 	// Console version with colors
-	consoleLine := fmt.Sprintf("%s%s [%s/%s] %s%s\n", entry.color, timestamp, entry.prefix, l.prefix, entry.message, colorReset)
+	consoleLine := fmt.Sprintf("%s%s [%s/%s] %s%s\n", entryColor, timestamp, entry.prefix, l.prefix, entry.message, colorReset)
 	// File version without colors
 	fileLine := fmt.Sprintf("%s [%s/%s] %s\n", timestamp, entry.prefix, l.prefix, entry.message)
 	// Console output
@@ -132,64 +178,50 @@ func (l *Logger) writeToFile(logLine string) {
 
 // Severity-based methods
 func (l *Logger) Debug(message string) {
-	l.log(logEntry{DEBUG, "DEBUG", colorMagenta, message})
+	l.log(logEntry{DEBUG, "DEBUG", colorReset, message}) // Subsystem color
 }
 
 func (l *Logger) Info(message string) {
-	l.log(logEntry{INFO, "INFO", colorReset, message})
+	l.log(logEntry{INFO, "INFO", colorReset, message}) // Subsystem color
 }
 
 func (l *Logger) Warn(message string) {
-	l.log(logEntry{WARN, "WARN", colorYellow, message})
+	l.log(logEntry{WARN, "WARN", colorYellow, message}) // Yellow for warnings
 }
 
 func (l *Logger) Error(message string) {
-	l.log(logEntry{ERROR, "ERROR", colorRed, message})
+	l.log(logEntry{ERROR, "ERROR", colorRed, message}) // Red for errors
 }
 
-// Subsystem-specific methods
+// Subsystem-specific methods (update colors for consistency)
 func (l *Logger) Backup(message string) {
-	l.log(logEntry{INFO, "BACKUP", colorGreen, message})
+	l.log(logEntry{INFO, "BACKUP", colorReset, message}) // Green via subsystem
 }
 
 func (l *Logger) Detection(message string) {
-	l.log(logEntry{INFO, "DETECT", colorGreen, message})
+	l.log(logEntry{INFO, "DETECT", colorReset, message}) // Yellow via subsystem
 }
 
 func (l *Logger) Discord(message string) {
-	l.log(logEntry{INFO, "DISCORD", colorGreen, message})
+	l.log(logEntry{INFO, "DISCORD", colorReset, message}) // Magenta via subsystem
 }
 
 func (l *Logger) Core(message string) {
-	l.log(logEntry{WARN, "CORE", colorYellow, message})
+	l.log(logEntry{WARN, "CORE", colorReset, message}) // Magenta via subsystem
 }
 
 func (l *Logger) Config(message string) {
-	l.log(logEntry{WARN, "CONFIG", colorYellow, message})
+	l.log(logEntry{WARN, "CONFIG", colorReset, message}) // Yellow via subsystem
 }
 
 func (l *Logger) Install(message string) {
-	l.log(logEntry{INFO, "INSTALL", colorCyan, message})
+	l.log(logEntry{INFO, "INSTALL", colorReset, message}) // Blue via subsystem
 }
 
 func (l *Logger) SSE(message string) {
-	l.log(logEntry{INFO, "SSE", colorMagenta, message})
+	l.log(logEntry{INFO, "SSE", colorReset, message}) // Cyan via subsystem
 }
 
 func (l *Logger) Security(message string) {
-	l.log(logEntry{ERROR, "SECURITY", colorRed, message})
+	l.log(logEntry{ERROR, "SECURITY", colorReset, message}) // Red via subsystem
 }
-
-// Logger instances
-var (
-	Main      = &Logger{prefix: SYS_MAIN}
-	Web       = &Logger{prefix: SYS_WEB}
-	Discord   = &Logger{prefix: SYS_DISCORD}
-	Backup    = &Logger{prefix: SYS_BACKUP}
-	Detection = &Logger{prefix: SYS_DETECT}
-	Core      = &Logger{prefix: SYS_CORE}
-	Config    = &Logger{prefix: SYS_CONFIG}
-	Install   = &Logger{prefix: SYS_INSTALL}
-	SSE       = &Logger{prefix: SYS_SSE}
-	Security  = &Logger{prefix: SYS_SECURITY}
-)

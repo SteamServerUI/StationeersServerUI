@@ -44,6 +44,7 @@ var (
 	GameServerAppID      = "600760"
 	ExePath              string
 	GameBranch           string
+	SubsystemFilters     []string
 )
 
 // Discord integration
