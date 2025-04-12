@@ -209,8 +209,11 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 
 func GetGameServerRunState(w http.ResponseWriter, r *http.Request) {
 	runState := gamemgr.InternalIsServerRunning()
+	response := map[string]bool{
+		"isRunning": runState,
+	}
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(runState); err != nil {
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, "Failed to respond with Game Server status", http.StatusInternalServerError)
 		return
 	}
