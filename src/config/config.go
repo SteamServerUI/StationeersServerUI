@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.1.5"
+	Version = "5.1.6"
 	Branch  = "nightly-uimodfolder-steamline"
 )
 
@@ -134,7 +134,7 @@ func applyConfig(cfg *JsonConfig) {
 	ServerAuthSecret = getString(cfg.ServerAuthSecret, "SERVER_AUTH_SECRET", "")
 	AdminPassword = getString(cfg.AdminPassword, "ADMIN_PASSWORD", "")
 	GamePort = getString(cfg.GamePort, "GAME_PORT", "27016")
-	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27017")
+	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27015")
 
 	upnpEnabledVal := getBool(cfg.UPNPEnabled, "UPNP_ENABLED", false)
 	UPNPEnabled = upnpEnabledVal
