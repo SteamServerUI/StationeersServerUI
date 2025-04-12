@@ -300,7 +300,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			Title:                  "Stationeers Server UI",
 			HeaderTitle:            "Network Setup (2/6)",
 			StepMessage:            "Enter the port number for update connections",
-			PrimaryPlaceholderText: "27017",
+			PrimaryPlaceholderText: "27015",
 			PrimaryLabel:           "Update Port",
 			SecondaryLabel:         "",
 			SecondaryLabelType:     "hidden",
