@@ -135,48 +135,66 @@ func InternalStopServer() error {
 	var killErr error
 
 	if isWindows {
-		// On Windows, attempt to terminate the process
+		// On Windows, terminate the process (no graceful shutdown)
 		killErr = cmd.Process.Kill()
 	} else {
-		// On Linux/Unix, try SIGTERM first for graceful shutdown
+		// On Linux/Unix, send SIGTERM for graceful shutdown
 		if termErr := cmd.Process.Signal(syscall.SIGTERM); termErr != nil {
-			// If SIGTERM fails, fall back to Kill
-			killErr = cmd.Process.Kill()
+			logger.Core.Debug("SIGTERM failed: " + termErr.Error())
+			killErr = cmd.Process.Kill() // Fallback to Kill if SIGTERM fails
+		} else {
+			// Wait for graceful shutdown
+			waitErrChan := make(chan error, 1)
+			go func() {
+				waitErrChan <- cmd.Wait()
+			}()
+
+			select {
+			case waitErr := <-waitErrChan:
+				if waitErr != nil && !strings.Contains(waitErr.Error(), "exit status") {
+					logger.Core.Debug("Wait error after SIGTERM: " + waitErr.Error())
+				}
+			case <-time.After(10 * time.Second): // Increased timeout
+				logger.Core.Warn("Timeout waiting for graceful shutdown, sending SIGKILL")
+				killErr = cmd.Process.Kill() // Fallback to SIGKILL
+				select {
+				case waitErr := <-waitErrChan:
+					if waitErr != nil && !strings.Contains(waitErr.Error(), "exit status") {
+						logger.Core.Debug("Wait error after SIGKILL: " + waitErr.Error())
+					}
+				case <-time.After(2 * time.Second): // Additional wait for SIGKILL
+					return fmt.Errorf("timeout waiting for process to exit after SIGKILL")
+				}
+			}
 		}
-		// Close the logDone channel to stop the tailing goroutine (Linux only)
+
+		// Stop log tailing (Linux only)
 		if logDone != nil {
 			close(logDone)
-			logDone = nil // Reset to nil to avoid double-closing
+			logDone = nil
 		}
 	}
 
-	// Wait for the process to exit, with a timeout to avoid hanging
-	waitErrChan := make(chan error, 1)
-	go func() {
-		waitErrChan <- cmd.Wait()
-	}()
+	// For Windows, wait briefly after Kill to ensure process is gone
+	if isWindows {
+		waitErrChan := make(chan error, 1)
+		go func() {
+			waitErrChan <- cmd.Wait()
+		}()
 
-	var waitErr error
-	select {
-	case waitErr = <-waitErrChan:
-	case <-time.After(1 * time.Second):
-		waitErr = fmt.Errorf("timeout waiting for process to exit")
+		select {
+		case waitErr := <-waitErrChan:
+			if waitErr != nil && !strings.Contains(waitErr.Error(), "exit status") &&
+				!strings.Contains(waitErr.Error(), "The handle is invalid") {
+				return fmt.Errorf("error during server shutdown: %v", waitErr)
+			}
+		case <-time.After(1 * time.Second):
+			return fmt.Errorf("timeout waiting for process to exit")
+		}
 	}
 
-	// If kill failed, return that error
 	if killErr != nil {
 		return fmt.Errorf("error stopping server: %v", killErr)
-	}
-
-	// Handle wait errors
-	if waitErr != nil {
-		// If the error is "handle is invalid" or similar, assume the process is dead
-		if isWindows && strings.Contains(waitErr.Error(), "The handle is invalid") {
-			logger.Core.Debug("Handle is invalid during shutdown, assuming process is terminated")
-		} else if !strings.Contains(waitErr.Error(), "exit status") {
-			// Report other unexpected errors
-			return fmt.Errorf("error during server shutdown: %v", waitErr)
-		}
 	}
 
 	// Process is confirmed stopped, clear cmd
