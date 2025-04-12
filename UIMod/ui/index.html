@@ -12,10 +12,10 @@
     <div id="planet-container"></div>
     <header>
         <img src="/static/stationeers.png" alt="Stationeers Banner" id="banner">
-        <div id="status-indicator" class="status-indicator offline" title="Server status unknown"></div>
         <button onclick="window.location.href = '/auth/logout';" class="logout-icon" title="Logout"></button>
     </header>
     <main>
+        <div id="status-indicator" class="status-indicator offline" title="Server status unknown"></div>
         <h1>Stationeers Server UI v{{.Version}} ({{.Branch}})</h1>
         <div id="controls">
             <button onclick="startServer()">Start Server</button>
