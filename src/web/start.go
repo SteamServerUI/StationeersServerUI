@@ -20,13 +20,13 @@ func StartWebServer(wg *sync.WaitGroup) {
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
 
 	// Unprotected auth routes
-	mux.HandleFunc("/twoboxform/form.js", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/twoboxform/twoboxform.js", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/javascript")
-		http.ServeFile(w, r, config.UIModFolder+"twoboxform/form.js")
+		http.ServeFile(w, r, config.UIModFolder+"twoboxform/twoboxform.js")
 	})
-	mux.HandleFunc("/twoboxform/form.css", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/twoboxform/twoboxform.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/css")
-		http.ServeFile(w, r, config.UIModFolder+"twoboxform/form.css")
+		http.ServeFile(w, r, config.UIModFolder+"twoboxform/twoboxform.css")
 	})
 	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
 	mux.HandleFunc("/auth/logout", LogoutHandler)

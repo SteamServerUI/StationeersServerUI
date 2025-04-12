@@ -101,8 +101,8 @@ var (
 	LogFilePath              = "./UIMod/ssui.log"
 	UIModFolder              = "./UIMod/"
 	TwoBoxFormFolder         = "./UIMod/twoboxform/"
-	ConfigHtmlPath           = "./UIMod/config.html"
+	ConfigHtmlPath           = "./UIMod/ui/config.html"
 	DetectionManagerHtmlPath = "./UIMod/detectionmanager/detectionmanager.html"
 	TwoBoxFormHtmlPath       = "./UIMod/twoboxform/twoboxform.html"
-	IndexHtmlPath            = "./UIMod/index.html"
+	IndexHtmlPath            = "./UIMod/ui/index.html"
 )
