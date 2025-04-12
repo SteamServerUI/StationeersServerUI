@@ -8,8 +8,8 @@ import (
 	"sort"
 	"time"
 
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 
 	"github.com/fsnotify/fsnotify"
 )
@@ -56,8 +56,8 @@ func (m *BackupManager) Start() error {
 
 // watchBackups monitors the backup directory for new files
 func (m *BackupManager) watchBackups() {
-	logger.Backup.Info("Starting backup file watcher...")
-	defer logger.Backup.Info("Backup file watcher stopped")
+	logger.Backup.Debug("Starting backup file watcher...")
+	defer logger.Backup.Debug("Backup file watcher stopped")
 
 	for {
 		select {

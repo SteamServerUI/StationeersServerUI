@@ -9,6 +9,7 @@ import (
 	"os"
 	"runtime"
 	"strconv"
+	"strings"
 )
 
 func getString(jsonVal, envKey, defaultVal string) string {
@@ -19,6 +20,26 @@ func getString(jsonVal, envKey, defaultVal string) string {
 		return envVal
 	}
 	return defaultVal
+}
+
+func getStringSlice(jsonValue []string, envKey string, fallback []string) []string {
+	if len(jsonValue) > 0 {
+		return jsonValue
+	}
+	if envValue := os.Getenv(envKey); envValue != "" {
+		// Split the environment variable by commas, trim whitespace
+		parts := strings.Split(envValue, ",")
+		var result []string
+		for _, part := range parts {
+			if trimmed := strings.TrimSpace(part); trimmed != "" {
+				result = append(result, trimmed)
+			}
+		}
+		if len(result) > 0 {
+			return result
+		}
+	}
+	return fallback
 }
 
 func getInt(jsonVal int, envKey string, defaultVal int) int {
@@ -33,9 +54,9 @@ func getInt(jsonVal int, envKey string, defaultVal int) int {
 	return defaultVal
 }
 
-func getBool(jsonVal bool, envKey string, defaultVal bool) bool {
-	if jsonVal {
-		return true
+func getBool(jsonVal *bool, envKey string, defaultVal bool) bool {
+	if jsonVal != nil {
+		return *jsonVal
 	}
 	if envVal := os.Getenv(envKey); envVal != "" {
 		if val, err := strconv.ParseBool(envVal); err == nil {
@@ -45,41 +66,33 @@ func getBool(jsonVal bool, envKey string, defaultVal bool) bool {
 	return defaultVal
 }
 
+// getUsers retrieves a map[string]string with JSON -> env -> default hierarchy
+func getUsers(jsonValue map[string]string, envKey string, defaultValue map[string]string) map[string]string {
+	if jsonValue != nil {
+		return jsonValue
+	}
+	if envValue := os.Getenv(envKey); envValue != "" {
+		// Expect env var as "user1:hash1,user2:hash2"
+		users := make(map[string]string)
+		pairs := strings.Split(envValue, ",")
+		for _, pair := range pairs {
+			parts := strings.SplitN(pair, ":", 2)
+			if len(parts) == 2 {
+				users[parts[0]] = parts[1]
+			}
+		}
+		if len(users) > 0 {
+			return users
+		}
+	}
+	return defaultValue
+}
+
 func getDefaultExePath() string {
 	if runtime.GOOS == "windows" {
 		return "./rocketstation_DedicatedServer.exe"
 	}
 	return "./rocketstation_DedicatedServer.x86_64"
-}
-
-func setDefaults(cfg *JsonConfig) {
-	if cfg.ExePath == "" {
-		cfg.ExePath = getDefaultExePath()
-	}
-	if cfg.DiscordCharBufferSize <= 0 {
-		cfg.DiscordCharBufferSize = 1000
-	}
-	if cfg.GameBranch == "" {
-		cfg.GameBranch = "public"
-	}
-	if cfg.SaveInfo == "" {
-		cfg.SaveInfo = "Moon Moon"
-	}
-	if cfg.BackupKeepDailyFor <= 0 {
-		cfg.BackupKeepDailyFor = 24
-	}
-	if cfg.BackupKeepWeeklyFor <= 0 {
-		cfg.BackupKeepWeeklyFor = 168
-	}
-	if cfg.BackupKeepMonthlyFor <= 0 {
-		cfg.BackupKeepMonthlyFor = 730
-	}
-	if cfg.BackupCleanupInterval <= 0 {
-		cfg.BackupCleanupInterval = 730
-	}
-	if cfg.BackupWaitTime <= 0 {
-		cfg.BackupWaitTime = 30
-	}
 }
 
 func generateJwtKey() string {

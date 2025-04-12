@@ -2,13 +2,14 @@
 package loader
 
 import (
-	"StationeersServerUI/src/backupmgr"
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/detectionmgr"
-	"StationeersServerUI/src/discordbot"
-	"StationeersServerUI/src/logger"
 	"fmt"
 	"strconv"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/backupmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/detectionmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 func ReloadAll() {
@@ -22,7 +23,7 @@ func ReloadConfig() {
 		logger.Core.Error("Failed to load config: " + err.Error())
 		return
 	}
-	logger.Core.Debug("Config reloaded successfully")
+	logger.Core.Info("Config reloaded successfully")
 
 	PrintConfigDetails()
 
@@ -33,13 +34,13 @@ func ReloadBackupManager() {
 		logger.Backup.Error("Failed to reload backup manager: " + err.Error())
 		return
 	}
-	logger.Backup.Debug("Backup manager reloaded successfully")
+	logger.Backup.Info("Backup manager reloaded successfully")
 }
 
 func ReloadDiscordBot() {
 	if config.IsDiscordEnabled {
 		go discordbot.InitializeDiscordBot()
-		logger.Discord.Debug("Discord bot reloaded successfully")
+		logger.Discord.Info("Discord bot reloaded successfully")
 	}
 }
 
@@ -49,7 +50,7 @@ func InitDetector() {
 	detectionmgr.RegisterDefaultHandlers(detector)
 	detectionmgr.InitCustomDetectionsManager(detector)
 	go detectionmgr.StreamLogs(detector)
-	logger.Detection.Debug("Detector loaded successfully")
+	logger.Detection.Info("Detector loaded successfully")
 }
 
 func PrintConfigDetails() {
@@ -59,7 +60,7 @@ func PrintConfigDetails() {
 	logger.Config.Debug(fmt.Sprintf("GameBranch: %s", config.GameBranch))
 	logger.Config.Debug("IsDiscordEnabled: " + strconv.FormatBool(config.IsDiscordEnabled))
 	logger.Config.Debug("IsCleanupEnabled: " + strconv.FormatBool(config.IsCleanupEnabled))
-	logger.Config.Debug("IsDebugMode: " + strconv.FormatBool(config.IsDebugMode))
+	logger.Config.Debug("IsDebugMode (pprof Server): " + strconv.FormatBool(config.IsDebugMode))
 	logger.Config.Debug("IsFirstTimeSetup: " + strconv.FormatBool(config.IsFirstTimeSetup))
 
 	logger.Config.Debug("---- DISCORD CONFIG VARS ----")
@@ -89,11 +90,14 @@ func PrintConfigDetails() {
 	logger.Config.Debug("---- AUTHENTICATION CONFIG VARS ----")
 	logger.Config.Debug(fmt.Sprintf("AuthTokenLifetime: %d", config.AuthTokenLifetime))
 	logger.Config.Debug(fmt.Sprintf("JwtKey: %s", config.JwtKey))
-	logger.Config.Debug(fmt.Sprintf("Password: %s", config.Password))
-	logger.Config.Debug(fmt.Sprintf("Username: %s", config.Username))
 
 	logger.Config.Debug("---- MISC CONFIG VARS ----")
 	logger.Config.Debug(fmt.Sprintf("Branch: %s", config.Branch))
 	logger.Config.Debug(fmt.Sprintf("GameServerAppID: %s", config.GameServerAppID))
 	logger.Config.Debug(fmt.Sprintf("Version: %s", config.Version))
+
+	logger.Config.Debug("----  UPDATER CONFIG VARS ----")
+	logger.Config.Debug(fmt.Sprintf("AllowPrereleaseUpdates: %v", config.AllowPrereleaseUpdates))
+	logger.Config.Debug(fmt.Sprintf("AllowMajorUpdates: %v", config.AllowMajorUpdates))
+	logger.Config.Debug(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
 }

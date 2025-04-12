@@ -1,9 +1,11 @@
 package discordbot
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
 	"strings"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -164,7 +166,9 @@ func sendControlPanel() {
 	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "▶️") // Start
 	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "⏹️") // Stop
 	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "♻️") // Restart
+	config.ConfigMu.Lock()
 	config.ControlMessageID = msg.ID
+	config.ConfigMu.Unlock()
 	clearMessagesAboveLastN(config.ControlPanelChannelID, 1) // Clear all old control panel messages
 }
 

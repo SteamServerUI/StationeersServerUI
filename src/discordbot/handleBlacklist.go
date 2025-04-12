@@ -1,12 +1,13 @@
 package discordbot
 
 import (
-	"StationeersServerUI/src/config"
 	"fmt"
 	"io"
 	"os"
 	"strings"
 	"sync"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 )
 
 var blacklistMutex sync.Mutex

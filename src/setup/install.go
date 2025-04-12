@@ -1,40 +1,33 @@
 package setup
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/loader"
-	"StationeersServerUI/src/logger"
+	"crypto/sha1"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"os"
+	"os" // Added for filepath.Dir
+	fp "path/filepath"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-)
 
-const (
-	// ANSI color codes for styling terminal output
-	colorReset   = "\033[0m"
-	colorRed     = "\033[31m"
-	colorGreen   = "\033[32m"
-	colorYellow  = "\033[33m"
-	colorBlue    = "\033[34m"
-	colorMagenta = "\033[35m"
-	colorCyan    = "\033[36m"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 var downloadBranch string // Holds the branch to download from
 
 // Install performs the entire installation process and ensures the server waits for it to complete
 func Install(wg *sync.WaitGroup) {
-	defer wg.Done()             // Signal that installation is complete
-	time.Sleep(1 * time.Second) // Small pause for effect
+	defer wg.Done() // Signal that installation is complete
 
 	loader.ReloadConfig()
 
-	// Step 0:  Check for updates
+	// Step 0: Check for updates
 	if err := UpdateExecutable(); err != nil {
 		logger.Install.Error("❌Update check went sideways: " + err.Error())
 	}
@@ -43,14 +36,11 @@ func Install(wg *sync.WaitGroup) {
 	logger.Install.Info("🔄Checking UIMod folder contents...")
 	CheckAndDownloadUIMod()
 	logger.Install.Info("✅UIMod folder setup complete.")
-	time.Sleep(1 * time.Second)
-
 	// Step 2: Check for Blacklist.txt and create it if it doesn't exist
 	logger.Install.Info("🔄Checking for Blacklist.txt...")
 	checkAndCreateBlacklist()
 	logger.Install.Info("✅Blacklist.txt verified or created.")
-	time.Sleep(1 * time.Second)
-
+	time.Sleep(2 * time.Second) // Small pause to let the user read potential errors
 	// Step 3: Install and run SteamCMD
 	logger.Install.Info("🔄Installing and running SteamCMD...")
 	InstallAndRunSteamCMD()
@@ -59,84 +49,310 @@ func Install(wg *sync.WaitGroup) {
 }
 
 func CheckAndDownloadUIMod() {
-	workingDir := "./UIMod/"
-	loginDir := "./UIMod/login/"
-	detectionmanagerDir := "./UIMod/detectionmanager/"
+	uiModDir := config.UIModFolder
+	twoBoxFormDir := config.UIModFolder + "twoboxform/"
+	detectionmanagerDir := config.UIModFolder + "detectionmanager/"
+	assetDir := config.UIModFolder + "assets/"
+	uiDir := config.UIModFolder + "ui/"
+	configDir := config.UIModFolder + "config/"
+	tlsDir := config.UIModFolder + "tls/"
+
+	requiredDirs := []string{uiModDir, uiDir, assetDir, twoBoxFormDir, detectionmanagerDir, configDir, tlsDir}
+
+	// Set branch
+	if config.Branch == "release" || config.Branch == "Release" {
+		downloadBranch = "main"
+	} else {
+		downloadBranch = config.Branch
+	}
+	logger.Install.Info("Using branch: " + downloadBranch)
+
+	// Define file mappings
+	files := map[string]string{
+		//configDir + "config.json":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config/config.json", downloadBranch),
+		uiDir + "config.html":                         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/config.html", downloadBranch),
+		uiDir + "index.html":                          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/index.html", downloadBranch),
+		assetDir + "script.js":                        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/script.js", downloadBranch),
+		assetDir + "style.css":                        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/style.css", downloadBranch),
+		assetDir + "config-styles.css":                fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/config-styles.css", downloadBranch),
+		assetDir + "stationeers.png":                  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/stationeers.png", downloadBranch),
+		assetDir + "favicon.ico":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/favicon.ico", downloadBranch),
+		assetDir + "apiinfo.html":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/apiinfo.html", downloadBranch),
+		twoBoxFormDir + "twoboxform.css":              fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.css", downloadBranch),
+		twoBoxFormDir + "twoboxform.js":               fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.js", downloadBranch),
+		twoBoxFormDir + "twoboxform.html":             fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.html", downloadBranch),
+		detectionmanagerDir + "detectionmanager.js":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.js", downloadBranch),
+		detectionmanagerDir + "detectionmanager.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.html", downloadBranch),
+		detectionmanagerDir + "detectionmanager.css":  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.css", downloadBranch),
+	}
 
 	// Check if the directory exists
-	if _, err := os.Stat(workingDir); os.IsNotExist(err) {
+	if _, err := os.Stat(uiModDir); os.IsNotExist(err) {
 		logger.Install.Warn("⚠️Folder ./UIMod does not exist. Creating it...")
 
-		// Create the UIMod folder
-		err := os.MkdirAll(workingDir, os.ModePerm)
+		// Create directories
+		for _, dir := range requiredDirs {
+			if _, err := os.Stat(dir); os.IsNotExist(err) {
+				err := os.MkdirAll(dir, os.ModePerm)
+				if err != nil {
+					logger.Install.Error("❌Error creating folder: " + err.Error())
+					return
+				}
+				logger.Install.Warn("⚠️Created folder: " + dir)
+			}
+		}
+
+		// Initial download
+		config.ConfigMu.Lock()
+		config.IsFirstTimeSetup = true
+		config.ConfigMu.Unlock()
+		downloadAllFiles(files)
+	} else {
+		// Directory exists
+		config.ConfigMu.Lock()
+		config.IsFirstTimeSetup = false
+		config.ConfigMu.Unlock()
+		logger.Install.Info(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
+		logger.Install.Info(fmt.Sprintf("IsFirstTimeSetup: %v", config.IsFirstTimeSetup))
+		if config.IsUpdateEnabled {
+			logger.Install.Info("🔍Validating UIMod files for updates...")
+			if config.Branch == "release" || config.Branch == "Release" {
+				downloadBranch = "main"
+				updateFilesIfDifferent(files)
+			} else {
+				downloadBranch = config.Branch
+				updateFilesIfDifferent(files)
+			}
+		} else {
+			logger.Install.Info("♻️Folder ./UIMod already exists. Updates disabled, skipping validation.")
+		}
+	}
+}
+
+// downloadAllFiles downloads all files in the provided map concurrently
+func downloadAllFiles(files map[string]string) {
+	var wg sync.WaitGroup
+	for filepath, url := range files {
+		wg.Add(1)
+		go func(filepath, url string) {
+			defer wg.Done()
+			fileName := filepath[strings.LastIndex(filepath, "/")+1:]
+			logger.Install.Info("Downloading " + fileName + "...")
+			err := downloadFile(filepath, url)
+			if err != nil {
+				logger.Install.Error("❌Error downloading " + fileName + ": " + err.Error())
+			} else {
+				logger.Install.Info("✅Downloaded " + fileName + " successfully from branch " + downloadBranch)
+			}
+		}(filepath, url)
+	}
+	wg.Wait()
+	logger.Install.Info("✅All files downloaded successfully.")
+}
+
+// updateFilesIfDifferent checks for differences and updates files if necessary using concurrency
+func updateFilesIfDifferent(files map[string]string) {
+	var wg sync.WaitGroup
+	for filepath, url := range files {
+		fileName := filepath[strings.LastIndex(filepath, "/")+1:]
+		if fileName == "config.json" {
+			continue // Skip updating config.json to preserve local changes
+		}
+		wg.Add(1)
+		go func(filepath, url string) {
+			defer wg.Done()
+			checkAndUpdateFile(filepath, url)
+		}(filepath, url)
+	}
+	wg.Wait()
+	logger.Install.Info("✅File validation and update check complete.")
+}
+
+// checkAndUpdateFile checks if a file needs updating by comparing its SHA-1 hash with the remote ETag
+func checkAndUpdateFile(filepath, url string) {
+	fileName := filepath[strings.LastIndex(filepath, "/")+1:]
+
+	if _, err := os.Stat(filepath); os.IsNotExist(err) {
+		// File doesn't exist locally, download it
+		logger.Install.Info("Downloading " + fileName + "...")
+		err := downloadFile(filepath, url)
 		if err != nil {
-			logger.Install.Error("❌Error creating folder: " + err.Error())
+			logger.Install.Error("❌Error downloading " + fileName + ": " + err.Error())
+		} else {
+			logger.Install.Info("✅Downloaded " + fileName + " successfully")
+		}
+	} else {
+		// File exists, check if it needs updating
+		localHash, err := computeGitBlobSHA1(filepath)
+		if err != nil {
+			logger.Install.Error("❌Error computing hash for " + fileName + ": " + err.Error())
 			return
 		}
 
-		if _, err := os.Stat(loginDir); os.IsNotExist(err) {
-			logger.Install.Warn("⚠️Folder ./UIMod/login/ does not exist. Creating it...")
-			err := os.MkdirAll(loginDir, os.ModePerm)
-			if err != nil {
-				logger.Install.Error("❌Error creating folder: " + err.Error())
-				return
-			}
+		// Extract the necessary parts from URL to build the API call
+		// Example URL: https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/UIMod/index.html
+		urlParts := strings.Split(url, "/")
+		if len(urlParts) < 7 {
+			logger.Install.Error("❌Invalid URL format: " + url)
+			return
 		}
 
-		if _, err := os.Stat(detectionmanagerDir); os.IsNotExist(err) {
-			logger.Install.Warn("⚠️Folder ./UIMod/detectionmanager/ does not exist. Creating it...")
-			err := os.MkdirAll(detectionmanagerDir, os.ModePerm)
-			if err != nil {
-				logger.Install.Error("❌Error creating folder: " + err.Error())
-				return
-			}
+		repoOwner := urlParts[3]
+		repoName := urlParts[4]
+		branch := urlParts[5]
+		filePath := strings.Join(urlParts[6:], "/")
+
+		remoteHash, err := getFileHash(repoOwner, repoName, branch, filePath)
+		if err != nil {
+			return
 		}
 
-		if config.Branch == "release" || config.Branch == "Release" {
-			downloadBranch = "main"
+		logger.Install.Debug("Local hash for " + fileName + ": " + localHash)
+		logger.Install.Debug("Remote hash for " + fileName + ": " + remoteHash)
+
+		if localHash != remoteHash {
+			logger.Install.Info("🔄Updating " + fileName + " due to differences...")
+			err := downloadFile(filepath, url)
+			if err != nil {
+				logger.Install.Error("❌Error updating " + fileName + ": " + err.Error())
+			} else {
+				logger.Install.Info("✅Updated " + fileName + " successfully from branch " + downloadBranch)
+			}
 		} else {
-			downloadBranch = config.Branch
+			logger.Install.Info("✅" + fileName + " is up-to-date.")
 		}
-
-		// List of files to download with their destination paths
-		files := map[string]string{
-			workingDir + "apiinfo.html":                   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/apiinfo.html", downloadBranch),
-			workingDir + "config.html":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.html", downloadBranch),
-			workingDir + "config.json":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.json", downloadBranch),
-			workingDir + "index.html":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/index.html", downloadBranch),
-			workingDir + "script.js":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/script.js", downloadBranch),
-			workingDir + "stationeers.png":                fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/stationeers.png", downloadBranch),
-			workingDir + "style.css":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/style.css", downloadBranch),
-			workingDir + "favicon.ico":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/favicon.ico", downloadBranch),
-			loginDir + "login.css":                        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.css", downloadBranch),
-			loginDir + "login.js":                         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.js", downloadBranch),
-			loginDir + "login.html":                       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.html", downloadBranch),
-			detectionmanagerDir + "detectionmanager.js":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.js", downloadBranch),
-			detectionmanagerDir + "detectionmanager.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.html", downloadBranch),
-			detectionmanagerDir + "detectionmanager.css":  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.css", downloadBranch),
-		}
-
-		// Set the first time setup flag to true
-		config.IsFirstTimeSetup = true
-
-		// Download each file
-		for filepath, url := range files {
-			// Extract just the filename for display purposes
-			fileName := filepath[strings.LastIndex(filepath, "/")+1:]
-			logger.Install.Info("Downloading " + fileName + "...")
-			err := downloadFileWithProgress(filepath, url)
-			if err != nil {
-				logger.Install.Error("❌Error downloading " + fileName + " (setup may has been left incomplete): " + err.Error())
-				return
-			}
-			logger.Install.Info("✅Downloaded " + fileName + " successfully from branch " + downloadBranch)
-		}
-
-		logger.Install.Info("✅All files downloaded successfully.")
-	} else {
-		logger.Install.Info("♻️Folder ./UIMod already exists. Skipping download.")
-		config.IsFirstTimeSetup = false
 	}
+}
+
+func computeGitBlobSHA1(filepath string) (string, error) {
+	// Read the file content
+	content, err := os.ReadFile(filepath)
+	if err != nil {
+		return "", err
+	}
+
+	// Create the blob header (format: "blob " + content length + null byte)
+	header := fmt.Sprintf("blob %d\x00", len(content))
+
+	// Combine header and content
+	blobData := append([]byte(header), content...)
+
+	// Compute SHA-1 hash
+	hash := sha1.New()
+	hash.Write(blobData)
+
+	return hex.EncodeToString(hash.Sum(nil)), nil
+}
+
+// getFileHash fetches the file hash from GitHub API
+func getFileHash(repoOwner, repoName, branch, filePath string) (string, error) {
+	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/contents/%s?ref=%s",
+		repoOwner, repoName, filePath, branch)
+
+	req, err := http.NewRequest("GET", apiURL, nil)
+	if err != nil {
+		return "", err
+	}
+
+	req.Header.Add("Accept", "application/vnd.github.v3+json")
+	// Optional: req.Header.Add("Authorization", "token YOUR_GITHUB_TOKEN")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		if err := handleRateLimitErrors(resp); err != nil {
+			return "", err
+		}
+		logger.Install.Error(fmt.Sprintf("❌Request failed with status: %s", resp.Status))
+		return "", fmt.Errorf("bad status: %s", resp.Status)
+	}
+
+	var fileInfo struct {
+		SHA string `json:"sha"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&fileInfo); err != nil {
+		return "", err
+	}
+
+	return fileInfo.SHA, nil
+}
+
+// handleRateLimitErrors processes GitHub API rate limit errors
+func handleRateLimitErrors(resp *http.Response) error {
+	if resp.StatusCode != http.StatusForbidden {
+		return nil
+	}
+
+	// Check secondary rate limit
+	if retryAfter := resp.Header.Get("Retry-After"); retryAfter != "" {
+		return handleSecondaryRateLimit(retryAfter, resp.Status)
+	}
+
+	// Check primary rate limit
+	if remaining := resp.Header.Get("x-ratelimit-remaining"); remaining == "0" {
+		return handlePrimaryRateLimit(resp.Header.Get("x-ratelimit-reset"), resp.Status)
+	}
+
+	// Generic 403 error
+	logger.Install.Error("❌Forbidden request, no specific rate limit info available")
+	return fmt.Errorf("bad status: %s", resp.Status)
+}
+
+// handleSecondaryRateLimit processes secondary rate limit exceeded errors
+func handleSecondaryRateLimit(retryAfter, status string) error {
+	waitSeconds, err := strconv.Atoi(retryAfter)
+	if err != nil {
+		logger.Install.Error(fmt.Sprintf("❌Failed to parse Retry-After header: %v", err))
+		return fmt.Errorf("bad status: %s, failed to parse Retry-After: %v", status, err)
+	}
+	errMsg := fmt.Sprintf("Github API secondary rate limit exceeded. (too many requests in a short time). Retry after %d seconds", waitSeconds)
+	logger.Install.Error("❌" + errMsg)
+	return fmt.Errorf("bad status: %s, %s", status, errMsg)
+}
+
+// handlePrimaryRateLimit processes primary rate limit exceeded errors
+func handlePrimaryRateLimit(reset, status string) error {
+	resetInt, err := strconv.ParseInt(reset, 10, 64)
+	if err != nil {
+		logger.Install.Error(fmt.Sprintf("❌Failed to parse x-ratelimit-reset header: %v", err))
+		return fmt.Errorf("bad status: %s, failed to parse x-ratelimit-reset: %v", status, err)
+	}
+	resetTime := time.Unix(resetInt, 0).UTC()
+	errMsg := fmt.Sprintf("Github ratelimit exceeded: hourly request quota of 60 calls reached. Resets at %s", resetTime.Format(time.RFC1123))
+	logger.Install.Warn("🧱" + errMsg)
+	return fmt.Errorf("bad status: %s, %s", status, errMsg)
+}
+
+// downloadFile downloads a file from the given URL to the specified filepath
+func downloadFile(filepath, url string) error {
+	// Ensure the directory exists
+	dir := fp.Dir(filepath)
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return err
+	}
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	// Fetch the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bad status: %s", resp.Status)
+	}
+	// Write to file
+	_, err = io.Copy(out, resp.Body)
+	return err
 }
 
 // checkAndCreateBlacklist ensures Blacklist.txt exists in the root directory
@@ -157,107 +373,4 @@ func checkAndCreateBlacklist() {
 	} else {
 		logger.Install.Info("♻️Blacklist.txt already exists. Skipping creation.")
 	}
-}
-
-// downloadFileWithProgress downloads a file from the given URL and saves it to the given filepath with progress indication
-func downloadFileWithProgress(filepath string, url string) error {
-	// Create the file
-	out, err := os.Create(filepath)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	// Get the data
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	// Check server response
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("bad status: %s", resp.Status)
-	}
-
-	// Get the total size for progress reporting
-	size := resp.ContentLength
-
-	// Create a counter for tracking progress
-	counter := &writeCounter{
-		Total: size,
-	}
-
-	// Write the body to file with progress tracking
-	_, err = io.Copy(out, io.TeeReader(resp.Body, counter))
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// writeCounter tracks download progress
-type writeCounter struct {
-	Total int64
-	count int64
-}
-
-func (wc *writeCounter) Write(p []byte) (int, error) {
-	n := len(p)
-	wc.count += int64(n)
-	wc.printProgress()
-	return n, nil
-}
-
-func (wc *writeCounter) printProgress() {
-	// If we don't know the total size, just show downloaded bytes
-	if wc.Total <= 0 {
-		logger.Backup.Info(fmt.Sprintf("\r%s downloaded", bytesToHuman(wc.count)))
-		return
-	}
-
-	// Calculate percentage with bounds checking
-	percent := float64(wc.count) / float64(wc.Total) * 100
-	if percent > 100 {
-		percent = 100
-	}
-
-	// Create simple progress bar
-	width := 20
-	complete := int(percent / 100 * float64(width))
-
-	progressBar := "["
-	for i := 0; i < width; i++ {
-		if i < complete {
-			progressBar += "="
-		} else if i == complete && complete < width {
-			progressBar += ">"
-		} else {
-			progressBar += " "
-		}
-	}
-	progressBar += "]"
-
-	// Print progress and erase to end of line
-
-	logger.Backup.Info(fmt.Sprintf("\r%s %.1f%% (%s/%s)",
-		progressBar,
-		percent,
-		bytesToHuman(wc.count),
-		bytesToHuman(wc.Total)))
-}
-
-// bytesToHuman converts bytes to human readable format
-func bytesToHuman(bytes int64) string {
-	const unit = 1024
-	if bytes < unit {
-		return strconv.FormatInt(bytes, 10) + " B"
-	}
-	div, exp := int64(unit), 0
-	for n := bytes / unit; n >= unit; n /= unit {
-		div *= unit
-		exp++
-	}
-	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
 }

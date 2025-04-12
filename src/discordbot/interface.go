@@ -1,9 +1,10 @@
 package discordbot
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -57,7 +58,9 @@ func InitializeDiscordBot() {
 	sendControlPanel() // Send control panel message to Discord
 	UpdateBotStatusWithMessage("StationeersServerUI v" + config.Version)
 	// Start buffer flush ticker
+	config.ConfigMu.Lock()
 	config.BufferFlushTicker = time.NewTicker(5 * time.Second)
+	config.ConfigMu.Unlock()
 	go func() {
 		for range config.BufferFlushTicker.C {
 			flushLogBufferToDiscord()

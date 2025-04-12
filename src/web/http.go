@@ -1,15 +1,17 @@
 package web
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/gamemgr"
-	"StationeersServerUI/src/logger"
-	"StationeersServerUI/src/ssestream"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"strings"
 	"text/template"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/ssestream"
 )
 
 // TemplateData holds data to be passed to templates
@@ -19,7 +21,7 @@ type TemplateData struct {
 }
 
 func ServeIndex(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("./UIMod/index.html")
+	tmpl, err := template.ParseFiles(config.IndexHtmlPath)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -45,7 +47,7 @@ func ServeIndex(w http.ResponseWriter, r *http.Request) {
 
 func ServeDetectionManager(w http.ResponseWriter, r *http.Request) {
 
-	htmlFile, err := os.ReadFile("./UIMod/detectionmanager/detectionmanager.html")
+	htmlFile, err := os.ReadFile(config.DetectionManagerHtmlPath)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error reading detectionmanager.html: %v", err), http.StatusInternalServerError)
 		return
@@ -58,7 +60,7 @@ func ServeDetectionManager(w http.ResponseWriter, r *http.Request) {
 
 func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
-	htmlFile, err := os.ReadFile("./UIMod/config.html")
+	htmlFile, err := os.ReadFile(config.ConfigHtmlPath)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error reading config.html: %v", err), http.StatusInternalServerError)
 		return
@@ -206,6 +208,18 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	logger.Web.Core("Server stopped.")
 }
 
+func GetGameServerRunState(w http.ResponseWriter, r *http.Request) {
+	runState := gamemgr.InternalIsServerRunning()
+	response := map[string]bool{
+		"isRunning": runState,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Failed to respond with Game Server status", http.StatusInternalServerError)
+		return
+	}
+}
+
 // handler for the /console endpoint
 func GetLogOutput(w http.ResponseWriter, r *http.Request) {
 	StartConsoleStream()(w, r)
@@ -224,4 +238,24 @@ func StartConsoleStream() http.HandlerFunc {
 // StartDetectionEventStream creates an HTTP handler for detection event SSE streaming
 func StartDetectionEventStream() http.HandlerFunc {
 	return ssestream.EventStreamManager.CreateStreamHandler("Event")
+}
+
+func ServeTwoBoxCss(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/css")
+	http.ServeFile(w, r, config.UIModFolder+"twoboxform/twoboxform.css")
+}
+
+func ServeTwoBoxJs(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/javascript")
+	http.ServeFile(w, r, config.UIModFolder+"twoboxform/twoboxform.js")
+}
+
+func ServeDetectionManagerCss(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/css")
+	http.ServeFile(w, r, config.UIModFolder+"detectionmanager/detectionmanager.css")
+}
+
+func ServeDetectionManagerJs(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/javascript")
+	http.ServeFile(w, r, config.UIModFolder+"detectionmanager/detectionmanager.js")
 }

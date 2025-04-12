@@ -1,13 +1,15 @@
 package setup
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 )
 
 // ExtractorFunc is a type that represents a function for extracting archives.

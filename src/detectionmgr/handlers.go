@@ -2,12 +2,13 @@
 package detectionmgr
 
 import (
-	"StationeersServerUI/src/discordbot"
-	"StationeersServerUI/src/logger"
-	"StationeersServerUI/src/ssestream"
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/ssestream"
 )
 
 /*

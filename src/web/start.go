@@ -2,26 +2,16 @@
 package web
 
 import (
-	"StationeersServerUI/src/backupmgr"
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/configchanger"
-	"StationeersServerUI/src/detectionmgr"
-	"StationeersServerUI/src/logger"
-	"StationeersServerUI/src/security"
 	"net/http"
 	"net/http/pprof"
 	"sync"
-)
 
-const (
-	// ANSI color codes for styling terminal output
-	colorReset   = "\033[0m"
-	colorRed     = "\033[31m"
-	colorGreen   = "\033[32m"
-	colorYellow  = "\033[33m"
-	colorBlue    = "\033[34m"
-	colorMagenta = "\033[35m"
-	colorCyan    = "\033[36m"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/backupmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/configchanger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/detectionmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/security"
 )
 
 func StartWebServer(wg *sync.WaitGroup) {
@@ -31,31 +21,19 @@ func StartWebServer(wg *sync.WaitGroup) {
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
 
 	// Unprotected auth routes
-	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./UIMod/login/login.html")
-	})
-	mux.HandleFunc("/login/login.js", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/javascript")
-		http.ServeFile(w, r, "./UIMod/login/login.js")
-	})
-	mux.HandleFunc("/login/login.css", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/css")
-		http.ServeFile(w, r, "./UIMod/login/login.css")
-	})
-	mux.HandleFunc("/auth/login", security.LoginHandler) // Token issuer
-	mux.HandleFunc("/auth/logout", security.LogoutHandler)
+	mux.HandleFunc("/twoboxform/twoboxform.js", ServeTwoBoxJs)
+	mux.HandleFunc("/twoboxform/twoboxform.css", ServeTwoBoxCss)
+	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
+	mux.HandleFunc("/auth/logout", LogoutHandler)
+	mux.HandleFunc("/login", ServeTwoBoxFormTemplate)
 
 	// Protected routes (wrapped with middleware)
 	protectedMux := http.NewServeMux()
-	fs := http.FileServer(http.Dir("./UIMod"))
+	fs := http.FileServer(http.Dir(config.UIModFolder + "/assets"))
 	protectedMux.Handle("/static/", http.StripPrefix("/static/", fs))
 	protectedMux.HandleFunc("/config", ServeConfigPage)
 	protectedMux.HandleFunc("/detectionmanager", ServeDetectionManager)
 	protectedMux.HandleFunc("/", ServeIndex)
-
-	// v1 API routes
-	protectedMux.HandleFunc("/start", StartServer)
-	protectedMux.HandleFunc("/stop", StopServer)
 
 	protectedMux.HandleFunc("/saveconfigasjson", configchanger.SaveConfigForm)
 
@@ -63,10 +41,12 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/console", GetLogOutput)
 	protectedMux.HandleFunc("/events", GetEventOutput)
 
-	// v2 API routes that will eventually replace the API routes above, but for now we'll keep v1 (no prefix) for compatibility.
 	// Server Control
+	protectedMux.HandleFunc("/start", StartServer)
+	protectedMux.HandleFunc("/stop", StopServer)
 	protectedMux.HandleFunc("/api/v2/server/start", StartServer)
 	protectedMux.HandleFunc("/api/v2/server/stop", StopServer)
+	protectedMux.HandleFunc("/api/v2/server/status", GetGameServerRunState)
 
 	backupHandler := backupmgr.NewHTTPHandler(backupmgr.GlobalBackupManager)
 	protectedMux.HandleFunc("/api/v2/backups", backupHandler.ListBackupsHandler)
@@ -79,8 +59,21 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/api/v2/custom-detections", detectionmgr.HandleCustomDetection)
 	protectedMux.HandleFunc("/api/v2/custom-detections/delete/", detectionmgr.HandleDeleteCustomDetection)
 
+	// Authentication
+	protectedMux.HandleFunc("/changeuser", ServeTwoBoxFormTemplate)
+	protectedMux.HandleFunc("/api/v2/auth/adduser", RegisterUserHandler) // user registration and change password
+
+	// Setup
+	protectedMux.HandleFunc("/setup", ServeTwoBoxFormTemplate)
+	protectedMux.HandleFunc("/api/v2/auth/setup/register", RegisterUserHandler) // user registration
+	protectedMux.HandleFunc("/api/v2/auth/setup/finalize", SetupFinalizeHandler)
+
+	// Detection Manager static files
+	protectedMux.HandleFunc("/detectionmanager/detectionmanager.js", ServeDetectionManagerJs)
+	protectedMux.HandleFunc("/detectionmanager/detectionmanager.css", ServeDetectionManagerCss)
+
 	// Apply middleware only to protected routes
-	mux.Handle("/", security.AuthMiddleware(protectedMux)) // Wrap protected routes under root
+	mux.Handle("/", AuthMiddleware(protectedMux)) // Wrap protected routes under root
 
 	// Start HTTP server
 	wg.Add(1)
@@ -89,9 +82,9 @@ func StartWebServer(wg *sync.WaitGroup) {
 		logger.Web.Info("Starting the HTTP server on port 8443...")
 		logger.Web.Info("UI available at: https://0.0.0.0:8443 or https://localhost:8443")
 		if config.IsFirstTimeSetup {
-			logger.Web.Warn("For first time Setup, follow the instructions on:")
-			logger.Web.Warn("https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup")
-			logger.Web.Warn("Or just copy your save folder to /Saves and edit the save file name from the UI (Config Page)")
+			logger.Web.Error("For first-time setup, visit the UI to configure a user or skip authentication.")
+			logger.Web.Warn("Fill the Username and Password fields, then click Register User and when done Finalize Setup.")
+			logger.Web.Warn("For more details, check the GitHub Wiki: https://github.com/JacksonTheMaster/StationeersServerUI/v5/wiki")
 		}
 		// Ensure TLS certs are ready
 		if err := security.EnsureTLSCerts(); err != nil {
