@@ -74,10 +74,124 @@ header::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+  background: radial-gradient(ellipse at bottom, #1b2735 0%, var(--bg-dark) 100%);
   z-index: -2;
-  will-change: transform; /* Improves animation performance */
+  will-change: transform;
+  overflow: hidden;
 }
+
+/* Stars Layer 1 - smaller and more scattered stars */
+#space-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(1px 1px at 17px 43px, var(--text-bright), transparent),
+    radial-gradient(1px 1px at 39px 157px, var(--text-header), transparent),
+    radial-gradient(1px 1px at 73px 91px, var(--text-header), transparent),
+    radial-gradient(1px 1px at 109px 134px, var(--text-bright), transparent),
+    radial-gradient(1px 1px at 143px 27px, var(--text-bright), transparent),
+    radial-gradient(1px 1px at 53px 79px, var(--text-header), transparent),
+    radial-gradient(1px 1px at 85px 123px, var(--text-bright), transparent),
+    radial-gradient(1px 1px at 174px 36px, var(--text-header), transparent),
+    radial-gradient(1px 1px at 102px 64px, var(--text-bright), transparent),
+    radial-gradient(1px 1px at 127px 187px, var(--text-header), transparent);
+  background-size: 250px 250px;
+  opacity: 0.4;
+}
+
+/* Stars Layer 2 - larger and brighter stars with different pattern */
+#space-background::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 2;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(2px 2px at 43px 267px, var(--text-header), transparent),
+    radial-gradient(2px 2px at 167px 312px, var(--text-bright), transparent),
+    radial-gradient(2px 2px at 213px 117px, var(--text-header), transparent),
+    radial-gradient(2px 2px at 81px 209px, var(--text-bright), transparent),
+    radial-gradient(2px 2px at 239px 349px, var(--text-header), transparent),
+    radial-gradient(2px 2px at 124px 281px, var(--text-bright), transparent),
+    radial-gradient(2px 2px at 198px 153px, var(--text-header), transparent),
+    radial-gradient(2px 2px at 56px 379px, var(--text-bright), transparent),
+    radial-gradient(1.5px 1.5px at 297px 246px, var(--text-header), transparent),
+    radial-gradient(1.5px 1.5px at 147px 133px, var(--text-bright), transparent);
+  background-size: 400px 400px;
+  opacity: 0.5;
+  animation: stars 120s linear infinite;
+}
+
+/* Nebula Element - overlaid on the stars layer */
+#space-background::before {
+  background: 
+    radial-gradient(1px 1px at 17px 43px, var(--text-bright), transparent),
+    radial-gradient(1px 1px at 39px 157px, var(--text-header), transparent),
+    radial-gradient(1px 1px at 73px 91px, var(--text-header), transparent),
+    radial-gradient(1px 1px at 109px 134px, var(--text-bright), transparent),
+    radial-gradient(1px 1px at 143px 27px, var(--text-bright), transparent),
+    radial-gradient(1px 1px at 53px 79px, var(--text-header), transparent),
+    radial-gradient(1px 1px at 85px 123px, var(--text-bright), transparent),
+    radial-gradient(1px 1px at 174px 36px, var(--text-header), transparent),
+    radial-gradient(1px 1px at 102px 64px, var(--text-bright), transparent),
+    radial-gradient(1px 1px at 127px 187px, var(--text-header), transparent),
+    radial-gradient(700px 500px at 65% 75%, var(--primary-glow), transparent),
+    radial-gradient(500px 400px at 20% 25%, rgba(0, 132, 255, 0.15), transparent);
+  background-size: 250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                   250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                   100% 100%, 100% 100%;
+  
+}
+
+/* Animation for stars */
+@keyframes stars {
+  0% {
+    background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+  }
+  100% {
+    background-position: 250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                         250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                         0 0, 0 0;
+  }
+}
+
+/* Animation for nebula */
+@keyframes nebulaPulse {
+  0% {
+    opacity: 0.3;
+    background-size: 250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                     250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                     100% 100%, 100% 100%;
+  }
+  50% {
+    opacity: 0.4;
+    background-size: 250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                     250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                     110% 110%, 105% 105%;
+  }
+  100% {
+    opacity: 0.5;
+    background-size: 250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                     250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                     100% 100%, 100% 100%;
+  }
+}
+
 
 #planet-container {
   position: fixed;
@@ -112,43 +226,6 @@ header::before {
   transform: translateY(-50%);
   will-change: transform; /* Improves animation performance */
 }
-
-#space-background::before,
-#space-background::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  z-index: 1;
-  pointer-events: none;
-  will-change: transform; /* Improves animation performance */
-}
-
-#space-background::before {
-  background-image: radial-gradient(1px 1px at 20px 30px, #eee, transparent),
-                    radial-gradient(1px 1px at 50px 50px, #fff, transparent),
-                    radial-gradient(1px 1px at 90px 80px, #fff, transparent),
-                    radial-gradient(1px 1px at 130px 120px, #eee, transparent);
-  background-size: 200px 200px;
-  opacity: 0.3;
-  animation: stars 50s linear infinite;
-}
-
-#space-background::after {
-  background-image: radial-gradient(2px 2px at 20px 200px, #fff, transparent),
-                    radial-gradient(3px 3px at 50px 250px, #eee, transparent),
-                    radial-gradient(2px 2px at 90px 300px, #fff, transparent),
-                    radial-gradient(3px 3px at 130px 400px, #eee, transparent);
-  background-size: 300px 300px;
-  opacity: 0.5;
-  animation: stars 100s linear infinite;
-}
-
 
 #banner {
   width: 60%;
