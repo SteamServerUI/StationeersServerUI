@@ -68,7 +68,7 @@ func CheckAndDownloadUIMod() {
 
 	// Define file mappings
 	files := map[string]string{
-		configDir + "config.json":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config/config.json", downloadBranch),
+		//configDir + "config.json":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config/config.json", downloadBranch),
 		uiDir + "config.html":                         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/config.html", downloadBranch),
 		uiDir + "index.html":                          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/index.html", downloadBranch),
 		assetDir + "script.js":                        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/script.js", downloadBranch),
