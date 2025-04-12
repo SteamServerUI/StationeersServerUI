@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchDetectionEvents();
     fetchBackups();
     handleConsole();
+    pollServerStatus();
     // Create planets with size, orbit radius, speed, and color
     const planetContainer = document.getElementById('planet-container');
     createPlanet(planetContainer, 80, 650, 34, 'rgba(200, 100, 50, 0.7)');
@@ -375,4 +376,40 @@ function createPlanet(container, size, orbitRadius, speed, color) {
     
     orbit.appendChild(planet);
     container.appendChild(orbit);
+}
+
+
+function pollServerStatus() {
+    const statusInterval = setInterval(() => {
+        fetch('/api/v2/server/status')
+            .then(response => response.json())
+            .then(data => {
+                updateStatusIndicator(data.isRunning);
+            })
+            .catch(err => {
+                console.error("Failed to fetch server status:", err);
+                updateStatusIndicator(false, true); // Set error state
+            });
+    }, 1000); // Poll every second
+
+    // Store the interval ID so we can clear it if needed
+    window.statusPollingInterval = statusInterval;
+}
+
+function updateStatusIndicator(isRunning, isError = false) {
+    const indicator = document.getElementById('status-indicator');
+    
+    if (isError) {
+        indicator.className = 'status-indicator error';
+        indicator.title = 'Error fetching server status';
+        return;
+    }
+    
+    if (isRunning) {
+        indicator.className = 'status-indicator online';
+        indicator.title = 'Server is running';
+    } else {
+        indicator.className = 'status-indicator offline';
+        indicator.title = 'Server is offline';
+    }
 }

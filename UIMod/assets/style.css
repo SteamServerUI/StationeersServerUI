@@ -1038,6 +1038,41 @@ a.endpoint-link:hover {
   transform: scale(1.1);
 }
 
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 10px;
+  display: inline-block;
+  transition: all 0.3s ease;
+  position: absolute;
+  right: 50px;
+  top: 20px;
+}
+
+.status-indicator.online {
+  background-color: #4CAF50;
+  box-shadow: 0 0 8px #4CAF50;
+}
+
+.status-indicator.offline {
+  background-color: #F44336;
+  box-shadow: 0 0 8px #F44336;
+}
+
+.status-indicator.error {
+  background-color: #FFC107;
+  box-shadow: 0 0 8px #FFC107;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   main {
