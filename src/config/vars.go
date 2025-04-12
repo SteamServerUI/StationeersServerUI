@@ -1,12 +1,25 @@
 package config
 
 import (
+	"sync"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
 )
 
-// config.Version and config.Branch can be found in config.go
+/*
+config.Version and config.Branch can be found in config.go
+
+ConfigMu protects all config variables. Lock it for writes; reads are safe
+if writes only happen via applyConfig or with ConfigMu locked.
+
+WARNING: Do NOT set any config vars without locking ConfigMu:
+config.ConfigMu.Lock()
+config.SomeConfigVar = newValue
+config.ConfigMu.Unlock()
+*/
+
+var ConfigMu sync.Mutex
 
 // Game Server configuration
 var (

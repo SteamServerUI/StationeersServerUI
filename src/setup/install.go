@@ -102,11 +102,15 @@ func CheckAndDownloadUIMod() {
 		}
 
 		// Initial download
+		config.ConfigMu.Lock()
 		config.IsFirstTimeSetup = true
+		config.ConfigMu.Unlock()
 		downloadAllFiles(files)
 	} else {
 		// Directory exists
+		config.ConfigMu.Lock()
 		config.IsFirstTimeSetup = false
+		config.ConfigMu.Unlock()
 		logger.Install.Info(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
 		logger.Install.Info(fmt.Sprintf("IsFirstTimeSetup: %v", config.IsFirstTimeSetup))
 		if config.IsUpdateEnabled {

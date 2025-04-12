@@ -57,7 +57,9 @@ func InitializeDiscordBot() {
 	sendControlPanel() // Send control panel message to Discord
 	UpdateBotStatusWithMessage("StationeersServerUI v" + config.Version)
 	// Start buffer flush ticker
+	config.ConfigMu.Lock()
 	config.BufferFlushTicker = time.NewTicker(5 * time.Second)
+	config.ConfigMu.Unlock()
 	go func() {
 		for range config.BufferFlushTicker.C {
 			flushLogBufferToDiscord()

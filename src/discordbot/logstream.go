@@ -45,5 +45,7 @@ func flushLogBufferToDiscord() {
 	}
 
 	// Clear the buffer after sending
+	config.ConfigMu.Lock()
 	config.LogMessageBuffer = ""
+	config.ConfigMu.Unlock()
 }

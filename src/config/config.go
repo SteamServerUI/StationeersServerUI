@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.1.11"
+	Version = "5.2.1"
 	Branch  = "nightly-logger"
 )
 
@@ -100,6 +100,8 @@ func LoadConfig() (*JsonConfig, error) {
 
 // applyConfig applies the configuration with JSON -> env -> fallback hierarchy
 func applyConfig(cfg *JsonConfig) {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
 	// Apply values with hierarchy
 	DiscordToken = getString(cfg.DiscordToken, "DISCORD_TOKEN", "")
 	ControlChannelID = getString(cfg.ControlChannelID, "CONTROL_CHANNEL_ID", "")

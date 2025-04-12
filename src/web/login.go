@@ -213,7 +213,9 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Mark setup as complete and enable auth
+	config.ConfigMu.Lock()
 	config.IsFirstTimeSetup = false
+	config.ConfigMu.Unlock()
 	isTrue := true
 	newConfig.AuthEnabled = &isTrue // Set the pointer to true
 
