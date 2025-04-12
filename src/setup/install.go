@@ -202,8 +202,8 @@ func checkAndUpdateFile(filepath, url string) {
 			return
 		}
 
-		logger.Install.Info("Local hash for " + fileName + ": " + localHash)
-		logger.Install.Info("Remote hash for " + fileName + ": " + remoteHash)
+		logger.Install.Debug("Local hash for " + fileName + ": " + localHash)
+		logger.Install.Debug("Remote hash for " + fileName + ": " + remoteHash)
 
 		if localHash != remoteHash {
 			logger.Install.Info("🔄Updating " + fileName + " due to differences...")

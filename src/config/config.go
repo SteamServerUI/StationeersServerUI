@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.1.6"
+	Version = "5.1.7"
 	Branch  = "nightly-uimodfolder-steamline"
 )
 
