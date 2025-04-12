@@ -2,44 +2,19 @@
 package web
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/configchanger"
-	"StationeersServerUI/src/loader"
-	"StationeersServerUI/src/logger"
-	"StationeersServerUI/src/security"
 	"encoding/json"
 	"net/http"
 	"strings"
-	"text/template"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/configchanger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/security"
 )
 
 var setupReminderCount = 0 // to limit the number of setup reminders shown to the user
-
-func ServeLoginTemplate(w http.ResponseWriter, r *http.Request) {
-	type TemplateData struct {
-		IsFirstTimeSetup bool
-		Path             string
-	}
-
-	tmpl, err := template.ParseFiles("./UIMod/login/login.html")
-	if err != nil {
-		logger.Web.Error("Failed to parse login template: %v" + err.Error())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	data := TemplateData{
-		IsFirstTimeSetup: config.IsFirstTimeSetup,
-		Path:             r.URL.Path,
-	}
-
-	w.Header().Set("Content-Type", "text/html")
-	if err := tmpl.Execute(w, data); err != nil {
-		logger.Web.Error("Failed to execute login template: %v" + err.Error())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-	}
-}
 
 // LoginHandler issues a JWT cookie
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -220,13 +195,6 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 
 // SetupFinalizeHandler marks setup as complete
 func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
-	// Check if setup is already done
-	if !config.IsFirstTimeSetup {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - Setup already finalized"})
-		return
-	}
 
 	//check if users map is nil or empty
 	if config.Users == nil || len(config.Users) == 0 {
@@ -246,7 +214,9 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Mark setup as complete and enable auth
+	config.ConfigMu.Lock()
 	config.IsFirstTimeSetup = false
+	config.ConfigMu.Unlock()
 	isTrue := true
 	newConfig.AuthEnabled = &isTrue // Set the pointer to true
 

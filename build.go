@@ -2,7 +2,6 @@
 package main
 
 import (
-	"StationeersServerUI/src/config"
 	"fmt"
 	"log"
 	"os"
@@ -11,6 +10,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 )
 
 const (

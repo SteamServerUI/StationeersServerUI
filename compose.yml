@@ -20,6 +20,4 @@ services:
     environment:
       - STEAMCMD_DIR=/app/steamcmd
     restart: unless-stopped
-    # Example with additional arguments
-    # command: ["/app/StationeersServerControl", "-config", "/app/config/config.json"]
     command: []

@@ -2,13 +2,14 @@
 package loader
 
 import (
-	"StationeersServerUI/src/backupmgr"
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/detectionmgr"
-	"StationeersServerUI/src/discordbot"
-	"StationeersServerUI/src/logger"
 	"fmt"
 	"strconv"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/backupmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/detectionmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 func ReloadAll() {
@@ -59,7 +60,7 @@ func PrintConfigDetails() {
 	logger.Config.Debug(fmt.Sprintf("GameBranch: %s", config.GameBranch))
 	logger.Config.Debug("IsDiscordEnabled: " + strconv.FormatBool(config.IsDiscordEnabled))
 	logger.Config.Debug("IsCleanupEnabled: " + strconv.FormatBool(config.IsCleanupEnabled))
-	logger.Config.Debug("IsDebugMode (pprof Server and LogLevel 10): " + strconv.FormatBool(config.IsDebugMode))
+	logger.Config.Debug("IsDebugMode (pprof Server): " + strconv.FormatBool(config.IsDebugMode))
 	logger.Config.Debug("IsFirstTimeSetup: " + strconv.FormatBool(config.IsFirstTimeSetup))
 
 	logger.Config.Debug("---- DISCORD CONFIG VARS ----")

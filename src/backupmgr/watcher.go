@@ -1,9 +1,10 @@
 package backupmgr
 
 import (
-	"StationeersServerUI/src/logger"
 	"fmt"
 	"path/filepath"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 
 	"github.com/fsnotify/fsnotify"
 )

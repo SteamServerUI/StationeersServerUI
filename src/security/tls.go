@@ -1,8 +1,6 @@
 package security
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -11,7 +9,11 @@ import (
 	"fmt"
 	"math/big"
 	"os"
+	"path/filepath"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 // EnsureTLSCerts ensures TLS certificates exist and are valid at config.TLSCertPath and config.TLSKeyPath, generating self-signed ones if needed.
@@ -55,6 +57,10 @@ func EnsureTLSCerts() error {
 
 // generateSelfSignedCert creates a self-signed certificate and key pair at config.TLSCertPath and config.TLSKeyPath.
 func generateSelfSignedCert() error {
+	dir := filepath.Dir(config.TLSCertPath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("failed to create directory %s: %v", dir, err)
+	}
 	// Generate a private key
 	priv, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {

@@ -1,8 +1,8 @@
 package discordbot
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 // PassLogMessageToDiscordLogBuffer is called from the detection module to add a log message to the buffer.
@@ -45,5 +45,7 @@ func flushLogBufferToDiscord() {
 	}
 
 	// Clear the buffer after sending
+	config.ConfigMu.Lock()
 	config.LogMessageBuffer = ""
+	config.ConfigMu.Unlock()
 }

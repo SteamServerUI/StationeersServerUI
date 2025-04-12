@@ -7,8 +7,12 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+)
 
-	"github.com/bwmarrin/discordgo"
+var (
+	// All configuration variables can be found in vars.go
+	Version = "5.2.7"
+	Branch  = "nightly-fixes"
 )
 
 type JsonConfig struct {
@@ -56,6 +60,7 @@ type JsonConfig struct {
 	Debug                   *bool             `json:"Debug"`
 	CreateSSUILogFile       *bool             `json:"CreateSSUILogFile"`
 	LogLevel                int               `json:"LogLevel"`
+	SubsystemFilters        []string          `json:"subsystemFilters"`
 	IsUpdateEnabled         *bool             `json:"IsUpdateEnabled"`
 	AllowPrereleaseUpdates  *bool             `json:"AllowPrereleaseUpdates"`
 	AllowMajorUpdates       *bool             `json:"AllowMajorUpdates"`
@@ -68,74 +73,6 @@ type CustomDetection struct {
 	EventType string `json:"eventType"`
 	Message   string `json:"message"`
 }
-
-var (
-	Version = "5.0.17"
-	Branch                  = "nightly-auth"
-	GameBranch              string
-	DiscordToken            string
-	DiscordSession          *discordgo.Session
-	IsDiscordEnabled        bool
-	ControlChannelID        string
-	StatusChannelID         string
-	LogChannelID            string
-	ErrorChannelID          string
-	ConnectionListChannelID string
-	SaveChannelID           string
-	ControlPanelChannelID   string
-	IsCleanupEnabled        bool
-	BackupKeepLastN         int
-	BackupKeepDailyFor      time.Duration
-	BackupKeepWeeklyFor     time.Duration
-	BackupKeepMonthlyFor    time.Duration
-	BackupCleanupInterval   time.Duration
-	ConfiguredBackupDir     string
-	ConfiguredSafeBackupDir string
-	BackupWaitTime          time.Duration
-	ServerName              string
-	ServerMaxPlayers        string
-	ServerPassword          string
-	ServerAuthSecret        string
-	AdminPassword           string
-	GamePort                string
-	UpdatePort              string
-	LocalIpAddress          string
-	ServerVisible           bool
-	UseSteamP2P             bool
-	BlackListFilePath       string
-	SaveInfo                string
-	BackupWorldName         string
-	WorldName               string
-	ExePath                 string
-	TLSCertPath             = "./UIMod/cert.pem"
-	TLSKeyPath              = "./UIMod/key.pem"
-	ConfigPath              = "./UIMod/config.json"
-	GameServerAppID         = "600760"
-	SaveInterval            string
-	AdditionalParams        string
-	AutoPauseServer         bool
-	UPNPEnabled             bool
-	AutoSave                bool
-	StartLocalHost          bool
-	IsDebugMode             bool
-	CreateSSUILogFile       bool
-	LogLevel                int
-	IsFirstTimeSetup        bool
-	LogMessageBuffer        string
-	DiscordCharBufferSize   int
-	SSEMessageBufferSize    = 2000
-	MaxSSEConnections       = 20
-	BufferFlushTicker       *time.Ticker
-	ControlMessageID        string
-	ExceptionMessageID      string
-	Users                   map[string]string
-	AuthEnabled             bool
-	JwtKey                  string
-	AuthTokenLifetime       int
-	IsUpdateEnabled         bool
-	AllowPrereleaseUpdates  bool
-	AllowMajorUpdates       bool
-)
 
 // LoadConfig loads and initializes the configuration
 func LoadConfig() (*JsonConfig, error) {
@@ -163,6 +100,8 @@ func LoadConfig() (*JsonConfig, error) {
 
 // applyConfig applies the configuration with JSON -> env -> fallback hierarchy
 func applyConfig(cfg *JsonConfig) {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
 	// Apply values with hierarchy
 	DiscordToken = getString(cfg.DiscordToken, "DISCORD_TOKEN", "")
 	ControlChannelID = getString(cfg.ControlChannelID, "CONTROL_CHANNEL_ID", "")
@@ -198,7 +137,7 @@ func applyConfig(cfg *JsonConfig) {
 	ServerAuthSecret = getString(cfg.ServerAuthSecret, "SERVER_AUTH_SECRET", "")
 	AdminPassword = getString(cfg.AdminPassword, "ADMIN_PASSWORD", "")
 	GamePort = getString(cfg.GamePort, "GAME_PORT", "27016")
-	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27017")
+	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27015")
 
 	upnpEnabledVal := getBool(cfg.UPNPEnabled, "UPNP_ENABLED", false)
 	UPNPEnabled = upnpEnabledVal
@@ -260,6 +199,8 @@ func applyConfig(cfg *JsonConfig) {
 	allowMajorUpdatesVal := getBool(cfg.AllowMajorUpdates, "ALLOW_MAJOR_UPDATES", false)
 	AllowMajorUpdates = allowMajorUpdatesVal
 	cfg.AllowMajorUpdates = &allowMajorUpdatesVal
+
+	SubsystemFilters = getStringSlice(cfg.SubsystemFilters, "SUBSYSTEM_FILTERS", []string{})
 
 	// Process SaveInfo
 	parts := strings.Split(SaveInfo, " ")

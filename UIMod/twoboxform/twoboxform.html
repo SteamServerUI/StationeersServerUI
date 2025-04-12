@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/twoboxform/twoboxform.css">
+</head>
+<body>
+    <div id="space-background"></div>
+    <div id="planet-container"></div>
+    <div class="breakout-container"></div>
+
+    <div id="preloader">
+        <div class="preloader-content">
+            <h2>Launching...</h2>
+            <div class="preloader-spinner"></div>
+            <p>Preparing Stationeers Server UI</p>
+        </div>
+    </div>
+    
+    <main class="two-box-form-container">
+        <header>
+            <h1>Stationeers Server UI</h1>
+            <br/>
+            <h2>{{.HeaderTitle}}</h2>
+        </header>
+        
+        <div class="form-container">
+            {{if .StepMessage}}
+            <p class="step-message">{{.StepMessage}}</p>
+            {{end}}
+            
+            <!-- Only show on finalize screen -->
+            {{if eq .Step "finalize"}}
+            <div class="config-summary">
+                <div id="config-details">
+                    <!-- Summary will be populated via JS -->
+                    <p>Your server is ready to be launched!</p>
+                </div>
+                <button type="button" id="finalize-btn" class="finalize-btn">Finalize Setup</button>
+            </div>
+            {{end}}
+            
+            <form id="two-box-form">
+                {{if ne .PrimaryLabel ""}}
+                <div class="form-group">
+                    <label for="primary-field">{{.PrimaryLabel}}</label>
+                    <input 
+                        type="text"
+                        id="primary-field" 
+                        name="primary-field" 
+                        placeholder="{{.PrimaryPlaceholderText}}"
+                        required
+                    >
+                </div>
+                {{end}}
+
+                {{if ne .SecondaryLabel ""}}
+                <div class="form-group">
+                    <label for="secondary-field">{{.SecondaryLabel}}</label>
+                    <input 
+                        type="{{.SecondaryLabelType}}" 
+                        id="secondary-field" 
+                        name="secondary-field" 
+                        placeholder="{{.SecondaryPlaceholderText}}"
+                        required
+                    >
+                </div>
+                {{end}}
+
+                <div class="form-actions">
+                    <input 
+                        type="submit" 
+                        value="{{.SubmitButtonText}}" 
+                        class="two-box-form-button"
+                    >
+                    
+                    {{if .ShowExtraButtons}}
+                    <button type="button" id="skip-btn" class="skip-btn">
+                        {{.SkipButtonText}}
+                    </button>
+                    {{end}}
+                </div>
+                <input type="hidden" id="mode" value="{{.Mode}}">
+                <input type="hidden" id="step" value="{{.Step}}">
+                <input type="hidden" id="config-field" value="{{.ConfigField}}">
+                <input type="hidden" id="next-step" value="{{.NextStep}}">
+            </form>
+        </div>
+
+        <footer>
+            <p>{{.FooterText}}</p>
+        </footer>
+    </main>
+
+    <script src="/twoboxform/twoboxform.js"></script>
+</body>
+</html>

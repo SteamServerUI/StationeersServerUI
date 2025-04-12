@@ -2,10 +2,7 @@
 package gamemgr
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
 	"fmt"
-	"os"
 	"os/exec"
 	"runtime"
 	"strconv"
@@ -13,6 +10,9 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 var (
@@ -41,19 +41,18 @@ func internalIsServerRunningNoLock() bool {
 		go func() { done <- cmd.Wait() }()
 		select {
 		case err := <-done:
-			if err != nil && strings.Contains(err.Error(), "Wait was already called") {
-				logger.Core.Debug("Wait already called, assuming process is dead")
-			}
-			cmd = nil
-			return false
-		case <-time.After(50 * time.Millisecond):
-			// Double-check with os.FindProcess
-			if proc, err := os.FindProcess(cmd.Process.Pid); err == nil {
-				if err := proc.Signal(os.Kill); err != nil {
+			// process has likely exited
+			if err != nil {
+				logger.Core.Debug("Wait failed: " + err.Error())
+				if strings.Contains(err.Error(), "The handle is invalid") {
 					cmd = nil
 					return false
 				}
 			}
+			cmd = nil
+			return false
+		case <-time.After(50 * time.Millisecond):
+			// Process is still running
 			return true
 		}
 	} else {
@@ -133,33 +132,72 @@ func InternalStopServer() error {
 
 	// Process is running, stop it
 	isWindows := runtime.GOOS == "windows"
+	var killErr error
 
 	if isWindows {
-		// On Windows, just kill the process directly
-		if killErr := cmd.Process.Kill(); killErr != nil {
-			return nil
-		}
+		// On Windows, terminate the process (no graceful shutdown)
+		killErr = cmd.Process.Kill()
 	} else {
-		// On Linux/Unix, try SIGTERM first for graceful shutdown
+		// On Linux/Unix, send SIGTERM for graceful shutdown
 		if termErr := cmd.Process.Signal(syscall.SIGTERM); termErr != nil {
-			// If SIGTERM fails, fall back to Kill
-			if killErr := cmd.Process.Kill(); killErr != nil {
-				return fmt.Errorf("error stopping server: %v", killErr)
+			logger.Core.Debug("SIGTERM failed: " + termErr.Error())
+			killErr = cmd.Process.Kill() // Fallback to Kill if SIGTERM fails
+		} else {
+			// Wait for graceful shutdown
+			waitErrChan := make(chan error, 1)
+			go func() {
+				waitErrChan <- cmd.Wait()
+			}()
+
+			select {
+			case waitErr := <-waitErrChan:
+				if waitErr != nil && !strings.Contains(waitErr.Error(), "exit status") {
+					logger.Core.Debug("Wait error after SIGTERM: " + waitErr.Error())
+				}
+			case <-time.After(10 * time.Second): // Increased timeout
+				logger.Core.Warn("Timeout waiting for graceful shutdown, sending SIGKILL")
+				killErr = cmd.Process.Kill() // Fallback to SIGKILL
+				select {
+				case waitErr := <-waitErrChan:
+					if waitErr != nil && !strings.Contains(waitErr.Error(), "exit status") {
+						logger.Core.Debug("Wait error after SIGKILL: " + waitErr.Error())
+					}
+				case <-time.After(2 * time.Second): // Additional wait for SIGKILL
+					return fmt.Errorf("timeout waiting for process to exit after SIGKILL")
+				}
 			}
 		}
-		// Close the logDone channel to stop the tailing goroutine (Linux only)
+
+		// Stop log tailing (Linux only)
 		if logDone != nil {
 			close(logDone)
-			logDone = nil // Reset to nil to avoid double-closing
+			logDone = nil
 		}
 	}
 
-	// Wait for the process to exit
-	if waitErr := cmd.Wait(); waitErr != nil && !strings.Contains(waitErr.Error(), "exit status") {
-		// Only report actual errors, not just non-zero exit codes
-		return fmt.Errorf("error during server shutdown: %v", waitErr)
+	// For Windows, wait briefly after Kill to ensure process is gone
+	if isWindows {
+		waitErrChan := make(chan error, 1)
+		go func() {
+			waitErrChan <- cmd.Wait()
+		}()
+
+		select {
+		case waitErr := <-waitErrChan:
+			if waitErr != nil && !strings.Contains(waitErr.Error(), "exit status") &&
+				!strings.Contains(waitErr.Error(), "The handle is invalid") {
+				return fmt.Errorf("error during server shutdown: %v", waitErr)
+			}
+		case <-time.After(1 * time.Second):
+			return fmt.Errorf("timeout waiting for process to exit")
+		}
 	}
 
+	if killErr != nil {
+		return fmt.Errorf("error stopping server: %v", killErr)
+	}
+
+	// Process is confirmed stopped, clear cmd
 	cmd = nil
 	return nil
 }

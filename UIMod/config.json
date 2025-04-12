@@ -25,7 +25,7 @@
   "ServerAuthSecret": "",
   "AdminPassword": "",
   "GamePort": "27016",
-  "UpdatePort": "27017",
+  "UpdatePort": "27015",
   "UPNPEnabled": false,
   "AutoSave": true,
   "SaveInterval": "300",

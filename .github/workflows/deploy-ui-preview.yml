@@ -20,17 +20,17 @@ jobs:
       - name: Set up static folder
         run: |
           mkdir -p static
-          cp UIMod/config.html static/
-          cp UIMod/apiinfo.html static/
-          cp UIMod/style.css static/
-          cp UIMod/favicon.ico static/
-          cp UIMod/stationeers.png static/
+          cp UIMod/ui/config.html static/
+          cp UIMod/assets/apiinfo.html static/
+          cp UIMod/ui/style.css static/
+          cp UIMod/assets/favicon.ico static/
+          cp UIMod/assets/stationeers.png static/
           cp .github/mock-backend-for-demo.js static/script.js
 
       - name: Modify index.html
         run: |
           # Copy index.html to root
-          cp UIMod/index.html .
+          cp UIMod/ui/index.html .
           # Fix button navigation
           sed -i "s|navigateTo('/config')|navigateTo('/static/config.html')|g" index.html
           # Fix static paths with repo name

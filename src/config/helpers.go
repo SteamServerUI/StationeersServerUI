@@ -22,6 +22,26 @@ func getString(jsonVal, envKey, defaultVal string) string {
 	return defaultVal
 }
 
+func getStringSlice(jsonValue []string, envKey string, fallback []string) []string {
+	if len(jsonValue) > 0 {
+		return jsonValue
+	}
+	if envValue := os.Getenv(envKey); envValue != "" {
+		// Split the environment variable by commas, trim whitespace
+		parts := strings.Split(envValue, ",")
+		var result []string
+		for _, part := range parts {
+			if trimmed := strings.TrimSpace(part); trimmed != "" {
+				result = append(result, trimmed)
+			}
+		}
+		if len(result) > 0 {
+			return result
+		}
+	}
+	return fallback
+}
+
 func getInt(jsonVal int, envKey string, defaultVal int) int {
 	if jsonVal != 0 {
 		return jsonVal

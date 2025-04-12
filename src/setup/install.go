@@ -1,9 +1,6 @@
 package setup
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/loader"
-	"StationeersServerUI/src/logger"
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
@@ -16,6 +13,10 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 var downloadBranch string // Holds the branch to download from
@@ -48,9 +49,15 @@ func Install(wg *sync.WaitGroup) {
 }
 
 func CheckAndDownloadUIMod() {
-	workingDir := "./UIMod/"
-	loginDir := "./UIMod/login/"
-	detectionmanagerDir := "./UIMod/detectionmanager/"
+	uiModDir := config.UIModFolder
+	twoBoxFormDir := config.UIModFolder + "twoboxform/"
+	detectionmanagerDir := config.UIModFolder + "detectionmanager/"
+	assetDir := config.UIModFolder + "assets/"
+	uiDir := config.UIModFolder + "ui/"
+	configDir := config.UIModFolder + "config/"
+	tlsDir := config.UIModFolder + "tls/"
+
+	requiredDirs := []string{uiModDir, uiDir, assetDir, twoBoxFormDir, detectionmanagerDir, configDir, tlsDir}
 
 	// Set branch
 	if config.Branch == "release" || config.Branch == "Release" {
@@ -62,28 +69,29 @@ func CheckAndDownloadUIMod() {
 
 	// Define file mappings
 	files := map[string]string{
-		workingDir + "apiinfo.html":                   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/apiinfo.html", downloadBranch),
-		workingDir + "config.html":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.html", downloadBranch),
-		workingDir + "config.json":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.json", downloadBranch),
-		workingDir + "index.html":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/index.html", downloadBranch),
-		workingDir + "script.js":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/script.js", downloadBranch),
-		workingDir + "stationeers.png":                fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/stationeers.png", downloadBranch),
-		workingDir + "style.css":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/style.css", downloadBranch),
-		workingDir + "favicon.ico":                    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/favicon.ico", downloadBranch),
-		loginDir + "login.css":                        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.css", downloadBranch),
-		loginDir + "login.js":                         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.js", downloadBranch),
-		loginDir + "login.html":                       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/login/login.html", downloadBranch),
+		//configDir + "config.json":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config/config.json", downloadBranch),
+		uiDir + "config.html":                         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/config.html", downloadBranch),
+		uiDir + "index.html":                          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/index.html", downloadBranch),
+		assetDir + "script.js":                        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/script.js", downloadBranch),
+		assetDir + "style.css":                        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/style.css", downloadBranch),
+		assetDir + "config-styles.css":                fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/config-styles.css", downloadBranch),
+		assetDir + "stationeers.png":                  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/stationeers.png", downloadBranch),
+		assetDir + "favicon.ico":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/favicon.ico", downloadBranch),
+		assetDir + "apiinfo.html":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/apiinfo.html", downloadBranch),
+		twoBoxFormDir + "twoboxform.css":              fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.css", downloadBranch),
+		twoBoxFormDir + "twoboxform.js":               fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.js", downloadBranch),
+		twoBoxFormDir + "twoboxform.html":             fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.html", downloadBranch),
 		detectionmanagerDir + "detectionmanager.js":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.js", downloadBranch),
 		detectionmanagerDir + "detectionmanager.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.html", downloadBranch),
 		detectionmanagerDir + "detectionmanager.css":  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/detectionmanager/detectionmanager.css", downloadBranch),
 	}
 
 	// Check if the directory exists
-	if _, err := os.Stat(workingDir); os.IsNotExist(err) {
+	if _, err := os.Stat(uiModDir); os.IsNotExist(err) {
 		logger.Install.Warn("⚠️Folder ./UIMod does not exist. Creating it...")
 
 		// Create directories
-		for _, dir := range []string{workingDir, loginDir, detectionmanagerDir} {
+		for _, dir := range requiredDirs {
 			if _, err := os.Stat(dir); os.IsNotExist(err) {
 				err := os.MkdirAll(dir, os.ModePerm)
 				if err != nil {
@@ -95,11 +103,15 @@ func CheckAndDownloadUIMod() {
 		}
 
 		// Initial download
+		config.ConfigMu.Lock()
 		config.IsFirstTimeSetup = true
+		config.ConfigMu.Unlock()
 		downloadAllFiles(files)
 	} else {
 		// Directory exists
+		config.ConfigMu.Lock()
 		config.IsFirstTimeSetup = false
+		config.ConfigMu.Unlock()
 		logger.Install.Info(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
 		logger.Install.Info(fmt.Sprintf("IsFirstTimeSetup: %v", config.IsFirstTimeSetup))
 		if config.IsUpdateEnabled {
@@ -195,8 +207,8 @@ func checkAndUpdateFile(filepath, url string) {
 			return
 		}
 
-		logger.Install.Info("Local hash for " + fileName + ": " + localHash)
-		logger.Install.Info("Remote hash for " + fileName + ": " + remoteHash)
+		logger.Install.Debug("Local hash for " + fileName + ": " + localHash)
+		logger.Install.Debug("Remote hash for " + fileName + ": " + remoteHash)
 
 		if localHash != remoteHash {
 			logger.Install.Info("🔄Updating " + fileName + " due to differences...")
