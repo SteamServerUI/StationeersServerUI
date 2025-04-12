@@ -53,6 +53,10 @@ func CheckAndDownloadUIMod() {
 	detectionmanagerDir := config.UIModFolder + "detectionmanager/"
 	assetDir := config.UIModFolder + "assets/"
 	uiDir := config.UIModFolder + "ui/"
+	configDir := config.UIModFolder + "config/"
+	tlsDir := config.UIModFolder + "tls/"
+
+	requiredDirs := []string{uiModDir, uiDir, assetDir, twoBoxFormDir, detectionmanagerDir, configDir, tlsDir}
 
 	// Set branch
 	if config.Branch == "release" || config.Branch == "Release" {
@@ -64,7 +68,7 @@ func CheckAndDownloadUIMod() {
 
 	// Define file mappings
 	files := map[string]string{
-		uiModDir + "config.json":                      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config.json", downloadBranch),
+		configDir + "config.json":                     fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/config/config.json", downloadBranch),
 		uiDir + "config.html":                         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/config.html", downloadBranch),
 		uiDir + "index.html":                          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/index.html", downloadBranch),
 		assetDir + "script.js":                        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/script.js", downloadBranch),
@@ -86,7 +90,7 @@ func CheckAndDownloadUIMod() {
 		logger.Install.Warn("⚠️Folder ./UIMod does not exist. Creating it...")
 
 		// Create directories
-		for _, dir := range []string{uiModDir, twoBoxFormDir, detectionmanagerDir} {
+		for _, dir := range requiredDirs {
 			if _, err := os.Stat(dir); os.IsNotExist(err) {
 				err := os.MkdirAll(dir, os.ModePerm)
 				if err != nil {

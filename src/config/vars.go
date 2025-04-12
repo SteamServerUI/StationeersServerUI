@@ -94,9 +94,9 @@ var (
 
 // File paths
 var (
-	TLSCertPath              = "./UIMod/cert.pem"
-	TLSKeyPath               = "./UIMod/key.pem"
-	ConfigPath               = "./UIMod/config.json"
+	TLSCertPath              = "./UIMod/tls/cert.pem"
+	TLSKeyPath               = "./UIMod/tls/key.pem"
+	ConfigPath               = "./UIMod/config/config.json"
 	CustomDetectionsFilePath = "./UIMod/detectionmanager/customdetections.json"
 	LogFilePath              = "./UIMod/ssui.log"
 	UIModFolder              = "./UIMod/"
