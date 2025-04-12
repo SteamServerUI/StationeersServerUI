@@ -225,3 +225,23 @@ func StartConsoleStream() http.HandlerFunc {
 func StartDetectionEventStream() http.HandlerFunc {
 	return ssestream.EventStreamManager.CreateStreamHandler("Event")
 }
+
+func ServeTwoBoxCss(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/css")
+	http.ServeFile(w, r, config.UIModFolder+"twoboxform/twoboxform.css")
+}
+
+func ServeTwoBoxJs(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/javascript")
+	http.ServeFile(w, r, config.UIModFolder+"twoboxform/twoboxform.js")
+}
+
+func ServeDetectionManagerCss(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/css")
+	http.ServeFile(w, r, config.UIModFolder+"detectionmanager/detectionmanager.css")
+}
+
+func ServeDetectionManagerJs(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/javascript")
+	http.ServeFile(w, r, config.UIModFolder+"detectionmanager/detectionmanager.js")
+}

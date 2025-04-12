@@ -20,14 +20,8 @@ func StartWebServer(wg *sync.WaitGroup) {
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
 
 	// Unprotected auth routes
-	mux.HandleFunc("/twoboxform/twoboxform.js", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/javascript")
-		http.ServeFile(w, r, config.UIModFolder+"twoboxform/twoboxform.js")
-	})
-	mux.HandleFunc("/twoboxform/twoboxform.css", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/css")
-		http.ServeFile(w, r, config.UIModFolder+"twoboxform/twoboxform.css")
-	})
+	mux.HandleFunc("/twoboxform/twoboxform.js", ServeTwoBoxJs)
+	mux.HandleFunc("/twoboxform/twoboxform.css", ServeTwoBoxCss)
 	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
 	mux.HandleFunc("/auth/logout", LogoutHandler)
 	mux.HandleFunc("/login", ServeTwoBoxFormTemplate)
@@ -40,18 +34,15 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/detectionmanager", ServeDetectionManager)
 	protectedMux.HandleFunc("/", ServeIndex)
 
-	// v1 API routes
-	protectedMux.HandleFunc("/start", StartServer)
-	protectedMux.HandleFunc("/stop", StopServer)
-
 	protectedMux.HandleFunc("/saveconfigasjson", configchanger.SaveConfigForm)
 
 	// SSE routes
 	protectedMux.HandleFunc("/console", GetLogOutput)
 	protectedMux.HandleFunc("/events", GetEventOutput)
 
-	// v2 API routes that will eventually replace the API routes above, but for now we'll keep v1 (no prefix) for compatibility.
 	// Server Control
+	protectedMux.HandleFunc("/start", StartServer)
+	protectedMux.HandleFunc("/stop", StopServer)
 	protectedMux.HandleFunc("/api/v2/server/start", StartServer)
 	protectedMux.HandleFunc("/api/v2/server/stop", StopServer)
 
@@ -74,6 +65,10 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/setup", ServeTwoBoxFormTemplate)
 	protectedMux.HandleFunc("/api/v2/auth/setup/register", RegisterUserHandler) // user registration
 	protectedMux.HandleFunc("/api/v2/auth/setup/finalize", SetupFinalizeHandler)
+
+	// Detection Manager static files
+	protectedMux.HandleFunc("/detectionmanager/detectionmanager.js", ServeDetectionManagerJs)
+	protectedMux.HandleFunc("/detectionmanager/detectionmanager.css", ServeDetectionManagerCss)
 
 	// Apply middleware only to protected routes
 	mux.Handle("/", AuthMiddleware(protectedMux)) // Wrap protected routes under root
