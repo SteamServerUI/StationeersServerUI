@@ -5,7 +5,6 @@ import (
 	"StationeersServerUI/src/config"
 	"StationeersServerUI/src/logger"
 	"fmt"
-	"os"
 	"os/exec"
 	"runtime"
 	"strconv"
@@ -40,20 +39,13 @@ func internalIsServerRunningNoLock() bool {
 		done := make(chan error, 1)
 		go func() { done <- cmd.Wait() }()
 		select {
-		case err := <-done:
-			if err != nil && strings.Contains(err.Error(), "Wait was already called") {
-				logger.Core.Debug("Wait already called, assuming process is dead")
-			}
+		case <-done:
+			// Process has exited
+			logger.Core.Debug("Server process has exited")
 			cmd = nil
 			return false
 		case <-time.After(50 * time.Millisecond):
-			// Double-check with os.FindProcess
-			if proc, err := os.FindProcess(cmd.Process.Pid); err == nil {
-				if err := proc.Signal(os.Kill); err != nil {
-					cmd = nil
-					return false
-				}
-			}
+			// Process is still running
 			return true
 		}
 	} else {
