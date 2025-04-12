@@ -19,7 +19,7 @@ type TemplateData struct {
 }
 
 func ServeIndex(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("./UIMod/index.html")
+	tmpl, err := template.ParseFiles(config.IndexHtmlPath)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -45,7 +45,7 @@ func ServeIndex(w http.ResponseWriter, r *http.Request) {
 
 func ServeDetectionManager(w http.ResponseWriter, r *http.Request) {
 
-	htmlFile, err := os.ReadFile("./UIMod/detectionmanager/detectionmanager.html")
+	htmlFile, err := os.ReadFile(config.DetectionManagerHtmlPath)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error reading detectionmanager.html: %v", err), http.StatusInternalServerError)
 		return
@@ -58,7 +58,7 @@ func ServeDetectionManager(w http.ResponseWriter, r *http.Request) {
 
 func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
-	htmlFile, err := os.ReadFile("./UIMod/config.html")
+	htmlFile, err := os.ReadFile(config.ConfigHtmlPath)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error reading config.html: %v", err), http.StatusInternalServerError)
 		return

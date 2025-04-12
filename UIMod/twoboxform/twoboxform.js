@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     async function preloadNextPage() {
         try {
-            const response = await fetch('/static/favicon.ico', { method: 'HEAD', cache: 'force-cache' });
+            const response = await fetch('/static/assets/favicon.ico', { method: 'HEAD', cache: 'force-cache' });
             return response.ok;
         } catch (error) {
             console.error('Preload failed:', error);

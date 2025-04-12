@@ -95,7 +95,7 @@ func (l *Logger) writeToFile(logLine string) {
 	// Retry loop with timeout
 	for attempt := 0; attempt < maxRetries; attempt++ {
 		// Open file with proper flags
-		file, err := os.OpenFile("./UIMod/ssui.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		file, err := os.OpenFile(config.LogFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err == nil {
 			// Successfully opened file, proceed with writing
 			defer file.Close()

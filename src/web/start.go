@@ -22,11 +22,11 @@ func StartWebServer(wg *sync.WaitGroup) {
 	// Unprotected auth routes
 	mux.HandleFunc("/twoboxform/form.js", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/javascript")
-		http.ServeFile(w, r, "./UIMod/twoboxform/form.js")
+		http.ServeFile(w, r, config.UIModFolder+"twoboxform/form.js")
 	})
 	mux.HandleFunc("/twoboxform/form.css", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/css")
-		http.ServeFile(w, r, "./UIMod/twoboxform/form.css")
+		http.ServeFile(w, r, config.UIModFolder+"twoboxform/form.css")
 	})
 	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
 	mux.HandleFunc("/auth/logout", LogoutHandler)
@@ -34,7 +34,7 @@ func StartWebServer(wg *sync.WaitGroup) {
 
 	// Protected routes (wrapped with middleware)
 	protectedMux := http.NewServeMux()
-	fs := http.FileServer(http.Dir("./UIMod"))
+	fs := http.FileServer(http.Dir(config.UIModFolder + "/assets"))
 	protectedMux.Handle("/static/", http.StripPrefix("/static/", fs))
 	protectedMux.HandleFunc("/config", ServeConfigPage)
 	protectedMux.HandleFunc("/detectionmanager", ServeDetectionManager)

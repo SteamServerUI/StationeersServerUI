@@ -7,8 +7,12 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+)
 
-	"github.com/bwmarrin/discordgo"
+var (
+	// All configuration variables can be found in vars.go
+	Version = "5.1.2"
+	Branch  = "nightly-uimodfolder-steamline"
 )
 
 type JsonConfig struct {
@@ -68,74 +72,6 @@ type CustomDetection struct {
 	EventType string `json:"eventType"`
 	Message   string `json:"message"`
 }
-
-var (
-	Version = "5.1.1"
-	Branch                  = "nightly-first-time-setup"
-	GameBranch              string
-	DiscordToken            string
-	DiscordSession          *discordgo.Session
-	IsDiscordEnabled        bool
-	ControlChannelID        string
-	StatusChannelID         string
-	LogChannelID            string
-	ErrorChannelID          string
-	ConnectionListChannelID string
-	SaveChannelID           string
-	ControlPanelChannelID   string
-	IsCleanupEnabled        bool
-	BackupKeepLastN         int
-	BackupKeepDailyFor      time.Duration
-	BackupKeepWeeklyFor     time.Duration
-	BackupKeepMonthlyFor    time.Duration
-	BackupCleanupInterval   time.Duration
-	ConfiguredBackupDir     string
-	ConfiguredSafeBackupDir string
-	BackupWaitTime          time.Duration
-	ServerName              string
-	ServerMaxPlayers        string
-	ServerPassword          string
-	ServerAuthSecret        string
-	AdminPassword           string
-	GamePort                string
-	UpdatePort              string
-	LocalIpAddress          string
-	ServerVisible           bool
-	UseSteamP2P             bool
-	BlackListFilePath       string
-	SaveInfo                string
-	BackupWorldName         string
-	WorldName               string
-	ExePath                 string
-	TLSCertPath             = "./UIMod/cert.pem"
-	TLSKeyPath              = "./UIMod/key.pem"
-	ConfigPath              = "./UIMod/config.json"
-	GameServerAppID         = "600760"
-	SaveInterval            string
-	AdditionalParams        string
-	AutoPauseServer         bool
-	UPNPEnabled             bool
-	AutoSave                bool
-	StartLocalHost          bool
-	IsDebugMode             bool
-	CreateSSUILogFile       bool
-	LogLevel                int
-	IsFirstTimeSetup        bool
-	LogMessageBuffer        string
-	DiscordCharBufferSize   int
-	SSEMessageBufferSize    = 2000
-	MaxSSEConnections       = 20
-	BufferFlushTicker       *time.Ticker
-	ControlMessageID        string
-	ExceptionMessageID      string
-	Users                   map[string]string
-	AuthEnabled             bool
-	JwtKey                  string
-	AuthTokenLifetime       int
-	IsUpdateEnabled         bool
-	AllowPrereleaseUpdates  bool
-	AllowMajorUpdates       bool
-)
 
 // LoadConfig loads and initializes the configuration
 func LoadConfig() (*JsonConfig, error) {

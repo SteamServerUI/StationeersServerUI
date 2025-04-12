@@ -45,7 +45,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		SecondaryPlaceholderText string
 	}
 
-	tmpl, err := template.ParseFiles("./UIMod/twoboxform/twoboxform.html")
+	tmpl, err := template.ParseFiles(config.TwoBoxFormHtmlPath)
 	if err != nil {
 		logger.Web.Error("Failed to parse 2BoxForm template: %v" + err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
