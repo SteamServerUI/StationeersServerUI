@@ -3,13 +3,14 @@
 package detectionmgr
 
 import (
-	"StationeersServerUI/src/config"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sync"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
 )
 
 /*

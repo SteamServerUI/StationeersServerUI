@@ -1,8 +1,8 @@
 package discordbot
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 )
 
 // PassLogMessageToDiscordLogBuffer is called from the detection module to add a log message to the buffer.

@@ -1,8 +1,6 @@
 package gamemgr
 
 import (
-	"StationeersServerUI/src/logger"
-	"StationeersServerUI/src/ssestream"
 	"bufio"
 	"fmt"
 	"io"
@@ -11,6 +9,9 @@ import (
 	"runtime"
 	"strconv"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/ssestream"
 )
 
 // readPipe for Windows

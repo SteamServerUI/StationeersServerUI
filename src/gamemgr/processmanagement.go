@@ -2,8 +2,6 @@
 package gamemgr
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
 	"fmt"
 	"os/exec"
 	"runtime"
@@ -12,6 +10,9 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 )
 
 var (

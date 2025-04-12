@@ -2,11 +2,12 @@
 package detectionmgr
 
 import (
-	"StationeersServerUI/src/discordbot"
 	"fmt"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/discordbot"
 )
 
 /*

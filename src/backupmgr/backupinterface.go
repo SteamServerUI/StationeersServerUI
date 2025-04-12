@@ -2,8 +2,9 @@
 package backupmgr
 
 import (
-	"StationeersServerUI/src/config"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
 )
 
 // GlobalBackupManager is the singleton instance of the backup manager

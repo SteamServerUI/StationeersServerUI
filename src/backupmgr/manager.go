@@ -8,8 +8,8 @@ import (
 	"sort"
 	"time"
 
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 
 	"github.com/fsnotify/fsnotify"
 )

@@ -1,8 +1,6 @@
 package security
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -13,6 +11,9 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 )
 
 // EnsureTLSCerts ensures TLS certificates exist and are valid at config.TLSCertPath and config.TLSKeyPath, generating self-signed ones if needed.

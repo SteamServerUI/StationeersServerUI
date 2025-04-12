@@ -2,11 +2,12 @@
 package ssestream
 
 import (
-	"StationeersServerUI/src/logger"
 	"fmt"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 )
 
 // The SSE blocking issue is NOT related to the backend; the API handles 200 clients per channel fine.

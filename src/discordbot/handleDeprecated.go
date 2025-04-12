@@ -1,10 +1,11 @@
 package discordbot
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/gamemgr"
-	"StationeersServerUI/src/logger"
 	"strings"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 
 	"github.com/bwmarrin/discordgo"
 )

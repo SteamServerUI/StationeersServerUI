@@ -2,15 +2,16 @@
 package web
 
 import (
-	"StationeersServerUI/src/backupmgr"
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/configchanger"
-	"StationeersServerUI/src/detectionmgr"
-	"StationeersServerUI/src/logger"
-	"StationeersServerUI/src/security"
 	"net/http"
 	"net/http/pprof"
 	"sync"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/backupmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/configchanger"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/detectionmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/security"
 )
 
 func StartWebServer(wg *sync.WaitGroup) {

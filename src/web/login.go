@@ -2,15 +2,16 @@
 package web
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/configchanger"
-	"StationeersServerUI/src/loader"
-	"StationeersServerUI/src/logger"
-	"StationeersServerUI/src/security"
 	"encoding/json"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/configchanger"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/security"
 )
 
 var setupReminderCount = 0 // to limit the number of setup reminders shown to the user

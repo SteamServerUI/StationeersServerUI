@@ -4,8 +4,9 @@ package security
 //repurposed from a Jacksonthemaster private repo
 
 import (
-	"StationeersServerUI/src/config"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"

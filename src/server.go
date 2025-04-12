@@ -1,11 +1,12 @@
 package main
 
 import (
-	"StationeersServerUI/src/loader"
-	"StationeersServerUI/src/logger"
-	"StationeersServerUI/src/setup"
-	"StationeersServerUI/src/web"
 	"sync"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/setup"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/web"
 )
 
 func main() {

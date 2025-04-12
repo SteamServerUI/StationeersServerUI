@@ -2,7 +2,7 @@
 package ssestream
 
 import (
-	"StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
 )
 
 // Global managers for console and event streams

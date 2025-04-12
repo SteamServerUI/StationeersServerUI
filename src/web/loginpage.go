@@ -1,10 +1,11 @@
 package web
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
 	"net/http"
 	"text/template"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 )
 
 func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {

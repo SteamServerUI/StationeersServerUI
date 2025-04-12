@@ -1,12 +1,13 @@
 package discordbot
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
 	"fmt"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 )
 
 var (

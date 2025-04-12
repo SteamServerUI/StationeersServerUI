@@ -2,10 +2,10 @@
 package detectionmgr
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/discordbot"
-	"StationeersServerUI/src/logger"
-	"StationeersServerUI/src/ssestream"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/discordbot"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/ssestream"
 )
 
 /*

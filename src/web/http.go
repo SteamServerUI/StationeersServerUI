@@ -1,16 +1,17 @@
 package web
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/gamemgr"
-	"StationeersServerUI/src/logger"
-	"StationeersServerUI/src/ssestream"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"strings"
 	"text/template"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/ssestream"
 )
 
 // TemplateData holds data to be passed to templates

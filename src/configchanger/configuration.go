@@ -1,8 +1,6 @@
 package configchanger
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/loader"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +8,9 @@ import (
 	"os"
 	"reflect"
 	"strconv"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/loader"
 )
 
 // SaveConfig writes the given config to file and reloads it

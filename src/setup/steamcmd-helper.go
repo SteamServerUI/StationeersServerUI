@@ -1,7 +1,6 @@
 package setup
 
 import (
-	"StationeersServerUI/src/logger"
 	"archive/tar"
 	"archive/zip"
 	"bytes"
@@ -17,6 +16,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 )
 
 // createSteamCMDDirectory creates the SteamCMD directory.

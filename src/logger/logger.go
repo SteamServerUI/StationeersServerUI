@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
 )
 
 // Logger instances

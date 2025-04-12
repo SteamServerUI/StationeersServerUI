@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/gamemgr"
-	"StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 
 	"github.com/bwmarrin/discordgo"
 )

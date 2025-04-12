@@ -1,9 +1,6 @@
 package setup
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/loader"
-	"StationeersServerUI/src/logger"
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
@@ -16,6 +13,10 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 )
 
 var downloadBranch string // Holds the branch to download from

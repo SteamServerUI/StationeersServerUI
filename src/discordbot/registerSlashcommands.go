@@ -1,9 +1,10 @@
 package discordbot
 
 import (
-	"StationeersServerUI/src/logger"
 	"sync"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 
 	"github.com/bwmarrin/discordgo"
 )

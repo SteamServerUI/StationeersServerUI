@@ -1,8 +1,6 @@
 package setup
 
 import (
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/logger"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,6 +13,9 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 )
 
 // githubRelease represents the structure of a GitHub release response

@@ -1,10 +1,11 @@
 package gamemgr
 
 import (
-	"StationeersServerUI/src/config"
 	"runtime"
 	"strconv"
 	"strings"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
 )
 
 type Arg struct {

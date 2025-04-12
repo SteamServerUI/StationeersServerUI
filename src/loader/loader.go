@@ -2,13 +2,14 @@
 package loader
 
 import (
-	"StationeersServerUI/src/backupmgr"
-	"StationeersServerUI/src/config"
-	"StationeersServerUI/src/detectionmgr"
-	"StationeersServerUI/src/discordbot"
-	"StationeersServerUI/src/logger"
 	"fmt"
 	"strconv"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/src/backupmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/detectionmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/discordbot"
+	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
 )
 
 func ReloadAll() {
