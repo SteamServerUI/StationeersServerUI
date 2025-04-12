@@ -39,9 +39,15 @@ func internalIsServerRunningNoLock() bool {
 		done := make(chan error, 1)
 		go func() { done <- cmd.Wait() }()
 		select {
-		case <-done:
-			// Process has exited
-			logger.Core.Debug("Server process has exited")
+		case err := <-done:
+			// process has likely exited
+			if err != nil {
+				logger.Core.Debug("Wait failed: " + err.Error())
+				if strings.Contains(err.Error(), "The handle is invalid") {
+					cmd = nil
+					return false
+				}
+			}
 			cmd = nil
 			return false
 		case <-time.After(50 * time.Millisecond):
@@ -125,19 +131,16 @@ func InternalStopServer() error {
 
 	// Process is running, stop it
 	isWindows := runtime.GOOS == "windows"
+	var killErr error
 
 	if isWindows {
-		// On Windows, just kill the process directly
-		if killErr := cmd.Process.Kill(); killErr != nil {
-			return nil
-		}
+		// On Windows, attempt to terminate the process
+		killErr = cmd.Process.Kill()
 	} else {
 		// On Linux/Unix, try SIGTERM first for graceful shutdown
 		if termErr := cmd.Process.Signal(syscall.SIGTERM); termErr != nil {
 			// If SIGTERM fails, fall back to Kill
-			if killErr := cmd.Process.Kill(); killErr != nil {
-				return fmt.Errorf("error stopping server: %v", killErr)
-			}
+			killErr = cmd.Process.Kill()
 		}
 		// Close the logDone channel to stop the tailing goroutine (Linux only)
 		if logDone != nil {
@@ -146,12 +149,36 @@ func InternalStopServer() error {
 		}
 	}
 
-	// Wait for the process to exit
-	if waitErr := cmd.Wait(); waitErr != nil && !strings.Contains(waitErr.Error(), "exit status") {
-		// Only report actual errors, not just non-zero exit codes
-		return fmt.Errorf("error during server shutdown: %v", waitErr)
+	// Wait for the process to exit, with a timeout to avoid hanging
+	waitErrChan := make(chan error, 1)
+	go func() {
+		waitErrChan <- cmd.Wait()
+	}()
+
+	var waitErr error
+	select {
+	case waitErr = <-waitErrChan:
+	case <-time.After(1 * time.Second):
+		waitErr = fmt.Errorf("timeout waiting for process to exit")
 	}
 
+	// If kill failed, return that error
+	if killErr != nil {
+		return fmt.Errorf("error stopping server: %v", killErr)
+	}
+
+	// Handle wait errors
+	if waitErr != nil {
+		// If the error is "handle is invalid" or similar, assume the process is dead
+		if isWindows && strings.Contains(waitErr.Error(), "The handle is invalid") {
+			logger.Core.Debug("Handle is invalid during shutdown, assuming process is terminated")
+		} else if !strings.Contains(waitErr.Error(), "exit status") {
+			// Report other unexpected errors
+			return fmt.Errorf("error during server shutdown: %v", waitErr)
+		}
+	}
+
+	// Process is confirmed stopped, clear cmd
 	cmd = nil
 	return nil
 }
