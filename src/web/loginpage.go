@@ -406,6 +406,11 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch {
+
+	case path == "/login" && !config.AuthEnabled:
+		http.Redirect(w, r, "/setup", http.StatusSeeOther)
+		return
+
 	case path == "/setup":
 		data.Mode = "setup"
 		data.ShowExtraButtons = true
