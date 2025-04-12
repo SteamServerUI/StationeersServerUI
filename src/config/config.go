@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.1.10"
+	Version = "5.1.11"
 	Branch  = "nightly-logger"
 )
 
@@ -60,10 +60,10 @@ type JsonConfig struct {
 	Debug                   *bool             `json:"Debug"`
 	CreateSSUILogFile       *bool             `json:"CreateSSUILogFile"`
 	LogLevel                int               `json:"LogLevel"`
+	SubsystemFilters        []string          `json:"subsystemFilters"`
 	IsUpdateEnabled         *bool             `json:"IsUpdateEnabled"`
 	AllowPrereleaseUpdates  *bool             `json:"AllowPrereleaseUpdates"`
 	AllowMajorUpdates       *bool             `json:"AllowMajorUpdates"`
-	SubsystemFilters        []string          `json:"subsystemFilters"`
 }
 
 type CustomDetection struct {

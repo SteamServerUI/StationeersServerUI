@@ -33,7 +33,7 @@ var (
 
 // Logging, debugging and misc
 var (
-	IsDebugMode          bool
+	IsDebugMode          bool //only used for pprof server, keep it like this and check the log level instead. Debug = 10
 	CreateSSUILogFile    bool
 	LogLevel             int
 	LogMessageBuffer     string
@@ -99,7 +99,7 @@ var (
 	TLSKeyPath               = "./UIMod/tls/key.pem"
 	ConfigPath               = "./UIMod/config/config.json"
 	CustomDetectionsFilePath = "./UIMod/detectionmanager/customdetections.json"
-	LogFilePath              = "./UIMod/ssui.log"
+	LogFolder                = "./UIMod/logs/"
 	UIModFolder              = "./UIMod/"
 	TwoBoxFormFolder         = "./UIMod/twoboxform/"
 	ConfigHtmlPath           = "./UIMod/ui/config.html"
