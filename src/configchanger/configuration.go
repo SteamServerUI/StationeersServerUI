@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
 )
 
 // SaveConfig writes the given config to file and reloads it

@@ -12,8 +12,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 // EnsureTLSCerts ensures TLS certificates exist and are valid at config.TLSCertPath and config.TLSKeyPath, generating self-signed ones if needed.

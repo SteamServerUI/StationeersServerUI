@@ -3,9 +3,9 @@ package discordbot
 import (
 	"strings"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/src/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 
 	"github.com/bwmarrin/discordgo"
 )

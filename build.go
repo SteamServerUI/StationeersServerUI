@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 )
 
 const (

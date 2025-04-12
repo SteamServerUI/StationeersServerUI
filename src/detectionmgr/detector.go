@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/src/discordbot"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
 )
 
 /*

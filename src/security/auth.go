@@ -6,7 +6,7 @@ package security
 import (
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"

@@ -14,9 +14,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/src/loader"
-	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 var downloadBranch string // Holds the branch to download from

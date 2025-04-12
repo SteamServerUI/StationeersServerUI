@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 
 	"github.com/bwmarrin/discordgo"
 )

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {

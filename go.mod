@@ -1,4 +1,4 @@
-module github.com/JacksonTheMaster/StationeersServerUI
+module github.com/JacksonTheMaster/StationeersServerUI/v5
 
 go 1.22.1
 

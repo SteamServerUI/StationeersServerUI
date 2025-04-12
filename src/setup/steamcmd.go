@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 )
 
 // ExtractorFunc is a type that represents a function for extracting archives.

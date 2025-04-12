@@ -3,10 +3,10 @@ package main
 import (
 	"sync"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/src/loader"
-	"github.com/JacksonTheMaster/StationeersServerUI/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/src/setup"
-	"github.com/JacksonTheMaster/StationeersServerUI/src/web"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/web"
 )
 
 func main() {
