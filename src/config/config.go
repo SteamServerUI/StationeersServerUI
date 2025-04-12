@@ -11,8 +11,8 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.2.1"
-	Branch  = "nightly-logger"
+	Version = "5.2.2"
+	Branch  = "nightly-fixes"
 )
 
 type JsonConfig struct {

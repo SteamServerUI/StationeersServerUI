@@ -5,6 +5,7 @@ import (
 	"StationeersServerUI/src/gamemgr"
 	"StationeersServerUI/src/logger"
 	"StationeersServerUI/src/ssestream"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -204,6 +205,15 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprint(w, "Server stopped.")
 	logger.Web.Core("Server stopped.")
+}
+
+func GetGameServerRunState(w http.ResponseWriter, r *http.Request) {
+	runState := gamemgr.InternalIsServerRunning()
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(runState); err != nil {
+		http.Error(w, "Failed to respond with Game Server status", http.StatusInternalServerError)
+		return
+	}
 }
 
 // handler for the /console endpoint

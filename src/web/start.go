@@ -45,6 +45,7 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/stop", StopServer)
 	protectedMux.HandleFunc("/api/v2/server/start", StartServer)
 	protectedMux.HandleFunc("/api/v2/server/stop", StopServer)
+	protectedMux.HandleFunc("/api/v2/server/status", GetGameServerRunState)
 
 	backupHandler := backupmgr.NewHTTPHandler(backupmgr.GlobalBackupManager)
 	protectedMux.HandleFunc("/api/v2/backups", backupHandler.ListBackupsHandler)
