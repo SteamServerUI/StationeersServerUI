@@ -25,12 +25,13 @@ jobs:
         run: go mod download
 
       # Compile the build.go script to produce Executable
-      - name: Run build.go
-        run: go run build.go
+      - name: Run ./build/build.go
+        run: go run ./build/build.go
 
       # Verify the executable exists
       - name: Verify build output
         run: |
+          cd build
           if ls StationeersServerControl*; then
             echo "Build succeeded: Executable found."
           else
@@ -44,4 +45,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: StationeersServerControl
-          path: StationeersServerControl*
+          path: ./build/StationeersServerControl*
