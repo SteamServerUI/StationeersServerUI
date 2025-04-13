@@ -1,4 +1,6 @@
-// build.go
+// build/build.go
+//go:build ignore
+// +build ignore
 
 // run from root with `go run build/build.go`
 package main
