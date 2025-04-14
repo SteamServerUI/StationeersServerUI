@@ -106,6 +106,12 @@ var (
 	AllowMajorUpdates      bool
 )
 
+// SSCM (Stationeers Server Command Manager) settings
+
+var (
+	IsSSCMEnabled = true
+)
+
 // File paths
 var (
 	TLSCertPath              = "./UIMod/tls/cert.pem"
@@ -119,4 +125,5 @@ var (
 	DetectionManagerHtmlPath = "./UIMod/detectionmanager/detectionmanager.html"
 	TwoBoxFormHtmlPath       = "./UIMod/twoboxform/twoboxform.html"
 	IndexHtmlPath            = "./UIMod/ui/index.html"
+	SSCMFilePath             = "./BepInEx/plugins/SSCM/SSCM.socket"
 )

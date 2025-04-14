@@ -96,6 +96,6 @@ Love this project? I'd love your help making it better! See the [Contributing Gu
 - 💡 **Have an idea?** [Suggest a feature](https://github.com/JacksonTheMaster/StationeesServerUI/issues/new?labels=enhancement)
 - 🤔 **Questions?** [Check the Wiki](https://github.com/JacksonTheMaster/StationeesServerUI/wiki) or [open a topic](https://github.com/JacksonTheMaster/StationeesServerUI/issues/new?labels=question).
 
-## License
+## Licensing
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT [LICENSE](LICENSE), except for the Stationeers Server Command Manager (SSCM) in the `./SSCM` subfolder, which is governed by the proprietary SSCM License Agreement (see `./SSCM/LICENSE`).

@@ -12,6 +12,8 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
+**Exclusions**: The Stationeers Server Command Manager (SSCM) located in the `./SSCM` subfolder is not covered by this MIT License. SSCM is governed by a separate proprietary license, the SSCM License Agreement, which can be found in `./SSCM/LICENSE`. Please review that license for terms governing the use, distribution, and modification of SSCM.
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
