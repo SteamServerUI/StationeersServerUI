@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Handle boolean conversion for yes/no fields
             if (configField === "IsDiscordEnabled" || configField === "UPNPEnabled" || 
-                configField === "ServerVisible" || configField === "UseSteamP2P") {
+                configField === "ServerVisible" || configField === "UseSteamP2P" || configField === "IsSSCMEnabled") {
                 body = JSON.stringify({
                     [configField]: booleanToConfig(document.getElementById('primary-field').value)
                 });

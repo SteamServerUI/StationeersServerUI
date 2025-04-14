@@ -109,7 +109,7 @@ var (
 // SSCM (Stationeers Server Command Manager) settings
 
 var (
-	IsSSCMEnabled = true
+	IsSSCMEnabled bool
 )
 
 // File paths

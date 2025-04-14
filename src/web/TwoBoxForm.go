@@ -383,7 +383,21 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SubmitButtonText:         "Save & Continue",
 			SkipButtonText:           "Skip Authentication",
 			ConfigField:              "", // Special handling for admin account
-			NextStep:                 "finalize",
+			NextStep:                 "sscm_opt_in",
+		},
+		"sscm_opt_in": {
+			ID:                     "sscm_opt_in",
+			Title:                  "Stationeers Server UI",
+			HeaderTitle:            "SSCM",
+			StepMessage:            "SSCM is a plugin that allows you to execute server commands directly from SSUI. It is recommended to enable this feature, but it is not required.",
+			PrimaryPlaceholderText: "yes/no",
+			PrimaryLabel:           "Enable SSCM",
+			SecondaryLabel:         "",
+			SecondaryLabelType:     "hidden",
+			SubmitButtonText:       "Accept SSCM License & Continue",
+			SkipButtonText:         "Skip",
+			ConfigField:            "IsSSCMEnabled",
+			NextStep:               "finalize",
 		},
 		"finalize": {
 			ID:                 "finalize",
