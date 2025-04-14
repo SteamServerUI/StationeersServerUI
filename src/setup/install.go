@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
@@ -24,8 +23,6 @@ var downloadBranch string // Holds the branch to download from
 // Install performs the entire installation process and ensures the server waits for it to complete
 func Install(wg *sync.WaitGroup) {
 	defer wg.Done() // Signal that installation is complete
-
-	loader.ReloadConfig()
 
 	// Step 0: Check for updates
 	if err := UpdateExecutable(); err != nil {
