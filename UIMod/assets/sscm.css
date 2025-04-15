@@ -1,0 +1,114 @@
+/* sscm.css */
+
+.sscm-command-container {
+    position: relative;
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--bg-panel, #1e2124);
+    border: 1px solid var(--primary-glow, #3b82f6);
+    border-radius: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+#sscm-command-input {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg-dark, #2d333b);
+    color: var(--text-bright, #ffffff);
+    border: 1px solid var(--primary-dim, #4b5563);
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+#sscm-command-input:focus {
+    border-color: var(--primary, #3b82f6);
+    box-shadow: 0 0 8px var(--primary-glow, #3b82f6);
+    background: var(--bg-dark-hover, #374151);
+}
+
+#sscm-command-input:disabled {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-bright, #ffffff);
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+#sscm-command-input::placeholder {
+    color: var(--text-bright, #9ca3af);
+    opacity: 0.8;
+}
+
+.sscm-suggestions {
+    position: absolute;
+    bottom: 100%;
+    left: 10px;
+    right: 10px;
+    max-height: 250px;
+    overflow-y: auto;
+    background: var(--bg-dark, #2d333b);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+}
+
+.sscm-suggestion-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    color: var(--text-bright, #ffffff);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sscm-suggestion-item:hover,
+.sscm-suggestion-item.highlighted {
+    background: var(--primary-glow, #3b82f6);
+    color: #ffffff;
+}
+
+.sscm-suggestion-name {
+    font-weight: 600;
+    flex: 0 0 150px;
+}
+
+.sscm-suggestion-params {
+    color: var(--text-muted, #d1d5db);
+    font-size: 12px;
+    flex: 0 0 200px;
+    margin-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sscm-suggestion-desc {
+    color: var(--text-dim, #9ca3af);
+    font-size: 12px;
+    flex: 1;
+    margin-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sscm-suggestions::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sscm-suggestions::-webkit-scrollbar-track {
+    background: var(--bg-dark, #2d333b);
+}
+
+.sscm-suggestions::-webkit-scrollbar-thumb {
+    background: var(--primary-dim, #4b5563);
+    border-radius: 4px;
+}
+
+.sscm-suggestions::-webkit-scrollbar-thumb:hover {
+    background: var(--primary, #3b82f6);
+}

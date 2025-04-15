@@ -14,8 +14,9 @@ var installMutex sync.Mutex
 
 func CheckAndDownloadSSCM() {
 	SCCMPluginDir := config.SCCMPluginDir
+	uiModDir := config.UIModFolder
 
-	requiredDirs := []string{SCCMPluginDir}
+	requiredDirs := []string{SCCMPluginDir, uiModDir}
 
 	// Set branch
 	if config.Branch == "release" || config.Branch == "Release" {
@@ -29,6 +30,8 @@ func CheckAndDownloadSSCM() {
 	files := map[string]string{
 		SCCMPluginDir + "SSCM.dll": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/SSCM/SSCM.dll", downloadBranch),
 		SCCMPluginDir + "SSCM.pdb": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/SSCM/SSCM.pdb", downloadBranch),
+		uiModDir + "sccm.js":       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/sscm.js", downloadBranch),
+		uiModDir + "sccm.css":      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/sscm.css", downloadBranch),
 	}
 
 	// Check if the directory exists

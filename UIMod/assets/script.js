@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createPlanet(planetContainer, 50, 1000, 46, 'rgba(100, 200, 150, 0.5)');
     createPlanet(planetContainer, 30, 1250, 63, 'rgba(50, 150, 250, 0.6)');
     createPlanet(planetContainer, 70, 400, 28, 'rgba(200, 150, 200, 0.7)'); 
-
+    console.warn("If you see errors for sscm.js or sscm.css, you may want to enable SSCM.");
 
 });
 

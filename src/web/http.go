@@ -301,3 +301,20 @@ func CommandHandler(w http.ResponseWriter, r *http.Request) {
 	// Success: return 204 No Content
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func HandleIsSSCMEnabled(w http.ResponseWriter, r *http.Request) {
+	// Only allow GET requests
+	if r.Method != http.MethodGet {
+		http.Error(w, "Only GET requests are allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Check if SSCM is enabled
+	if !config.IsSSCMEnabled {
+		http.Error(w, "SSCM is disabled", http.StatusForbidden)
+		return
+	}
+
+	// Success: return 200 OK
+	w.WriteHeader(http.StatusOK)
+}

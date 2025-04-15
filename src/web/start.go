@@ -54,7 +54,8 @@ func StartWebServer(wg *sync.WaitGroup) {
 
 	// Configuration
 	protectedMux.HandleFunc("/api/v2/saveconfig", configchanger.SaveConfigRestful)
-	protectedMux.HandleFunc("/api/v2/SSCM/run", HandleCommand) // Command execution via SSCM (needs to be enable, config.IsSSCMEnabled)
+	protectedMux.HandleFunc("/api/v2/SSCM/run", HandleCommand)           // Command execution via SSCM (needs to be enable, config.IsSSCMEnabled)
+	protectedMux.HandleFunc("/api/v2/SSCM/enabled", HandleIsSSCMEnabled) // Check if SSCM is enabled
 
 	// Custom Detections
 	protectedMux.HandleFunc("/api/v2/custom-detections", detectionmgr.HandleCustomDetection)

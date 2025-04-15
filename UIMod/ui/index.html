@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Server Control</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/sscm.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
 <body>
@@ -32,6 +33,10 @@
             </div>
             <div id="console-tab" class="tab-content active">
                 <div id="console"></div>
+                <div class="sscm-command-container">
+                    <input id="sscm-command-input" type="text" placeholder="Enter command...">
+                    <div id="sscm-autocomplete-suggestions" class="sscm-suggestions"></div>
+                </div>
             </div>
             <div id="detection-tab" class="tab-content">
                 <div id="detection-console"></div>
@@ -47,5 +52,6 @@
         <div class="copyright">Copyright &copy; 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a> Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.</div>
     </footer>
     <script src="/static/script.js"></script>
+    <script src="/static/sscm.js"></script>
 </body>
 </html>
