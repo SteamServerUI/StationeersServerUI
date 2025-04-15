@@ -75,10 +75,17 @@ func InternalStartServer() error {
 	}
 
 	args := buildCommandArgs()
-	cmd = exec.Command(config.ExePath, args...)
 
 	logger.Core.Info("=== GAMESERVER STARTING ===")
-	logger.Core.Info("• Executable: " + config.ExePath)
+	if config.IsSSCMEnabled && runtime.GOOS == "linux" {
+		// Use run_bepinex.sh as the command and pass ExePath as an argument
+		cmd = exec.Command("./run_bepinex.sh", append([]string{config.ExePath}, args...)...)
+		logger.Core.Info("• Executable: " + fmt.Sprintln("./run_bepinex.sh", config.ExePath, args))
+	} else {
+		// Use ExePath directly as the command
+		cmd = exec.Command(config.ExePath, args...)
+		logger.Core.Info("• Executable: " + config.ExePath)
+	}
 	logger.Core.Info("• Parameters: " + strings.Join(args, " "))
 
 	if runtime.GOOS == "windows" {

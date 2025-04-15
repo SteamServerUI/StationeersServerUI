@@ -150,11 +150,10 @@ func downloadAndInstallBepInEx(url string) error {
 		}
 	}
 
-	// clean up run_bepinex.sh if it exists
-	if _, err := os.Stat("run_bepinex.sh"); err == nil {
-		logger.Install.Debug("🗑️Removing run_bepinex.sh")
-		if err := os.Remove("run_bepinex.sh"); err != nil {
-			logger.Install.Warn(fmt.Sprintf("⚠️Failed to remove run_bepinex.sh: %v", err))
+	if runtime.GOOS == "linux" {
+		// make sure run_bepinex.sh is executable
+		if err := os.Chmod("./run_bepinex.sh", os.ModePerm); err != nil {
+			logger.Install.Warn(fmt.Sprintf("⚠️Failed to make run_bepinex.sh executable: %v", err))
 		}
 	}
 
