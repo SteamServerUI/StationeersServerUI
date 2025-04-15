@@ -258,6 +258,7 @@ input[type="password"]:focus {
     font-style: italic;
     text-align: center;
     text-wrap: pretty;
+    line-height: 1.8rem;
 }
 
 footer {

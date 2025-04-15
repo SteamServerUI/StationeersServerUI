@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.4.12"
+	Version = "5.4.15"
 	Branch  = "SSCM"
 )
 
