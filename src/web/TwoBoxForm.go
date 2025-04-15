@@ -387,10 +387,10 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		},
 		"sscm_opt_in": {
 			ID:                     "sscm_opt_in",
-			Title:                  "Stationeers Server UI",
-			HeaderTitle:            "SSCM (Public Beta)",
+			Title:                  "Stationeers Command Manager",
+			HeaderTitle:            "Public Beta",
 			StepMessage:            "SSCM is a custom plugin that allows you to execute server commands directly from SSUI. It doesn't affect vanilla server functionality while giving you the ability to run commands from the SSUI console.",
-			PrimaryPlaceholderText: "yes/no",
+			PrimaryPlaceholderText: "yes",
 			PrimaryLabel:           "Enable SSCM",
 			SecondaryLabel:         "",
 			SecondaryLabelType:     "hidden",
@@ -401,7 +401,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		},
 		"finalize": {
 			ID:                 "finalize",
-			Title:              "Stationeers Server UI - Finalize Setup",
+			Title:              "Finalize Setup",
 			HeaderTitle:        "",
 			StepMessage:        "Ready to finalize? Your configuration has already been saved while you completed this setup. If you want to change any of the settings, you may click Return to Start and skip whatever you want to keep. Most options can also be changed on the config Tab in the UI.",
 			PrimaryLabel:       "",
