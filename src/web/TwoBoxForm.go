@@ -394,7 +394,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			PrimaryLabel:           "Enable SSCM",
 			SecondaryLabel:         "",
 			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       "Accept SSCM License & Continue",
+			SubmitButtonText:       "Accept License & Continue",
 			SkipButtonText:         "Skip",
 			ConfigField:            "IsSSCMEnabled",
 			NextStep:               "finalize",

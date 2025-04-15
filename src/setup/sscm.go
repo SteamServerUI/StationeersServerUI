@@ -13,7 +13,7 @@ import (
 var installMutex sync.Mutex
 
 func CheckAndDownloadSSCM() {
-	SCCMPluginDir := config.UIModFolder
+	SCCMPluginDir := config.SCCMPluginDir
 
 	requiredDirs := []string{SCCMPluginDir}
 
@@ -69,7 +69,7 @@ func CheckAndDownloadSSCM() {
 				updateFilesIfDifferent(files)
 			}
 		} else {
-			logger.Install.Info("♻️Folder ./UIMod already exists. Updates disabled, skipping validation.")
+			logger.Install.Info("♻️Folder SSCM already exists. Updates disabled, skipping validation.")
 		}
 	}
 }
@@ -83,7 +83,7 @@ func CheckAndInstallBepInEx() {
 
 	// Check if BepInEx is already installed
 	if _, err := os.Stat("BepInEx"); err == nil {
-		logger.Install.Info("BepInEx folder already exists")
+		logger.Install.Info("BepInEx folder already exists, skipping installation")
 		return
 	}
 
@@ -144,9 +144,17 @@ func downloadAndInstallBepInEx(url string) error {
 
 	// Clean up changelog.txt if it exists
 	if _, err := os.Stat("changelog.txt"); err == nil {
-		logger.Install.Info("🗑️Removing changelog.txt")
+		logger.Install.Debug("🗑️Removing changelog.txt")
 		if err := os.Remove("changelog.txt"); err != nil {
 			logger.Install.Warn(fmt.Sprintf("⚠️Failed to remove changelog.txt: %v", err))
+		}
+	}
+
+	// clean up run_bepinex.sh if it exists
+	if _, err := os.Stat("run_bepinex.sh"); err == nil {
+		logger.Install.Debug("🗑️Removing run_bepinex.sh")
+		if err := os.Remove("run_bepinex.sh"); err != nil {
+			logger.Install.Warn(fmt.Sprintf("⚠️Failed to remove run_bepinex.sh: %v", err))
 		}
 	}
 
@@ -156,12 +164,6 @@ func downloadAndInstallBepInEx(url string) error {
 func InstallSSCM() {
 	logger.Install.Info("🕑Installing SSCM...")
 
-	// Check if SSCM is already enabled
-	if config.IsSSCMEnabled {
-		logger.Install.Info("✅SSCM is already enabled")
-		return
-	}
-
 	CheckAndInstallBepInEx()
 	CheckAndDownloadSSCM()
 
@@ -170,5 +172,5 @@ func InstallSSCM() {
 	config.IsSSCMEnabled = true
 	config.ConfigMu.Unlock()
 
-	logger.Install.Info("✅SSCM enabled successfully")
+	logger.Install.Info("✅SSCM enabled")
 }
