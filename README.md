@@ -1,4 +1,4 @@
-# Stationeers Dedicated Server Control
+# Stationeers Server UI
 
 ![Go](https://img.shields.io/badge/Go-1.22.1-blue?logo=go&logoColor=white)
 ![Version](https://img.shields.io/github/v/release/jacksonthemaster/StationeersServerUI?logo=github&logoColor=white)
@@ -12,19 +12,22 @@
 ![Last Commit](https://img.shields.io/github/last-commit/jacksonthemaster/StationeersServerUI?logo=git&logoColor=white)
 ![Stationeers](https://img.shields.io/badge/Game-Stationeers-orange?logo=steam&logoColor=white)
 
-### ✨ Feature Showcase ✨
 
-| 🚀 Easy Setup | Secure by Default | 🔄 Auto Updates | 🎮 Easy Control | 💾 Smart Backups | 🤖 Discord Bot |
-|:-------------:|:-----------------:|:---------------:|:----------------:|:----------------:|:--------------:|
-| Just run and go | JWT auth, TLS | Gameserver updates at startup | One-click management | Automated system | Remote control |
+
+## ✨ Feature Showcase ✨
+
+| 🚀 Easy Setup | Secure by Default | 🔄 Auto Updates | 🎮 Easy Control | 💾 Smart Backups | 🤖 Discord Bot | 🛠️ Command Manager | 🧩 Mod Support | 
+|:-------------:|:-----------------:|:---------------:|:----------------:|:----------------:|:--------------:|:------------------:|:-------------:|
+| Just run and go | JWT auth, TLS | Gameserver updates at startup | One-click management | Automated system | Remote control | Execute server commands | BepInEx integration |
 
 <div align="center">
 
 ### 🌟 Live UI Preview 🌟
 
-Explore your fututre Stationeers Server UI in action—no setup required! (Demo, no actual Backend connected)
+Explore your fututre Stationeers Server UI in action—no setup required!
+And the "best part?" The Demo current is not on the V5 but V4, so if you are convinced by the Demo, it will only get better when you actually try it out!
 
-[![Live Preview - Stationeers UI](https://img.shields.io/badge/Live%20Preview-Stationeers%20UI-blueviolet?style=for-the-badge&logo=github)](https://jacksonthemaster.github.io/StationeersServerUI/)
+[![v4 Live Preview - Stationeers UI](https://img.shields.io/badge/Live%20Preview-Stationeers%20UI-blueviolet?style=for-the-badge&logo=github)](https://jacksonthemaster.github.io/StationeersServerUI/)
 
 </div>
 
@@ -34,6 +37,11 @@ Explore your fututre Stationeers Server UI in action—no setup required! (Demo,
   [![UI Overview](media/events-preview.png)](https://jacksonthemaster.github.io/StationeersServerUI/)
   <em>Manage your Stationeers server with style - Retro interface, modern capabilities.</em>
 </div>
+
+### New Power Features
+
+- 🛠️ **Stationeers Server Command Manager Mod** - Execute server commands directly through the UI or API
+- 🧩 **BepInEx Integration** - Automatic setup of the popular modding framework
 
 ## TL;DR - Get Started Fast
 
@@ -47,15 +55,19 @@ Explore your fututre Stationeers Server UI in action—no setup required! (Demo,
 
 A sleek, retro-themed web UI to manage your Stationeers dedicated server. No more command line headaches or manual file editing!
 
+
 ### Why You'll Love It
 
 - 🚀 **Zero Config Setup** - Place in empty folder and run
-- 🔄 **Auto Updates** - Server updates automatically at startup
-- 🎮 **One-Click Controls** - Start/stop server with simple buttons
+- 🔌 **Auto SteamCMD Setup** - No manual installation required
+- 🔄 **Auto Updates** - Server and Management UI update automatically at startup
+- 🎮 **One-Click Controls** - Start/stop server or restore backups with simple buttons
 - 💾 **Smart Backups** - Automated backup system with easy restore
 - 🤖 **Discord Integration** - Control your server through Discord
-- 🔌 **Auto SteamCMD Setup** - No manual installation required
 - 🔒 **Secure by Default** - JWT auth, TLS, and randomized JWT key
+- 🛠️ **Command Manager** - Execute server commands directly from the UI (and soon discord!)
+- 🧩 **Beta: Mod Support** - Support for BepInEx mods (currently in beta, be careful!)
+- 📦 **Docker Support** - Runs in Docker containers
 
 ## Detailed Documentation
 
