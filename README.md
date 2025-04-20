@@ -4,7 +4,6 @@
 ![Version](https://img.shields.io/github/v/release/jacksonthemaster/StationeersServerUI?logo=github&logoColor=white)
 ![Issues](https://img.shields.io/github/issues/jacksonthemaster/StationeersServerUI?logo=github&logoColor=white)
 ![Stars](https://img.shields.io/github/stars/jacksonthemaster/StationeersServerUI?style=social&logo=github)
-![License](https://img.shields.io/github/license/jacksonthemaster/StationeersServerUI?logo=github&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-supported-blue?logo=windows&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-supported-green?logo=linux&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-available-blue?logo=docker&logoColor=white)
