@@ -1,6 +1,6 @@
 // /static/main.js
 document.addEventListener('DOMContentLoaded', () => {
-    window.GPUSaverEnabled = localStorage.getItem('GPUSaverEnabled') === 'true' || false;
+    window.GPUSaverEnabled = localStorage.getItem('GPUSaverEnabled') !== 'false';
     typeh1(document.querySelector('h1'), 30);
     if (window.location.pathname == '/') {
         setupTabs();
