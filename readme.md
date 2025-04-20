@@ -1,27 +1,31 @@
-# Rework in Progress: Stationeers Dedicated Server Control v1.1
-
 ![Go](https://img.shields.io/badge/Go-1.22.1-blue)
-![License](https://img.shields.io/github/license/jacksonthemaster/StationeersServerUI)
 ![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey)
+![Archeology](https://img.shields.io/badge/Archeology-In%20Progress-brown?logo=fossil&logoColor=white)
+![Danger](https://img.shields.io/badge/Dragons-Here%20Be-red?logo=firebase&logoColor=white)
+![Support](https://img.shields.io/badge/Support-LOL%20No-critical?logo=stackexchange&logoColor=white)
+![Version](https://img.shields.io/badge/Version-Jurassic-yellow?logo=github&logoColor=white)
 
+## 👵 Welcome, digital archaeologist! 
+
+ What Are These Ancient Relics?
+ 
+ You've stumbled upon the fossilized remains of earlier Stationeers Server UI versions. These branches are preserved primarily for historical documentation, developer nightmares, and occasionally making @JacksonTheMaster cry.
+
+## ⚠️ IMPORTANT: WHY YOU SHOULDN'T BE HERE ⚠️
+
+### These branches are about as functional as a teapot in summer.
+
+**SERIOUSLY, GO DOWNLOAD THE [LATEST RELEASE](https://github.com/JacksonTheMaster/StationeersServerUI/releases/latest) INSTEAD.**
+
+Old branches will attempt to download files that have long since moved on to the great repository in the sky. They're maintained purely for:
+
+# Stationeers Dedicated Server Control v1.1
 Stationeers Dedicated Server Control is a web-based tool for managing a Stationeers dedicated server. It offers an intuitive UI and a robust REST API for server operations, configuration management, and backup handling.
 I created this project to make it easier for me to manage my Stationeers server more efficiently, especially to restore backups.
 I found that the Stationeers server was not very user-friendly, and I wanted to create a tool that would make it easier to manage the server.
 Also I wanted my friends to be able to start, stop and manage the Server without having to ask me to restore the lastest backup because some base exploded. So here we are.
 
 DISCLAIMER: PUBLISHING THIS UI TO THE WEB SHOULD ONLY BE DONE BEHIND A SECURE AUTHENTICATION MECHANISM; THIS SHOULD NOT UNDER ANY CIRCUMSTANCES BE PORT FORWARDED STRAIGHT OUT!
-
-## Coming Features & Current Bugs
-
-So, in the land of "things I didn't want to happen," I've discovered a lovely little bug in the backup system that's causing—wait for it—*backups to disappear*. Yes, exactly what you want in a backup system, right? Now, whether this catastrophe is entirely my fault or a byproduct of the game being... itself... remains to be seen. But, while I channel my inner ostrich (head firmly in the sand), I've slapped together a *temporary* production fix on our server, SpaceInc: backups will be more granular going forward. Yay, progress!
-
-Now, here's the fun part. The software is going to copy any backup to a secure location on your disk, all neatly segregated by date like some sort of highly organized digital filing cabinet. Restoring them? Oh yeah, that'll be more granular too. You'll be able to sort them by date and feel really smug about it.
-
-Oh, and I made that Discord integration: It’s coming along. Expect a control channel for starting, stopping, and restoring the server, along with other channels for logs, saves, and player data, all nicely formatted and ready for your Discord flex. Plus, live updates for connected players because we all need to know how many people are (or aren't) using the server, right?
-
-## When is "The Future"?
-
-You want to know when all of this magic will be available? Well, let’s just say it’ll be ready "soon™." As someone with a house, a wife, and approximately zero free time, this whole development thing gets... tricky. The changes are mostly done in a super-secret private repo, and I reckon I need about 5 to 15 hours to wrap this thing up. But hey, who's counting?
 
 ## Linux Support
 
@@ -111,10 +115,6 @@ This server is based on Go, so it's basically a REST-API with some HTML files on
 
 The web interface provides buttons to start and stop the server, edit configuration, and manage backups. The current server status and console output are displayed in real-time.
 
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
 ## Contributing
 
 Contributions are welcome! Feel free to open issues or submit pull requests!
@@ -124,3 +124,56 @@ Contributions are welcome! Feel free to open issues or submit pull requests!
 - [JacksonTheMaster](https://github.com/JacksonTheMaster) Developed with ❤️ and 💧 by J. Langisch.
 - [Go](https://go.dev/) for the Go programming language.
 - [RocketWerkz](https://github.com/RocketWerkz) for creating the Stationeers game.
+# 🦖 Prehistoric Branches of Stationeers Server UI
+
+# About historic releases
+1. Historical reference
+2. Code archaeology
+3. Developer nostalgia
+4. The following (sigh):
+
+## 🤦‍♂️ "But I REALLY Need This Specific Old Version!"
+
+Are you absolutely, positively sure? Fine. Here's what you'll need to do:
+
+1. Clone this specific branch
+2. Edit `src/config/config.Branch` to match your current branch name
+3. Build using:
+   - For ancient versions: `go run build.go`
+   - For slightly less ancient versions: `go run build/build.go`
+4. Accept that you are now on your own personal journey of pain and probably fixing already fixed bugs
+
+## 🧟‍♂️ "I'm Still Going To Try This!"
+
+Congratulations on your determination! When things go sideways (not if, WHEN), please follow these steps:
+
+1. Acknowledge your choices
+2. Download the latest release instead
+3. Pretend this never happened
+
+## 📜 Historical Context
+
+These branches are NOT maintained and exist only for continuity of development history and historical reference. They represent the evolutionary path that led to the current codebase, much like how chickens evolved from dinosaurs. Do I like dinosaurs? Maybe.
+
+## 🤡 Support Policy
+
+Support for these branches is provided on a "point and laugh" basis only. 
+
+My official, heartfelt recommendation is:
+
+```
+$ rm -rf old-branch/
+$ wget https://github.com/JacksonTheMaster/StationeersServerUI/releases/latest/download/StationeersServerUI
+```
+
+## 📊 Success Rate Prediction
+
+Your chance of successfully running an old branch without modification:
+
+```
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░░░░░░░░░░░ 39.42%
+```
+
+## License
+
+This project, including it's ancient branches, is licensed under the STATIONEERS SERVER UI LICENSE AGREEMENT - see the ([LICENSE](https://github.com/JacksonTheMaster/StationeersServerUI/blob/main/LICENSE)) file for details.
