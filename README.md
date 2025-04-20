@@ -1,6 +1,6 @@
 # Stationeers Server UI
 
-![Go](https://img.shields.io/badge/Go-1.22.1-blue?logo=go&logoColor=white)
+![Go](https://img.shields.io/badge/Go-1.24.2-blue?logo=go&logoColor=white)
 ![Version](https://img.shields.io/github/v/release/jacksonthemaster/StationeersServerUI?logo=github&logoColor=white)
 ![Issues](https://img.shields.io/github/issues/jacksonthemaster/StationeersServerUI?logo=github&logoColor=white)
 ![Stars](https://img.shields.io/github/stars/jacksonthemaster/StationeersServerUI?style=social&logo=github)
