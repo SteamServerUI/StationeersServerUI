@@ -10,6 +10,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 )
 
 func ReloadAll() {
@@ -23,10 +24,14 @@ func ReloadConfig() {
 		logger.Core.Error("Failed to load config: " + err.Error())
 		return
 	}
+
 	logger.Core.Info("Config reloaded successfully")
 
-	PrintConfigDetails()
+	if config.IsSSCMEnabled {
+		setup.InstallSSCM()
+	}
 
+	PrintConfigDetails()
 }
 
 func ReloadBackupManager() {
@@ -100,4 +105,8 @@ func PrintConfigDetails() {
 	logger.Config.Debug(fmt.Sprintf("AllowPrereleaseUpdates: %v", config.AllowPrereleaseUpdates))
 	logger.Config.Debug(fmt.Sprintf("AllowMajorUpdates: %v", config.AllowMajorUpdates))
 	logger.Config.Debug(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
+
+	logger.Config.Debug("----  SSCM CONFIG VARS ----")
+	logger.Config.Debug(fmt.Sprintf("SSCMFilePath: %s", config.SSCMFilePath))
+	logger.Config.Debug(fmt.Sprintf("IsSSCMEnabled: %v", config.IsSSCMEnabled))
 }

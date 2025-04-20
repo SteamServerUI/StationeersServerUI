@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/google/uuid"
 )
 
 /*
@@ -58,6 +59,7 @@ var (
 	ExePath              string
 	GameBranch           string
 	SubsystemFilters     []string
+	GameServerUUID       uuid.UUID // Assined at startup to the current instance of the server we are managing. Currently unused.
 )
 
 // Discord integration
@@ -106,6 +108,12 @@ var (
 	AllowMajorUpdates      bool
 )
 
+// SSCM (Stationeers Server Command Manager) settings
+
+var (
+	IsSSCMEnabled bool
+)
+
 // File paths
 var (
 	TLSCertPath              = "./UIMod/tls/cert.pem"
@@ -116,7 +124,10 @@ var (
 	UIModFolder              = "./UIMod/"
 	TwoBoxFormFolder         = "./UIMod/twoboxform/"
 	ConfigHtmlPath           = "./UIMod/ui/config.html"
-	DetectionManagerHtmlPath = "./UIMod/detectionmanager/detectionmanager.html"
+	DetectionManagerHtmlPath = "./UIMod/ui/detectionmanager.html"
 	TwoBoxFormHtmlPath       = "./UIMod/twoboxform/twoboxform.html"
 	IndexHtmlPath            = "./UIMod/ui/index.html"
+	SSCMWebDir               = "./UIMod/sscm/"
+	SSCMFilePath             = "./BepInEx/plugins/SSCM/SSCM.socket"
+	SSCMPluginDir            = "./BepInEx/plugins/SSCM/"
 )

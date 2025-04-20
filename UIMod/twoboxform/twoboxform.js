@@ -68,12 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof value === 'string') {
             value = value.trim().toLowerCase();
             if (value === 'yes' || value === 'true' || value === '1') {
-                return "true";
+                return true;
             } else if (value === 'no' || value === 'false' || value === '0') {
-                return "false";
+                return false;
             }
         }
-        return "false"; // Default to false if invalid input
+        return false; // Default to false if invalid input
     }
 
     // Form submission
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Handle boolean conversion for yes/no fields
             if (configField === "IsDiscordEnabled" || configField === "UPNPEnabled" || 
-                configField === "ServerVisible" || configField === "UseSteamP2P") {
+                configField === "ServerVisible" || configField === "UseSteamP2P" || configField === "IsSSCMEnabled") {
                 body = JSON.stringify({
                     [configField]: booleanToConfig(document.getElementById('primary-field').value)
                 });

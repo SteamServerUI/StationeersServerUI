@@ -33,7 +33,6 @@ func (m *BackupManager) Initialize() error {
 
 // Start begins the backup monitoring and cleanup routines
 func (m *BackupManager) Start() error {
-
 	if err := m.Initialize(); err != nil {
 		return fmt.Errorf("failed to initialize backup directories: %w", err)
 	}
@@ -56,6 +55,9 @@ func (m *BackupManager) Start() error {
 
 // watchBackups monitors the backup directory for new files
 func (m *BackupManager) watchBackups() {
+	m.wg.Add(1)
+	defer m.wg.Done()
+
 	logger.Backup.Debug("Starting backup file watcher...")
 	defer logger.Backup.Debug("Backup file watcher stopped")
 
@@ -85,7 +87,11 @@ func (m *BackupManager) handleNewBackup(filePath string) {
 	if !isValidBackupFile(filepath.Base(filePath)) {
 		return
 	}
+
+	m.wg.Add(1)
 	go func() {
+		defer m.wg.Done()
+
 		time.Sleep(m.config.WaitTime)
 
 		m.mu.Lock()
@@ -105,6 +111,9 @@ func (m *BackupManager) handleNewBackup(filePath string) {
 
 // startCleanupRoutine runs periodic backup cleanup
 func (m *BackupManager) startCleanupRoutine() {
+	m.wg.Add(1)
+	defer m.wg.Done()
+
 	ticker := time.NewTicker(m.config.RetentionPolicy.CleanupInterval)
 	defer ticker.Stop()
 
@@ -145,15 +154,25 @@ func (m *BackupManager) ListBackups(limit int) ([]BackupGroup, error) {
 
 // Shutdown stops all backup operations
 func (m *BackupManager) Shutdown() {
-	m.mu.Lock()
-	defer m.mu.Unlock()
+	logger.Backup.Debug("Shutting down backup manager...")
 
+	m.mu.Lock()
 	if m.cancel != nil {
 		m.cancel()
+		m.cancel = nil
 	}
+
 	if m.watcher != nil {
 		m.watcher.close()
+		m.watcher = nil
 	}
+	m.mu.Unlock()
+
+	// Wait for all goroutines to finish
+	logger.Backup.Debug("Waiting for background tasks to complete...")
+	m.wg.Wait()
+
+	logger.Backup.Debug("Backup manager shut down completely")
 }
 
 // NewBackupManager creates a new BackupManager instance

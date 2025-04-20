@@ -1,5 +1,6 @@
 // /static/script.js
 document.addEventListener('DOMContentLoaded', () => {
+    window.GPUSaverEnabled = localStorage.getItem('GPUSaverEnabled') === 'true' || false;
     typeText(document.querySelector('h1'), 30);
     setupTabs();
     fetchDetectionEvents();
@@ -12,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createPlanet(planetContainer, 50, 1000, 46, 'rgba(100, 200, 150, 0.5)');
     createPlanet(planetContainer, 30, 1250, 63, 'rgba(50, 150, 250, 0.6)');
     createPlanet(planetContainer, 70, 400, 28, 'rgba(200, 150, 200, 0.7)'); 
-
+    console.warn("If you see errors for sscm.js or sscm.css, you may want to enable SSCM.");
 
 });
 
@@ -284,6 +285,50 @@ function handleConsole() {
         consoleElement.scrollTop = consoleElement.scrollHeight;
     };
 
+    // Dynamically create SSCM command input
+    const createCommandInput = async () => {
+        try {
+            // Make API call to check if SSCM is enabled
+            const response = await fetch('/api/v2/SSCM/enabled', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+    
+            // If status is not 200, exit the function
+            if (response.status !== 200) {
+                console.log('SSCM is not enabled, status:', response.status);
+                return;
+            }
+    
+            // Proceed to create command input UI if status is 200
+            console.log("Creating command input...");
+            const commandContainer = document.createElement('div');
+            commandContainer.className = 'sscm-command-container';
+            
+            const prompt = document.createElement('span');
+            prompt.className = 'prompt';
+            prompt.textContent = '>';
+    
+            const input = document.createElement('input');
+            input.id = 'sscm-command-input';
+            input.type = 'text';
+            input.placeholder = 'Enter command..';
+            input.setAttribute('autocomplete', 'off');
+            
+            const suggestions = document.createElement('div');
+            suggestions.id = 'sscm-autocomplete-suggestions';
+            suggestions.className = 'sscm-suggestions';
+            
+            commandContainer.append(prompt, input, suggestions);
+            consoleElement.appendChild(commandContainer);
+        } catch (error) {
+            console.error('Error checking SSCM enabled status:', error);
+            return; // Exit on error
+        }
+    };
+
     // Start with initializing message
     typeTextWithCallback(consoleElement, bootTitle, 30, () => {
         // Show two funny messages while connecting
@@ -303,8 +348,11 @@ function handleConsole() {
         outputEventSource.onmessage = event => {
             const message = document.createElement('div');
             message.textContent = event.data;
-            consoleElement.appendChild(message);
-            consoleElement.scrollTop = consoleElement.scrollHeight;
+            consoleElement.insertBefore(message, consoleElement.querySelector('.sscm-command-container')); // Insert before input
+            // Auto-scroll only if at bottom
+            if (consoleElement.scrollTop + consoleElement.clientHeight >= consoleElement.scrollHeight - 10) {
+                consoleElement.scrollTop = consoleElement.scrollHeight;
+            }
         };
 
         outputEventSource.onopen = () => {
@@ -343,6 +391,7 @@ function handleConsole() {
 
     function completeBoot() {
         setTimeout(() => {
+            createCommandInput(); // Add input after boot
             addMessage(bootCompleteMessage, '#0f0');
             consoleElement.scrollTop = consoleElement.scrollHeight;
         }, 500);
@@ -380,17 +429,21 @@ function createPlanet(container, size, orbitRadius, speed, color) {
 
 
 function pollServerStatus() {
+    window.gamserverstate = false;
     const statusInterval = setInterval(() => {
         fetch('/api/v2/server/status')
             .then(response => response.json())
             .then(data => {
                 updateStatusIndicator(data.isRunning);
+                if (data.uuid) {
+                    localStorage.setItem('gameserverrunID', data.uuid);
+                }
             })
             .catch(err => {
                 console.error("Failed to fetch server status:", err);
                 updateStatusIndicator(false, true); // Set error state
             });
-    }, 1000); // Poll every second
+    }, 3500); // Poll every 3.5 seconds (adjusted from 1000 to reduce server load checking the status each time)
 
     // Store the interval ID so we can clear it if needed
     window.statusPollingInterval = statusInterval;
@@ -402,14 +455,66 @@ function updateStatusIndicator(isRunning, isError = false) {
     if (isError) {
         indicator.className = 'status-indicator error';
         indicator.title = 'Error fetching server status';
+        window.gamserverstate = false;
         return;
     }
     
     if (isRunning) {
         indicator.className = 'status-indicator online';
         indicator.title = 'Server is running';
+        window.gamserverstate = true;
     } else {
         indicator.className = 'status-indicator offline';
         indicator.title = 'Server is offline';
+        window.gamserverstate = false;
     }
 }
+
+function resourceSaver(pause) {
+    // Get space background once outside the loop
+    const spaceBackground = document.getElementById('space-background');
+    
+    // Handle animation states for all elements
+    document.querySelectorAll('*').forEach(element => {
+      element.style.animationPlayState = pause ? 'paused' : 'running';
+    });
+    
+    // Fade the space background in/out instead of abrupt display change
+    if (pause) {
+      // Fade out
+      spaceBackground.style.transition = 'opacity 0.5s ease';
+      spaceBackground.style.opacity = '0';
+      // Only hide it after the fade completes
+      setTimeout(() => {
+        if (document.hasFocus() === false) { // Double-check we're still unfocused
+          spaceBackground.style.display = 'none';
+        }
+      }, 500);
+    } else {
+      // Make it visible first, then fade in
+      spaceBackground.style.display = 'block';
+      // Use setTimeout to ensure the display change is processed before starting the fade
+      setTimeout(() => {
+        spaceBackground.style.transition = 'opacity 0.5s ease';
+        spaceBackground.style.opacity = '1';
+      }, 10);
+    }
+}
+
+function toggleGPUSaver() {
+    window.GPUSaverEnabled = !window.GPUSaverEnabled;
+    localStorage.setItem('GPUSaverEnabled', window.GPUSaverEnabled);
+}
+
+// Event listeners for window focus and blur
+window.addEventListener('focus', () => {
+    if (window.GPUSaverEnabled) {
+        resourceSaver(false); // Resume animations when page is in focus
+    }
+});
+
+window.addEventListener('blur', () => {
+    if (window.GPUSaverEnabled) {
+        resourceSaver(true); // Pause animations when page loses focus
+    }
+});

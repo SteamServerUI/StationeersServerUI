@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.3.2"
+	Version = "5.4.26"
 	Branch  = "release"
 )
 
@@ -62,6 +62,7 @@ type JsonConfig struct {
 	LogLevel                int               `json:"LogLevel"`
 	SubsystemFilters        []string          `json:"subsystemFilters"`
 	IsUpdateEnabled         *bool             `json:"IsUpdateEnabled"`
+	IsSSCMEnabled           *bool             `json:"IsSSCMEnabled"`
 	AllowPrereleaseUpdates  *bool             `json:"AllowPrereleaseUpdates"`
 	AllowMajorUpdates       *bool             `json:"AllowMajorUpdates"`
 }
@@ -201,6 +202,10 @@ func applyConfig(cfg *JsonConfig) {
 	cfg.AllowMajorUpdates = &allowMajorUpdatesVal
 
 	SubsystemFilters = getStringSlice(cfg.SubsystemFilters, "SUBSYSTEM_FILTERS", []string{})
+
+	isSSCMEnabledVal := getBool(cfg.IsSSCMEnabled, "IS_SSCM_ENABLED", false)
+	IsSSCMEnabled = isSSCMEnabledVal
+	cfg.IsSSCMEnabled = &isSSCMEnabledVal
 
 	// Process SaveInfo
 	parts := strings.Split(SaveInfo, " ")

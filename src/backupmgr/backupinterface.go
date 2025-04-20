@@ -10,9 +10,11 @@ import (
 // GlobalBackupManager is the singleton instance of the backup manager
 var GlobalBackupManager *BackupManager
 
+// Track all HTTP handlers that need updating when manager changes
+var activeHTTPHandlers []*HTTPHandler
+
 // InitGlobalBackupManager initializes the global backup manager instance
 func InitGlobalBackupManager(config BackupConfig) error {
-
 	if GlobalBackupManager != nil {
 		GlobalBackupManager.Shutdown()
 	}
@@ -21,7 +23,18 @@ func InitGlobalBackupManager(config BackupConfig) error {
 	if err := GlobalBackupManager.Initialize(); err != nil {
 		return err
 	}
+
+	// Update all active HTTP handlers with the new manager
+	for _, handler := range activeHTTPHandlers {
+		handler.manager = GlobalBackupManager
+	}
+
 	return GlobalBackupManager.Start()
+}
+
+// RegisterHTTPHandler registers an HTTP handler to be updated when the manager changes
+func RegisterHTTPHandler(handler *HTTPHandler) {
+	activeHTTPHandlers = append(activeHTTPHandlers, handler)
 }
 
 // GetBackupConfig returns a properly configured BackupConfig

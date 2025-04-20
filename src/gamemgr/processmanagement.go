@@ -3,6 +3,7 @@ package gamemgr
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"runtime"
 	"strconv"
@@ -13,12 +14,14 @@ import (
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/google/uuid"
 )
 
 var (
 	cmd     *exec.Cmd
 	mu      sync.Mutex
 	logDone chan struct{}
+	err     error
 )
 
 // InternalIsServerRunning checks if the server process is running.
@@ -46,10 +49,12 @@ func internalIsServerRunningNoLock() bool {
 				logger.Core.Debug("Wait failed: " + err.Error())
 				if strings.Contains(err.Error(), "The handle is invalid") {
 					cmd = nil
+					clearGameServerUUID()
 					return false
 				}
 			}
 			cmd = nil
+			clearGameServerUUID()
 			return false
 		case <-time.After(50 * time.Millisecond):
 			// Process is still running
@@ -60,6 +65,7 @@ func internalIsServerRunningNoLock() bool {
 		if err := cmd.Process.Signal(syscall.Signal(0)); err != nil {
 			logger.Core.Debug("Signal(0) failed, assuming process is dead: " + err.Error())
 			cmd = nil
+			clearGameServerUUID()
 			return false
 		}
 		return true
@@ -75,13 +81,40 @@ func InternalStartServer() error {
 	}
 
 	args := buildCommandArgs()
-	cmd = exec.Command(config.ExePath, args...)
 
 	logger.Core.Info("=== GAMESERVER STARTING ===")
-	logger.Core.Info("• Executable: " + config.ExePath)
-	logger.Core.Info("• Parameters: " + strings.Join(args, " "))
+
+	if config.IsSSCMEnabled && runtime.GOOS == "linux" {
+
+		var envVars []string
+		// Set up SSCM (BepInEx/Doorstop) environment
+		envVars, err = SetupBepInExEnvironment()
+		if err != nil {
+			return fmt.Errorf("failed to set up SSCM environment: %v", err)
+		}
+		// Create command after environment is set
+		cmd = exec.Command(config.ExePath, args...)
+		// Set the environment for the command
+		if envVars != nil {
+			cmd.Env = envVars
+			logger.Core.Info("BepInEx/Doorstop environment configured for server process")
+		}
+		logger.Core.Info("• Executable: " + config.ExePath + " (with SSCM)")
+	}
+
+	if !config.IsSSCMEnabled && runtime.GOOS == "linux" {
+		// Use ExePath directly as the command
+		cmd = exec.Command(config.ExePath, args...)
+		logger.Core.Info("• Executable: " + config.ExePath)
+	}
 
 	if runtime.GOOS == "windows" {
+
+		// On Windows, set the command to use the executable path and arguments
+		cmd = exec.Command(config.ExePath, args...)
+		logger.Core.Info("• Executable: " + config.ExePath)
+		logger.Core.Debug("Switching to pipes for logs as we are on Windows!")
+
 		stdout, err := cmd.StdoutPipe()
 		if err != nil {
 			return fmt.Errorf("error creating StdoutPipe: %v", err)
@@ -95,6 +128,7 @@ func InternalStartServer() error {
 		if err := cmd.Start(); err != nil {
 			return fmt.Errorf("error starting server: %v", err)
 		}
+		logger.Core.Info("• Arguments: " + strings.Join(args, " "))
 		logger.Core.Debug("Server process started with PID:" + strconv.Itoa(cmd.Process.Pid))
 		logger.Core.Debug("Created pipes")
 
@@ -115,10 +149,20 @@ func InternalStartServer() error {
 		}
 		logger.Core.Debug("Server process started with PID:" + strconv.Itoa(cmd.Process.Pid))
 
+		// check if debug.log file exists, if not, create it
+		if _, err := os.Stat("./debug.log"); os.IsNotExist(err) {
+			file, err := os.OpenFile("./debug.log", os.O_CREATE|os.O_WRONLY, os.ModePerm)
+			if err != nil {
+				return fmt.Errorf("error creating debug.log file: %v", err)
+			}
+			defer file.Close()
+		}
 		// Start tailing the debug.log file on Linux
 		go tailLogFile("./debug.log")
 	}
-
+	// create a UUID for this specific run
+	createGameServerUUID()
+	logger.Core.Debug("Created Game Server with internal UUID: " + config.GameServerUUID.String())
 	return nil
 }
 
@@ -199,5 +243,18 @@ func InternalStopServer() error {
 
 	// Process is confirmed stopped, clear cmd
 	cmd = nil
+	clearGameServerUUID()
 	return nil
+}
+
+func clearGameServerUUID() {
+	config.ConfigMu.Lock()
+	defer config.ConfigMu.Unlock()
+	config.GameServerUUID = uuid.Nil
+}
+
+func createGameServerUUID() {
+	config.ConfigMu.Lock()
+	defer config.ConfigMu.Unlock()
+	config.GameServerUUID = uuid.New()
 }

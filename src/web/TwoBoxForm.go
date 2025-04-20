@@ -383,13 +383,27 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SubmitButtonText:         "Save & Continue",
 			SkipButtonText:           "Skip Authentication",
 			ConfigField:              "", // Special handling for admin account
-			NextStep:                 "finalize",
+			NextStep:                 "sscm_opt_in",
+		},
+		"sscm_opt_in": {
+			ID:                     "sscm_opt_in",
+			Title:                  "Stationeers Command Manager",
+			HeaderTitle:            "Public Beta",
+			StepMessage:            "SSCM is a custom plugin that allows you to execute server commands directly from SSUI. It doesn't affect vanilla server functionality while giving you the ability to run commands from the SSUI console.",
+			PrimaryPlaceholderText: "yes",
+			PrimaryLabel:           "Enable SSCM",
+			SecondaryLabel:         "",
+			SecondaryLabelType:     "hidden",
+			SubmitButtonText:       "Accept License & Continue",
+			SkipButtonText:         "Skip",
+			ConfigField:            "IsSSCMEnabled",
+			NextStep:               "finalize",
 		},
 		"finalize": {
 			ID:                 "finalize",
-			Title:              "Stationeers Server UI - Finalize Setup",
+			Title:              "Finalize Setup",
 			HeaderTitle:        "",
-			StepMessage:        "Ready to finalize? Your configuration has already been saved while you completed this setup. If you want to change any of the settings, you may click Return to Start and skip whatever you want to keep. All options can also be changed on the config Tab in the UI.",
+			StepMessage:        "Ready to finalize? Your configuration has already been saved while you completed this setup. If you want to change any of the settings, you may click Return to Start and skip whatever you want to keep. Most options can also be changed on the config Tab in the UI.",
 			PrimaryLabel:       "",
 			SecondaryLabel:     "",
 			SecondaryLabelType: "hidden",
@@ -430,6 +444,9 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			data.NextStep = step.NextStep
 			data.PrimaryPlaceholderText = step.PrimaryPlaceholderText
 			data.SecondaryPlaceholderText = step.SecondaryPlaceholderText
+			if stepID == "sscm_opt_in" {
+				data.FooterText = "Opt in to SSCM for the most powerful Stationeers server management! This license protects this unique feature, ensuring it stays exclusive to SSUI users. Check the terms in the SSUI GitHub Wiki. Don’t be worried, the license simply protects SSCM’s integrity and its integration with SSUI."
+			}
 		} else {
 			// Default to welcome page if step is invalid
 			welcomeStep := steps["welcome"]

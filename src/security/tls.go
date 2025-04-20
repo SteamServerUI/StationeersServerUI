@@ -21,6 +21,14 @@ func EnsureTLSCerts() error {
 	// Check if cert and key files exist
 	certExists := fileExists(config.TLSCertPath)
 	keyExists := fileExists(config.TLSKeyPath)
+	tlsDir := config.UIModFolder + "tls/"
+
+	if _, err := os.Stat(tlsDir); os.IsNotExist(err) {
+		if err := os.MkdirAll(tlsDir, os.ModePerm); err != nil {
+			logger.Security.Error("Failed to create directory " + tlsDir + ": " + err.Error())
+			return nil
+		}
+	}
 
 	if certExists && keyExists {
 		// Load and check if the cert is still valid

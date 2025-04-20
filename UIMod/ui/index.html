@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Server Control</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/tabs.css">
+    <link rel="stylesheet" href="/static/css/background.css">
+    <link rel="stylesheet" href="/static/css/mobile.css">
+    <link rel="stylesheet" href="/static/css/home.css">
+    <link rel="stylesheet" href="/static/css/sscm.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
 <body>
@@ -13,6 +20,7 @@
     <header>
         <img src="/static/stationeers.png" alt="Stationeers Banner" id="banner">
         <button onclick="window.location.href = '/auth/logout';" class="logout-icon" title="Logout"></button>
+        <button onclick="toggleGPUSaver()" class="gpusaver-icon" title="Save GPU Power by disabling background Animations when navigating away from the UI. Persistent until toggled off."></button>
     </header>
     <main>
         <div id="status-indicator" class="status-indicator offline" title="Server status unknown"></div>
@@ -44,8 +52,13 @@
         </div>
     </main>
     <footer>
-        <div class="copyright">Copyright &copy; 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a> Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.</div>
+        <div class="copyright">Copyright &copy; 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a> Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">Proprietary License</a>.</div>
     </footer>
-    <script src="/static/script.js"></script>
+
+    <script src="/sscm/sscm.js"></script>
+    <script src="/static/js/ui-utils.js"></script>
+    <script src="/static/js/server-api.js"></script>
+    <script src="/static/js/console-manager.js"></script>
+    <script src="/static/js/main.js"></script>
 </body>
 </html>

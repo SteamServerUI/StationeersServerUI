@@ -15,7 +15,9 @@ type HTTPHandler struct {
 
 // NewHTTPHandler creates a new HTTP handler for backups
 func NewHTTPHandler(manager *BackupManager) *HTTPHandler {
-	return &HTTPHandler{manager: manager}
+	handler := &HTTPHandler{manager: manager}
+	RegisterHTTPHandler(handler) // Register this handler for automatic updates
+	return handler
 }
 
 // ListBackupsHandler handles requests to list available backups

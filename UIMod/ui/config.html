@@ -5,8 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Server Configuration</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="/static/config-styles.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/tabs.css">
+    <link rel="stylesheet" href="/static/css/background.css">
+    <link rel="stylesheet" href="/static/css/mobile.css">
+    <link rel="stylesheet" href="/static/css/config.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
 
@@ -46,13 +51,14 @@
                         <button class="section-nav-button" data-section="network-settings">Network Settings</button>
                         <button class="section-nav-button" data-section="advanced-settings">Advanced Settings</button>
                     </div>
-                
+
                     <form id="server-config-form" action="/saveconfigasjson" method="post">
-                        <div id="select-prompt" style="text-align: center; margin: 30px 0; color: var(--primary); font-family: 'Share Tech Mono', monospace;">
+                        <div id="select-prompt"
+                            style="text-align: center; margin: 30px 0; color: var(--primary); font-family: 'Share Tech Mono', monospace;">
                             <h3>Please select a configuration section above</h3>
                             <p>Alternatively, use the Configuration Wizard to configure the server.</p>
                         </div>
-                        
+
                         <div id="basic-settings" class="config-section">
                             <h3 class="section-title">Basic Server Settings</h3>
                             <div class="channel-grid">
@@ -66,7 +72,8 @@
                                     <label for="SaveInfo">Save File Name:</label>
                                     <input type="text" id="SaveInfo" name="SaveInfo" value="{{SaveInfo}}"
                                         pattern="^[A-Z].*(\s[A-Z].*)?$" required>
-                                    <div class="input-info">Name of save folder. Must be capitalized. Optionally, provide the
+                                    <div class="input-info">Name of save folder. Must be capitalized. Optionally,
+                                        provide the
                                         World type to generate. (MyMoonMap Moon)</div>
                                 </div>
 
@@ -79,8 +86,8 @@
 
                                 <div class="form-group password-field">
                                     <label for="ServerPassword">Server Password:</label>
-                                    <input type="text" id="ServerPassword" name="ServerPassword" value="{{ServerPassword}}"
-                                        pattern="^\S*$">
+                                    <input type="text" id="ServerPassword" name="ServerPassword"
+                                        value="{{ServerPassword}}" pattern="^\S*$">
                                     <div class="input-info">Leave empty for no password</div>
                                 </div>
 
@@ -113,25 +120,26 @@
                                         <option value="true" {{AutoPauseServerTrueSelected}}>TRUE</option>
                                         <option value="false" {{AutoPauseServerFalseSelected}}>FALSE</option>
                                     </select>
-                                    <div class="input-info">Automatically pause server when no players are connected</div>
+                                    <div class="input-info">Automatically pause server when no players are connected
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div id="network-settings" class="config-section">
                             <h3 class="section-title">Network Configuration</h3>
                             <div class="channel-grid">
                                 <div class="form-group">
                                     <label for="GamePort">Game Port:</label>
-                                    <input type="text" id="GamePort" name="GamePort" value="{{GamePort}}" pattern="^\S*$"
-                                        required>
+                                    <input type="text" id="GamePort" name="GamePort" value="{{GamePort}}"
+                                        pattern="^\S*$" required>
                                     <div class="input-info">Default: 27016</div>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="UpdatePort">Update Port:</label>
-                                    <input type="text" id="UpdatePort" name="UpdatePort" value="{{UpdatePort}}" pattern="^\S*$"
-                                        required>
+                                    <input type="text" id="UpdatePort" name="UpdatePort" value="{{UpdatePort}}"
+                                        pattern="^\S*$" required>
                                     <div class="input-info">Default: 27015</div>
                                 </div>
 
@@ -143,11 +151,11 @@
                                     </select>
                                     <div class="input-info">Enable automatic UPNP port forwarding</div>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label for="LocalIpAddress">Local IP Address:</label>
-                                    <input type="text" id="LocalIpAddress" name="LocalIpAddress" value="{{LocalIpAddress}}"
-                                        pattern="^\S*$" required>
+                                    <input type="text" id="LocalIpAddress" name="LocalIpAddress"
+                                        value="{{LocalIpAddress}}" pattern="^\S*$" required>
                                     <div class="input-info">IP address to bind to</div>
                                 </div>
 
@@ -179,7 +187,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div id="advanced-settings" class="config-section">
                             <h3 class="section-title">Advanced Configuration</h3>
                             <div class="channel-grid">
@@ -194,7 +202,8 @@
                                     <label for="ExePath">Server Executable Path:</label>
                                     <input type="text" id="ExePath" name="ExePath" value="{{ExePath}}" readonly>
                                     <div class="input-info">System path to server executable</div>
-                                    <div class="input-info">Not editable from the UI for security reasons, but you can edit it
+                                    <div class="input-info">Not editable from the UI for security reasons, but you can
+                                        edit it
                                         manually in the config.json file.</div>
                                 </div>
 
@@ -206,7 +215,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="form-actions">
                             <button type="button" class="back-button" onclick="window.location.href = '/'"></button>
                             <button type="button" class="save-button"
@@ -311,9 +320,11 @@
         </div>
     </main>
     <footer>
-        <div class="copyright">Copyright &copy; 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a> Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT License</a>.</div>
+        <div class="copyright">Copyright &copy; 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a>
+            Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">MIT
+                License</a>.</div>
     </footer>
-    
+
     <script>
         function showTab(tabId) {
             // Remove active class from all tabs and tab buttons
@@ -347,29 +358,30 @@
 
         // Section navigation
         document.querySelectorAll('.section-nav-button').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 // Hide all sections
                 document.querySelectorAll('.config-section').forEach(section => {
                     section.classList.remove('active');
                 });
-                
+
                 // Hide the prompt message when a section is selected
                 document.getElementById('select-prompt').style.display = 'none';
-                
+
                 // Remove active class from all buttons
                 document.querySelectorAll('.section-nav-button').forEach(btn => {
                     btn.classList.remove('active');
                 });
-                
+
                 // Show the selected section
                 const sectionId = this.getAttribute('data-section');
                 document.getElementById(sectionId).classList.add('active');
-                
+
                 // Add active class to the clicked button
                 this.classList.add('active');
             });
         });
     </script>
+    <script src="/static/js/main.js"></script>
 </body>
 
 </html>

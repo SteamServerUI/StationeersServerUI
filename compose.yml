@@ -12,12 +12,13 @@ services:
           cpus: '4'
           memory: 8G
     ports:
-      - "8080:8080"
-      - "27016:27016"
+      - "8443:8443"
+      - "27016:27016/udp"
+      - "27016:27016/tcp"
+      - "27015:27015/udp"
+      - "27015:27015/tcp"
     volumes:
       - ./saves:/app/saves
-      - ./config:/app/config
-    environment:
-      - STEAMCMD_DIR=/app/steamcmd
+      - ./UIMod/config:/app/UIMod/config:rw
     restart: unless-stopped
     command: []

@@ -187,15 +187,19 @@ func unzip(zipReader io.ReaderAt, size int64, dest string) error {
 		return fmt.Errorf("failed to create zip reader: %w", err)
 	}
 
-	// Ensure the destination directory exists
+	// Normalize destination path
+	dest = filepath.Clean(dest)
 	if err := os.MkdirAll(dest, os.ModePerm); err != nil {
 		return fmt.Errorf("failed to create destination directory: %w", err)
 	}
 
 	for _, f := range reader.File {
-		// Sanitize the file path to prevent path traversal
+		// Sanitize the file path
 		fpath := filepath.Join(dest, f.Name)
-		if !strings.HasPrefix(fpath, filepath.Clean(dest)+string(os.PathSeparator)) {
+
+		// Ensure the file path is within the destination directory
+		relPath, err := filepath.Rel(dest, fpath)
+		if err != nil || strings.HasPrefix(relPath, "..") || strings.HasPrefix(relPath, string(os.PathSeparator)) {
 			return fmt.Errorf("invalid file path: %s", fpath)
 		}
 
@@ -207,24 +211,30 @@ func unzip(zipReader io.ReaderAt, size int64, dest string) error {
 			continue
 		}
 
+		// Ensure the parent directory exists for files
+		parentDir := filepath.Dir(fpath)
+		if err := os.MkdirAll(parentDir, os.ModePerm); err != nil {
+			return fmt.Errorf("failed to create parent directory %s: %w", parentDir, err)
+		}
+
 		// Create the file with the same permissions as in the zip file
 		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 		if err != nil {
-			return fmt.Errorf("failed to create file: %w", err)
+			return fmt.Errorf("failed to create file %s: %w", fpath, err)
 		}
 		defer outFile.Close()
 
 		// Open the file in the zip archive
 		rc, err := f.Open()
 		if err != nil {
-			return fmt.Errorf("failed to open file in zip: %w", err)
+			return fmt.Errorf("failed to open file %s in zip: %w", fpath, err)
 		}
 		defer rc.Close()
 
 		// Copy the file contents using a buffer for better performance
 		buffer := make([]byte, 32*1024) // 32KB buffer
 		if _, err := io.CopyBuffer(outFile, rc, buffer); err != nil {
-			return fmt.Errorf("failed to copy file contents: %w", err)
+			return fmt.Errorf("failed to copy file contents for %s: %w", fpath, err)
 		}
 	}
 
