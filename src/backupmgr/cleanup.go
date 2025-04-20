@@ -74,8 +74,9 @@ func (m *BackupManager) cleanSafeBackupDir() error {
 
 	now := time.Now()
 	var (
-		lastKeptDaily  time.Time
-		lastKeptWeekly time.Time
+		lastKeptDaily   time.Time
+		lastKeptWeekly  time.Time
+		lastKeptMonthly time.Time
 	)
 
 	for i, group := range groups {
@@ -106,8 +107,10 @@ func (m *BackupManager) cleanSafeBackupDir() error {
 
 		// Keep monthly backups for specified duration
 		if age < m.config.RetentionPolicy.KeepMonthlyFor {
-			if group.ModTime.Month() != lastKeptWeekly.Month() || group.ModTime.Year() != lastKeptWeekly.Year() {
-				lastKeptWeekly = group.ModTime
+			if lastKeptMonthly.IsZero() ||
+				group.ModTime.Month() != lastKeptMonthly.Month() ||
+				group.ModTime.Year() != lastKeptMonthly.Year() {
+				lastKeptMonthly = group.ModTime
 				continue
 			}
 		}
