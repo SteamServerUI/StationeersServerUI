@@ -1,0 +1,176 @@
+# STATIONEERS SERVER UI LICENSE AGREEMENT
+
+**Version 1.0, Effective April 16, 2025**  
+**Copyright © 2025 J. Langisch "JacksonTheMaster". All rights reserved.**
+
+## PREAMBLE
+
+The Licensor encourages community participation through the SSUI GitHub repository. For support, feature requests, or inquiries, contact the Licensor at github.com/JacksonTheMaster.
+
+The Stationeers Server UI (“SSUI”) is a proprietary software suite, including the Stationeers Server Command Manager (SSCM), designed to enhance Stationeers server administration. SSUI is developed as an open-source project on GitHub (github.com/JacksonTheMaster/StationeersServerUI) to encourage community collaboration while maintaining legal control with the repository owner, JacksonTheMaster. This License Agreement governs the use, modification, and contribution to SSUI, balancing open development with controlled commercial use. SSCM is licensed separately under the Stationeers Server Command Manager License Agreement (see LICENSE in the SSCM folder).
+
+## DEFINITIONS
+
+- **SSUI**: The Stationeers Server UI software, including SSCM, all updates, and documentation.
+- **SSCM**: The Stationeers Server Command Manager, a separate proprietary utility.
+- **Licensee**: You, the individual or entity using SSUI.
+- **Licensor**: JacksonTheMaster, the copyright holder and repository owner of SSUI.
+- **Non-Commercial Use**: Use for personal, educational, or open-source development purposes without profit or business revenue.
+- **Commercial Use**: Use in a business, profit-generating, or commercial context.
+- **RocketWerkz**: RocketWerkz Studios Limited (Level 38, PwC Tower, 15 Customs St. West, 1010 Auckland, NZBN: 9429041553206)
+
+## GRANT OF LICENSE
+
+### 2.1 Scope
+
+The Licensor grants the Licensee a non-exclusive, non-transferable, revocable license to use and modify, but not distribute in any way, SSUI, subject to this Agreement.
+
+### 2.2 Non-Commercial Use
+
+- The Licensee may install, use, and modify SSUI for Non-Commercial Use.
+- Modifications may be shared only via the official SSUI GitHub repository ([github.com/JacksonTheMaster/StationeersServerUI](https://github.com/JacksonTheMaster/StationeersServerUI)) or private forks not publicly distributed.
+
+### 2.3 Contributions
+
+- Licensees are encouraged to submit Contributions to the SSUI GitHub repository. Contributions may be submitted as Pull Requests or Issues, and may be accepted or declined by the Licensor.
+- By submitting a Contribution, the Licensee grants the Licensor a perpetual, worldwide, non-exclusive, royalty-free license to use, modify, but not distribute, and incorporate the Contribution into SSUI, including for Commercial Use.
+- Contributors retain copyright and other rights to their Contributions, subject to the license granted to the Licensor.
+- Contributions are subject to the Contributor License Agreement (CLA) outlined in Section 2.3.1.
+
+#### 2.3.1. Contributor License Agreement
+
+To foster collaboration while ensuring legal clarity, all Contributions to SSUI are subject to the following terms:
+
+Ownership: Contributors retain ownership of their Contributions but grant the Licensor the rights described in Section 2.3.
+
+No Obligation: The Licensor is not obligated to accept or incorporate Contributions.
+
+Attribution: The Licensor will make reasonable efforts to credit Contributors in the SSUI repository (e.g., in CONTRIBUTORS.md or commit logs).
+
+No Warranty: Contributions are provided “AS IS” without warranties, and Contributors assume no liability for their use.
+
+Contributors have no right to request any royalties, profits, or other compensation from the Licensor.
+
+
+
+### 2.4 Commercial Use
+
+- Commercial Use requires a paid license, priced in SEK and paid to JacksonTheMaster, per 1,000 installations, including lifetime updates.
+- Contact the Licensor via GitHub for licensing inquiries.
+
+### 2.5 Special Licenses
+
+#### 2.5.1 Special License to RocketWerkz
+
+- RocketWerkz is granted a worldwide, irrevocable, non-exclusive license to use and modify but not distribute SSUI for Commercial Use, provided they do not sell SSUI or derivatives.
+- This special license remains in effect only while Mr. Dean Hall is the major stakeholder of RocketWerkz. If Dean Hall ceases to be the major stakeholder, RocketWerkz’s rights revert to standard terms.
+
+#### 2.5.2 Special License to Sebastian Meier zu Biesen
+
+- This special license acknowledges Sebastians pivotal role in inspiring the overhaul of SSUI, sparking significant improvements to the project:
+- Special Acknowledgment and License to _Sebastian Meier zu Biesen, Scotland, UK_
+- Sebastian Meier zu Biesen is granted a worldwide, irrevocable, non-exclusive license to use, modify, but not distribute SSUI for Non-Commercial Use, including the right to showcase SSUI as part of their portfolio or public demonstrations,
+- provided such distributions include attribution to the Licensor and a link to the official SSUI GitHub repository (github.com/JacksonTheMaster/StationeersServerUI).
+
+
+
+### 2.6 No Other Rights
+
+All rights not expressly granted are reserved by the Licensor.
+
+## RESTRICTIONS
+
+Unless permitted by applicable law, the Licensee shall NOT:
+
+1. Use SSUI for Commercial Use without a paid license.
+2. Publicly distribute modified SSUI outside the official SSUI GitHub repository, except for private forks used non-commercially and for the sole purpose of merging the additions back into the main repository.
+3. Sell, sublicense, lease, or transfer SSUI without Licensor’s written permission.
+4. Remove or alter copyright notices or proprietary markings in SSUI.
+5. Reverse-engineer, decompile, or disassemble SSUI, except as permitted by EU law (e.g., for interoperability under Directive 2009/24/EC).
+
+## OWNERSHIP
+
+### 4.1 Intellectual Property
+
+SSUI is the exclusive property of the Licensor, protected under Swedish copyright law (Lag (1960:729) om upphovsrätt) and international treaties.
+
+### 4.2 No Transfer
+
+This Agreement does not convey ownership rights in SSUI to the Licensee.
+
+## TERMINATION
+
+### 5.1 Breach
+
+This License terminates automatically if the Licensee violates any term of this Agreement.
+
+### 5.2 Effect of Termination
+
+Upon termination, the Licensee must cease using SSUI and destroy all copies.
+
+### 5.3 Survival
+
+Sections 4 (Ownership), 6 (No Warranty), 7 (Limitation of Liability), and 9 (Governing Law) survive termination.
+
+## NO WARRANTY
+
+### 6.1 As Is
+
+SSUI is provided “AS IS” without warranties of any kind, express or implied, including merchantability, fitness for a particular purpose, or non-infringement, to the fullest extent permitted by law.
+
+### 6.2 Risk
+
+The Licensee assumes all risks related to SSUI’s use, including compatibility with Stationeers servers.
+
+## LIMITATION OF LIABILITY
+
+### 7.1 Exclusion
+
+To the extent permitted by Swedish and EU law, the Licensor shall not be liable for any direct, indirect, incidental, or consequential damages arising from SSUI’s use or inability to use it, including data loss or server disruptions.
+
+### 7.2 Consumer Rights
+
+If the Licensee is a consumer under EU law, statutory rights (e.g., under Directive 1999/44/EC) are not affected.
+
+## DATA PROTECTION
+
+### 8.1
+
+SSUI does not process personal data.
+
+## GOVERNING LAW AND DISPUTE RESOLUTION
+
+### 9.1 Jurisdiction
+
+This Agreement is governed by the laws of Sweden, excluding conflict of law rules.
+
+### 9.2 Disputes
+
+Disputes shall be resolved in the District Court of Stockholm (Stockholms tingsrätt), unless EU consumer law requires otherwise.
+
+### 9.3 Consumer Rights
+
+Consumers may have additional rights under local jurisdiction (e.g., EU Directive 2013/11/EU on alternative dispute resolution).
+
+## MISCELLANEOUS
+
+### 10.1 Entire Agreement
+
+This Agreement supersedes prior agreements, including the MIT License previously applied to SSUI.
+
+### 10.2 Amendments
+
+The Licensor may update this Agreement, with changes effective upon notice (e.g., via GitHub).
+
+### 10.3 Severability
+
+If any provision is unenforceable, the remaining provisions remain in effect.
+
+### 10.4 Language
+
+This Agreement is in English.
+
+
+## CONTACT
+
+For inquiries or commercial licensing, contact the Licensor at [github.com/JacksonTheMaster](https://github.com/JacksonTheMaster).
