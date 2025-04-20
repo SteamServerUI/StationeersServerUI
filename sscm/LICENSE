@@ -5,13 +5,13 @@ Version 1.1, Effective April 14, 2025
 _Copyright © 2025 J. Langisch "JacksonTheMaster". All rights reserved._
 
 PREAMBLE
-The Stationeers Server Command Manager (“SSCM”) is a proprietary utility designed to enhance server administration for Stationeers, exclusively in conjunction with the Stationeers Server UI (“SSUI”), available at [Github](https://github.com/JacksonTheMaster/StationeersServerUI/) under the MIT License. This License Agreement governs your use of SSCM to ensure its intended functionality and compatibility with SSUI.
+The Stationeers Server Command Manager (“SSCM”) is a proprietary utility designed to enhance server administration for Stationeers, exclusively in conjunction with the Stationeers Server UI (“SSUI”), available at [Github](https://github.com/JacksonTheMaster/StationeersServerUI/) under the License. This License Agreement governs your use of SSCM to ensure its intended functionality and compatibility with SSUI.
 
 ## DEFINITIONS
 
 “SSCM”: The Stationeers Server Command Manager software, including all updates and documentation.
 
-“SSUI”: The Stationeers Server UI, a separate open-source interface licensed under the MIT License, required to operate SSCM.
+“SSUI”: The Stationeers Server UI, a separate open-source interface licensed under the a seperate License, required to operate SSCM.
 
 “Licensee”: You, the individual or entity using SSCM.
 
@@ -20,10 +20,10 @@ The Stationeers Server Command Manager (“SSCM”) is a proprietary utility des
 ## GRANT OF LICENSE
 
 2.1 Scope: The Licensor grants the Licensee a non-exclusive, non-transferable, revocable license to use SSCM solely in conjunction with SSUI for managing Stationeers servers, subject to this Agreement.
-2.2 Permitted Use: The Licensee may install and use SSCM on devices under their control, provided SSUI is installed and used in compliance with its MIT License.
-2.3 No Other Rights: All rights not expressly granted are reserved by the Licensor. This license does not modify or limit rights granted under SSUI’s MIT License.
+2.2 Permitted Use: The Licensee may install and use SSCM on devices under their control, provided SSUI is installed and used in compliance with its License.
+2.3 No Other Rights: All rights not expressly granted are reserved by the Licensor. This license does not modify or limit rights granted under SSUI’s License.
 2.4 Commercial Use: This license is intended for non-commercial use. Companies or entities seeking to use SSCM for commercial purposes (e.g., in a business or profit-generating context) must contact the Licensor through GitHub.
-2.5 Special License to RocketWerkz: Notwithstanding any other provisions, RocketWerkz Studios Limited (Level 38, PwC Tower, 15 Customs St. West, 1010 Auckland, NZBN: 9429041553206) is granted a worldwide, irrevocable, non-exclusive license to use, modify, distribute, sublicense, and create derivative works of SSCM without restriction, provided SSUI is used in compliance with its MIT License. This special license does not affect the Licensor’s ownership or other Licensees’ obligations. This license shall remain in effect only for as long as Mr. Dean Hall remains the major stakeholder of RocketWerkz Studios Limited. In the event that Dean Hall ceases to be the major stakeholder, this special license shall be automatically revoked, and RocketWerkz Studios Limited’s rights to SSCM shall revert to the standard terms applicable to other Licensees under this agreement.
+2.5 Special License to RocketWerkz: Notwithstanding any other provisions, RocketWerkz Studios Limited (Level 38, PwC Tower, 15 Customs St. West, 1010 Auckland, NZBN: 9429041553206) is granted a worldwide, irrevocable, non-exclusive license to use, modify, distribute, sublicense, and create derivative works of SSCM without restriction, provided SSUI is used in compliance with its License. This special license does not affect the Licensor’s ownership or other Licensees’ obligations. This license shall remain in effect only for as long as Mr. Dean Hall remains the major stakeholder of RocketWerkz Studios Limited. In the event that Dean Hall ceases to be the major stakeholder, this special license shall be automatically revoked, and RocketWerkz Studios Limited’s rights to SSCM shall revert to the standard terms applicable to other Licensees under this agreement.
 
 
 
@@ -35,12 +35,12 @@ Unless permitted by applicable law, the Licensee shall not:
 3.3 Reverse-engineer, decompile, or disassemble SSCM, except as permitted by EU law (e.g., for interoperability under Directive 2009/24/EC).
 3.4 Distribute, sublicense, lease, or transfer SSCM to any third party.
 3.5 Remove or alter any copyright notices or proprietary markings in SSCM.
-3.6 Violate the terms of SSUI’s MIT License when using SSCM.
+3.6 Violate the terms of SSUI’s License when using SSCM.
 
 ## OWNERSHIP
 
 4.1 SSCM Intellectual Property: SSCM is the exclusive property of the Licensor, protected under Swedish copyright law (Lag (1960:729) om upphovsrätt) and international treaties.
-4.2 SSUI Distinction: SSCM is a separate work from SSUI. This Agreement does not alter SSUI’s MIT License or grant any rights to SSUI beyond its terms.
+4.2 SSUI Distinction: SSCM is a separate work from SSUI. This Agreement does not alter SSUI’s License or grant any rights to SSUI beyond its terms.
 4.3 No Transfer: This Agreement does not convey ownership rights in SSCM to the Licensee.
 
 ## TERMINATION
@@ -52,7 +52,7 @@ Unless permitted by applicable law, the Licensee shall not:
 ## NO WARRANTY
 
 6.1 As Is: SSCM is provided “AS IS” without warranties of any kind, express or implied, including merchantability, fitness for a particular purpose, or non-infringement, to the fullest extent permitted by law.
-6.2 Risk: The Licensee assumes all risks related to SSCM’s use, including compatibility with SSUI or Stationeers servers. No warranty is provided for SSUI, which is governed by its MIT License.
+6.2 Risk: The Licensee assumes all risks related to SSCM’s use, including compatibility with SSUI or Stationeers servers. No warranty is provided for SSUI, which is governed by its License.
 
 ## LIMITATION OF LIABILITY
 
