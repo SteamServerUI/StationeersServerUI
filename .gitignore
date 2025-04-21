@@ -16,5 +16,5 @@ rocketstation_DedicatedServer.exe
 /saves/*
 .github/workflows/nightly-sync.yml
 repos.md
-StationeersServerUI
 UIMod/*.pem
+build/StationeersServerControl*
