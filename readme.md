@@ -26,7 +26,7 @@
 Explore your fututre Stationeers Server UI in action—no setup required!
 And the "best part?" The Demo current is not on the V5 but V4, so if you are convinced by the Demo, it will only get better when you actually try it out!
 
-[![v4 Live Preview - Stationeers UI](https://img.shields.io/badge/Live%20Preview-Stationeers%20UI-blueviolet?style=for-the-badge&logo=github)](https://jacksonthemaster.github.io/StationeersServerUI/server.html)
+[![v4 Live Preview - Stationeers UI](https://img.shields.io/badge/Live%20Preview-Stationeers%20UI-blueviolet?style=for-the-badge&logo=github)](https://jacksonthemaster.github.io/StationeersServerUI/)
 
 </div>
 
