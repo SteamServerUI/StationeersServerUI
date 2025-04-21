@@ -1,16 +1,17 @@
 # Stationeers Server UI
 
-![Go](https://img.shields.io/badge/Go-1.22.1-blue?logo=go&logoColor=white)
+![Go](https://img.shields.io/badge/Go-1.24.2-blue?logo=go&logoColor=white)
 ![Version](https://img.shields.io/github/v/release/jacksonthemaster/StationeersServerUI?logo=github&logoColor=white)
 ![Issues](https://img.shields.io/github/issues/jacksonthemaster/StationeersServerUI?logo=github&logoColor=white)
 ![Stars](https://img.shields.io/github/stars/jacksonthemaster/StationeersServerUI?style=social&logo=github)
-![License](https://img.shields.io/github/license/jacksonthemaster/StationeersServerUI?logo=github&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-supported-blue?logo=windows&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-supported-green?logo=linux&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-available-blue?logo=docker&logoColor=white)
 ![Downloads](https://img.shields.io/github/downloads/jacksonthemaster/StationeersServerUI/total?logo=github&logoColor=white)
 ![Last Commit](https://img.shields.io/github/last-commit/jacksonthemaster/StationeersServerUI?logo=git&logoColor=white)
 ![Stationeers](https://img.shields.io/badge/Game-Stationeers-orange?logo=steam&logoColor=white)
+
+
 
 ## ✨ Feature Showcase ✨
 
