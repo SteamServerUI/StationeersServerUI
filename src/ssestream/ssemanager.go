@@ -4,6 +4,7 @@ package ssestream
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -25,10 +26,13 @@ type Client struct {
 
 // SSEManager manages Server-Sent Event streams
 type SSEManager struct {
-	clients    map[*Client]bool
-	clientsMu  sync.RWMutex
-	maxClients int
-	maxBuffer  int
+	clients            map[*Client]bool
+	clientsMu          sync.RWMutex
+	maxClients         int
+	maxBuffer          int
+	kinematicDropCount int
+	lastKinematicLog   time.Time
+	dropMu             sync.Mutex
 }
 
 // NewSSEManager creates a new SSE stream manager
@@ -118,8 +122,36 @@ func (m *SSEManager) streamMessages(
 	}
 }
 
+// dropKinematicMessage checks if a message should be dropped due to kinematic warnings. This is a workaround "fix" for a bug in the gameserver.
+func (m *SSEManager) dropKinematicMessage(message string) bool {
+	if !strings.Contains(message, "Setting linear velocity of a kinematic body is not supported") &&
+		!strings.Contains(message, "Setting angular velocity of a kinematic body is not supported") {
+		return false
+	}
+
+	m.dropMu.Lock()
+	defer m.dropMu.Unlock()
+
+	m.kinematicDropCount++
+	now := time.Now()
+
+	// Log only if it's been more than a minute since last log and we have messages to report
+	if m.kinematicDropCount > 0 && now.Sub(m.lastKinematicLog) >= time.Minute {
+		logger.SSE.Info(fmt.Sprintf("🗑️ Detected and Dropped %d kinematic body warning messages. (Gameserver Bug)", m.kinematicDropCount))
+		m.lastKinematicLog = now
+		m.kinematicDropCount = 0 // Reset count after logging
+	}
+
+	return true
+}
+
 // Broadcast sends a message to all clients with a non-blocking approach
 func (m *SSEManager) Broadcast(message string) {
+	// Check if message should be dropped
+	if m.dropKinematicMessage(message) {
+		return
+	}
+
 	m.clientsMu.RLock()
 	defer m.clientsMu.RUnlock()
 
