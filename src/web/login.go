@@ -71,12 +71,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !config.AuthEnabled {
-			if config.IsFirstTimeSetup {
-				if setupReminderCount < 1 {
-					http.Redirect(w, r, "/setup", http.StatusTemporaryRedirect)
-					setupReminderCount++
-				}
-			}
 			next.ServeHTTP(w, r)
 			return
 		}
