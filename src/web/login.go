@@ -3,7 +3,9 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -70,13 +72,25 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 // AuthMiddleware protects routes with cookie-based JWT
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !config.AuthEnabled {
-			if config.IsFirstTimeSetup {
-				if setupReminderCount < 1 {
+		// Log request details for debugging
+		//logger.Web.Debug("Request Path:" + r.URL.Path) //very spammy
+
+		// Check for first-time setup redirect
+		if config.IsFirstTimeSetup {
+			totalSetupReminderCount := 3 // Defines how often we redirect the users reqests to the setup page
+			if setupReminderCount < totalSetupReminderCount {
+				if r.URL.Path == "/" && (r.Referer() == "" || r.Referer() != "/setup") {
+					remainingReminderCount := totalSetupReminderCount - setupReminderCount
+					logger.Web.Warn("🔍Redirecting to setup page, you should really enable authentication...")
+					logger.Web.Warn(fmt.Sprintf("You will be remined %s more times.", strconv.Itoa(remainingReminderCount)))
 					http.Redirect(w, r, "/setup", http.StatusTemporaryRedirect)
 					setupReminderCount++
+					return
 				}
 			}
+		}
+
+		if !config.AuthEnabled {
 			next.ServeHTTP(w, r)
 			return
 		}

@@ -174,18 +174,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (configField || step === "admin_account") { // Any setup step
                     hidePreloader();
                     showNotification(step === "admin_account" ? 'Admin account saved!' : 'Config saved!', 'success');
-                    setTimeout(() => {
-                        window.location.href = `/setup?step=${nextStep}`;
-                    }, 800);
+                    // Wait for backend response to complete before redirecting
+                    await response.json(); // Ensure backend response is fully processed
+                    window.location.href = `/setup?step=${nextStep}`;
                 } else if (mode === 'login') {
                     showNotification('Login Successful!', 'success');
                     await preloadNextPage();
-                    setTimeout(() => {
-                        hidePreloader();
-                        window.location.href = '/';
-                    }, 600);
+                    hidePreloader();
+                    window.location.href = '/';
                 } else { // changeuser
                     hidePreloader();
+                    const data = await response.json(); // Ensure backend response is processed
                     showNotification(data.message || 'User updated!', 'success');
                     form.reset();
                 }
