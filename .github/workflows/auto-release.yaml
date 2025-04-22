@@ -46,7 +46,7 @@ jobs:
             exit 1
           fi
 
-      # Check for git tag on any commit in the PR and select the latest
+      # Check for git tag on any commit in the PR
       - name: Check for git tag
         id: check_tag
         run: |
@@ -57,26 +57,19 @@ jobs:
           # Get all commits in the PR (from base to head)
           COMMITS=$(git rev-list $BASE_SHA..$HEAD_SHA)
           
-          # Initialize variables to track the latest tag
-          LATEST_TAG=""
-          LATEST_TIMESTAMP=0
-          
-          # Check each commit for tags
+          # Check each commit for a tag
+          TAG=""
           for COMMIT in $COMMITS; do
-            TAGS=$(git tag --points-at $COMMIT)
-            for TAG in $TAGS; do
-              # Get the timestamp of the commit associated with the tag
-              TIMESTAMP=$(git show -s --format=%ct $COMMIT)
-              if [ $TIMESTAMP -gt $LATEST_TIMESTAMP ]; then
-                LATEST_TIMESTAMP=$TIMESTAMP
-                LATEST_TAG=$TAG
-              fi
-            done
+            CURRENT_TAG=$(git tag --points-at $COMMIT)
+            if [ -n "$CURRENT_TAG" ]; then
+              TAG=$CURRENT_TAG
+              break
+            fi
           done
           
-          if [ -n "$LATEST_TAG" ]; then
-            echo "Found latest tag: $LATEST_TAG"
-            echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          if [ -n "$TAG" ]; then
+            echo "Found tag: $TAG"
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
           else
             echo "No tag found for any commit in this PR."
             echo "tag=" >> $GITHUB_OUTPUT
