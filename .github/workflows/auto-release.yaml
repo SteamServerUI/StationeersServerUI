@@ -46,17 +46,39 @@ jobs:
             exit 1
           fi
 
-      # Check for git tag and set output
+      # Check for git tag on any commit in the PR and select the latest
       - name: Check for git tag
         id: check_tag
         run: |
-          # Get tags associated with the merged commit
-          TAG=$(git tag --points-at ${{ github.sha }})
-          if [ -n "$TAG" ]; then
-            echo "Found tag: $TAG"
-            echo "tag=$TAG" >> $GITHUB_OUTPUT
+          # Get the base and head SHAs of the PR
+          BASE_SHA=${{ github.event.pull_request.base.sha }}
+          HEAD_SHA=${{ github.sha }}
+          
+          # Get all commits in the PR (from base to head)
+          COMMITS=$(git rev-list $BASE_SHA..$HEAD_SHA)
+          
+          # Initialize variables to track the latest tag
+          LATEST_TAG=""
+          LATEST_TIMESTAMP=0
+          
+          # Check each commit for tags
+          for COMMIT in $COMMITS; do
+            TAGS=$(git tag --points-at $COMMIT)
+            for TAG in $TAGS; do
+              # Get the timestamp of the commit associated with the tag
+              TIMESTAMP=$(git show -s --format=%ct $COMMIT)
+              if [ $TIMESTAMP -gt $LATEST_TIMESTAMP ]; then
+                LATEST_TIMESTAMP=$TIMESTAMP
+                LATEST_TAG=$TAG
+              fi
+            done
+          done
+          
+          if [ -n "$LATEST_TAG" ]; then
+            echo "Found latest tag: $LATEST_TAG"
+            echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
           else
-            echo "No tag found for this commit."
+            echo "No tag found for any commit in this PR."
             echo "tag=" >> $GITHUB_OUTPUT
           fi
 
