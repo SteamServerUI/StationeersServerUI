@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> This project is licensed under the SSUI [LICENSE](LICENSE) and does NOT allow redistribution.
+> Instead of forking, join the [Discord](https://discord.gg/8n3vN92MyJ) and state your intentions or [Open an issue](https://github.com/SteamServerUI/SteamServerUI/issues).
+
 # Stationeers Server UI
 
 ![Go](https://img.shields.io/badge/Go-1.24.2-blue?logo=go&logoColor=white)
