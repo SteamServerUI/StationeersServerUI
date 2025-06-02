@@ -13,6 +13,62 @@
     <link rel="stylesheet" href="/static/css/home.css">
     <link rel="stylesheet" href="/static/css/sscm.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <style>
+        .transition-notice {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            border: 2px solid #ff4500;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+            animation: pulse-glow 2s infinite alternate;
+        }
+        
+        .transition-notice h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .transition-notice p {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        
+        .transition-notice a {
+            color: #fff;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        
+        .transition-notice a:hover {
+            color: #ffeb3b;
+        }
+        
+        .notice-icon {
+            display: inline-block;
+            font-size: 1.2em;
+        }
+        
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
+            100% { box-shadow: 0 4px 25px rgba(255, 107, 53, 0.6); }
+        }
+        
+        @media (max-width: 768px) {
+            .transition-notice {
+                margin: 15px 10px;
+                padding: 15px;
+            }
+            
+            .transition-notice h3 {
+                font-size: 1.2em;
+            }
+        }
+    </style>
 </head>
 <body>
     <div id="space-background"></div>
@@ -23,6 +79,7 @@
         <button onclick="toggleGPUSaver()" class="gpusaver-icon" title="Save GPU Power by disabling background Animations when navigating away from the UI. Persistent until toggled off."></button>
     </header>
     <main>
+        
         <div id="status-indicator" class="status-indicator offline" title="Server status unknown"></div>
         <h1>Stationeers Server UI v{{.Version}} ({{.Branch}})</h1>
         <div id="controls">
@@ -49,6 +106,31 @@
         <div id="backups">
             <h2>Saves</h2>
             <ul id="backupList"></ul>
+        </div>
+        
+        <div class="transition-notice">
+            <h3>
+                <span class="notice-icon">📢</span>
+                Transition Notice
+            </h3>
+            <p>
+                <strong>StationeersServerUI</strong> will be gradually phased out and replaced by the new 
+                <strong><a href="https://github.com/SteamServerUI/SteamServerUI" target="_blank">SteamServerUI</a></strong>.
+            </p>
+            <p>
+                The new SteamServerUI offers enhanced multi-game support, a professional UI, a dedicated Desktop App, and more generalized way to manage multiple game servers with this core Software.
+                <br>
+                <br>
+                <strong>The plan is to have a stable release of SteamServerUI by Q4-2025.</strong> SteamServerUI will NOT lack any features of StationeersServerUI, but will be a completely different product.
+                <br>
+                <br>
+                While StationeersServerUI will continue to receive critical updates during the transition period, 
+                we recommend planning your migration to SteamServerUI for the best long-term experience.
+            </p>
+            <p>
+                Visit the <a href="https://github.com/SteamServerUI/SteamServerUI/wiki/Migration-from-StationeersServerUI" target="_blank">SteamServerUI Wiki</a> 
+                for our migration guide.
+            </p>
         </div>
     </main>
     <footer>
