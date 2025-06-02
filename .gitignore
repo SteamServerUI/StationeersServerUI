@@ -18,3 +18,7 @@ rocketstation_DedicatedServer.exe
 repos.md
 UIMod/*.pem
 build/StationeersServerControl*
+Blacklist.txt
+UIMod/detectionmanager/customdetections.json
+UIMod/tls/cert.pem
+UIMod/tls/key.pem
