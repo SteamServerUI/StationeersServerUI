@@ -12,7 +12,7 @@ import (
 var (
 	// All configuration variables can be found in vars.go
 	Version = "5.4.30"
-	Branch  = "v5.4"
+	Branch  = "release"
 )
 
 type JsonConfig struct {
