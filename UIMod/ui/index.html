@@ -14,57 +14,87 @@
     <link rel="stylesheet" href="/static/css/sscm.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <style>
-        .transition-notice {
-            border: 2px solid #ff4500;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            color: white;
-            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-            animation: pulse-glow 2s infinite alternate;
+        .info-notice {
+            border: 1px solid #4a90e2;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background: rgba(74, 144, 226, 0.1);
+            color: #e0e0e0;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
         }
-        
-        .transition-notice h3 {
-            margin: 0 0 15px 0;
-            font-size: 1.4em;
+
+        .info-notice h3 {
+            margin: 0 0 12px 0;
+            font-size: 1.1em;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            color: #4a90e2;
         }
-        
-        .transition-notice p {
-            margin: 10px 0;
-            line-height: 1.5;
+
+        .info-notice p {
+            margin: 8px 0;
+            line-height: 1.4;
+            font-size: 0.9em;
         }
-        
-        .transition-notice a {
-            color: #fff;
+
+        .info-notice a {
+            color: #4a90e2;
             text-decoration: underline;
-            font-weight: bold;
         }
-        
-        .transition-notice a:hover {
-            color: #ffeb3b;
+
+        .info-notice a:hover {
+            color: #7bb3f0;
         }
-        
+
         .notice-icon {
             display: inline-block;
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
-        
-        @keyframes pulse-glow {
-            0% { box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
-            100% { box-shadow: 0 4px 25px rgba(255, 107, 53, 0.6); }
+
+        .deprecation-warning {
+            border: 1px solid #ff9800;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            background: rgba(255, 152, 0, 0.1);
+            color: #ffcc80;
+            box-shadow: 0 2px 6px rgba(255, 152, 0, 0.2);
         }
-        
+
+        .deprecation-warning h3 {
+            margin: 0 0 8px 0;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #ff9800;
+        }
+
+        .deprecation-warning p {
+            margin: 5px 0;
+            font-size: 0.85em;
+            line-height: 1.3;
+        }
+
         @media (max-width: 768px) {
-            .transition-notice {
-                margin: 15px 10px;
-                padding: 15px;
+            .info-notice {
+                margin: 10px 5px;
+                padding: 12px;
             }
-            
-            .transition-notice h3 {
-                font-size: 1.2em;
+
+            .info-notice h3 {
+                font-size: 1em;
+            }
+
+            .info-notice p {
+                font-size: 0.85em;
+            }
+
+            .deprecation-warning {
+                margin: 8px 5px;
+                padding: 10px;
             }
         }
     </style>
@@ -88,7 +118,7 @@
             <button onclick="navigateTo('/static/apiinfo.html')">API Info</button>
         </div>
         <p id="status" hidden></p>
-        
+
         <div class="tab-container">
             <div class="tab-buttons">
                 <button class="tab-button active" onclick="showTab('console-tab')">Console</button>
@@ -101,36 +131,63 @@
                 <div id="detection-console"></div>
             </div>
         </div>
-        
+
         <div id="backups">
-            <h2>Saves</h2>
+            <div class="deprecation-warning">
+                <h3>
+                    <span class="notice-icon">⚠️</span>
+                    Backup Manager is Sunsetting: Saves will be disabled soon™
+                </h3>
+                <p>
+                    Due to changes in the way Stationeers handles savegames, the latest implementation of the Backup
+                    Manager will (once again) stop working soon™. As a fix is not reasonable with the current
+                    implementation, Backup Manager will be re-vamped at a later stage.
+                </p>
+                <p>
+                    Backups will be soft-disabled in a hotfix once RocketWerkz releases the new World System to the
+                    public branch.
+                </p>
+                <p>
+                    A new implementation of the Backup Manager will possibly be directly Developed for SteamServerUI
+                    instead of StationeersServerUI. Join the SSUI Discord if you have feedback about this.
+                </p>
+            </div>
             <ul id="backupList"></ul>
         </div>
-        
-<div class="transition-notice">
-    <h3>
-        <span class="notice-icon">📢</span>
-        A New Era for ALL Your Game Servers: Transitioning to SteamServerUI
-    </h3>
-    <p>
-        Dear Stationeers community (and beyond!), we’ve got big news. <strong>StationeersServerUI (V5)</strong>, your trusty, retro-styled companion for running Stationeers servers, is evolving into something even bigger: <strong><a href="https://github.com/SteamServerUI/SteamServerUI" target="_blank">SteamServerUI (V6)</a></strong>. This isn’t just an update — it’s a complete transformation to make server management faster, sleeker, and ready for *any* Steam game, all while keeping Stationeers at its heart.
-    </p>
-        <br>
-    <p>
-        <strong>Why are we doing this?</strong> StationeersServerUI has been a labor of love, built to make your spacefaring servers a breeze with its one-click setups, Discord bots, and smart backups. But its Stationeers-only focus and retro, hard-to-maintain frontend code limited its potential. Enter SteamServerUI: a modern, professional-grade tool powered by the same reliable Go backend, now with a stunning Svelte-based UI, a dedicated desktop app, and a flexible system that supports *any* Steam game — from Satisfactory to Project Zomboid and beyond. Whether you’re a Stationeers diehard or exploring other games, SteamServerUI delivers the same “up and running in a minute” magic, so why not just try running your Satisfactory server this way too?
-    </p>
-    <br>
-    <p>
-        <strong>What does this mean for Stationeers fans?</strong> Rest easy — Stationeers is the beating heart of SteamServerUI. It’s our primary testing ground, ensuring your servers run as smoothly as ever. While some Stationeers-specific features (like SSCM) won’t carry over to keep V6 lean and universal, you’re gaining a future-proof tool that’s easier to use, looks incredible, and can grow with you. We’re committed to making this transition seamless, with <strong>a stable SteamServerUI release planned for Q4-2025</strong>. During this period, StationeersServerUI will still receive critical updates, so your servers stay rock-solid.
-    </p>
-        <br>
-    <p>
-        <strong>Ready to make the jump?</strong> We're not - yet! But: We’ve got your back. Check out our <a href="https://github.com/SteamServerUI/SteamServerUI/wiki/Migration-from-StationeersServerUI" target="_blank">SteamServerUI Migration Guide</a> to plan your move. Eventually, our auto-updater will offer a one-click migration option, safely backing up your V5 settings so you can dive into V6 worry-free. Join us in this Servervolution — it’s time to take your game servers to the stars!
-    </p>
-</div>
+
+        <div class="info-notice">
+            <h3>
+                <span class="notice-icon">ℹ️</span>
+                Transitioning to SteamServerUI
+            </h3>
+            <p>
+                <strong>StationeersServerUI (V5)</strong> is evolving into <strong><a href="https://github.com/SteamServerUI/SteamServerUI" target="_blank">SteamServerUI (V6)</a></strong> — a modern, multi-game server management tool that supports any Steam game while keeping Stationeers at its core.
+            </p>
+            <p>ℹ️ Sit back and relax: If you have auto updates enabled, you'll get notified and guided once V6 is ready. If not, you can check the <a href="https://github.com/SteamServerUI/SteamServerUI/wiki/Migration-from-StationeersServerUI" target="_blank">Migration Guide</a> to plan your transition.</p>
+            <p>
+                <strong>Why are we doing this?</strong> StationeersServerUI has been great for Stationeers servers with its one-click setups, Discord bots, and smart backups. However, its Stationeers-only focus and retro, hard-to-maintain frontend code limited its potential. SteamServerUI uses the same reliable Go backend but adds a modern Svelte-based UI, desktop app, and flexible system supporting any Steam game — from Satisfactory to Project Zomboid and beyond.
+            </p>
+            <p>
+                <strong>What's changing:</strong> V6 features a sleek new interface, universal Steam game support, and enhanced reliability. While Stationeers-specific features like won't carry over to keep V6 lean and universal, you're gaining a future-proof tool that's easier to use and can grow with you.
+            </p>
+            <p>
+                <strong>Timeline:</strong> Stable SteamServerUI release planned for Q4-2025. StationeersServerUI will continue receiving critical updates until Q42026. See the Roadmap <a href="https://github.com/SteamServerUI/SteamServerUI/wiki/Roadmap" target="_blank">here</a> for more details.
+            </p>
+        </div>
     </main>
+
+    <discord-button>
+        <a href="https://discord.gg/8n3vN92MyJ" target="_blank">
+            <img src="https://cdn.discordapp.com/icons/1357524183260729404/3626cdbaa442efdad6e619a65b4f037a.png?size=128&quality=lossless" alt="SSUI Discord" width="40" height="40">
+        </a>
+    </discord-button>
+    <p>Join the Discord and help make SSUI better!</p>
+
     <footer>
-        <div class="copyright">Copyright &copy; 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a> Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">Proprietary License</a>.</div>
+        <div class="copyright">
+            Copyright © 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a>
+            Licensed under <a href="https://github.com/SteamServerUI/StationeersServerUI/blob/main/LICENSE">Proprietary License</a>.
+        </div>
     </footer>
 
     <script src="/sscm/sscm.js"></script>
