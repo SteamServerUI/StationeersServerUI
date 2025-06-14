@@ -171,11 +171,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             
             if (response.ok) {
-                if (configField || step === "admin_account") { // Any setup step
+                if (configField) { // Any setup step
                     hidePreloader();
                     showNotification(step === "admin_account" ? 'Admin account saved!' : 'Config saved!', 'success');
                     // Wait for backend response to complete before redirecting
-                    await response.json(); // Ensure backend response is fully processed
+                    try { await response.json(); } catch (e) {} // Ensure backend response is fully processed
                     window.location.href = `/setup?step=${nextStep}`;
                 } else if (mode === 'login') {
                     showNotification('Login Successful!', 'success');
