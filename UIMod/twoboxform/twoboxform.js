@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             
             if (response.ok) {
-                if (configField) { // Any setup step
+                if (configField || step === "admin_account") {
                     hidePreloader();
                     showNotification(step === "admin_account" ? 'Admin account saved!' : 'Config saved!', 'success');
                     // Wait for backend response to complete before redirecting
