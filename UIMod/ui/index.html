@@ -53,29 +53,44 @@
             font-size: 1.1em;
         }
 
-        .deprecation-warning {
-            border: 1px solid #ff9800;
+        .update {
+            border: 1px solid #4caf50;
             border-radius: 8px;
             padding: 12px;
             margin: 10px 0;
-            background: rgba(255, 152, 0, 0.1);
-            color: #ffcc80;
-            box-shadow: 0 2px 6px rgba(255, 152, 0, 0.2);
+            background: rgba(76, 175, 80, 0.15);
+            color: #c8e6c9;
+            box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
         }
 
-        .deprecation-warning h3 {
+        .update h3 {
             margin: 0 0 8px 0;
             font-size: 1em;
             display: flex;
             align-items: center;
             gap: 6px;
-            color: #ff9800;
+            color: #4caf50;
         }
 
-        .deprecation-warning p {
+        .update p {
             margin: 5px 0;
             font-size: 0.85em;
             line-height: 1.3;
+        }
+
+        .dev-response {
+            background: rgba(33, 150, 243, 0.1);
+            border-left: 3px solid #2196f3;
+            padding: 8px 12px;
+            margin: 8px 0;
+            border-radius: 0 4px 4px 0;
+            font-style: italic;
+            color: #bbdefb;
+        }
+
+        .status-good {
+            color: #4caf50;
+            font-weight: 600;
         }
 
         @media (max-width: 768px) {
@@ -92,7 +107,7 @@
                 font-size: 0.85em;
             }
 
-            .deprecation-warning {
+            .positive-update {
                 margin: 8px 5px;
                 padding: 10px;
             }
@@ -133,26 +148,27 @@
         </div>
 
         <div id="backups">
-            <div class="deprecation-warning">
+            <div class="update">
                 <h3>
                     <span class="notice-icon">⚠️</span>
                     When the new Terrain System is released to the public branch, this tool could break.
                     <span class="notice-icon">⚠️</span>
                 </h3>
+                                    <span class="notice-icon">📢</span>
+                    Update: The Devs responded to the missing backup world name feature request!
                 <p>
-                    Due to changes in the way Stationeers handles savegames, StationeerServerUI will not be able to run the Server properly in the latest implementation of the Stationeers Dedicated Server.
+                    <strong>Previous concern:</strong> The new Terrain System removed the load-or-create fallback system that StationeerServerUI relies on, which would entirely break SSUI functionality once released to the public branch.
                 </p>
-                <p>
-                    I spent hours tinkering with the new Terrain System today (14th of July): We need the Stationeers Developers to re-add a Load-or-create fallback system for Savegames. I raised a Bug report in the Stationeers Discord requesting this feature back.
+                <div class="dev-response">
+                    <strong>Recent Developer Response (June 15, 2025):</strong> "Yup we can add that to loadlatest for sure. [...] this is very helpful thanks" - puck | Programmer
+                </div>
+                <p class="status-good">
+                    Great news! After raising this issue to RocketWerkz, the dev team has confirmed they'll restore the missing backup world name functionality to the loadlatest command.
                 </p>
+                <p class="status-good"></p>
+                    The Backup Manager will get an Update when the new Terrain System is released to the public branch. Until then, it will continue to work as expected.
                 <p>
-                    I'm sorry for the inconvenience. I hope the Stationeers Developers will fix this issue soon. I feel like this was left out momentarily but will be re-added in the future, especially now that someone pointed out the issue. (Hopefully!)
-                </p>
-                <p>
-                    "What should I do?": Sadly, there is no solution for this yet. When the new Terrain System is released to the public branch, switch to the preterrain branch. If there is no solution until the release, a hofix will be released asap to switch you over to the preterrain branch.
-                </p>
-                <p>
-                    There is a chance this impact will be bigger than expected, forcing the Update to V6 and the switch to SteamServerUI to happen sooner than planned. Lets hope this will not be the case.
+                    <strong>No immediate action needed</strong> - just wanted to share the good news that StationeersServerUI will continue to work in the future! 🎉
                 </p>
             </div>
             <ul id="backupList"></ul>
