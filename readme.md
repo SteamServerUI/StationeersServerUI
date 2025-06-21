@@ -37,7 +37,7 @@ And the "best part?" The Demo current is not on the V5 but V4, so if you are con
 </div>
 <div align="center">
   
-  [![UI Overview](media/preview.gif)](https://jacksonthemaster.github.io/StationeersServerUI/)
+  [![UI Overview](media/SSUI_AD.gif)](https://jacksonthemaster.github.io/StationeersServerUI/)
   <em>Manage your Stationeers server with style - Retro interface, modern capabilities.</em>
 </div>
 
