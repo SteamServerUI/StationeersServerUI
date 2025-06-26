@@ -20,7 +20,12 @@ func buildCommandArgs() []string {
 	var argOrder = []Arg{
 		{Flag: "-nographics", RequiresValue: false},
 		{Flag: "-batchmode", RequiresValue: false},
-		{Flag: "-LOAD", Value: config.SaveInfo, RequiresValue: true, NoQuote: true}, // LOAD has special handling because the gameserver expects 2 parameters
+		{Flag: "-file", RequiresValue: false},
+		{Flag: "start", Value: "MySaveGame", RequiresValue: true},
+		{Flag: "Lunar", RequiresValue: false},
+		{Flag: "Normal ", RequiresValue: false},
+		{Flag: "DefaultStart", RequiresValue: false},
+		{Flag: "DefaultStartLocation", RequiresValue: false},
 		{Flag: "-logFile", Value: "./debug.log", Condition: func() bool { return runtime.GOOS == "linux" }, RequiresValue: true},
 		{Flag: "-settings", RequiresValue: false},
 		{Flag: "StartLocalHost", Value: strconv.FormatBool(config.StartLocalHost), RequiresValue: true},
