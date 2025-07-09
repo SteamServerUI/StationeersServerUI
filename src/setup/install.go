@@ -95,22 +95,10 @@ func CheckAndDownloadUIMod() {
 		jsAssetDir + "ui-utils.js":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/js/ui-utils.js", downloadBranch),
 	}
 
+	createRequiredDirs(requiredDirs)
+
 	// Check if the directory exists
 	if _, err := os.Stat(uiModDir); os.IsNotExist(err) {
-		logger.Install.Warn("⚠️Folder ./UIMod does not exist. Creating it...")
-
-		// Create directories
-		for _, dir := range requiredDirs {
-			if _, err := os.Stat(dir); os.IsNotExist(err) {
-				err := os.MkdirAll(dir, os.ModePerm)
-				if err != nil {
-					logger.Install.Error("❌Error creating folder: " + err.Error())
-					return
-				}
-				logger.Install.Warn("⚠️Created folder: " + dir)
-			}
-		}
-
 		// Initial download
 		config.ConfigMu.Lock()
 		//check if tlsDir exists, if not, set isFirstTimeSetup to true
@@ -387,5 +375,19 @@ func checkAndCreateBlacklist() {
 		logger.Install.Info("✅Created Blacklist.txt with dummy steamID64.")
 	} else {
 		logger.Install.Info("♻️Blacklist.txt already exists. Skipping creation.")
+	}
+}
+
+func createRequiredDirs(requiredDirs []string) {
+	// Create directories
+	for _, dir := range requiredDirs {
+		if _, err := os.Stat(dir); os.IsNotExist(err) {
+			err := os.MkdirAll(dir, os.ModePerm)
+			if err != nil {
+				logger.Install.Error("❌Error creating folder: " + err.Error())
+				return
+			}
+			logger.Install.Warn("⚠️Created folder: " + dir)
+		}
 	}
 }
