@@ -211,7 +211,7 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if users map is nil or empty
-	if config.Users == nil || len(config.Users) == 0 {
+	if len(config.Users) == 0 {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - No users registered - cannot finalize setup at this time"})
