@@ -141,7 +141,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SubmitButtonText:       "Save & Continue",
 			SkipButtonText:         "Use Release Version",
 			ConfigField:            "GameBranch",
-			NextStep:               "discord_enabled",
+			NextStep:               "network_config_choice",
 		},
 
 		"discord_enabled": {
@@ -155,7 +155,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SecondaryLabelType:     "hidden",
 			SubmitButtonText:       "Save & Continue",
 			SkipButtonText:         "Skip (Disable Discord)",
-			ConfigField:            "IsDiscordEnabled", // We'll handle the boolean conversion in JS
+			ConfigField:            "isDiscordEnabled", // We'll handle the boolean conversion in JS
 			NextStep:               "discord_token",    // Default next step if enabled
 			// The actual next step will be determined by JS based on the answer
 		},
@@ -171,7 +171,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SecondaryLabelType:     "hidden",
 			SubmitButtonText:       "Save & Continue",
 			SkipButtonText:         "Skip",
-			ConfigField:            "DiscordToken",
+			ConfigField:            "discordToken",
 			NextStep:               "control_panel_channel",
 		},
 
@@ -186,7 +186,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SecondaryLabelType:     "hidden",
 			SubmitButtonText:       "Save & Continue",
 			SkipButtonText:         "Skip",
-			ConfigField:            "ControlPanelChannelID",
+			ConfigField:            "controlPanelChannelID",
 			NextStep:               "save_channel",
 		},
 
@@ -201,7 +201,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SecondaryLabelType:     "hidden",
 			SubmitButtonText:       "Save & Continue",
 			SkipButtonText:         "Skip",
-			ConfigField:            "SaveChannelID",
+			ConfigField:            "saveChannelID",
 			NextStep:               "log_channel",
 		},
 
@@ -216,7 +216,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SecondaryLabelType:     "hidden",
 			SubmitButtonText:       "Save & Continue",
 			SkipButtonText:         "Skip",
-			ConfigField:            "LogChannelID",
+			ConfigField:            "logChannelID",
 			NextStep:               "connection_list_channel",
 		},
 
@@ -231,7 +231,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SecondaryLabelType:     "hidden",
 			SubmitButtonText:       "Save & Continue",
 			SkipButtonText:         "Skip",
-			ConfigField:            "ConnectionListChannelID",
+			ConfigField:            "connectionListChannelID",
 			NextStep:               "status_channel",
 		},
 
@@ -246,7 +246,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SecondaryLabelType:     "hidden",
 			SubmitButtonText:       "Save & Continue",
 			SkipButtonText:         "Skip",
-			ConfigField:            "StatusChannelID",
+			ConfigField:            "statusChannelID",
 			NextStep:               "control_channel",
 		},
 
@@ -261,7 +261,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SecondaryLabelType:     "hidden",
 			SubmitButtonText:       "Save & Continue",
 			SkipButtonText:         "Skip",
-			ConfigField:            "ControlChannelID",
+			ConfigField:            "controlChannelID",
 			NextStep:               "network_config_choice",
 		},
 
