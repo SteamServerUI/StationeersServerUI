@@ -54,11 +54,11 @@
         }
 
         .update {
-            border: 1px solid #4caf50;
+            border: 1px solid #af534c;
             border-radius: 8px;
             padding: 12px;
             margin: 10px 0;
-            background: rgba(76, 175, 80, 0.15);
+            background: #784a47;
             color: #c8e6c9;
             box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
         }
@@ -76,16 +76,6 @@
             margin: 5px 0;
             font-size: 0.85em;
             line-height: 1.3;
-        }
-
-        .dev-response {
-            background: rgba(33, 150, 243, 0.1);
-            border-left: 3px solid #2196f3;
-            padding: 8px 12px;
-            margin: 8px 0;
-            border-radius: 0 4px 4px 0;
-            font-style: italic;
-            color: #bbdefb;
         }
 
         .status-good {
@@ -120,10 +110,11 @@
     <header>
         <img src="/static/stationeers.png" alt="Stationeers Banner" id="banner">
         <button onclick="window.location.href = '/auth/logout';" class="logout-icon" title="Logout"></button>
-        <button onclick="toggleGPUSaver()" class="gpusaver-icon" title="Save GPU Power by disabling background Animations when navigating away from the UI. Persistent until toggled off."></button>
+        <button onclick="toggleGPUSaver()" class="gpusaver-icon"
+            title="Save GPU Power by disabling background Animations when navigating away from the UI. Persistent until toggled off."></button>
     </header>
     <main>
-        
+
         <div id="status-indicator" class="status-indicator offline" title="Server status unknown"></div>
         <h1>Stationeers Server UI v{{.Version}} ({{.Branch}})</h1>
         <div id="controls">
@@ -148,49 +139,71 @@
         </div>
 
         <div id="backups">
-            <div class="update">
-                <h3>
-                    <span class="notice-icon">⚠️</span>
-                    When the new Terrain System is released to the public branch, this tool could break.
-                    <span class="notice-icon">⚠️</span>
-                </h3>
-                                    <span class="notice-icon">📢</span>
-                    Update: The Devs responded to the missing backup world name feature request!
-                <p>
-                    <strong>Previous concern:</strong> The new Terrain System removed the load-or-create fallback system that StationeerServerUI relies on, which would entirely break SSUI functionality once released to the public branch.
-                </p>
-                <div class="dev-response">
-                    <strong>Recent Developer Response (June 15, 2025):</strong> "Yup we can add that to loadlatest for sure. [...] this is very helpful thanks" - puck | Programmer
-                </div>
-                <p class="status-good">
-                    Great news! After raising this issue to RocketWerkz, the dev team has confirmed they'll restore the missing backup world name functionality to the loadlatest command.
-                </p>
-                <p class="status-good"></p>
-                    The Backup Manager will get an Update when the new Terrain System is released to the public branch. Until then, it will continue to work as expected.
-                <p>
-                    <strong>No immediate action needed</strong> - just wanted to share the good news that StationeersServerUI will continue to work in the future! 🎉
-                </p>
-            </div>
+            <h2>Backups List</h2>
             <ul id="backupList"></ul>
         </div>
 
+        <div class="update">
+            <h3>
+                <span class="notice-icon">⚠️</span>
+                When the new Terrain System is released to the public branch, this tool could break.
+                <span class="notice-icon">⚠️</span>
+            </h3>
+            <span class="notice-icon">📢</span>
+            Update: Due to fundamental changes in the terrain and most importantly the save/load system, StationeersServerUI
+            will <strong>sunset</strong> in favor of SteamServerUI <strong>way earlier than originally planned.</strong>
+            <p>
+                <strong>What does this mean for me?</strong>
+            </p>
+            <p class="status-good">
+                As of now, SteamServerUI is still in development and NOT yet ready for use, as the Devs have not yet fixed the new file start command for Linux. However, I am working on making this transition as smooth as possible for you.
+            </p>
+            <p>
+                I had originally planned to release SteamServerUI at the end of 2025, and provide a LTS for
+                StationeersServerUI. However, due to the major changes, I decided it's best to focus on the better,
+                future product - SteamServerUI.
+            </p>
+            <strong>No immediate action needed</strong> - a guided migration feature will be provided in the near
+            future! When the Stationeers update is released, StationeersServerUI will switch to the pre-terrain branch
+            with a hotfix.
+            <p>My promise: I will not let y'all down! Continue normally, and I will sort this out.</p>
+            <br>
+            <p>Sorry for the inconvenience - I really didn't want to do this.</p>
+            <p>JacksonTheMaster</p>
+        </div>
         <div class="info-notice">
             <h3>
                 <span class="notice-icon">ℹ️</span>
                 Transitioning to SteamServerUI
             </h3>
             <p>
-                <strong>StationeersServerUI (V5)</strong> is evolving into <strong><a href="https://github.com/SteamServerUI/SteamServerUI" target="_blank">SteamServerUI (V6)</a></strong> — a modern, multi-game server management tool that supports any Steam game while keeping Stationeers at its core.
+                <strong>StationeersServerUI (V5)</strong> is evolving into <strong><a
+                        href="https://github.com/SteamServerUI/SteamServerUI" target="_blank">SteamServerUI
+                        (V6)</a></strong> — a modern, multi-game server management tool that supports any Steam game
+                while keeping Stationeers at its core.
             </p>
-            <p>ℹ️ Sit back and relax: If you have auto updates enabled, you'll get notified and guided once V6 is ready. If not, you can check the <a href="https://github.com/SteamServerUI/SteamServerUI/wiki/Migration-from-StationeersServerUI" target="_blank">Migration Guide</a> to plan your transition.</p>
+            <p>ℹ️ Sit back and relax: If you have auto updates enabled, you'll get notified and guided once V6 is ready.
+                If not, you can check the <a
+                    href="https://github.com/SteamServerUI/SteamServerUI/wiki/Migration-from-StationeersServerUI"
+                    target="_blank">Migration Guide</a> to plan your transition.</p>
             <p>
-                <strong>Why are we doing this?</strong> StationeersServerUI has been great for Stationeers servers with its one-click setups, Discord bots, and smart backups. However, its Stationeers-only focus and retro, hard-to-maintain frontend code limited its potential. SteamServerUI uses the same reliable Go backend but adds a modern Svelte-based UI, desktop app, and flexible system supporting any Steam game — from Satisfactory to Project Zomboid and beyond.
+                <strong>Why are we doing this?</strong> StationeersServerUI has been great for Stationeers servers with
+                its one-click setups, Discord bots, and smart backups. However, its Stationeers-only focus and retro,
+                hard-to-maintain frontend code limited its potential. SteamServerUI uses the same reliable Go backend
+                but adds a modern Svelte-based UI, desktop app, and flexible system supporting any Steam game — from
+                Satisfactory to Project Zomboid and beyond.
             </p>
             <p>
-                <strong>What's changing:</strong> V6 features a sleek new interface, universal Steam game support, and enhanced reliability. While Stationeers-specific features like won't carry over to keep V6 lean and universal, you're gaining a future-proof tool that's easier to use and can grow with you.
+                <strong>What's changing:</strong> V6 features a sleek new interface, universal Steam game support, and
+                enhanced reliability. While some Stationeers-specific features won't carry over 1:1 to keep V6 lean and
+                universal, you're gaining a future-proof tool that's easier to use and can grow with you.
             </p>
             <p>
-                <strong>Timeline:</strong> Stable SteamServerUI release planned for Q4-2025. StationeersServerUI will continue receiving critical updates until Q42026. See the Roadmap <a href="https://github.com/SteamServerUI/SteamServerUI/wiki/Roadmap" target="_blank">here</a> for more details.
+                <strong>Timeline:</strong> Due to the major changes to Stationeers, the planned timeline is now
+                expendable. While I am working hard on SteamServerUI to deliver a stable release, the timeline is
+                uncertain at this point. See the Roadmap <a
+                    href="https://github.com/SteamServerUI/SteamServerUI/wiki/Roadmap" target="_blank">here</a> for more
+                details.
             </p>
         </div>
     </main>
@@ -200,7 +213,7 @@
             <img src="https://cdn.discordapp.com/icons/1357524183260729404/3626cdbaa442efdad6e619a65b4f037a.png?size=128&quality=lossless" alt="SSUI Discord" width="40" height="40">
         </a>
     </discord-button>
-    <p>Join the Discord and help make SSUI better!</p>
+    <p>Join the Discord and help make SSUI better or get support!</p>
 
     <footer>
         <div class="copyright">
