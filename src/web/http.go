@@ -172,6 +172,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		"{{UseSteamP2PFalseSelected}}":      steamP2PFalseSelected,
 		"{{ExePath}}":                       config.ExePath,
 		"{{AdditionalParams}}":              config.AdditionalParams,
+		"{{AutoRestartServerTimer}}":        config.AutoRestartServerTimer,
 	}
 
 	for placeholder, value := range replacements {

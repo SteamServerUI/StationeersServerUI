@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.4.31"
+	Version = "5.4.32"
 	Branch  = "release"
 )
 
@@ -63,6 +63,7 @@ type JsonConfig struct {
 	SubsystemFilters        []string          `json:"subsystemFilters"`
 	IsUpdateEnabled         *bool             `json:"IsUpdateEnabled"`
 	IsSSCMEnabled           *bool             `json:"IsSSCMEnabled"`
+	AutoRestartServerTimer  string            `json:"AutoRestartServerTimer"`
 	AllowPrereleaseUpdates  *bool             `json:"AllowPrereleaseUpdates"`
 	AllowMajorUpdates       *bool             `json:"AllowMajorUpdates"`
 }
@@ -202,7 +203,7 @@ func applyConfig(cfg *JsonConfig) {
 	cfg.AllowMajorUpdates = &allowMajorUpdatesVal
 
 	SubsystemFilters = getStringSlice(cfg.SubsystemFilters, "SUBSYSTEM_FILTERS", []string{})
-
+	AutoRestartServerTimer = getString(cfg.AutoRestartServerTimer, "AUTO_RESTART_SERVER_TIMER", "0")
 	isSSCMEnabledVal := getBool(cfg.IsSSCMEnabled, "IS_SSCM_ENABLED", false)
 	IsSSCMEnabled = isSSCMEnabledVal
 	cfg.IsSSCMEnabled = &isSSCMEnabledVal

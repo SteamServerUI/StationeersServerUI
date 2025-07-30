@@ -12,16 +12,18 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/google/uuid"
 )
 
 var (
-	cmd     *exec.Cmd
-	mu      sync.Mutex
-	logDone chan struct{}
-	err     error
+	cmd             *exec.Cmd
+	mu              sync.Mutex
+	logDone         chan struct{}
+	err             error
+	autoRestartDone chan struct{}
 )
 
 // InternalIsServerRunning checks if the server process is running.
@@ -163,6 +165,17 @@ func InternalStartServer() error {
 	// create a UUID for this specific run
 	createGameServerUUID()
 	logger.Core.Debug("Created Game Server with internal UUID: " + config.GameServerUUID.String())
+
+	// Start auto-restart goroutine if AutoRestartServerTimer is set greater than 0
+	if config.AutoRestartServerTimer != "0" {
+		if autoRestartDone != nil {
+			close(autoRestartDone)
+		}
+		autoRestartDone = make(chan struct{})
+		go startAutoRestart(config.AutoRestartServerTimer, autoRestartDone)
+		logger.Core.Info("Auto-restart scheduled every " + config.AutoRestartServerTimer + " minutes")
+	}
+
 	return nil
 }
 
@@ -172,6 +185,13 @@ func InternalStopServer() error {
 
 	if !internalIsServerRunningNoLock() {
 		return fmt.Errorf("server not running")
+	}
+
+	// Stop auto-restart goroutine
+	if autoRestartDone != nil {
+		close(autoRestartDone)
+		autoRestartDone = nil
+		logger.Core.Info("Auto-restart cycle interrupted due to manaual stop")
 	}
 
 	// Process is running, stop it
@@ -245,6 +265,53 @@ func InternalStopServer() error {
 	cmd = nil
 	clearGameServerUUID()
 	return nil
+}
+
+// startAutoRestart runs a goroutine that restarts the server after the specified timeframe in minutes.
+func startAutoRestart(minutes string, done chan struct{}) {
+	minutesInt, _ := strconv.Atoi(minutes)
+	ticker := time.NewTicker(time.Duration(minutesInt) * time.Minute)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			mu.Lock()
+			if !internalIsServerRunningNoLock() {
+				mu.Unlock()
+				logger.Core.Info("Auto-restart skipped: server is not running")
+				return
+			}
+			mu.Unlock()
+
+			if config.IsSSCMEnabled {
+				commandmgr.WriteCommand("say Attention, server is restarting in 30 seconds!")
+				time.Sleep(10 * time.Second)
+				commandmgr.WriteCommand("say Attention, server is restarting in 20 seconds!")
+				time.Sleep(10 * time.Second)
+				commandmgr.WriteCommand("say Attention, server is restarting in 10 seconds!")
+				time.Sleep(5 * time.Second)
+				commandmgr.WriteCommand("say Attention, server is restarting in 5 seconds!")
+				time.Sleep(5 * time.Second)
+			}
+			logger.Core.Info("Auto-restart triggered: stopping server")
+			if err := InternalStopServer(); err != nil {
+				logger.Core.Error("Auto-restart failed to stop server: " + err.Error())
+				return
+			}
+
+			logger.Core.Info("Auto-restart: waiting 5 seconds before restarting")
+			time.Sleep(5 * time.Second)
+
+			logger.Core.Info("Auto-restart: starting server")
+			if err := InternalStartServer(); err != nil {
+				logger.Core.Error("Auto-restart failed to start server: " + err.Error())
+				return
+			}
+		case <-done:
+			return
+		}
+	}
 }
 
 func clearGameServerUUID() {
