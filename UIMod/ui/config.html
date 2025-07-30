@@ -213,6 +213,13 @@
                                         value="{{AdditionalParams}}">
                                     <div class="input-info">Format: CustomParam1 Value1 CustomParam2 Value2</div>
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="AutoRestartServerTimer">Scheduled Gameserver Restart:</label>
+                                    <input type="text" id="AutoRestartServerTimer" name="AutoRestartServerTimer"
+                                        value="{{AutoRestartServerTimer}}">
+                                    <div class="input-info">Timeframe in <strong> minutes </strong> to schedule an automatic gameserver restart. 0 = disabled, 1440 = 24 hours, etc.. If SSCM is enabled, you will see "Attention, server is restarting in 30/20/10/5 seconds!" messages <strong> ingame </strong> before restarting.</div>
+                                </div>
                             </div>
                         </div>
 
@@ -221,7 +228,7 @@
                             <button type="button" class="save-button"
                                 onclick="document.getElementById('server-config-form').submit()"></button>
                         </div>
-                    </form>
+                    </form> 
                 </div>
             </div>
         </div>

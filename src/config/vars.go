@@ -47,19 +47,20 @@ var (
 
 // Logging, debugging and misc
 var (
-	IsDebugMode          bool //only used for pprof server, keep it like this and check the log level instead. Debug = 10
-	CreateSSUILogFile    bool
-	LogLevel             int
-	LogMessageBuffer     string
-	IsFirstTimeSetup     bool
-	BufferFlushTicker    *time.Ticker
-	SSEMessageBufferSize = 2000
-	MaxSSEConnections    = 20
-	GameServerAppID      = "600760"
-	ExePath              string
-	GameBranch           string
-	SubsystemFilters     []string
-	GameServerUUID       uuid.UUID // Assined at startup to the current instance of the server we are managing. Currently unused.
+	IsDebugMode            bool //only used for pprof server, keep it like this and check the log level instead. Debug = 10
+	CreateSSUILogFile      bool
+	LogLevel               int
+	LogMessageBuffer       string
+	IsFirstTimeSetup       bool
+	BufferFlushTicker      *time.Ticker
+	SSEMessageBufferSize   = 2000
+	MaxSSEConnections      = 20
+	GameServerAppID        = "600760"
+	ExePath                string
+	GameBranch             string
+	SubsystemFilters       []string
+	GameServerUUID         uuid.UUID // Assined at startup to the current instance of the server we are managing. Currently unused.
+	AutoRestartServerTimer string
 )
 
 // Discord integration
