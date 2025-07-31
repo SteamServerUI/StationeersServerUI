@@ -92,7 +92,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			Title:                  "Stationeers Server UI",
 			HeaderTitle:            "Save Identifier Setup",
 			StepMessage:            "Set a save identifier like 'SpaceStation13 Moon'. Capitalize the first letter of each word. Possible World types can be found in the Stationeers Wiki or the Stationeers Server UI GitHub Wiki.",
-			PrimaryPlaceholderText: "Requires a SaveName, accepts optional WorldType",
+			PrimaryPlaceholderText: "Requires a SaveName and WorldType for first start!",
 			PrimaryLabel:           "Save Identifier",
 			SecondaryLabel:         "",
 			SecondaryLabelType:     "hidden",
