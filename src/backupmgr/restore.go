@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 // RestoreBackup restores a backup with the given index
 func (m *BackupManager) RestoreBackup(index int) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	logger.Backup.Info("Restoring backup with index " + fmt.Sprintf("%d", index))
 
 	files := []struct {
 		backupName    string
@@ -25,7 +29,7 @@ func (m *BackupManager) RestoreBackup(index int) error {
 
 	for _, file := range files {
 		backupFile := filepath.Join(m.config.SafeBackupDir, file.backupName)
-		destFile := filepath.Join(m.config.BackupDir, file.destName)
+		destFile := filepath.Join("./saves/"+config.WorldName, file.destName)
 
 		if err := copyFile(backupFile, destFile); err != nil {
 			// Try alternative name
@@ -38,6 +42,7 @@ func (m *BackupManager) RestoreBackup(index int) error {
 		}
 		restoredFiles[destFile] = backupFile
 	}
+	logger.Backup.Debug(fmt.Sprintf("%v", restoredFiles))
 
 	return nil
 }
