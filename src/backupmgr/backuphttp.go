@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 // HTTPHandler provides HTTP endpoints for backup operations
@@ -65,6 +67,7 @@ func (h *HTTPHandler) ListBackupsHandler(w http.ResponseWriter, r *http.Request)
 
 // RestoreBackupHandler handles requests to restore a backup
 func (h *HTTPHandler) RestoreBackupHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Web.Debug("Received restore request")
 	indexStr := r.URL.Query().Get("index")
 	if indexStr == "" {
 		http.Error(w, "index parameter is required", http.StatusBadRequest)
