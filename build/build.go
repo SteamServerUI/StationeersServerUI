@@ -62,9 +62,9 @@ func main() {
 		// Prepare the output file name with the new version, branch, and platform
 		var outputName string
 		if config.Branch == "release" {
-			outputName = fmt.Sprintf("StationeersServerControl%s", newVersion)
+			outputName = fmt.Sprintf("StationeersServerControlv%s", newVersion)
 		} else {
-			outputName = fmt.Sprintf("StationeersServerControl%s_%s", newVersion, config.Branch)
+			outputName = fmt.Sprintf("StationeersServerControlv%s_%s", newVersion, config.Branch)
 		}
 
 		// Append appropriate extension based on platform
