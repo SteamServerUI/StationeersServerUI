@@ -140,7 +140,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SecondaryLabelType:     "hidden",
 			SubmitButtonText:       "Save & Continue",
 			SkipButtonText:         "Use Release Version",
-			ConfigField:            "GameBranch",
+			ConfigField:            "gameBranch",
 			NextStep:               "network_config_choice",
 		},
 
