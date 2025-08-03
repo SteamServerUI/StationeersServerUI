@@ -91,6 +91,7 @@ func PrintConfigDetails() {
 	logger.Config.Debug(fmt.Sprintf("ConfiguredBackupDir: %s", config.ConfiguredBackupDir))
 	logger.Config.Debug(fmt.Sprintf("ConfiguredSafeBackupDir: %s", config.ConfiguredSafeBackupDir))
 	logger.Config.Debug(fmt.Sprintf("BackupWaitTime: %s", config.BackupWaitTime))
+	logger.Config.Debug(fmt.Sprintf("EnableDotSaves: %v", config.EnableDotSaves))
 
 	logger.Config.Debug("---- AUTHENTICATION CONFIG VARS ----")
 	logger.Config.Debug(fmt.Sprintf("AuthTokenLifetime: %d", config.AuthTokenLifetime))

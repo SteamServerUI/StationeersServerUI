@@ -34,6 +34,7 @@ type JsonConfig struct {
 	BackupKeepMonthlyFor    int               `json:"backupKeepMonthlyFor"`
 	BackupCleanupInterval   int               `json:"backupCleanupInterval"`
 	BackupWaitTime          int               `json:"backupWaitTime"`
+	EnableDotSaves          *bool             `json:"EnableDotSaves"`
 	GameBranch              string            `json:"gameBranch"`
 	ServerName              string            `json:"ServerName"`
 	SaveInfo                string            `json:"SaveInfo"`
@@ -131,6 +132,11 @@ func applyConfig(cfg *JsonConfig) {
 	BackupKeepMonthlyFor = time.Duration(getInt(cfg.BackupKeepMonthlyFor, "BACKUP_KEEP_MONTHLY_FOR", 730)) * time.Hour
 	BackupCleanupInterval = time.Duration(getInt(cfg.BackupCleanupInterval, "BACKUP_CLEANUP_INTERVAL", 730)) * time.Hour
 	BackupWaitTime = time.Duration(getInt(cfg.BackupWaitTime, "BACKUP_WAIT_TIME", 30)) * time.Second
+
+	dotSaveVal := getBool(cfg.EnableDotSaves, "ENABLE_DOT_SAVES", false)
+	EnableDotSaves = dotSaveVal
+	cfg.EnableDotSaves = &dotSaveVal
+
 	GameBranch = getString(cfg.GameBranch, "GAME_BRANCH", "public")
 	ServerName = getString(cfg.ServerName, "SERVER_NAME", "Stationeers Server UI")
 	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "Moon Moon")
@@ -217,7 +223,14 @@ func applyConfig(cfg *JsonConfig) {
 		BackupWorldName = parts[1]
 	}
 
-	// Set backup paths
-	ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "autosave")
+	// Set backup paths for old or new style saves
+	if EnableDotSaves {
+		// use new new style autosave folder
+		ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "autosave")
+	} else {
+		// use old style Backups folder
+		ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "Backups")
+	}
+	// use Safebackups folder either way.
 	ConfiguredSafeBackupDir = filepath.Join("./saves/", WorldName, "Safebackups")
 }

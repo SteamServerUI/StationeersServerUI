@@ -92,6 +92,7 @@ var (
 	ConfiguredBackupDir     string
 	ConfiguredSafeBackupDir string
 	BackupWaitTime          time.Duration
+	EnableDotSaves          bool
 )
 
 // Authentication and security

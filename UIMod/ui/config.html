@@ -220,6 +220,17 @@
                                         value="{{AutoRestartServerTimer}}">
                                     <div class="input-info">Timeframe in <strong> minutes </strong> to schedule an automatic gameserver restart. 0 = disabled, 1440 = 24 hours, etc.. If SSCM is enabled, you will see "Attention, server is restarting in 30/20/10/5 seconds!" messages <strong> ingame </strong> before restarting.</div>
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="EnableDotSaves">EnableDotSaves</label>
+                                    <select id="EnableDotSaves" name="EnableDotSaves" required>
+                                        <option value="true" {{EnableDotSavesTrueSelected}}>TRUE</option>
+                                        <option value="false" {{EnableDotSavesFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">Set to TRUE to enable handling of .save files in the Backup manager. Defaults to false, which will use the old trio of world_meta.xml, world.xml, and world.bin files.</div>
+                                </div>
+                                
+
                             </div>
                         </div>
 

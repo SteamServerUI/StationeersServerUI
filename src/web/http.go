@@ -119,6 +119,16 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		serverVisibleFalseSelected = "selected"
 	}
 
+	enableDotSavesTrueSelected := ""
+	enableDotSavesFalseSelected := ""
+	if config.EnableDotSaves {
+		enableDotSavesTrueSelected = "selected"
+		logger.Config.Debug("enableDotSavesTrueSelected")
+	} else {
+		enableDotSavesFalseSelected = "selected"
+		logger.Config.Debug("enableDotSavesFalseSelected")
+	}
+
 	steamP2PTrueSelected := ""
 	steamP2PFalseSelected := ""
 	if config.UseSteamP2P {
@@ -173,6 +183,9 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		"{{ExePath}}":                       config.ExePath,
 		"{{AdditionalParams}}":              config.AdditionalParams,
 		"{{AutoRestartServerTimer}}":        config.AutoRestartServerTimer,
+		"{{EnableDotSaves}}":                fmt.Sprintf("%v", config.EnableDotSaves),
+		"{{EnableDotSavesTrueSelected}}":    enableDotSavesTrueSelected,
+		"{{EnableDotSavesFalseSelected}}":   enableDotSavesFalseSelected,
 	}
 
 	for placeholder, value := range replacements {
