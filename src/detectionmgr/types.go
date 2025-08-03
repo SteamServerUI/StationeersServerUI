@@ -3,17 +3,6 @@ package detectionmgr
 
 import "regexp"
 
-const (
-	// ANSI color codes for styling terminal output
-	colorReset   = "\033[0m"
-	colorRed     = "\033[31m"
-	colorGreen   = "\033[32m"
-	colorYellow  = "\033[33m"
-	colorBlue    = "\033[34m"
-	colorMagenta = "\033[35m"
-	colorCyan    = "\033[36m"
-)
-
 // EventType defines the type of event detected
 type EventType string
 
