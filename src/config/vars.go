@@ -43,6 +43,9 @@ var (
 	SaveInterval     string
 	AutoPauseServer  bool
 	AutoSave         bool
+	Difficulty       string
+	StartCondition   string
+	StartLocation    string
 )
 
 // Logging, debugging and misc

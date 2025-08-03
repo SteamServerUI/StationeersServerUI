@@ -78,6 +78,27 @@
                                 </div>
 
                                 <div class="form-group">
+                                    <label for="Difficulty">Difficulty:</label>
+                                    <input type="text" id="Difficulty" name="Difficulty"
+                                        value="{{Difficulty}}" pattern="^\S*$" required>
+                                    <div class="input-info">Difficulty to create the world with. Defaults to Normal if empty.</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="StartCondition">Start Condition:</label>
+                                    <input type="text" id="StartCondition" name="StartCondition"
+                                        value="{{StartCondition}}" pattern="^\S*$" required>
+                                    <div class="input-info">Start condition to create the world with. Defaults to the default start condition for the world type if empty.</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="StartLocation">Start Location:</label>
+                                    <input type="text" id="StartLocation" name="StartLocation"
+                                        value="{{StartLocation}}" pattern="^\S*$" required>
+                                    <div class="input-info">Start location to create the world with. Defaults to "DefaultStartLocation" if empty.</div>
+                                </div>
+                                
+                                <div class="form-group">
                                     <label for="ServerMaxPlayers">Max Players:</label>
                                     <input type="text" id="ServerMaxPlayers" name="ServerMaxPlayers"
                                         value="{{ServerMaxPlayers}}" pattern="^\S*$" required>

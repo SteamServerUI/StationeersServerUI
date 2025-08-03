@@ -36,6 +36,9 @@ type JsonConfig struct {
 	BackupWaitTime          int               `json:"backupWaitTime"`
 	EnableDotSaves          *bool             `json:"EnableDotSaves"`
 	GameBranch              string            `json:"gameBranch"`
+	Difficulty              string            `json:"Difficulty"`
+	StartCondition          string            `json:"StartCondition"`
+	StartLocation           string            `json:"StartLocation"`
 	ServerName              string            `json:"ServerName"`
 	SaveInfo                string            `json:"SaveInfo"`
 	ServerMaxPlayers        string            `json:"ServerMaxPlayers"`
@@ -138,6 +141,9 @@ func applyConfig(cfg *JsonConfig) {
 	cfg.EnableDotSaves = &dotSaveVal
 
 	GameBranch = getString(cfg.GameBranch, "GAME_BRANCH", "public")
+	Difficulty = getString(cfg.Difficulty, "DIFFICULTY", "")
+	StartCondition = getString(cfg.StartCondition, "START_CONDITION", "")
+	StartLocation = getString(cfg.StartLocation, "START_LOCATION", "")
 	ServerName = getString(cfg.ServerName, "SERVER_NAME", "Stationeers Server UI")
 	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "Moon Moon")
 	ServerMaxPlayers = getString(cfg.ServerMaxPlayers, "SERVER_MAX_PLAYERS", "6")
