@@ -12,6 +12,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/security"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/terminal"
 )
 
 func StartWebServer(wg *sync.WaitGroup) {
@@ -77,12 +78,9 @@ func StartWebServer(wg *sync.WaitGroup) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		logger.Web.Info("Starting the HTTP server on port 8443...")
-		logger.Web.Info("UI available at: https://0.0.0.0:8443 or https://localhost:8443")
+		terminal.PrintStartupMessage()
 		if config.IsFirstTimeSetup {
-			logger.Web.Error("For first-time setup, visit the UI to configure a user or skip authentication.")
-			logger.Web.Warn("Fill the Username and Password fields, then click Register User and when done Finalize Setup.")
-			logger.Web.Warn("For more details, check the GitHub Wiki: https://github.com/JacksonTheMaster/StationeersServerUI/v5/wiki")
+			terminal.PrintFirstTimeSetupMessage()
 		}
 		// Ensure TLS certs are ready
 		if err := security.EnsureTLSCerts(); err != nil {

@@ -70,6 +70,7 @@ type JsonConfig struct {
 	AutoRestartServerTimer    string            `json:"AutoRestartServerTimer"`
 	AllowPrereleaseUpdates    *bool             `json:"AllowPrereleaseUpdates"`
 	AllowMajorUpdates         *bool             `json:"AllowMajorUpdates"`
+	IsConsoleEnabled          *bool             `json:"IsConsoleEnabled"`
 }
 
 type CustomDetection struct {
@@ -219,6 +220,10 @@ func applyConfig(cfg *JsonConfig) {
 	isSSCMEnabledVal := getBool(cfg.IsSSCMEnabled, "IS_SSCM_ENABLED", false)
 	IsSSCMEnabled = isSSCMEnabledVal
 	cfg.IsSSCMEnabled = &isSSCMEnabledVal
+
+	isConsoleEnabledVal := getBool(cfg.IsConsoleEnabled, "IS_CONSOLE_ENABLED", false)
+	IsConsoleEnabled = isConsoleEnabledVal
+	cfg.IsConsoleEnabled = &isConsoleEnabledVal
 
 	// Process SaveInfo
 	parts := strings.Split(SaveInfo, " ")

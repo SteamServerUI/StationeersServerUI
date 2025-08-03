@@ -111,3 +111,7 @@ func PrintConfigDetails() {
 	logger.Config.Debug(fmt.Sprintf("SSCMFilePath: %s", config.SSCMFilePath))
 	logger.Config.Debug(fmt.Sprintf("IsSSCMEnabled: %v", config.IsSSCMEnabled))
 }
+
+func RestartBackend() {
+	setup.RestartMySelf()
+}

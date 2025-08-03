@@ -64,6 +64,7 @@ var (
 	SubsystemFilters       []string
 	GameServerUUID         uuid.UUID // Assined at startup to the current instance of the server we are managing. Currently unused.
 	AutoRestartServerTimer string
+	IsConsoleEnabled       bool
 )
 
 // Discord integration

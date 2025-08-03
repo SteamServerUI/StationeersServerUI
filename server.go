@@ -26,6 +26,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/terminal"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/web"
 )
 
@@ -43,6 +44,8 @@ func main() {
 	// Load config,discordbot, backupmgr and detectionmgr using the loader package
 	loader.ReloadAll()
 	loader.InitDetector()
+
+	terminal.StartConsole(&wg)
 
 	web.StartWebServer(&wg)
 }
