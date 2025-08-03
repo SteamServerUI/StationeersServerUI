@@ -47,16 +47,16 @@ func Install(wg *sync.WaitGroup) {
 
 func CheckAndDownloadUIMod() {
 	uiModDir := config.UIModFolder
-	twoBoxFormDir := config.UIModFolder + "twoboxform/"
+	//twoBoxFormDir := config.UIModFolder + "twoboxform/"
 	detectionmanagerDir := config.UIModFolder + "detectionmanager/"
-	assetDir := config.UIModFolder + "assets/"
-	cssAssetDIr := config.UIModFolder + "assets/css/"
+	//assetDir := config.UIModFolder + "assets/"
+	//cssAssetDIr := config.UIModFolder + "assets/css/"
 	uiDir := config.UIModFolder + "ui/"
 	configDir := config.UIModFolder + "config/"
 	tlsDir := config.UIModFolder + "tls/"
-	jsAssetDir := config.UIModFolder + "assets/js/"
+	//jsAssetDir := config.UIModFolder + "assets/js/"
 
-	requiredDirs := []string{uiModDir, uiDir, assetDir, cssAssetDIr, twoBoxFormDir, detectionmanagerDir, configDir, jsAssetDir}
+	requiredDirs := []string{uiModDir, uiDir, detectionmanagerDir, configDir}
 
 	// Set branch
 	if config.Branch == "release" || config.Branch == "Release" {
@@ -71,12 +71,12 @@ func CheckAndDownloadUIMod() {
 		uiDir + "config.html":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/config.html", downloadBranch),
 		uiDir + "index.html":            fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/index.html", downloadBranch),
 		uiDir + "detectionmanager.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/detectionmanager.html", downloadBranch),
+		//twoBoxFormDir + "twoboxform.css":  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.css", downloadBranch),
+		//twoBoxFormDir + "twoboxform.js":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.js", downloadBranch),
+		//twoBoxFormDir + "twoboxform.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.html", downloadBranch),
 		//assetDir + "stationeers.png":      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/stationeers.png", downloadBranch),
 		//assetDir + "favicon.ico":          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/favicon.ico", downloadBranch),
 		//assetDir + "apiinfo.html":         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/apiinfo.html", downloadBranch),
-		twoBoxFormDir + "twoboxform.css":  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.css", downloadBranch),
-		twoBoxFormDir + "twoboxform.js":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.js", downloadBranch),
-		twoBoxFormDir + "twoboxform.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.html", downloadBranch),
 		//cssAssetDIr + "apiinfo.css":          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/apiinfo.css", downloadBranch),
 		//cssAssetDIr + "background.css":       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/background.css", downloadBranch),
 		//cssAssetDIr + "base.css":             fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/base.css", downloadBranch),

@@ -23,8 +23,8 @@ func StartWebServer(wg *sync.WaitGroup) {
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
 
 	// Unprotected auth routes
-	mux.HandleFunc("/twoboxform/twoboxform.js", ServeTwoBoxJs)
-	mux.HandleFunc("/twoboxform/twoboxform.css", ServeTwoBoxCss)
+	twoboxformAssetsFS, _ := fs.Sub(config.GetV1UIFS(), "UIMod/onboard_bundled/twoboxform")
+	mux.Handle("/twoboxform/", http.StripPrefix("/twoboxform/", http.FileServer(http.FS(twoboxformAssetsFS))))
 	mux.HandleFunc("/sscm/sscm.js", ServeSSCMJs)
 	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
 	mux.HandleFunc("/auth/logout", LogoutHandler)

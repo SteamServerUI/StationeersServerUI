@@ -1,6 +1,7 @@
 package web
 
 import (
+	"io/fs"
 	"net/http"
 	"text/template"
 
@@ -46,9 +47,16 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		SecondaryPlaceholderText string
 	}
 
-	tmpl, err := template.ParseFiles(config.TwoBoxFormHtmlPath)
+	twoboxformAssetsFS, err := fs.Sub(config.GetV1UIFS(), "UIMod/onboard_bundled/twoboxform")
 	if err != nil {
-		logger.Web.Error("Failed to parse 2BoxForm template: %v" + err.Error())
+		logger.Web.Error("Failed to get bundled FS")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	tmpl, err := template.ParseFS(twoboxformAssetsFS, "twoboxform.html")
+	if err != nil {
+		logger.Web.Error("Failed to parse 2BoxForm template")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
