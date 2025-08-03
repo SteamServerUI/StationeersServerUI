@@ -126,7 +126,7 @@ var (
 	TLSCertPath              = "./UIMod/tls/cert.pem"
 	TLSKeyPath               = "./UIMod/tls/key.pem"
 	ConfigPath               = "./UIMod/config/config.json"
-	CustomDetectionsFilePath = "./UIMod/detectionmanager/customdetections.json"
+	CustomDetectionsFilePath = "./UIMod/config/customdetections.json"
 	LogFolder                = "./UIMod/logs/"
 	UIModFolder              = "./UIMod/"
 	TwoBoxFormFolder         = "./UIMod/twoboxform/"
