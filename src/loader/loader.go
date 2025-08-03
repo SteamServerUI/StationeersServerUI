@@ -2,6 +2,7 @@
 package loader
 
 import (
+	"embed"
 	"fmt"
 	"strconv"
 
@@ -114,4 +115,9 @@ func PrintConfigDetails() {
 
 func RestartBackend() {
 	setup.RestartMySelf()
+}
+
+// InitBundler initialized the onboard bundled assets for the web UI
+func InitVirtFS(v1uiFS embed.FS) {
+	config.SetV1UIFS(v1uiFS)
 }

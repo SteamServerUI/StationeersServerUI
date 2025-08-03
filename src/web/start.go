@@ -2,6 +2,7 @@
 package web
 
 import (
+	"io/fs"
 	"net/http"
 	"net/http/pprof"
 	"sync"
@@ -31,8 +32,10 @@ func StartWebServer(wg *sync.WaitGroup) {
 
 	// Protected routes (wrapped with middleware)
 	protectedMux := http.NewServeMux()
-	fs := http.FileServer(http.Dir(config.UIModFolder + "/assets"))
-	protectedMux.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	legacyAssetsFS, _ := fs.Sub(config.GetV1UIFS(), "UIMod/onboard_bundled/assets")
+	protectedMux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(legacyAssetsFS))))
+
 	protectedMux.HandleFunc("/config", ServeConfigPage)
 	protectedMux.HandleFunc("/detectionmanager", ServeDetectionManager)
 	protectedMux.HandleFunc("/", ServeIndex)

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"embed"
 	"sync"
 	"time"
 
@@ -137,3 +138,7 @@ var (
 	SSCMFilePath             = "./BepInEx/plugins/SSCM/SSCM.socket"
 	SSCMPluginDir            = "./BepInEx/plugins/SSCM/"
 )
+
+// Bundled Assets
+
+var V1UIFS embed.FS
