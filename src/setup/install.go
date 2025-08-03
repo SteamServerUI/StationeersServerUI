@@ -41,22 +41,15 @@ func Install(wg *sync.WaitGroup) {
 	// Step 3: Install and run SteamCMD
 	logger.Install.Info("🔄Installing and running SteamCMD...")
 	InstallAndRunSteamCMD()
-	logger.Install.Warn("🙏Thank you for using StationeersServerUI!")
 	logger.Install.Info("✅Setup complete!")
 }
 
 func CheckAndDownloadUIMod() {
 	uiModDir := config.UIModFolder
-	//twoBoxFormDir := config.UIModFolder + "twoboxform/"
-	detectionmanagerDir := config.UIModFolder + "detectionmanager/"
-	//assetDir := config.UIModFolder + "assets/"
-	//cssAssetDIr := config.UIModFolder + "assets/css/"
-	uiDir := config.UIModFolder + "ui/"
 	configDir := config.UIModFolder + "config/"
 	tlsDir := config.UIModFolder + "tls/"
-	//jsAssetDir := config.UIModFolder + "assets/js/"
 
-	requiredDirs := []string{uiModDir, uiDir, detectionmanagerDir, configDir}
+	requiredDirs := []string{uiModDir, configDir}
 
 	// Set branch
 	if config.Branch == "release" || config.Branch == "Release" {
@@ -68,34 +61,18 @@ func CheckAndDownloadUIMod() {
 
 	// Define file mappings
 	files := map[string]string{
-		uiDir + "config.html":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/config.html", downloadBranch),
-		uiDir + "index.html":            fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/index.html", downloadBranch),
-		uiDir + "detectionmanager.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/ui/detectionmanager.html", downloadBranch),
-		//twoBoxFormDir + "twoboxform.css":  fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.css", downloadBranch),
-		//twoBoxFormDir + "twoboxform.js":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.js", downloadBranch),
-		//twoBoxFormDir + "twoboxform.html": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/twoboxform/twoboxform.html", downloadBranch),
-		//assetDir + "stationeers.png":      fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/stationeers.png", downloadBranch),
-		//assetDir + "favicon.ico":          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/favicon.ico", downloadBranch),
-		//assetDir + "apiinfo.html":         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/apiinfo.html", downloadBranch),
-		//cssAssetDIr + "apiinfo.css":          fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/apiinfo.css", downloadBranch),
-		//cssAssetDIr + "background.css":       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/background.css", downloadBranch),
-		//cssAssetDIr + "base.css":             fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/base.css", downloadBranch),
-		//cssAssetDIr + "components.css":       fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/components.css", downloadBranch),
-		//cssAssetDIr + "config.css":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/config.css", downloadBranch),
-		//cssAssetDIr + "detectionmanager.css": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/detectionmanager.css", downloadBranch),
-		//cssAssetDIr + "home.css":             fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/home.css", downloadBranch),
-		//cssAssetDIr + "mobile.css":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/mobile.css", downloadBranch),
-		//cssAssetDIr + "style.css":            fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/style.css", downloadBranch),
-		//cssAssetDIr + "tabs.css":             fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/tabs.css", downloadBranch),
-		//cssAssetDIr + "variables.css":        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/variables.css", downloadBranch),
-		//jsAssetDir + "main.js":               fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/js/main.js", downloadBranch),
-		//jsAssetDir + "detectionmanager.js":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/js/detectionmanager.js", downloadBranch),
-		//jsAssetDir + "console-manager.js":    fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/js/console-manager.js", downloadBranch),
-		//jsAssetDir + "server-api.js":         fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/js/server-api.js", downloadBranch),
-		//jsAssetDir + "ui-utils.js":           fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/js/ui-utils.js", downloadBranch),
+		// NOTE: Now empty as files are now embedded in the executable. Kept this structure for future use.
+
+		// UI - commented out since files are embedded, left here for reference in case we need this funcitonality again
+		// "ui/config.html":           "https://raw.githubusercontent.com/SteamServerUI/SteamServerUI/{branch}/UIMod/ui/config.html",
 	}
 
 	createRequiredDirs(requiredDirs)
+
+	if len(files) == 0 {
+		logger.Install.Debug("📁 File mappings empty - no additional files to download available")
+		return
+	}
 
 	// Check if the directory exists
 	if _, err := os.Stat(uiModDir); os.IsNotExist(err) {
@@ -382,6 +359,7 @@ func createRequiredDirs(requiredDirs []string) {
 	// Create directories
 	for _, dir := range requiredDirs {
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
+			config.IsFirstTimeSetup = true
 			err := os.MkdirAll(dir, os.ModePerm)
 			if err != nil {
 				logger.Install.Error("❌Error creating folder: " + err.Error())

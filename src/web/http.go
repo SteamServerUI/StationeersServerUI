@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
 	"net/http"
 	"os"
 	"strings"
@@ -23,9 +24,16 @@ type TemplateData struct {
 }
 
 func ServeIndex(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles(config.IndexHtmlPath)
+	htmlFS, err := fs.Sub(config.V1UIFS, "UIMod/onboard_bundled/ui")
+	if err != nil {
+		http.Error(w, "Error accessing Virt FS: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	tmpl, err := template.ParseFS(htmlFS, "index.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		logger.Core.Error("failed to serve v1 Index.html")
 		return
 	}
 
@@ -48,27 +56,51 @@ func ServeIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func ServeDetectionManager(w http.ResponseWriter, r *http.Request) {
+	detectionmanagerFS, err := fs.Sub(config.V1UIFS, "UIMod/onboard_bundled/detectionmanager")
+	if err != nil {
+		http.Error(w, "Error accessing Virt FS: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	htmlFile, err := os.ReadFile(config.DetectionManagerHtmlPath)
+	htmlFile, err := detectionmanagerFS.Open("detectionmanager.html")
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error reading detectionmanager.html: %v", err), http.StatusInternalServerError)
 		return
 	}
+	defer htmlFile.Close()
 
-	htmlContent := string(htmlFile)
+	htmlContent, err := io.ReadAll(htmlFile)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error reading detectionmanager.html content: %v", err), http.StatusInternalServerError)
+		return
+	}
 
-	fmt.Fprint(w, htmlContent)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write(htmlContent)
 }
 
 func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
-	htmlFile, err := os.ReadFile(config.ConfigHtmlPath)
+	htmlFS, err := fs.Sub(config.V1UIFS, "UIMod/onboard_bundled/ui")
+	if err != nil {
+		http.Error(w, "Error accessing Virt FS: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	htmlFile, err := htmlFS.Open("config.html")
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error reading config.html: %v", err), http.StatusInternalServerError)
 		return
 	}
+	defer htmlFile.Close()
 
-	htmlContent := string(htmlFile)
+	htmlContentBytes, err := io.ReadAll(htmlFile)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error reading config.html content: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	htmlContent := string(htmlContentBytes)
 
 	// Determine selected attributes for boolean fields
 	upnpTrueSelected := ""
