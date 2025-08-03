@@ -37,7 +37,6 @@ func Install(wg *sync.WaitGroup) {
 	logger.Install.Info("🔄Checking for Blacklist.txt...")
 	checkAndCreateBlacklist()
 	logger.Install.Info("✅Blacklist.txt verified or created.")
-	time.Sleep(2 * time.Second) // Small pause to let the user read potential errors
 	// Step 3: Install and run SteamCMD
 	logger.Install.Info("🔄Installing and running SteamCMD...")
 	InstallAndRunSteamCMD()
