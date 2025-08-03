@@ -124,26 +124,37 @@ func (m *BackupManager) cleanSafeBackupDir() error {
 
 // getBackupGroups collects and groups backup files
 func (m *BackupManager) getBackupGroups() ([]BackupGroup, error) {
-	files, err := os.ReadDir(m.config.SafeBackupDir)
+	var files []os.DirEntry
+	err := filepath.WalkDir(m.config.SafeBackupDir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if !d.IsDir() {
+			files = append(files, d)
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to walk safe backup dir: %w", err)
 	}
 
 	groups := make(map[int]BackupGroup)
 
 	for _, file := range files {
-		if file.IsDir() {
+		filename := file.Name()
+		if !isValidBackupFile(filename) {
 			continue
 		}
 
-		index := parseBackupIndex(file.Name())
-		if index == -1 {
-			continue
-		}
-
-		fullPath := filepath.Join(m.config.SafeBackupDir, file.Name())
-		info, err := os.Stat(fullPath)
+		fullPath := filepath.Join(m.config.SafeBackupDir, filename)
+		info, err := file.Info()
 		if err != nil {
+			continue
+		}
+
+		// Parse index or assign synthetic index for .save files
+		index := parseBackupIndex(filename, info.ModTime(), files)
+		if index == -1 {
 			continue
 		}
 
@@ -151,13 +162,17 @@ func (m *BackupManager) getBackupGroups() ([]BackupGroup, error) {
 		group.Index = index
 		group.ModTime = info.ModTime()
 
-		switch {
-		case strings.HasSuffix(file.Name(), ".bin"):
+		if strings.HasSuffix(filename, ".save") {
 			group.BinFile = fullPath
-		case strings.Contains(file.Name(), "world(") && strings.HasSuffix(file.Name(), ".xml"):
-			group.XMLFile = fullPath
-		case strings.Contains(file.Name(), "world_meta(") && strings.HasSuffix(file.Name(), ".xml"):
-			group.MetaFile = fullPath
+		} else {
+			switch {
+			case strings.HasSuffix(filename, ".bin"):
+				group.BinFile = fullPath
+			case strings.Contains(filename, "world(") && strings.HasSuffix(filename, ".xml"):
+				group.XMLFile = fullPath
+			case strings.Contains(filename, "world_meta(") && strings.HasSuffix(filename, ".xml"):
+				group.MetaFile = fullPath
+			}
 		}
 
 		groups[index] = group
@@ -165,7 +180,8 @@ func (m *BackupManager) getBackupGroups() ([]BackupGroup, error) {
 
 	var result []BackupGroup
 	for _, group := range groups {
-		if group.BinFile != "" && group.XMLFile != "" && group.MetaFile != "" {
+		// Include both old-style groups (all three files) and .save-based groups (just BinFile)
+		if (group.BinFile != "" && group.XMLFile != "" && group.MetaFile != "") || (group.BinFile != "" && strings.HasSuffix(group.BinFile, ".save")) {
 			result = append(result, group)
 		}
 	}

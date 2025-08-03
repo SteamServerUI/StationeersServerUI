@@ -98,7 +98,17 @@ func (m *BackupManager) handleNewBackup(filePath string) {
 		defer m.mu.Unlock()
 
 		fileName := filepath.Base(filePath)
-		dstPath := filepath.Join(m.config.SafeBackupDir, fileName)
+		relativePath, err := filepath.Rel(m.config.BackupDir, filePath)
+		if err != nil {
+			logger.Backup.Error("Error getting relative path for " + filePath + ": " + err.Error())
+			return
+		}
+		dstPath := filepath.Join(m.config.SafeBackupDir, relativePath)
+
+		if err := os.MkdirAll(filepath.Dir(dstPath), os.ModePerm); err != nil {
+			logger.Backup.Error("Error creating destination dir for " + dstPath + ": " + err.Error())
+			return
+		}
 
 		if err := copyFile(filePath, dstPath); err != nil {
 			logger.Backup.Error("Error copying backup " + fileName + ": " + err.Error())

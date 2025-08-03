@@ -11,8 +11,8 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.4.34"
-	Branch  = "release"
+	Version = "5.5.0"
+	Branch  = "indev"
 )
 
 type JsonConfig struct {
@@ -218,6 +218,6 @@ func applyConfig(cfg *JsonConfig) {
 	}
 
 	// Set backup paths
-	ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "Backup")
+	ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "autosave")
 	ConfiguredSafeBackupDir = filepath.Join("./saves/", WorldName, "Safebackups")
 }
