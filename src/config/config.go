@@ -245,3 +245,20 @@ func applyConfig(cfg *JsonConfig) {
 	// use Safebackups folder either way.
 	ConfiguredSafeBackupDir = filepath.Join("./saves/", WorldName, "Safebackups")
 }
+
+// use SaveConfig EXCLUSIVELY though loader.SaveConfig to trigger a reload afterwards!
+func SaveConfig(cfg *JsonConfig) error {
+	file, err := os.Create(ConfigPath)
+	if err != nil {
+		return fmt.Errorf("error creating config.json: %v", err)
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(cfg); err != nil {
+		return fmt.Errorf("error encoding config.json: %v", err)
+	}
+
+	return nil
+}

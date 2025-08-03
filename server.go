@@ -49,6 +49,7 @@ func main() {
 	loader.InitVirtFS(v1uiFS)
 	loader.ReloadAll()
 	loader.InitDetector()
+	loader.AfterStartComplete()
 
 	terminal.StartConsole(&wg)
 

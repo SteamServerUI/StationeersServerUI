@@ -121,3 +121,25 @@ func RestartBackend() {
 func InitVirtFS(v1uiFS embed.FS) {
 	config.SetV1UIFS(v1uiFS)
 }
+
+// this is a Hack, but it works for now. Ideally, move the getter setter logic from SteamServerUI to StationeersServerUI, but not feasible at the moment.
+func SaveConfig(cfg *config.JsonConfig) error {
+	err := config.SaveConfig(cfg)
+	if err != nil {
+		logger.Core.Error("Failed to save config: " + err.Error())
+		return err
+	}
+	ReloadConfig()
+	return err
+}
+
+func AfterStartComplete() {
+	existingConfig, err := config.LoadConfig()
+	if err != nil {
+		logger.Core.Error("AfterStartComplete: Failed to Load config: " + err.Error())
+	}
+	err2 := SaveConfig(existingConfig)
+	if err2 != nil {
+		logger.Core.Error("AfterStartComplete: Failed to save config: " + err2.Error())
+	}
+}

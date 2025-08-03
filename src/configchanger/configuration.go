@@ -5,32 +5,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"reflect"
 	"strconv"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
 )
-
-// SaveConfig writes the given config to file and reloads it
-func SaveConfig(cfg *config.JsonConfig) error {
-	file, err := os.Create(config.ConfigPath)
-	if err != nil {
-		return fmt.Errorf("error creating config.json: %v", err)
-	}
-	defer file.Close()
-
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(cfg); err != nil {
-		return fmt.Errorf("error encoding config.json: %v", err)
-	}
-
-	// Reload using the loader package
-	loader.ReloadAll()
-	return nil
-}
 
 func SaveConfigForm(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -84,7 +64,7 @@ func SaveConfigForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save the updated config
-	if err := SaveConfig(existingConfig); err != nil {
+	if err := loader.SaveConfig(existingConfig); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -176,7 +156,7 @@ func SaveConfigRestful(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save the updated config
-	if err := SaveConfig(existingConfig); err != nil {
+	if err := loader.SaveConfig(existingConfig); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
