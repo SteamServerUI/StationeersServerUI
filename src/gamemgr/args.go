@@ -19,7 +19,7 @@ type Arg struct {
 func buildCommandArgs() []string {
 	var argOrder []Arg
 
-	if config.EnableDotSaves {
+	if config.IsNewTerrainAndSaveSystem {
 		argOrder = []Arg{
 			{Flag: "-nographics", RequiresValue: false},
 			{Flag: "-batchmode", RequiresValue: false},
@@ -54,7 +54,7 @@ func buildCommandArgs() []string {
 			{Flag: "AdminPassword", Value: config.AdminPassword, Condition: func() bool { return config.AdminPassword != "" }, RequiresValue: true},
 		}
 	}
-	if !config.EnableDotSaves {
+	if !config.IsNewTerrainAndSaveSystem {
 		argOrder = []Arg{
 			{Flag: "-nographics", RequiresValue: false},
 			{Flag: "-batchmode", RequiresValue: false},

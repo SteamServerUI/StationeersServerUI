@@ -16,60 +16,60 @@ var (
 )
 
 type JsonConfig struct {
-	DiscordToken            string            `json:"discordToken"`
-	ControlChannelID        string            `json:"controlChannelID"`
-	StatusChannelID         string            `json:"statusChannelID"`
-	ConnectionListChannelID string            `json:"connectionListChannelID"`
-	LogChannelID            string            `json:"logChannelID"`
-	SaveChannelID           string            `json:"saveChannelID"`
-	ControlPanelChannelID   string            `json:"controlPanelChannelID"`
-	DiscordCharBufferSize   int               `json:"DiscordCharBufferSize"`
-	BlackListFilePath       string            `json:"blackListFilePath"`
-	IsDiscordEnabled        *bool             `json:"isDiscordEnabled"`
-	ErrorChannelID          string            `json:"errorChannelID"`
-	BackupKeepLastN         int               `json:"backupKeepLastN"`
-	IsCleanupEnabled        *bool             `json:"isCleanupEnabled"`
-	BackupKeepDailyFor      int               `json:"backupKeepDailyFor"`
-	BackupKeepWeeklyFor     int               `json:"backupKeepWeeklyFor"`
-	BackupKeepMonthlyFor    int               `json:"backupKeepMonthlyFor"`
-	BackupCleanupInterval   int               `json:"backupCleanupInterval"`
-	BackupWaitTime          int               `json:"backupWaitTime"`
-	EnableDotSaves          *bool             `json:"EnableDotSaves"`
-	GameBranch              string            `json:"gameBranch"`
-	Difficulty              string            `json:"Difficulty"`
-	StartCondition          string            `json:"StartCondition"`
-	StartLocation           string            `json:"StartLocation"`
-	ServerName              string            `json:"ServerName"`
-	SaveInfo                string            `json:"SaveInfo"`
-	ServerMaxPlayers        string            `json:"ServerMaxPlayers"`
-	ServerPassword          string            `json:"ServerPassword"`
-	ServerAuthSecret        string            `json:"ServerAuthSecret"`
-	AdminPassword           string            `json:"AdminPassword"`
-	GamePort                string            `json:"GamePort"`
-	UpdatePort              string            `json:"UpdatePort"`
-	UPNPEnabled             *bool             `json:"UPNPEnabled"`
-	AutoSave                *bool             `json:"AutoSave"`
-	SaveInterval            string            `json:"SaveInterval"`
-	AutoPauseServer         *bool             `json:"AutoPauseServer"`
-	LocalIpAddress          string            `json:"LocalIpAddress"`
-	StartLocalHost          *bool             `json:"StartLocalHost"`
-	ServerVisible           *bool             `json:"ServerVisible"`
-	UseSteamP2P             *bool             `json:"UseSteamP2P"`
-	ExePath                 string            `json:"ExePath"`
-	AdditionalParams        string            `json:"AdditionalParams"`
-	Users                   map[string]string `json:"users"`       // Map of username to hashed password
-	AuthEnabled             *bool             `json:"authEnabled"` // Toggle for enabling/disabling auth
-	JwtKey                  string            `json:"JwtKey"`
-	AuthTokenLifetime       int               `json:"AuthTokenLifetime"`
-	Debug                   *bool             `json:"Debug"`
-	CreateSSUILogFile       *bool             `json:"CreateSSUILogFile"`
-	LogLevel                int               `json:"LogLevel"`
-	SubsystemFilters        []string          `json:"subsystemFilters"`
-	IsUpdateEnabled         *bool             `json:"IsUpdateEnabled"`
-	IsSSCMEnabled           *bool             `json:"IsSSCMEnabled"`
-	AutoRestartServerTimer  string            `json:"AutoRestartServerTimer"`
-	AllowPrereleaseUpdates  *bool             `json:"AllowPrereleaseUpdates"`
-	AllowMajorUpdates       *bool             `json:"AllowMajorUpdates"`
+	DiscordToken              string            `json:"discordToken"`
+	ControlChannelID          string            `json:"controlChannelID"`
+	StatusChannelID           string            `json:"statusChannelID"`
+	ConnectionListChannelID   string            `json:"connectionListChannelID"`
+	LogChannelID              string            `json:"logChannelID"`
+	SaveChannelID             string            `json:"saveChannelID"`
+	ControlPanelChannelID     string            `json:"controlPanelChannelID"`
+	DiscordCharBufferSize     int               `json:"DiscordCharBufferSize"`
+	BlackListFilePath         string            `json:"blackListFilePath"`
+	IsDiscordEnabled          *bool             `json:"isDiscordEnabled"`
+	ErrorChannelID            string            `json:"errorChannelID"`
+	BackupKeepLastN           int               `json:"backupKeepLastN"`
+	IsCleanupEnabled          *bool             `json:"isCleanupEnabled"`
+	BackupKeepDailyFor        int               `json:"backupKeepDailyFor"`
+	BackupKeepWeeklyFor       int               `json:"backupKeepWeeklyFor"`
+	BackupKeepMonthlyFor      int               `json:"backupKeepMonthlyFor"`
+	BackupCleanupInterval     int               `json:"backupCleanupInterval"`
+	BackupWaitTime            int               `json:"backupWaitTime"`
+	IsNewTerrainAndSaveSystem *bool             `json:"IsNewTerrainAndSaveSystem"`
+	GameBranch                string            `json:"gameBranch"`
+	Difficulty                string            `json:"Difficulty"`
+	StartCondition            string            `json:"StartCondition"`
+	StartLocation             string            `json:"StartLocation"`
+	ServerName                string            `json:"ServerName"`
+	SaveInfo                  string            `json:"SaveInfo"`
+	ServerMaxPlayers          string            `json:"ServerMaxPlayers"`
+	ServerPassword            string            `json:"ServerPassword"`
+	ServerAuthSecret          string            `json:"ServerAuthSecret"`
+	AdminPassword             string            `json:"AdminPassword"`
+	GamePort                  string            `json:"GamePort"`
+	UpdatePort                string            `json:"UpdatePort"`
+	UPNPEnabled               *bool             `json:"UPNPEnabled"`
+	AutoSave                  *bool             `json:"AutoSave"`
+	SaveInterval              string            `json:"SaveInterval"`
+	AutoPauseServer           *bool             `json:"AutoPauseServer"`
+	LocalIpAddress            string            `json:"LocalIpAddress"`
+	StartLocalHost            *bool             `json:"StartLocalHost"`
+	ServerVisible             *bool             `json:"ServerVisible"`
+	UseSteamP2P               *bool             `json:"UseSteamP2P"`
+	ExePath                   string            `json:"ExePath"`
+	AdditionalParams          string            `json:"AdditionalParams"`
+	Users                     map[string]string `json:"users"`       // Map of username to hashed password
+	AuthEnabled               *bool             `json:"authEnabled"` // Toggle for enabling/disabling auth
+	JwtKey                    string            `json:"JwtKey"`
+	AuthTokenLifetime         int               `json:"AuthTokenLifetime"`
+	Debug                     *bool             `json:"Debug"`
+	CreateSSUILogFile         *bool             `json:"CreateSSUILogFile"`
+	LogLevel                  int               `json:"LogLevel"`
+	SubsystemFilters          []string          `json:"subsystemFilters"`
+	IsUpdateEnabled           *bool             `json:"IsUpdateEnabled"`
+	IsSSCMEnabled             *bool             `json:"IsSSCMEnabled"`
+	AutoRestartServerTimer    string            `json:"AutoRestartServerTimer"`
+	AllowPrereleaseUpdates    *bool             `json:"AllowPrereleaseUpdates"`
+	AllowMajorUpdates         *bool             `json:"AllowMajorUpdates"`
 }
 
 type CustomDetection struct {
@@ -136,9 +136,9 @@ func applyConfig(cfg *JsonConfig) {
 	BackupCleanupInterval = time.Duration(getInt(cfg.BackupCleanupInterval, "BACKUP_CLEANUP_INTERVAL", 730)) * time.Hour
 	BackupWaitTime = time.Duration(getInt(cfg.BackupWaitTime, "BACKUP_WAIT_TIME", 30)) * time.Second
 
-	dotSaveVal := getBool(cfg.EnableDotSaves, "ENABLE_DOT_SAVES", false)
-	EnableDotSaves = dotSaveVal
-	cfg.EnableDotSaves = &dotSaveVal
+	dotSaveVal := getBool(cfg.IsNewTerrainAndSaveSystem, "ENABLE_DOT_SAVES", false)
+	IsNewTerrainAndSaveSystem = dotSaveVal
+	cfg.IsNewTerrainAndSaveSystem = &dotSaveVal
 
 	GameBranch = getString(cfg.GameBranch, "GAME_BRANCH", "public")
 	Difficulty = getString(cfg.Difficulty, "DIFFICULTY", "")
@@ -230,7 +230,7 @@ func applyConfig(cfg *JsonConfig) {
 	}
 
 	// Set backup paths for old or new style saves
-	if EnableDotSaves {
+	if IsNewTerrainAndSaveSystem {
 		// use new new style autosave folder
 		ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "autosave")
 	} else {

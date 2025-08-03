@@ -91,7 +91,6 @@ func PrintConfigDetails() {
 	logger.Config.Debug(fmt.Sprintf("ConfiguredBackupDir: %s", config.ConfiguredBackupDir))
 	logger.Config.Debug(fmt.Sprintf("ConfiguredSafeBackupDir: %s", config.ConfiguredSafeBackupDir))
 	logger.Config.Debug(fmt.Sprintf("BackupWaitTime: %s", config.BackupWaitTime))
-	logger.Config.Debug(fmt.Sprintf("EnableDotSaves: %v", config.EnableDotSaves))
 
 	logger.Config.Debug("---- AUTHENTICATION CONFIG VARS ----")
 	logger.Config.Debug(fmt.Sprintf("AuthTokenLifetime: %d", config.AuthTokenLifetime))
@@ -101,6 +100,7 @@ func PrintConfigDetails() {
 	logger.Config.Debug(fmt.Sprintf("Branch: %s", config.Branch))
 	logger.Config.Debug(fmt.Sprintf("GameServerAppID: %s", config.GameServerAppID))
 	logger.Config.Debug(fmt.Sprintf("Version: %s", config.Version))
+	logger.Config.Debug(fmt.Sprintf("IsNewTerrainAndSaveSystem: %v", config.IsNewTerrainAndSaveSystem))
 
 	logger.Config.Debug("----  UPDATER CONFIG VARS ----")
 	logger.Config.Debug(fmt.Sprintf("AllowPrereleaseUpdates: %v", config.AllowPrereleaseUpdates))

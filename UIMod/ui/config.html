@@ -81,21 +81,21 @@
                                     <label for="Difficulty">Difficulty:</label>
                                     <input type="text" id="Difficulty" name="Difficulty"
                                         value="{{Difficulty}}" pattern="^\S*$" required>
-                                    <div class="input-info">Difficulty to create the world with. Defaults to Normal if empty.</div>
+                                    <div class="input-info">CURRENTLY STATIONEERS BETA ONLY:Difficulty to create the world with. Defaults to Normal if empty.</div>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="StartCondition">Start Condition:</label>
                                     <input type="text" id="StartCondition" name="StartCondition"
                                         value="{{StartCondition}}" pattern="^\S*$" required>
-                                    <div class="input-info">Start condition to create the world with. Defaults to the default start condition for the world type if empty.</div>
+                                    <div class="input-info">CURRENTLY STATIONEERS BETA ONLY:Start condition to create the world with. Defaults to the default start condition for the world type if empty.</div>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="StartLocation">Start Location:</label>
                                     <input type="text" id="StartLocation" name="StartLocation"
                                         value="{{StartLocation}}" pattern="^\S*$" required>
-                                    <div class="input-info">Start location to create the world with. Defaults to "DefaultStartLocation" if empty.</div>
+                                    <div class="input-info">CURRENTLY STATIONEERS BETA ONLY: Start location to create the world with. Defaults to "DefaultStartLocation" if empty.</div>
                                 </div>
                                 
                                 <div class="form-group">
@@ -243,12 +243,12 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="EnableDotSaves">EnableDotSaves</label>
-                                    <select id="EnableDotSaves" name="EnableDotSaves" required>
-                                        <option value="true" {{EnableDotSavesTrueSelected}}>TRUE</option>
-                                        <option value="false" {{EnableDotSavesFalseSelected}}>FALSE</option>
+                                    <label for="IsNewTerrainAndSaveSystem">Use New Terrain and Save System:</label>
+                                    <select id="IsNewTerrainAndSaveSystem" name="IsNewTerrainAndSaveSystem" required>
+                                        <option value="true" {{IsNewTerrainAndSaveSystemTrueSelected}}>TRUE</option>
+                                        <option value="false" {{IsNewTerrainAndSaveSystemFalseSelected}}>FALSE</option>
                                     </select>
-                                    <div class="input-info">Set to TRUE to enable handling of .save files in the Backup manager. Defaults to false, which will use the old trio of world_meta.xml, world.xml, and world.bin files.</div>
+                                    <div class="input-info">CURRENTLY STATIONEERS BETA ONLY: Set to TRUE to enable handling of .save files in the Backup manager and argument parsing. If set to false, only Stationeers versions before the terrain rework (≈ mid 2025) will work. Defaults to false until new Stationeers Terrain and Save System is released.</div>
                                 </div>
                                 
 
