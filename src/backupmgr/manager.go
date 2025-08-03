@@ -40,7 +40,7 @@ func (m *BackupManager) Start() error {
 	// Start file watcher
 	watcher, err := newFsWatcher(m.config.BackupDir)
 	if err != nil {
-		return fmt.Errorf("failed to create file watcher: %w", err)
+		return fmt.Errorf("failed to create autosave watcher: %w", err)
 	}
 	m.watcher = watcher
 
