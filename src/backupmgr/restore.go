@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
@@ -38,7 +39,7 @@ func (m *BackupManager) RestoreBackup(index int) error {
 	if targetGroup.BinFile != "" && strings.HasSuffix(targetGroup.BinFile, ".save") {
 		// .save file case
 		backupFile := targetGroup.BinFile
-		destFile := filepath.Join("./saves/"+m.config.WorldName, filepath.Base(backupFile))
+		destFile := filepath.Join("./saves/"+m.config.WorldName, m.config.WorldName+".save")
 
 		// Before restore, check if we have existing .save files in the root saves/WorldName dir
 		saveDir := filepath.Join("./saves/", m.config.WorldName)
@@ -54,7 +55,8 @@ func (m *BackupManager) RestoreBackup(index int) error {
 			if strings.HasSuffix(file.Name(), ".save") {
 				existingFile := filepath.Join(saveDir, file.Name())
 				// Move existing .save file to SafeBackupDir with timestamp to avoid overwrites
-				savedPreviousHeadSaveFilePath := filepath.Join(m.config.SafeBackupDir, fmt.Sprintf("%s_%s", "_oldHeadSaveBackup", file.Name()))
+				timestamp := time.Now().Format("2006-01-02_15-04-05")
+				savedPreviousHeadSaveFilePath := filepath.Join(m.config.SafeBackupDir, fmt.Sprintf("%s_%s_%s", "oldHeadSaveBackup", timestamp, file.Name()))
 				if err := os.Rename(existingFile, savedPreviousHeadSaveFilePath); err != nil {
 					return fmt.Errorf("failed to move existing HEAD .save file %s to %s: %w", existingFile, savedPreviousHeadSaveFilePath, err)
 				}
