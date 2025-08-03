@@ -235,7 +235,7 @@ func applyConfig(cfg *JsonConfig) {
 		ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "autosave")
 	} else {
 		// use old style Backups folder
-		ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "Backups")
+		ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "Backup")
 	}
 	// use Safebackups folder either way.
 	ConfiguredSafeBackupDir = filepath.Join("./saves/", WorldName, "Safebackups")
