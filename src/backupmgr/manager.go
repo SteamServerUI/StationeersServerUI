@@ -20,22 +20,61 @@ Background routines (file watching and cleanup) only start when Start() is calle
 can coexist but may conflict if configured with overlapping directories.
 */
 
-// Initialize sets up required directories
-func (m *BackupManager) Initialize() error {
+// Initialize checks for BackupDir and waits until it exists, then ensures SafeBackupDir exists.
+// It returns a channel that signals when initialization is complete or an error occurs.
+func (m *BackupManager) Initialize() <-chan error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	if err := os.MkdirAll(m.config.BackupDir, os.ModePerm); err != nil {
-		return err
-	}
-	return os.MkdirAll(m.config.SafeBackupDir, os.ModePerm)
+	result := make(chan error, 1)
+
+	go func() {
+		const timeout = 90 * time.Minute
+		const pollInterval = 1000 * time.Millisecond
+		deadline := time.Now().Add(timeout)
+
+		// Wait for BackupDir to exist
+		for {
+			if _, err := os.Stat(m.config.BackupDir); err == nil {
+				// Directory exists, proceed
+				break
+			} else if !os.IsNotExist(err) {
+				// An error other than "not exists" occurred
+				result <- fmt.Errorf("error checking backup directory %s: %v", m.config.BackupDir, err)
+				return
+			}
+
+			if time.Now().After(deadline) {
+				result <- fmt.Errorf("timeout waiting for backup directory %s to be created", m.config.BackupDir)
+				return
+			}
+
+			// Wait before checking again
+			time.Sleep(pollInterval)
+			//logger.Backup.Warn("Backup manager waiting for save folder to be created...")
+		}
+
+		// Ensure SafeBackupDir exists, create it if it doesn't
+		if err := os.MkdirAll(m.config.SafeBackupDir, os.ModePerm); err != nil {
+			result <- fmt.Errorf("error creating safe backup directory %s: %v", m.config.SafeBackupDir, err)
+			return
+		}
+
+		result <- nil // Signal successful initialization
+	}()
+
+	return result
 }
 
 // Start begins the backup monitoring and cleanup routines
 func (m *BackupManager) Start() error {
-	if err := m.Initialize(); err != nil {
-		return fmt.Errorf("failed to initialize backup directories: %w", err)
+	// Wait for initialization to complete
+	logger.Backup.Warn("Backup manager waiting for save folder initialization...")
+	initResult := <-m.Initialize()
+	if initResult != nil {
+		return fmt.Errorf("failed to initialize backup manager: %w", initResult)
 	}
+	logger.Backup.Warn("Backup manager initialized")
 
 	// Start file watcher
 	watcher, err := newFsWatcher(m.config.BackupDir)
