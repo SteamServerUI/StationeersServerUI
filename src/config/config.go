@@ -137,9 +137,9 @@ func applyConfig(cfg *JsonConfig) {
 	BackupCleanupInterval = time.Duration(getInt(cfg.BackupCleanupInterval, "BACKUP_CLEANUP_INTERVAL", 730)) * time.Hour
 	BackupWaitTime = time.Duration(getInt(cfg.BackupWaitTime, "BACKUP_WAIT_TIME", 30)) * time.Second
 
-	dotSaveVal := getBool(cfg.IsNewTerrainAndSaveSystem, "ENABLE_DOT_SAVES", false)
-	IsNewTerrainAndSaveSystem = dotSaveVal
-	cfg.IsNewTerrainAndSaveSystem = &dotSaveVal
+	isNewTerrainAndSaveSystemVal := getBool(cfg.IsNewTerrainAndSaveSystem, "ENABLE_DOT_SAVES", false)
+	IsNewTerrainAndSaveSystem = isNewTerrainAndSaveSystemVal
+	cfg.IsNewTerrainAndSaveSystem = &isNewTerrainAndSaveSystemVal
 
 	GameBranch = getString(cfg.GameBranch, "GAME_BRANCH", "public")
 	Difficulty = getString(cfg.Difficulty, "DIFFICULTY", "")
