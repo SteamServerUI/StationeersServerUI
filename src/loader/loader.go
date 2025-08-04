@@ -4,6 +4,8 @@ package loader
 import (
 	"embed"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/backupmgr"
@@ -138,8 +140,67 @@ func AfterStartComplete() {
 	if err != nil {
 		logger.Core.Error("AfterStartComplete: Failed to Load config: " + err.Error())
 	}
-	err2 := SaveConfig(existingConfig)
-	if err2 != nil {
-		logger.Core.Error("AfterStartComplete: Failed to save config: " + err2.Error())
+	err = SaveConfig(existingConfig)
+	if err != nil {
+		logger.Core.Error("AfterStartComplete: Failed to save config: " + err.Error())
 	}
+	err = cleanUpOldUIModFolderFiles()
+	if err != nil {
+		logger.Core.Error("AfterStartComplete: Failed to clean up old pre-v5.5 UI mod folder files: " + err.Error())
+	}
+}
+
+func cleanUpOldUIModFolderFiles() error {
+	uiModFolder := config.UIModFolder
+	customdetectionsSourceFile := filepath.Join(uiModFolder, "detectionmanager", "customdetections.json")
+	customdetectionsDestinationFile := config.CustomDetectionsFilePath
+	oldUiFolder := filepath.Join(uiModFolder, "ui") // used to test if we need clean up from a structure before v5.5 (since we now have embedded assets)
+
+	//if uiModFolder doesn't contain a folder called UI, return early as there is nothing to clean up
+	if _, err := os.Stat(oldUiFolder); os.IsNotExist(err) {
+		return nil
+	}
+
+	// Copy customdetections.json to the destination path
+	if _, err := os.Stat(customdetectionsSourceFile); err == nil {
+		// Ensure destination directory exists
+		destDir := filepath.Dir(customdetectionsDestinationFile)
+		if err := os.MkdirAll(destDir, 0755); err != nil {
+			return fmt.Errorf("failed to create destination directory: %w", err)
+		}
+
+		// Read source file
+		data, err := os.ReadFile(customdetectionsSourceFile)
+		if err != nil {
+			return fmt.Errorf("failed to read source file: %w", err)
+		}
+
+		// Write to destination file
+		if err := os.WriteFile(customdetectionsDestinationFile, data, 0644); err != nil {
+			return fmt.Errorf("failed to write destination file: %w", err)
+		}
+	} else if !os.IsNotExist(err) {
+		logger.Core.Error("Error moving customdetections.json file to new location: " + err.Error())
+	}
+
+	// List of folders to remove
+	foldersToRemove := []string{
+		filepath.Join(uiModFolder, "detectionmanager"),
+		filepath.Join(uiModFolder, "ui"),
+		filepath.Join(uiModFolder, "twoboxform"),
+		filepath.Join(uiModFolder, "assets"),
+	}
+
+	// Remove specified folders if they exist
+	for _, folder := range foldersToRemove {
+		if _, err := os.Stat(folder); err == nil {
+			if err := os.RemoveAll(folder); err != nil {
+				return fmt.Errorf("failed to remove folder %s: %w", folder, err)
+			}
+		} else if !os.IsNotExist(err) {
+			return fmt.Errorf("error checking folder %s: %w", folder, err)
+		}
+	}
+
+	return nil
 }
