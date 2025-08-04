@@ -102,12 +102,14 @@ func InternalStartServer() error {
 			logger.Core.Info("BepInEx/Doorstop environment configured for server process")
 		}
 		logger.Core.Info("• Executable: " + config.ExePath + " (with SSCM)")
+		logger.Core.Info("• Arguments: " + strings.Join(args, " "))
 	}
 
 	if !config.IsSSCMEnabled && runtime.GOOS == "linux" {
 		// Use ExePath directly as the command
 		cmd = exec.Command(config.ExePath, args...)
 		logger.Core.Info("• Executable: " + config.ExePath)
+		logger.Core.Info("• Arguments: " + strings.Join(args, " "))
 	}
 
 	if runtime.GOOS == "windows" {

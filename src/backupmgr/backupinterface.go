@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 // GlobalBackupManager is the singleton instance of the backup manager
@@ -20,16 +21,24 @@ func InitGlobalBackupManager(config BackupConfig) error {
 	}
 
 	GlobalBackupManager = NewBackupManager(config)
-	if err := GlobalBackupManager.Initialize(); err != nil {
-		return err
-	}
+
+	// Start initialization asynchronously
+	_ = GlobalBackupManager.Initialize()
 
 	// Update all active HTTP handlers with the new manager
 	for _, handler := range activeHTTPHandlers {
 		handler.manager = GlobalBackupManager
 	}
 
-	return GlobalBackupManager.Start()
+	// Start the backup manager in a goroutine to avoid blocking
+	go func() {
+		if err := GlobalBackupManager.Start(); err != nil {
+			logger.Backup.Error("Failed to start global backup manager: " + err.Error())
+		}
+	}()
+
+	// Return immediately, initialization will complete in the background
+	return nil
 }
 
 // RegisterHTTPHandler registers an HTTP handler to be updated when the manager changes

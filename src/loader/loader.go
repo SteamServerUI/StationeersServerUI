@@ -2,6 +2,7 @@
 package loader
 
 import (
+	"embed"
 	"fmt"
 	"strconv"
 
@@ -100,6 +101,7 @@ func PrintConfigDetails() {
 	logger.Config.Debug(fmt.Sprintf("Branch: %s", config.Branch))
 	logger.Config.Debug(fmt.Sprintf("GameServerAppID: %s", config.GameServerAppID))
 	logger.Config.Debug(fmt.Sprintf("Version: %s", config.Version))
+	logger.Config.Debug(fmt.Sprintf("IsNewTerrainAndSaveSystem: %v", config.IsNewTerrainAndSaveSystem))
 
 	logger.Config.Debug("----  UPDATER CONFIG VARS ----")
 	logger.Config.Debug(fmt.Sprintf("AllowPrereleaseUpdates: %v", config.AllowPrereleaseUpdates))
@@ -109,4 +111,43 @@ func PrintConfigDetails() {
 	logger.Config.Debug("----  SSCM CONFIG VARS ----")
 	logger.Config.Debug(fmt.Sprintf("SSCMFilePath: %s", config.SSCMFilePath))
 	logger.Config.Debug(fmt.Sprintf("IsSSCMEnabled: %v", config.IsSSCMEnabled))
+}
+
+func RestartBackend() {
+	setup.RestartMySelf()
+}
+
+// InitBundler initialized the onboard bundled assets for the web UI
+func InitVirtFS(v1uiFS embed.FS) {
+	config.SetV1UIFS(v1uiFS)
+}
+
+// this is a Hack, but it works for now. Ideally, move the getter setter logic from SteamServerUI to StationeersServerUI, but not feasible at the moment.
+func SaveConfig(cfg *config.JsonConfig) error {
+	err := config.SaveConfig(cfg)
+	if err != nil {
+		logger.Core.Error("Failed to save config: " + err.Error())
+		return err
+	}
+	ReloadConfig()
+	return err
+}
+
+func AfterStartComplete() {
+	existingConfig, err := config.LoadConfig()
+	if err != nil {
+		logger.Core.Error("AfterStartComplete: Failed to Load config: " + err.Error())
+	}
+	err = SaveConfig(existingConfig)
+	if err != nil {
+		logger.Core.Error("AfterStartComplete: Failed to save config: " + err.Error())
+	}
+	err = setup.CleanUpOldUIModFolderFiles()
+	if err != nil {
+		logger.Core.Error("AfterStartComplete: Failed to clean up old pre-v5.5 UI mod folder files: " + err.Error())
+	}
+	err = setup.CleanUpOldExecutables()
+	if err != nil {
+		logger.Core.Error("AfterStartComplete: Failed to clean up old executables: " + err.Error())
+	}
 }

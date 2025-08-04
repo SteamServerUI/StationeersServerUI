@@ -50,6 +50,7 @@
                         <button class="section-nav-button" data-section="basic-settings">Basic Settings</button>
                         <button class="section-nav-button" data-section="network-settings">Network Settings</button>
                         <button class="section-nav-button" data-section="advanced-settings">Advanced Settings</button>
+                        <button class="section-nav-button" data-section="beta-settings">Beta Settings</button>
                     </div>
 
                     <form id="server-config-form" action="/saveconfigasjson" method="post">
@@ -74,9 +75,9 @@
                                         pattern="^[A-Z].*(\s[A-Z].*)?$" required>
                                     <div class="input-info">Name of save folder. Must be capitalized. To create a new world,
                                         provide the
-                                        World type to generate. (MyMoonMap Moon)</div>
+                                        World type to generate. (MyVulcanMap Vulcan) WorldTypes can be found in the Stationeers Wiki -> Dedicated Server page.</div>
                                 </div>
-
+                                
                                 <div class="form-group">
                                     <label for="ServerMaxPlayers">Max Players:</label>
                                     <input type="text" id="ServerMaxPlayers" name="ServerMaxPlayers"
@@ -219,6 +220,51 @@
                                     <input type="text" id="AutoRestartServerTimer" name="AutoRestartServerTimer"
                                         value="{{AutoRestartServerTimer}}">
                                     <div class="input-info">Timeframe in <strong> minutes </strong> to schedule an automatic gameserver restart. 0 = disabled, 1440 = 24 hours, etc.. If SSCM is enabled, you will see "Attention, server is restarting in 30/20/10/5 seconds!" messages <strong> ingame </strong> before restarting.</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="gameBranch">Game Branch</label>
+                                    <input type="text" id="gameBranch" name="gameBranch"
+                                        value="{{gameBranch}}">
+                                    <div class="input-info">Branch of the game to use. When changed, requires to restart SSUI!</div>
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                        <div id="beta-settings" class="config-section">
+                            <h3 class="section-title">BETA ONLY: NEW TERRAIN AND SAVE SYSTEM SETTINGS</h3>
+                            <div class = "beta-warning"></div>
+                                <p>These settings are only useful if you are running the Stationeers Dedicated Server Beta. Switching is possible from Advanced Settings -> Game Branch. Old savegames are NOT compatible with the new system, but can be migrated with JacksonTheMaster's <a href="https://sst.jxsn.dev">Migration tool.</a>. Related "how to" Information on the FAQ there also applies to the Dedicated Server.</a></p>
+                            <div class="channel-grid">
+                                <div class="form-group">
+                                    <label for="IsNewTerrainAndSaveSystem">Use New Terrain and Save System:</label>
+                                    <select id="IsNewTerrainAndSaveSystem" name="IsNewTerrainAndSaveSystem" required>
+                                        <option value="true" {{IsNewTerrainAndSaveSystemTrueSelected}}>TRUE</option>
+                                        <option value="false" {{IsNewTerrainAndSaveSystemFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">Set to TRUE to enable handling of .save files in the Backup manager and argument parsing. If set to false, only Stationeers versions before the terrain rework (≈ mid 2025) will work. Defaults to false until new Stationeers Terrain and Save System is released.</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Difficulty">Difficulty:</label>
+                                    <input type="text" id="Difficulty" name="Difficulty"
+                                        value="{{Difficulty}}" pattern="^\S*$" required>
+                                    <div class="input-info">Difficulty to create the world with. Defaults to Normal if empty.</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="StartCondition">Start Condition:</label>
+                                    <input type="text" id="StartCondition" name="StartCondition"
+                                        value="{{StartCondition}}" pattern="^\S*$" required>
+                                    <div class="input-info">Start condition to create the world with. Defaults to the default start condition for the world type if empty.</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="StartLocation">Start Location:</label>
+                                    <input type="text" id="StartLocation" name="StartLocation"
+                                        value="{{StartLocation}}" pattern="^\S*$" required>
+                                    <div class="input-info">Start location to create the world with. Defaults to "DefaultStartLocation" if empty.</div>
                                 </div>
                             </div>
                         </div>

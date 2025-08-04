@@ -216,7 +216,7 @@ function handleConsole() {
             createCommandInput(); // Add input after boot
             addMessage(bootCompleteMessage, '#0f0');
             //addMessage("StationeersServerUI is becoming SteamServerUI!", '#ff4500');
-            addMessage("Please mind the New Terrain System warning below", '#ff4500');
+            //addMessage("Please mind the New Terrain System warning below", '#ff4500');
             consoleElement.scrollTop = consoleElement.scrollHeight;
         }, 500);
     }

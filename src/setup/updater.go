@@ -135,6 +135,27 @@ func UpdateExecutable() error {
 	return nil
 }
 
+func RestartMySelf() {
+	currentExe, err := os.Executable()
+	if err != nil {
+		logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t get current executable path: %v. Keeping version %s.", err, config.Version))
+		return
+	}
+
+	if runtime.GOOS == "windows" {
+		if err := runAndExit(currentExe); err != nil {
+			logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t launch %s: %v. Keeping version %s.", currentExe, err, config.Version))
+			return
+		}
+	}
+	if runtime.GOOS == "linux" {
+		if err := runAndExitLinux(currentExe); err != nil {
+			logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t launch %s: %v. Keeping version %s.", currentExe, err, config.Version))
+			return
+		}
+	}
+}
+
 // parseVersion parses a version string (e.g., "4.6.10") into a Version struct and tries to handle a few culprits too
 func parseVersion(v string) (Version, error) {
 	v = strings.TrimPrefix(v, "v")

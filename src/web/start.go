@@ -2,6 +2,7 @@
 package web
 
 import (
+	"io/fs"
 	"net/http"
 	"net/http/pprof"
 	"sync"
@@ -12,6 +13,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/security"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/terminal"
 )
 
 func StartWebServer(wg *sync.WaitGroup) {
@@ -21,8 +23,8 @@ func StartWebServer(wg *sync.WaitGroup) {
 	mux := http.NewServeMux() // Use a mux to apply middleware globally
 
 	// Unprotected auth routes
-	mux.HandleFunc("/twoboxform/twoboxform.js", ServeTwoBoxJs)
-	mux.HandleFunc("/twoboxform/twoboxform.css", ServeTwoBoxCss)
+	twoboxformAssetsFS, _ := fs.Sub(config.GetV1UIFS(), "UIMod/onboard_bundled/twoboxform")
+	mux.Handle("/twoboxform/", http.StripPrefix("/twoboxform/", http.FileServer(http.FS(twoboxformAssetsFS))))
 	mux.HandleFunc("/sscm/sscm.js", ServeSSCMJs)
 	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
 	mux.HandleFunc("/auth/logout", LogoutHandler)
@@ -30,8 +32,10 @@ func StartWebServer(wg *sync.WaitGroup) {
 
 	// Protected routes (wrapped with middleware)
 	protectedMux := http.NewServeMux()
-	fs := http.FileServer(http.Dir(config.UIModFolder + "/assets"))
-	protectedMux.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	legacyAssetsFS, _ := fs.Sub(config.GetV1UIFS(), "UIMod/onboard_bundled/assets")
+	protectedMux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(legacyAssetsFS))))
+
 	protectedMux.HandleFunc("/config", ServeConfigPage)
 	protectedMux.HandleFunc("/detectionmanager", ServeDetectionManager)
 	protectedMux.HandleFunc("/", ServeIndex)
@@ -77,12 +81,9 @@ func StartWebServer(wg *sync.WaitGroup) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		logger.Web.Info("Starting the HTTP server on port 8443...")
-		logger.Web.Info("UI available at: https://0.0.0.0:8443 or https://localhost:8443")
+		terminal.PrintStartupMessage()
 		if config.IsFirstTimeSetup {
-			logger.Web.Error("For first-time setup, visit the UI to configure a user or skip authentication.")
-			logger.Web.Warn("Fill the Username and Password fields, then click Register User and when done Finalize Setup.")
-			logger.Web.Warn("For more details, check the GitHub Wiki: https://github.com/JacksonTheMaster/StationeersServerUI/v5/wiki")
+			terminal.PrintFirstTimeSetupMessage()
 		}
 		// Ensure TLS certs are ready
 		if err := security.EnsureTLSCerts(); err != nil {

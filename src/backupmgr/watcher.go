@@ -2,6 +2,7 @@ package backupmgr
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
@@ -29,11 +30,24 @@ func newFsWatcher(path string) (*fsWatcher, error) {
 	}
 	logger.Backup.Debug("Watcher created successfully")
 
-	if err := watcher.Add(normalizedPath); err != nil {
+	// Watch the root save path and all subdirectories
+	err = filepath.WalkDir(normalizedPath, func(subPath string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			if err := watcher.Add(subPath); err != nil {
+				logger.Backup.Error("Failed to add subdir to watcher: " + subPath + ": " + err.Error())
+			} else {
+				logger.Backup.Debug("Successfully watching subdir: " + subPath)
+			}
+		}
+		return nil
+	})
+	if err != nil {
 		watcher.Close()
-		return nil, fmt.Errorf("failed to add path %s to watcher: %w", normalizedPath, err)
+		return nil, fmt.Errorf("failed to add paths to watcher: %w", err)
 	}
-	logger.Backup.Debug("Successfully watching path: " + normalizedPath)
 
 	w := &fsWatcher{
 		watcher: watcher,

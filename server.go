@@ -21,13 +21,18 @@
 package main
 
 import (
+	"embed"
 	"sync"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/terminal"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/web"
 )
+
+//go:embed UIMod/onboard_bundled
+var v1uiFS embed.FS
 
 func main() {
 	var wg sync.WaitGroup
@@ -41,8 +46,12 @@ func main() {
 	wg.Wait()
 
 	// Load config,discordbot, backupmgr and detectionmgr using the loader package
+	loader.InitVirtFS(v1uiFS)
 	loader.ReloadAll()
 	loader.InitDetector()
+	loader.AfterStartComplete()
+
+	terminal.StartConsole(&wg)
 
 	web.StartWebServer(&wg)
 }

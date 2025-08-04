@@ -34,3 +34,5 @@ run_bepinex.sh
 debug.log
 modconfig.xml
 UIMod/config/config.json
+C:/custom/file.txt
+UIMod/config/customdetections.json
