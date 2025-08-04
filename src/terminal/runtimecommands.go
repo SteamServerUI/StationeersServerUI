@@ -48,7 +48,7 @@ func RegisterCommand(name string, handler CommandFunc, aliases ...string) {
 // StartConsole starts a non-blocking console input loop in a separate goroutine.
 func StartConsole(wg *sync.WaitGroup) {
 	if !config.IsConsoleEnabled {
-		logger.Core.Warn("Console is disabled, skipping...")
+		logger.Core.Info("SSUICLI runtime console is disabled in config, skipping...")
 		return
 	}
 	wg.Add(1)
