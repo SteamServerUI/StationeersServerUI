@@ -146,7 +146,7 @@ func applyConfig(cfg *JsonConfig) {
 	StartCondition = getString(cfg.StartCondition, "START_CONDITION", "")
 	StartLocation = getString(cfg.StartLocation, "START_LOCATION", "")
 	ServerName = getString(cfg.ServerName, "SERVER_NAME", "Stationeers Server UI")
-	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "Moon Moon")
+	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "Vulcan Vulcan")
 	ServerMaxPlayers = getString(cfg.ServerMaxPlayers, "SERVER_MAX_PLAYERS", "6")
 	ServerPassword = getString(cfg.ServerPassword, "SERVER_PASSWORD", "")
 	ServerAuthSecret = getString(cfg.ServerAuthSecret, "SERVER_AUTH_SECRET", "")
