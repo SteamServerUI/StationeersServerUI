@@ -24,6 +24,7 @@ var (
 	logDone         chan struct{}
 	err             error
 	autoRestartDone chan struct{}
+	processExited   chan struct{}
 )
 
 // InternalIsServerRunning checks if the server process is running.
@@ -35,34 +36,25 @@ func InternalIsServerRunning() bool {
 }
 
 // internalIsServerRunningNoLock checks if the server process is running.
-// Caller must hold mu.Lock().
+// Caller M U S T hold mu.Lock().
 func internalIsServerRunningNoLock() bool {
 	if cmd == nil || cmd.Process == nil {
 		return false
 	}
 
 	if runtime.GOOS == "windows" {
-		done := make(chan error, 1)
-		go func() { done <- cmd.Wait() }()
 		select {
-		case err := <-done:
-			// process has likely exited
-			if err != nil {
-				logger.Core.Debug("Wait failed: " + err.Error())
-				if strings.Contains(err.Error(), "The handle is invalid") {
-					cmd = nil
-					clearGameServerUUID()
-					return false
-				}
-			}
+		case <-processExited:
 			cmd = nil
 			clearGameServerUUID()
 			return false
-		case <-time.After(50 * time.Millisecond):
+		default:
 			// Process is still running
 			return true
 		}
-	} else {
+	}
+
+	if runtime.GOOS == "linux" {
 		// On Unix-like systems, use Signal(0)
 		if err := cmd.Process.Signal(syscall.Signal(0)); err != nil {
 			logger.Core.Debug("Signal(0) failed, assuming process is dead: " + err.Error())
@@ -72,6 +64,9 @@ func internalIsServerRunningNoLock() bool {
 		}
 		return true
 	}
+
+	logger.Core.Warn("Failed to check if server is running, assuming it's dead")
+	return false
 }
 
 func InternalStartServer() error {
@@ -139,6 +134,18 @@ func InternalStartServer() error {
 		// Start reading stdout and stderr pipes on Windows
 		go readPipe(stdout)
 		go readPipe(stderr)
+
+		// Monitor process exit
+		processExited = make(chan struct{})
+		go func() {
+			err := cmd.Wait()
+			if err != nil {
+				logger.Core.Debug("Process exited with error: " + err.Error())
+			} else {
+				logger.Core.Debug("Process exited successfully")
+			}
+			close(processExited)
+		}()
 	} else {
 
 		logger.Core.Debug("Switching to log file for logs as we are on Linux! Hail the Penguin!")
@@ -193,7 +200,7 @@ func InternalStopServer() error {
 	if autoRestartDone != nil {
 		close(autoRestartDone)
 		autoRestartDone = nil
-		logger.Core.Info("Auto-restart cycle interrupted due to manaual stop")
+		logger.Core.Info("Auto-restart cycle interrupted due to manual stop")
 	}
 
 	// Process is running, stop it
@@ -203,6 +210,15 @@ func InternalStopServer() error {
 	if isWindows {
 		// On Windows, terminate the process (no graceful shutdown)
 		killErr = cmd.Process.Kill()
+		// Wait for the processExited channel to confirm exit
+		if processExited != nil {
+			select {
+			case <-processExited:
+				logger.Core.Debug("processExited channel confirmed server shutdown")
+			case <-time.After(2 * time.Second):
+				logger.Core.Warn("Timeout waiting for processExited confirmation")
+			}
+		}
 	} else {
 		// On Linux/Unix, send SIGTERM for graceful shutdown
 		if termErr := cmd.Process.Signal(syscall.SIGTERM); termErr != nil {
@@ -238,24 +254,6 @@ func InternalStopServer() error {
 		if logDone != nil {
 			close(logDone)
 			logDone = nil
-		}
-	}
-
-	// For Windows, wait briefly after Kill to ensure process is gone
-	if isWindows {
-		waitErrChan := make(chan error, 1)
-		go func() {
-			waitErrChan <- cmd.Wait()
-		}()
-
-		select {
-		case waitErr := <-waitErrChan:
-			if waitErr != nil && !strings.Contains(waitErr.Error(), "exit status") &&
-				!strings.Contains(waitErr.Error(), "The handle is invalid") {
-				return fmt.Errorf("error during server shutdown: %v", waitErr)
-			}
-		case <-time.After(1 * time.Second):
-			return fmt.Errorf("timeout waiting for process to exit")
 		}
 	}
 
