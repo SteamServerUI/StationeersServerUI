@@ -48,11 +48,10 @@ func (m *BackupManager) Initialize() <-chan error {
 				result <- fmt.Errorf("timeout waiting for backup directory %s to be created", m.config.BackupDir)
 				return
 			}
-			logger.Backup.Warn("Backup manager waiting for save folder " + m.config.BackupDir + " to be created by Stationeers...")
+			logger.Backup.Debug("Backup manager waiting for save folder " + m.config.BackupDir + " to be created by Stationeers...")
 
 			// Wait before checking again
 			time.Sleep(pollInterval)
-			//logger.Backup.Warn("Backup manager waiting for save folder to be created...")
 		}
 
 		// Ensure SafeBackupDir exists, create it if it doesn't
