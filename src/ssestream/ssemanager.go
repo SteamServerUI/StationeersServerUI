@@ -124,25 +124,40 @@ func (m *SSEManager) streamMessages(
 
 // dropKinematicMessage checks if a message should be dropped due to kinematic warnings. This is a workaround "fix" for a bug in the gameserver.
 func (m *SSEManager) dropKinematicMessage(message string) bool {
-	if !strings.Contains(message, "Setting linear velocity of a kinematic body is not supported") &&
-		!strings.Contains(message, "Setting angular velocity of a kinematic body is not supported") {
-		return false
+	// Map of messages to drop
+	dropMessages := map[string]bool{
+		"Setting linear velocity of a kinematic body is not supported":  true,
+		"Setting angular velocity of a kinematic body is not supported": true,
+		"WARNING: Shader": true,
+		"ERROR: Shader":   true,
+		"The referenced script on this Behaviour": true,
+		"No mesh data available":                  true,
+		"The image effect Main Camera":            true,
+		"Unsupported shader":                      true,
+		"The shader":                              true,
+		"memorysetup":                             true,
 	}
 
-	m.dropMu.Lock()
-	defer m.dropMu.Unlock()
+	// Check if message contains any of the drop messages
+	for dropMsg := range dropMessages {
+		if strings.Contains(message, dropMsg) {
+			m.dropMu.Lock()
+			defer m.dropMu.Unlock()
 
-	m.kinematicDropCount++
-	now := time.Now()
+			m.kinematicDropCount++
+			now := time.Now()
 
-	// Log only if it's been more than a minute since last log and we have messages to report
-	if m.kinematicDropCount > 0 && now.Sub(m.lastKinematicLog) >= time.Minute {
-		logger.SSE.Info(fmt.Sprintf("🗑️ Detected and Dropped %d kinematic body warning messages. (Gameserver Bug)", m.kinematicDropCount))
-		m.lastKinematicLog = now
-		m.kinematicDropCount = 0 // Reset count after logging
+			// Log only if it's been more than a minute since last log and we have messages to report
+			if m.kinematicDropCount > 0 && now.Sub(m.lastKinematicLog) >= time.Minute {
+				logger.SSE.Info(fmt.Sprintf("🗑️ Detected and Dropped %d unhelpful game server log messages. (Workaround for Gameserver Bug)", m.kinematicDropCount))
+				m.lastKinematicLog = now
+				m.kinematicDropCount = 0 // Reset count after logging
+			}
+			return true
+		}
 	}
 
-	return true
+	return false
 }
 
 // Broadcast sends a message to all clients with a non-blocking approach
