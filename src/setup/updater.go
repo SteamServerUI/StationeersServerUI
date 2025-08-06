@@ -232,6 +232,14 @@ func getLatestRelease() (*githubRelease, error) {
 			continue
 		}
 		if i == 0 || isReleaseNewerVersion(version, latestVersion) {
+			currentVersion, err := parseVersion(config.Version)
+			if err == nil && isReleaseNewerVersion(currentVersion, version) {
+				if release.Prerelease {
+					logger.Install.Warn("Found a prerelease, but it is older than the running version. Skipping...")
+					continue
+				}
+				continue
+			}
 			latestVersion = version
 			latestRelease = &releases[i]
 		}
@@ -243,7 +251,7 @@ func getLatestRelease() (*githubRelease, error) {
 
 	// Log warning if the latest release is a prerelease
 	if latestRelease.Prerelease && !config.AllowPrereleaseUpdates {
-		logger.Install.Warn(fmt.Sprintf("⚠️ Pre-release Update found: Latest version %s is a pre-release. Enable 'AllowPrereleaseUpdates' in config.json to update to it. Continuing with the latest stable release.", latestRelease.TagName))
+		logger.Install.Warn(fmt.Sprintf("⚠️ Pre-release Update found: Latest version %s is a pre-release. Enable 'AllowPrereleaseUpdates' in config.json to update to it.", latestRelease.TagName))
 		time.Sleep(1000 * time.Millisecond)
 		logger.Install.Info("⚠️ Continuing in 3 seconds...")
 		time.Sleep(1000 * time.Millisecond)
@@ -287,6 +295,9 @@ func isReleaseNewerVersion(v1, v2 Version) bool {
 	}
 	if v1.Minor != v2.Minor {
 		return v1.Minor > v2.Minor
+	}
+	if v1.Patch == v2.Patch {
+		return false
 	}
 	return v1.Patch > v2.Patch
 }
