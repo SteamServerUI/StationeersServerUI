@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
@@ -89,8 +90,8 @@ func CleanUpOldExecutables() error {
 			return err
 		}
 
-		// Skip directories and non-matching files
-		if info.IsDir() || !re.MatchString(info.Name()) {
+		// Skip directories, non-matching files, and files with _old prefix
+		if info.IsDir() || !re.MatchString(info.Name()) || strings.HasPrefix(info.Name(), "_old") {
 			return nil
 		}
 
