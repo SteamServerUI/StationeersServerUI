@@ -31,7 +31,7 @@ func ReloadConfig() {
 	if config.IsSSCMEnabled {
 		setup.InstallSSCM()
 	}
-
+	ReloadBackupManager()
 	PrintConfigDetails()
 }
 
