@@ -141,7 +141,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			ID:                     "game_branch",
 			Title:                  "Stationeers Server UI",
 			HeaderTitle:            "Game Branch Setup",
-			StepMessage:            "Enter a beta branch or skip this to use the release version. If switching branches, make sure to restart SSUI after completing this wizzard.",
+			StepMessage:            "Enter a beta branch or skip this to use the release version. If switching branches, make sure to r e s t a r t SSUI after completing this wizzard.",
 			PrimaryPlaceholderText: "beta",
 			PrimaryLabel:           "Game Branch",
 			SecondaryLabel:         "",
