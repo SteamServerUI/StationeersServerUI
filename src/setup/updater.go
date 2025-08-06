@@ -38,7 +38,14 @@ type Version struct {
 // UpdateExecutable checks for and applies the latest release from GitHub
 func UpdateExecutable() error {
 	if !config.IsUpdateEnabled {
-		logger.Install.Warn("⚠️ Update check is disabled. Skipping update check.")
+		logger.Install.Warn("⚠️ Update check is disabled. Skipping update check. Change 'IsUpdateEnabled' in config.json to true to re-enable update checks.")
+		time.Sleep(1000 * time.Millisecond)
+		logger.Install.Info("⚠️ Continuing in 3 seconds...")
+		time.Sleep(1000 * time.Millisecond)
+		logger.Install.Info("⚠️ Continuing in 2 seconds...")
+		time.Sleep(1000 * time.Millisecond)
+		logger.Install.Info("⚠️ Continuing in 1 seconds...")
+		time.Sleep(1000 * time.Millisecond)
 		return nil
 	}
 
@@ -47,7 +54,11 @@ func UpdateExecutable() error {
 		return nil
 	}
 
-	logger.Install.Info("🕵️ Querying GitHub API for the latest release...")
+	if config.AllowPrereleaseUpdates {
+		logger.Install.Info("🕵️ Querying GitHub API for the latest (pre)release...")
+	} else {
+		logger.Install.Info("🕵️ Querying GitHub API for the latest stable release...")
+	}
 	latestRelease, err := getLatestRelease()
 	if err != nil {
 		return fmt.Errorf("❌ Failed to fetch latest release: %v", err)
@@ -65,12 +76,6 @@ func UpdateExecutable() error {
 
 	logger.Install.Info(fmt.Sprintf("Current version: %s, Latest version: %s", config.Version, latestRelease.TagName))
 
-	// Check pre-release status
-	if latestRelease.Prerelease && !config.AllowPrereleaseUpdates {
-		logger.Install.Warn(fmt.Sprintf("⚠️ Latest version %s is a pre-release. Enable 'AllowPrerelease' in config to update.", latestRelease.TagName))
-		return nil
-	}
-
 	// Check if we should update
 	updateReason, shouldUpdate := shouldUpdate(currentVer, latestVer)
 	if !shouldUpdate {
@@ -78,7 +83,14 @@ func UpdateExecutable() error {
 		case "up-to-date":
 			logger.Install.Info("🎉 No update needed: you’re already on the latest version.")
 		case "major-update":
-			logger.Install.Warn(fmt.Sprintf("⚠️ Latest version %s is a major update from %s. Major Updates include Breaking changes in this project. Read the release notes and backup your Server folder before updating. Enable 'AllowMajorUpdates' in config to proceed.", latestRelease.TagName, config.Version))
+			logger.Install.Warn(fmt.Sprintf("⚠️ Update found: Latest version %s is a major update from %s. Major Updates include Breaking changes in this project. Read the release notes and backup your Server folder before updating. Enable 'AllowMajorUpdates' in config to proceed.", latestRelease.TagName, config.Version))
+			time.Sleep(1000 * time.Millisecond)
+			logger.Install.Info("⚠️ Continuing in 3 seconds...")
+			time.Sleep(1000 * time.Millisecond)
+			logger.Install.Info("⚠️ Continuing in 2 seconds...")
+			time.Sleep(1000 * time.Millisecond)
+			logger.Install.Info("⚠️ Continuing in 1 seconds...")
+			time.Sleep(1000 * time.Millisecond)
 		}
 		return nil
 	}
@@ -210,14 +222,10 @@ func getLatestRelease() (*githubRelease, error) {
 		return nil, fmt.Errorf("no releases found")
 	}
 
-	// Find the most recent release or prerelease
+	// Find the most recent release
 	var latestRelease *githubRelease
 	var latestVersion Version
 	for i, release := range releases {
-		// Skip if release is a prerelease and prereleases are not allowed
-		if release.Prerelease && !config.AllowPrereleaseUpdates {
-			continue
-		}
 		version, err := parseVersion(release.TagName)
 		if err != nil {
 			logger.Install.Warn(fmt.Sprintf("Skipping invalid version tag %s: %v", release.TagName, err))
@@ -231,6 +239,42 @@ func getLatestRelease() (*githubRelease, error) {
 
 	if latestRelease == nil {
 		return nil, fmt.Errorf("no suitable releases found")
+	}
+
+	// Log warning if the latest release is a prerelease
+	if latestRelease.Prerelease && !config.AllowPrereleaseUpdates {
+		logger.Install.Warn(fmt.Sprintf("⚠️ Pre-release Update found: Latest version %s is a pre-release. Enable 'AllowPrereleaseUpdates' in config.json to update to it. Continuing with the latest stable release.", latestRelease.TagName))
+		time.Sleep(1000 * time.Millisecond)
+		logger.Install.Info("⚠️ Continuing in 3 seconds...")
+		time.Sleep(1000 * time.Millisecond)
+		logger.Install.Info("⚠️ Continuing in 2 seconds...")
+		time.Sleep(1000 * time.Millisecond)
+		logger.Install.Info("⚠️ Continuing in 1 seconds...")
+		time.Sleep(1000 * time.Millisecond)
+	}
+
+	// If prerelease and AllowPrereleaseUpdates is false, find the latest stable release
+	if latestRelease.Prerelease && !config.AllowPrereleaseUpdates {
+		var stableRelease *githubRelease
+		var stableVersion Version
+		for i, release := range releases {
+			if release.Prerelease {
+				continue
+			}
+			version, err := parseVersion(release.TagName)
+			if err != nil {
+				logger.Install.Warn(fmt.Sprintf("Skipping invalid version tag %s: %v", release.TagName, err))
+				continue
+			}
+			if i == 0 || isReleaseNewerVersion(version, stableVersion) {
+				stableVersion = version
+				stableRelease = &releases[i]
+			}
+		}
+		if stableRelease == nil {
+			return nil, fmt.Errorf("no stable releases found")
+		}
+		return stableRelease, nil
 	}
 
 	return latestRelease, nil
