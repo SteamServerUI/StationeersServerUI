@@ -188,9 +188,10 @@ func shouldUpdate(current, latest Version) (string, bool) {
 	return "", true
 }
 
-// getLatestRelease fetches the latest release info from GitHub API
+// getLatestRelease fetches the most recent release (or prerelease) from GitHub API
 func getLatestRelease() (*githubRelease, error) {
-	resp, err := http.Get("https://api.github.com/repos/JacksonTheMaster/StationeersServerUI/releases/latest")
+	url := "https://api.github.com/repos/JacksonTheMaster/StationeersServerUI/releases"
+	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -200,11 +201,50 @@ func getLatestRelease() (*githubRelease, error) {
 		return nil, fmt.Errorf("bad response from GitHub API: %s", resp.Status)
 	}
 
-	var release githubRelease
-	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
+	var releases []githubRelease
+	if err := json.NewDecoder(resp.Body).Decode(&releases); err != nil {
 		return nil, fmt.Errorf("failed to parse GitHub API response: %v", err)
 	}
-	return &release, nil
+
+	if len(releases) == 0 {
+		return nil, fmt.Errorf("no releases found")
+	}
+
+	// Find the most recent release or prerelease
+	var latestRelease *githubRelease
+	var latestVersion Version
+	for i, release := range releases {
+		// Skip if release is a prerelease and prereleases are not allowed
+		if release.Prerelease && !config.AllowPrereleaseUpdates {
+			continue
+		}
+		version, err := parseVersion(release.TagName)
+		if err != nil {
+			logger.Install.Warn(fmt.Sprintf("Skipping invalid version tag %s: %v", release.TagName, err))
+			continue
+		}
+		if i == 0 || isReleaseNewerVersion(version, latestVersion) {
+			latestVersion = version
+			latestRelease = &releases[i]
+		}
+	}
+
+	if latestRelease == nil {
+		return nil, fmt.Errorf("no suitable releases found")
+	}
+
+	return latestRelease, nil
+}
+
+// isNewerVersion compares two versions to determine if the first is newer
+func isReleaseNewerVersion(v1, v2 Version) bool {
+	if v1.Major != v2.Major {
+		return v1.Major > v2.Major
+	}
+	if v1.Minor != v2.Minor {
+		return v1.Minor > v2.Minor
+	}
+	return v1.Patch > v2.Patch
 }
 
 // downloadNewExecutable downloads the new executable with a progress bar
