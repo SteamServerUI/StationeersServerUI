@@ -22,9 +22,6 @@ func InitGlobalBackupManager(config BackupConfig) error {
 
 	GlobalBackupManager = NewBackupManager(config)
 
-	// Start initialization asynchronously
-	_ = GlobalBackupManager.Initialize()
-
 	// Update all active HTTP handlers with the new manager
 	for _, handler := range activeHTTPHandlers {
 		handler.manager = GlobalBackupManager

@@ -30,7 +30,7 @@ func (m *BackupManager) Initialize() <-chan error {
 
 	go func() {
 		const timeout = 90 * time.Minute
-		const pollInterval = 1000 * time.Millisecond
+		const pollInterval = 2500 * time.Millisecond
 		deadline := time.Now().Add(timeout)
 
 		// Wait for BackupDir to exist
@@ -48,6 +48,7 @@ func (m *BackupManager) Initialize() <-chan error {
 				result <- fmt.Errorf("timeout waiting for backup directory %s to be created", m.config.BackupDir)
 				return
 			}
+			logger.Backup.Warn("Backup manager waiting for save folder " + m.config.BackupDir + " to be created by Stationeers...")
 
 			// Wait before checking again
 			time.Sleep(pollInterval)
@@ -59,8 +60,9 @@ func (m *BackupManager) Initialize() <-chan error {
 			result <- fmt.Errorf("error creating safe backup directory %s: %v", m.config.SafeBackupDir, err)
 			return
 		}
+		logger.Backup.Info("Backup manager created safebackups dir successfully")
 
-		result <- nil // Signal successful initialization
+		result <- nil
 	}()
 
 	return result
@@ -69,12 +71,12 @@ func (m *BackupManager) Initialize() <-chan error {
 // Start begins the backup monitoring and cleanup routines
 func (m *BackupManager) Start() error {
 	// Wait for initialization to complete
-	logger.Backup.Warn("Backup manager waiting for save folder initialization...")
+	logger.Backup.Warn("Backup manager is waiting for save folder initialization...")
 	initResult := <-m.Initialize()
 	if initResult != nil {
 		return fmt.Errorf("failed to initialize backup manager: %w", initResult)
 	}
-	logger.Backup.Warn("Backup manager initialized")
+	logger.Backup.Info("Backup manager started")
 
 	// Start file watcher
 	watcher, err := newFsWatcher(m.config.BackupDir)
@@ -82,7 +84,6 @@ func (m *BackupManager) Start() error {
 		return fmt.Errorf("failed to create autosave watcher: %w", err)
 	}
 	m.watcher = watcher
-
 	go m.watchBackups()
 
 	if config.IsCleanupEnabled {
