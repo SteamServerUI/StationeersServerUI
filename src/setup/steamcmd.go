@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 
@@ -86,7 +87,7 @@ func installSteamCMD(platform string, steamCMDDir string, downloadURL string, ex
 		logger.Install.Info("✅ SteamCMD installed successfully.\n")
 	} else {
 
-		logger.Install.Info("✅ SteamCMD is already installed.\n")
+		logger.Install.Info("✅ SteamCMD is already installed.")
 	}
 
 	// Run SteamCMD
@@ -128,7 +129,12 @@ func runSteamCMD(steamCMDDir string) {
 	cmd.Stderr = os.Stderr
 
 	// Run the command
-	logger.Install.Info("🕑 Running SteamCMD...\n")
+	if config.LogLevel == 10 {
+		cmdString := strings.Join(cmd.Args, " ")
+		logger.Install.Info("🕑 Running SteamCMD: " + cmdString)
+	} else {
+		logger.Install.Info("🕑 Running SteamCMD...")
+	}
 	err = cmd.Run()
 	if err != nil {
 		logger.Install.Error("❌ Error running SteamCMD: " + err.Error() + "\n")
@@ -140,8 +146,8 @@ func runSteamCMD(steamCMDDir string) {
 // buildSteamCMDCommand constructs the SteamCMD command based on the OS.
 func buildSteamCMDCommand(steamCMDDir, currentDir string) *exec.Cmd {
 	//print the config.GameBranch and config.GameServerAppID
-	logger.Install.Info("🔍 Game Branch: " + config.GameBranch + "\n")
-	logger.Install.Debug("🔍 Game Server App ID: " + config.GameServerAppID + "\n")
+	logger.Install.Info("🔍 Game Branch: " + config.GameBranch)
+	logger.Install.Debug("🔍 Game Server App ID: " + config.GameServerAppID)
 
 	if runtime.GOOS == "windows" {
 		return exec.Command(filepath.Join(steamCMDDir, "steamcmd.exe"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GameServerAppID, "-beta", config.GameBranch, "validate", "+quit")
