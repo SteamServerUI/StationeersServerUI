@@ -22,6 +22,19 @@ function toggleServer(endpoint) {
         .catch(err => console.error(`Failed to ${endpoint}:`, err));
 }
 
+function triggerSteamCMD() {
+    const status = document.getElementById('status');
+    fetch('/api/v2/steamcmd/run')
+        .then(response => response.json())
+        .then(data => {
+            status.hidden = false;
+            typeTextWithCallback(status, data.message, 20, () => {
+                setTimeout(() => status.hidden = true, 10000);
+            });
+        })
+        .catch(err => console.error(`Failed to trigger SteamCMD:`, err));
+}
+
 // Backup management
 function fetchBackups() {
     fetch('/api/v2/backups?mode=classic')
