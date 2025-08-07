@@ -16,7 +16,6 @@ import (
 
 func ReloadAll() {
 	ReloadConfig()
-	ReloadBackupManager()
 	ReloadDiscordBot()
 }
 
@@ -31,6 +30,7 @@ func ReloadConfig() {
 	if config.IsSSCMEnabled {
 		setup.InstallSSCM()
 	}
+	ReloadBackupManager()
 	PrintConfigDetails()
 }
 
