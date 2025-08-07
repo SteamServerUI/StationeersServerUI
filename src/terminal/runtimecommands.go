@@ -56,7 +56,7 @@ func StartConsole(wg *sync.WaitGroup) {
 	go func() {
 		defer wg.Done()
 		scanner := bufio.NewScanner(os.Stdin)
-		logger.Core.Info("Console input started. Type 'help' for commands.")
+		logger.Core.Info("SSUICLI runtime console started. Type 'help' for commands.")
 		time.Sleep(10 * time.Millisecond)
 
 		for {
@@ -73,9 +73,9 @@ func StartConsole(wg *sync.WaitGroup) {
 		}
 
 		if err := scanner.Err(); err != nil {
-			logger.Core.Error("Console input error:" + err.Error())
+			logger.Core.Error("SSUICLI input error:" + err.Error())
 		}
-		logger.Core.Info("Console input stopped: shell is not interactive. To use SSUICLI, consider using an interactive shell.")
+		logger.Core.Info("SSUICLI runtime console stopped.")
 	}()
 }
 
