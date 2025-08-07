@@ -120,8 +120,8 @@
         <div id="controls">
             <button onclick="startServer()">Start Server</button>
             <button onclick="stopServer()">Stop Server</button>
-            <button onclick="navigateTo('/config')">Config</button>
-            <button onclick="navigateTo('/static/apiinfo.html')">API Info</button>
+            <button onclick="navigateTo('/config')">Edit Config</button>
+            <button onclick="triggerSteamCMD()">Update Server</button>
         </div>
         <p id="status" hidden></p>
 
@@ -139,7 +139,7 @@
         </div>
 
         <div id="backups">
-            <h2>Backups List</h2>
+            <h2>Backup Manager</h2>
             <ul id="backupList"></ul>
         </div>
 
@@ -212,8 +212,10 @@
             <img src="https://cdn.discordapp.com/icons/1357524183260729404/3626cdbaa442efdad6e619a65b4f037a.png?size=128&quality=lossless" alt="SSUI Discord" width="40" height="40">
         </a>
     </discord-button>
-    <p>Join the Discord and help make SSUI better or get support!</p>
-
+    <span onclick="navigateTo('https://discord.gg/8n3vN92MyJ')" style="cursor: pointer; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Join the Discord and help make SSUI better or get support!</span>
+    <br>
+    <span onclick="navigateTo('/static/apiinfo.html')" style="cursor: pointer; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">API Endpoint Reference</span>
+    <br>
     <footer>
         <div class="copyright">
             Copyright © 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a>
