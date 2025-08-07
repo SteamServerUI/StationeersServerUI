@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const configField = document.getElementById('config-field').value;
         let nextStep = document.getElementById('next-step').value;
 
-        if (step === "welcome") {
+        if (step === "welcome" || step === "pls_read") {
             window.location.href = `/setup?step=${nextStep}`;
             return;
         }
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Handle boolean conversion for yes/no fields
             if (configField === "IsDiscordEnabled" || configField === "UPNPEnabled" || 
-                configField === "ServerVisible" || configField === "UseSteamP2P" || configField === "IsSSCMEnabled") {
+                configField === "ServerVisible" || configField === "UseSteamP2P" || configField === "IsSSCMEnabled" || configField === "IsNewTerrainAndSaveSystem") {
                 body = JSON.stringify({
                     [configField]: booleanToConfig(document.getElementById('primary-field').value)
                 });
