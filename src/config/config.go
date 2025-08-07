@@ -64,6 +64,7 @@ type JsonConfig struct {
 	Debug                     *bool             `json:"Debug"`
 	CreateSSUILogFile         *bool             `json:"CreateSSUILogFile"`
 	LogLevel                  int               `json:"LogLevel"`
+	LogClutterToConsole       *bool             `json:"LogClutterToConsole"`
 	SubsystemFilters          []string          `json:"subsystemFilters"`
 	IsUpdateEnabled           *bool             `json:"IsUpdateEnabled"`
 	IsSSCMEnabled             *bool             `json:"IsSSCMEnabled"`
@@ -224,6 +225,10 @@ func applyConfig(cfg *JsonConfig) {
 	isConsoleEnabledVal := getBool(cfg.IsConsoleEnabled, "IS_CONSOLE_ENABLED", false)
 	IsConsoleEnabled = isConsoleEnabledVal
 	cfg.IsConsoleEnabled = &isConsoleEnabledVal
+
+	logClutterToConsoleVal := getBool(cfg.LogClutterToConsole, "LOG_CLUTTER_TO_CONSOLE", false)
+	LogClutterToConsole = logClutterToConsoleVal
+	cfg.LogClutterToConsole = &logClutterToConsoleVal
 
 	// Process SaveInfo
 	parts := strings.Split(SaveInfo, " ")

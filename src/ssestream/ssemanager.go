@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
@@ -122,20 +123,23 @@ func (m *SSEManager) streamMessages(
 	}
 }
 
-// dropKinematicMessage checks if a message should be dropped due to kinematic warnings. This is a workaround "fix" for a bug in the gameserver.
-func (m *SSEManager) dropKinematicMessage(message string) bool {
-	// Map of messages to drop
+// excludeClutterLogs checks if a message should be dropped due to kinematic warnings. This is a workaround "fix" for a bug in the gameserver.
+func (m *SSEManager) excludeClutterLogs(message string) bool {
+	if config.LogClutterToConsole {
+		return false
+	}
 	dropMessages := map[string]bool{
 		"Setting linear velocity of a kinematic body is not supported":  true,
 		"Setting angular velocity of a kinematic body is not supported": true,
-		"WARNING: Shader": true,
-		"ERROR: Shader":   true,
-		"The referenced script on this Behaviour": true,
-		"No mesh data available":                  true,
-		"The image effect Main Camera":            true,
-		"Unsupported shader":                      true,
-		"The shader":                              true,
-		"memorysetup":                             true,
+		"WARNING: Shader":                           true,
+		"ERROR: Shader":                             true,
+		"No mesh data available":                    true,
+		"The image effect Main Camera":              true,
+		"Unsupported shader":                        true,
+		"The shader":                                true,
+		"memorysetup":                               true,
+		"Microsoft Media Foundation video decoding": true,
+		"The referenced script on this Behaviour":   true,
 	}
 
 	// Check if message contains any of the drop messages
@@ -163,7 +167,7 @@ func (m *SSEManager) dropKinematicMessage(message string) bool {
 // Broadcast sends a message to all clients with a non-blocking approach
 func (m *SSEManager) Broadcast(message string) {
 	// Check if message should be dropped
-	if m.dropKinematicMessage(message) {
+	if m.excludeClutterLogs(message) {
 		return
 	}
 
