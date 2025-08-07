@@ -75,7 +75,7 @@ func StartConsole(wg *sync.WaitGroup) {
 		if err := scanner.Err(); err != nil {
 			logger.Core.Error("Console input error:" + err.Error())
 		}
-		logger.Core.Info("Console input stopped.")
+		logger.Core.Info("Console input stopped: shell is not interactive. To use SSUICLI, consider using an interactive shell.")
 	}()
 }
 
