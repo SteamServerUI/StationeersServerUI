@@ -59,7 +59,7 @@ func (m *BackupManager) Initialize() <-chan error {
 			result <- fmt.Errorf("error creating safe backup directory %s: %v", m.config.SafeBackupDir, err)
 			return
 		}
-		logger.Backup.Info("Backup manager created safebackups dir successfully")
+		logger.Backup.Debug("Backup manager created safebackups dir successfully")
 
 		result <- nil
 	}()
@@ -70,7 +70,7 @@ func (m *BackupManager) Initialize() <-chan error {
 // Start begins the backup monitoring and cleanup routines
 func (m *BackupManager) Start() error {
 	// Wait for initialization to complete
-	logger.Backup.Warn("Backup manager is waiting for save folder initialization...")
+	logger.Backup.Debug("Backup manager is waiting for save folder initialization...")
 	initResult := <-m.Initialize()
 	if initResult != nil {
 		return fmt.Errorf("failed to initialize backup manager: %w", initResult)
