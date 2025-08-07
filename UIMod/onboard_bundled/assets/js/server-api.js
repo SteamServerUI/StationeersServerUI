@@ -24,15 +24,22 @@ function toggleServer(endpoint) {
 
 function triggerSteamCMD() {
     const status = document.getElementById('status');
-    fetch('/api/v2/steamcmd/run')
-        .then(response => response.json())
-        .then(data => {
-            status.hidden = false;
-            typeTextWithCallback(status, data.message, 20, () => {
-                setTimeout(() => status.hidden = true, 10000);
+    status.hidden = false;
+    typeTextWithCallback(status, 'Triggering SteamCMD, please wait. SteamCMD will print log output only to the CLI ', 20, () => {
+        fetch('/api/v2/steamcmd/run')
+            .then(response => response.json())
+            .then(data => {
+                typeTextWithCallback(status, data.message, 20, () => {
+                    setTimeout(() => status.hidden = true, 10000);
+                });
+            })
+            .catch(err => {
+                typeTextWithCallback(status, 'Error: Failed to trigger SteamCMD', 20, () => {
+                    setTimeout(() => status.hidden = true, 10000);
+                });
+                console.error(`Failed to trigger SteamCMD:`, err);
             });
-        })
-        .catch(err => console.error(`Failed to trigger SteamCMD:`, err));
+    });
 }
 
 // Backup management

@@ -370,7 +370,7 @@ var lastSteamCMDExecution time.Time // last time SteamCMD was executed via API.
 // run SteamCMD from API, but only allow once every 5 minutes to "kinda" prevent concurrent executions although that woluldnt hurn.
 // If the user has a 5mbit connection, I cannot help them anyways.
 func HandleRunSteamCMD(w http.ResponseWriter, r *http.Request) {
-	const rateLimitDuration = 2 * time.Minute
+	const rateLimitDuration = 30 * time.Second
 
 	// Only allow GET requests
 	if r.Method != http.MethodGet {
@@ -398,5 +398,5 @@ func HandleRunSteamCMD(w http.ResponseWriter, r *http.Request) {
 	// Success: return 202 Accepted and JSON
 	w.WriteHeader(http.StatusAccepted)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"statuscode": "202", "status": "Accepted", "message": "SteamCMD was successfully triggered. Monitor the CLI for output."})
+	json.NewEncoder(w).Encode(map[string]string{"statuscode": "202", "status": "Accepted", "message": "SteamCMD ran successfully."})
 }
