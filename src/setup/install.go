@@ -30,7 +30,7 @@ func Install(wg *sync.WaitGroup) {
 	}
 
 	// Step 1: Check and download the UIMod folder contents
-	logger.Install.Info("🔄Checking UIMod folder contents...")
+	logger.Install.Info("🔄Checking UIMod folder...")
 	CheckAndDownloadUIMod()
 	logger.Install.Info("✅UIMod folder setup complete.")
 	// Step 2: Check for Blacklist.txt and create it if it doesn't exist
@@ -56,7 +56,7 @@ func CheckAndDownloadUIMod() {
 	} else {
 		downloadBranch = config.Branch
 	}
-	logger.Install.Info("Using branch: " + downloadBranch)
+	logger.Install.Debug("Using branch: " + downloadBranch)
 
 	// Define file mappings
 	files := map[string]string{
