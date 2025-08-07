@@ -422,9 +422,9 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		},
 		"sscm_opt_in": {
 			ID:                     "sscm_opt_in",
-			Title:                  "Stationeers Command Manager",
-			HeaderTitle:            "Preview Feature",
-			StepMessage:            "SSCM is a custom server plugin that allows you to execute commands directly from SSUI. It doesn't affect vanilla server functionality while giving you the ability to run commands from the SSUI console.",
+			Title:                  "Stationeers Server Command Manager",
+			HeaderTitle:            "Unique Feature",
+			StepMessage:            "SSCM is a custom server plugin that allows you to execute commands directly from SSUI. It doesn't affect vanilla server functionality while giving you the ability to run commands from the Web console.",
 			PrimaryPlaceholderText: "yes",
 			PrimaryLabel:           "Enable SSCM",
 			SecondaryLabel:         "",
