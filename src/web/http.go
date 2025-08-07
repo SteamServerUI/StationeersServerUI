@@ -9,11 +9,13 @@ import (
 	"os"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/ssestream"
 )
 
@@ -361,4 +363,40 @@ func HandleIsSSCMEnabled(w http.ResponseWriter, r *http.Request) {
 
 	// Success: return 200 OK
 	w.WriteHeader(http.StatusOK)
+}
+
+var lastSteamCMDExecution time.Time // last time SteamCMD was executed via API.
+
+// run SteamCMD from API, but only allow once every 5 minutes to "kinda" prevent concurrent executions although that woluldnt hurn.
+// If the user has a 5mbit connection, I cannot help them anyways.
+func HandleRunSteamCMD(w http.ResponseWriter, r *http.Request) {
+	const rateLimitDuration = 5 * time.Minute
+
+	// Only allow GET requests
+	if r.Method != http.MethodGet {
+		http.Error(w, "Only GET requests are allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Check rate limit
+	if time.Since(lastSteamCMDExecution) < rateLimitDuration {
+		json.NewEncoder(w).Encode(map[string]string{"statuscode": "200", "status": "Rejected", "message": "Slow down, you are calling SteamCMD too often. Use SSUICLI or restart SSUI to run SteamCMD repeatedly without limit."})
+		return
+	}
+
+	if gamemgr.InternalIsServerRunning() {
+		logger.Core.Warn("Server is running, stopping server first...")
+		gamemgr.InternalStopServer()
+		time.Sleep(10000 * time.Millisecond)
+	}
+	logger.Core.Info("Running SteamCMD")
+	setup.InstallAndRunSteamCMD()
+
+	// Update last execution time
+	lastSteamCMDExecution = time.Now()
+
+	// Success: return 202 Accepted and JSON
+	w.WriteHeader(http.StatusAccepted)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"statuscode": "202", "status": "Accepted", "message": "SteamCMD was successfully triggered. Monitor the CLI for output."})
 }
