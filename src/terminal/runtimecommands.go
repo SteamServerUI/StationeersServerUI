@@ -16,6 +16,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 )
 
 // ANSI escape codes for green text and reset
@@ -146,6 +147,7 @@ func init() {
 	RegisterCommand("deleteconfig", WrapNoReturn(deleteConfig), "delc", "dc")
 	RegisterCommand("startserver", WrapNoReturn(startServer), "start")
 	RegisterCommand("stopserver", WrapNoReturn(stopServer), "stop")
+	RegisterCommand("runsteamcmd", WrapNoReturn(runSteamCMD), "steamcmd", "stcmd")
 }
 
 func startServer() {
@@ -174,4 +176,14 @@ func deleteConfig() {
 		return
 	}
 	logger.Core.Info("Config file deleted successfully")
+}
+
+func runSteamCMD() {
+	if gamemgr.InternalIsServerRunning() {
+		logger.Core.Warn("Server is running, stopping server first...")
+		gamemgr.InternalStopServer()
+		time.Sleep(10000 * time.Millisecond)
+	}
+	logger.Core.Info("Running SteamCMD")
+	setup.InstallAndRunSteamCMD()
 }
