@@ -141,7 +141,8 @@ func helpCommand(args []string) error {
 // init registers default cli commands and their aliases.
 func init() {
 	RegisterCommand("help", helpCommand, "h")
-	RegisterCommand("reloadbackend", WrapNoReturn(loader.ReloadConfig), "rlc", "rc", "rlb", "rb", "r")
+	RegisterCommand("reloadbackend", WrapNoReturn(loader.ReloadBackend), "rlb", "rb", "r")
+	RegisterCommand("reloadconfig", WrapNoReturn(loader.ReloadConfig), "rlc", "rc")
 	RegisterCommand("restartbackend", WrapNoReturn(loader.RestartBackend), "rsb")
 	RegisterCommand("exit", WrapNoReturn(exitfromcli), "e")
 	RegisterCommand("deleteconfig", WrapNoReturn(deleteConfig), "delc", "dc")
