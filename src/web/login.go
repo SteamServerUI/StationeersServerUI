@@ -249,5 +249,5 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 		"message":      "Setup finalized successfully",
 		"restart_hint": "You will be redirected to the login page...",
 	})
-	loader.ReloadConfig()
+	loader.ReloadBackend()
 }
