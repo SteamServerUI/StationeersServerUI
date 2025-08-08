@@ -293,21 +293,6 @@ func StartDetectionEventStream() http.HandlerFunc {
 	return ssestream.EventStreamManager.CreateStreamHandler("Event")
 }
 
-func ServeTwoBoxCss(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/css")
-	http.ServeFile(w, r, config.UIModFolder+"twoboxform/twoboxform.css")
-}
-
-func ServeTwoBoxJs(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/javascript")
-	http.ServeFile(w, r, config.UIModFolder+"twoboxform/twoboxform.js")
-}
-
-func ServeSSCMJs(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/javascript")
-	http.ServeFile(w, r, config.SSCMWebDir+"sscm.js")
-}
-
 // CommandHandler handles POST requests to execute commands via commandmgr.
 // Expects a command in the request body. Returns 204 on success or error details.
 func CommandHandler(w http.ResponseWriter, r *http.Request) {

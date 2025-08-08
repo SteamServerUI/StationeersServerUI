@@ -25,7 +25,6 @@ func StartWebServer(wg *sync.WaitGroup) {
 	// Unprotected auth routes
 	twoboxformAssetsFS, _ := fs.Sub(config.GetV1UIFS(), "UIMod/onboard_bundled/twoboxform")
 	mux.Handle("/twoboxform/", http.StripPrefix("/twoboxform/", http.FileServer(http.FS(twoboxformAssetsFS))))
-	mux.HandleFunc("/sscm/sscm.js", ServeSSCMJs)
 	mux.HandleFunc("/auth/login", LoginHandler) // Token issuer
 	mux.HandleFunc("/auth/logout", LogoutHandler)
 	mux.HandleFunc("/login", ServeTwoBoxFormTemplate)
