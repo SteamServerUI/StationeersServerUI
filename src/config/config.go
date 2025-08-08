@@ -12,7 +12,7 @@ import (
 var (
 	// All configuration variables can be found in vars.go
 	Version = "5.5.6"
-	Branch  = "release"
+	Branch  = "indev-no-steamcmd"
 )
 
 type JsonConfig struct {
@@ -72,6 +72,7 @@ type JsonConfig struct {
 	AllowPrereleaseUpdates    *bool             `json:"AllowPrereleaseUpdates"`
 	AllowMajorUpdates         *bool             `json:"AllowMajorUpdates"`
 	IsConsoleEnabled          *bool             `json:"IsConsoleEnabled"`
+	LanguageSetting           string            `json:"LanguageSetting"`
 }
 
 type CustomDetection struct {
@@ -84,6 +85,8 @@ type CustomDetection struct {
 
 // LoadConfig loads and initializes the configuration
 func LoadConfig() (*JsonConfig, error) {
+	ConfigMu.Lock()
+
 	var jsonConfig JsonConfig
 	file, err := os.Open(ConfigPath)
 	if err == nil {
@@ -94,13 +97,14 @@ func LoadConfig() (*JsonConfig, error) {
 			return nil, fmt.Errorf("failed to decode config: %v", err)
 		}
 	} else if os.IsNotExist(err) {
-		// File is missing, log it and proceed with defaults
-		fmt.Println("Config file does not exist. Using defaults and environment variables.")
+		// File is missing, log it and proceed with defaults (probably first time setup)
+		fmt.Println("config file was not found, proceeding with defaults.")
 	} else {
 		// Other errors (e.g., permissions), fail immediately
 		return nil, fmt.Errorf("failed to open config file: %v", err)
 	}
-	// Apply configuration with hierarchy
+	ConfigMu.Unlock()
+	// Apply configuration
 	applyConfig(&jsonConfig)
 
 	return &jsonConfig, nil
@@ -154,6 +158,7 @@ func applyConfig(cfg *JsonConfig) {
 	AdminPassword = getString(cfg.AdminPassword, "ADMIN_PASSWORD", "")
 	GamePort = getString(cfg.GamePort, "GAME_PORT", "27016")
 	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27015")
+	LanguageSetting = getString(cfg.LanguageSetting, "LANGUAGE_SETTING", "en-US")
 
 	upnpEnabledVal := getBool(cfg.UPNPEnabled, "UPNP_ENABLED", false)
 	UPNPEnabled = upnpEnabledVal
@@ -229,7 +234,6 @@ func applyConfig(cfg *JsonConfig) {
 	logClutterToConsoleVal := getBool(cfg.LogClutterToConsole, "LOG_CLUTTER_TO_CONSOLE", false)
 	LogClutterToConsole = logClutterToConsoleVal
 	cfg.LogClutterToConsole = &logClutterToConsoleVal
-
 	// Process SaveInfo
 	parts := strings.Split(SaveInfo, " ")
 	if len(parts) > 0 {
