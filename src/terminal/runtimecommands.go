@@ -15,6 +15,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 )
@@ -148,6 +149,7 @@ func init() {
 	RegisterCommand("startserver", WrapNoReturn(startServer), "start")
 	RegisterCommand("stopserver", WrapNoReturn(stopServer), "stop")
 	RegisterCommand("runsteamcmd", WrapNoReturn(runSteamCMD), "steamcmd", "stcmd")
+	RegisterCommand("testlocalization", WrapNoReturn(testLocalization), "tl")
 }
 
 func startServer() {
@@ -186,4 +188,10 @@ func runSteamCMD() {
 	}
 	logger.Core.Info("Running SteamCMD")
 	setup.InstallAndRunSteamCMD()
+}
+
+func testLocalization() {
+	currentLanguageSetting := config.LanguageSetting
+	s := localization.GetString("UIText_StartButton")
+	logger.Core.Info(s + " (current language: " + currentLanguageSetting + ")")
 }

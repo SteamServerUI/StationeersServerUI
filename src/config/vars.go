@@ -67,6 +67,7 @@ var (
 	AutoRestartServerTimer string
 	IsConsoleEnabled       bool
 	LogClutterToConsole    bool // surpresses clutter mono logs from the gameserver
+	LanguageSetting        string
 )
 
 // Discord integration

@@ -10,6 +10,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 )
@@ -31,6 +32,7 @@ func ReloadConfig() {
 		setup.InstallSSCM()
 	}
 	ReloadBackupManager()
+	ReloadLocalizer()
 	PrintConfigDetails()
 }
 
@@ -149,4 +151,8 @@ func AfterStartComplete() {
 	if err != nil {
 		logger.Core.Error("AfterStartComplete: Failed to clean up old executables: " + err.Error())
 	}
+}
+
+func ReloadLocalizer() {
+	localization.ReloadLocalizer()
 }
