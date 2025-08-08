@@ -134,7 +134,7 @@ func SaveConfig(cfg *config.JsonConfig) error {
 		logger.Core.Error("Failed to save config: " + err.Error())
 		return err
 	}
-	ReloadConfig()
+	ReloadBackend()
 	return err
 }
 
