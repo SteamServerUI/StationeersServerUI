@@ -8,6 +8,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 
@@ -125,6 +126,13 @@ func (m *BackupManager) watchBackups() {
 func (m *BackupManager) handleNewBackup(filePath string) {
 	if !isValidBackupFile(filepath.Base(filePath)) {
 		return
+	}
+
+	if config.IsSSCMEnabled && config.IsNewTerrainAndSaveSystem {
+		commandmgr.WriteCommand("SAVE")
+		logger.Backup.Info("HEAD Save triggered via SSCM")
+	} else {
+		logger.Backup.Info("HEAD Save NOT refreshed via SSCM")
 	}
 
 	m.wg.Add(1)
