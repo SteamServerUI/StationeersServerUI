@@ -1,0 +1,13 @@
+{
+  "UIText_StartButton": "Starta servern",
+  "UIText_StopButton": "Stoppa servern",
+  "UIText_Settings": "Inställningar",
+  "UIText_Update_SteamCMD": "Uppdatera servern",
+  "UIText_Console": "Konsol",
+  "UIText_Detection_Events": "Händelser",
+  "UIText_Backup_Manager": "Backup-hantering",
+  "UIText_Discord_Info": "Häng med i Discord och hjälp oss göra SSUI bättre eller få support!",
+  "UIText_API_Info": "API-referens",
+  "UIText_Copyright1": "Licensierad under",
+  "UIText_Copyright2": "Proprietär licens"
+}

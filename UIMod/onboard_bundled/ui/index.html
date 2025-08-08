@@ -118,17 +118,17 @@
         <div id="status-indicator" class="status-indicator offline" title="Server status unknown"></div>
         <h1>Stationeers Server UI v{{.Version}} ({{.Branch}})</h1>
         <div id="controls">
-            <button onclick="startServer()">Start Server</button>
-            <button onclick="stopServer()">Stop Server</button>
-            <button onclick="navigateTo('/config')">Edit Config</button>
-            <button onclick="triggerSteamCMD()">Update Server</button>
+            <button onclick="startServer()">{{.UIText_StartButton}}</button>
+            <button onclick="stopServer()">{{.UIText_StopButton}}</button>
+            <button onclick="navigateTo('/config')">{{.UIText_Settings}}</button>
+            <button onclick="triggerSteamCMD()">{{.UIText_Update_SteamCMD}}</button>
         </div>
         <p id="status" hidden></p>
 
         <div class="tab-container">
             <div class="tab-buttons">
-                <button class="tab-button active" onclick="showTab('console-tab')">Console</button>
-                <button class="tab-button" onclick="showTab('detection-tab')">Detection Events</button>
+                <button class="tab-button active" onclick="showTab('console-tab')">{{.UIText_Console}}</button>
+                <button class="tab-button" onclick="showTab('detection-tab')">{{.UIText_Detection_Events}}</button>
             </div>
             <div id="console-tab" class="tab-content active">
                 <div id="console"></div>
@@ -139,7 +139,7 @@
         </div>
 
         <div id="backups">
-            <h2>Backup Manager</h2>
+            <h2>{{.UIText_Backup_Manager}}</h2>
             <ul id="backupList"></ul>
         </div>
 
@@ -212,14 +212,14 @@
             <img src="https://cdn.discordapp.com/icons/1357524183260729404/3626cdbaa442efdad6e619a65b4f037a.png?size=128&quality=lossless" alt="SSUI Discord" width="40" height="40">
         </a>
     </discord-button>
-    <span onclick="navigateTo('https://discord.gg/8n3vN92MyJ')" style="cursor: pointer; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Join the Discord and help make SSUI better or get support!</span>
+    <span onclick="navigateTo('https://discord.gg/8n3vN92MyJ')" style="cursor: pointer; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">{{.UIText_Discord_Info}}</span>
     <br>
-    <span onclick="navigateTo('/static/apiinfo.html')" style="cursor: pointer; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">API Endpoint Reference</span>
+    <span onclick="navigateTo('/static/apiinfo.html')" style="cursor: pointer; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">{{.UIText_API_Info}}</span>
     <br>
     <footer>
         <div class="copyright">
             Copyright © 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a>
-            Licensed under <a href="https://github.com/SteamServerUI/StationeersServerUI/blob/main/LICENSE">Proprietary License</a>.
+            {{.UIText_Copyright1}} <a href="https://github.com/SteamServerUI/StationeersServerUI/blob/main/LICENSE">{{.UIText_Copyright2}}</a>.
         </div>
     </footer>
 

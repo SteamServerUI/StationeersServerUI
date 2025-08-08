@@ -16,6 +16,8 @@ button {
   position: relative;
   overflow: hidden;
   will-change: transform, box-shadow;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 button::before {

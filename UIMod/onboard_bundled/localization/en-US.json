@@ -1,4 +1,13 @@
 {
-  "UIText_StartButton": "Start",
-  "UIText_Settings": "Settings"
+  "UIText_StartButton": "Start Server",
+  "UIText_StopButton": "Stop Server",
+  "UIText_Settings": "Edit Config",
+  "UIText_Update_SteamCMD": "Update Server",
+  "UIText_Console": "Console",
+  "UIText_Detection_Events": "Detection Events",
+  "UIText_Backup_Manager": "Backup Manager",
+  "UIText_Discord_Info": "Join the Discord and help make SSUI better or get support!",
+  "UIText_API_Info": "API Endpoint Reference",
+  "UIText_Copyright1": "Licensed under",
+  "UIText_Copyright2": "Proprietary License."
 }

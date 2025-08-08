@@ -14,6 +14,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/ssestream"
@@ -21,8 +22,19 @@ import (
 
 // TemplateData holds data to be passed to templates
 type TemplateData struct {
-	Version string
-	Branch  string
+	Version                 string
+	Branch                  string
+	UIText_StartButton      string
+	UIText_StopButton       string
+	UIText_Settings         string
+	UIText_Update_SteamCMD  string
+	UIText_Console          string
+	UIText_Detection_Events string
+	UIText_Backup_Manager   string
+	UIText_Discord_Info     string
+	UIText_API_Info         string
+	UIText_Copyright1       string
+	UIText_Copyright2       string
 }
 
 func ServeIndex(w http.ResponseWriter, r *http.Request) {
@@ -40,8 +52,19 @@ func ServeIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := TemplateData{
-		Version: config.Version,
-		Branch:  config.Branch,
+		Version:                 config.Version,
+		Branch:                  config.Branch,
+		UIText_StartButton:      localization.GetString("UIText_StartButton"),
+		UIText_StopButton:       localization.GetString("UIText_StopButton"),
+		UIText_Settings:         localization.GetString("UIText_Settings"),
+		UIText_Update_SteamCMD:  localization.GetString("UIText_Update_SteamCMD"),
+		UIText_Console:          localization.GetString("UIText_Console"),
+		UIText_Detection_Events: localization.GetString("UIText_Detection_Events"),
+		UIText_Backup_Manager:   localization.GetString("UIText_Backup_Manager"),
+		UIText_Discord_Info:     localization.GetString("UIText_Discord_Info"),
+		UIText_API_Info:         localization.GetString("UIText_API_Info"),
+		UIText_Copyright1:       localization.GetString("UIText_Copyright1"),
+		UIText_Copyright2:       localization.GetString("UIText_Copyright2"),
 	}
 	if data.Version == "" {
 		data.Version = "unknown"
