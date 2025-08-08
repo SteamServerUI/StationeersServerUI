@@ -27,7 +27,7 @@ func PrintStartupMessage() {
 	// Tagline
 	fmt.Println("  ║                      🎮 YOUR ONE-STOP SHOP FOR RUNNING A STATIONEERS SERVER  🎮                   ║")
 	// System info
-	fmt.Printf("  ║  🚀 Version: %s       📅 %s       💻 Runtime: %s/%s                     ║\n",
+	fmt.Printf("  ║  🚀 Version: %s       📅 %s       💻 Runtime: %.3s/%s                       ║\n",
 		config.Version,
 		time.Now().Format("2006-01-02 15:04:05"),
 		runtime.GOOS,
