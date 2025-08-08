@@ -33,7 +33,6 @@ func CheckAndDownloadSSCM() {
 	// Define file mappings
 	files := map[string]string{
 		SSCMPluginDir + "SSCM.dll": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/sscm/SSCM.dll", downloadBranch),
-		SSCMPluginDir + "SSCM.pdb": fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/sscm/SSCM.pdb", downloadBranch),
 		sscmDir + "sscm.js":        fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/sscm/sscm.js", downloadBranch),
 		cssAssetDIr + "sscm.css":   fmt.Sprintf("https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/%s/UIMod/assets/css/sscm.css", downloadBranch),
 	}
