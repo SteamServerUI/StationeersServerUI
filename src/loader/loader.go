@@ -15,16 +15,24 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 )
 
-func ReloadBackend() {
-
+// only call this once at startup
+func InitBackend() {
 	ReloadConfig()
 	ReloadSSCM()
 	ReloadBackupManager()
 	ReloadLocalizer()
 	ReloadDiscordBot()
+}
+
+// use this to reload backend at runtime
+func ReloadBackend() {
+	ReloadConfig()
+	ReloadBackupManager()
+	ReloadLocalizer()
 	PrintConfigDetails()
 }
 
+// should ideally not be called standalone, if feasable, call ReloadBackend instead
 func ReloadConfig() {
 	if _, err := config.LoadConfig(); err != nil {
 		logger.Core.Error("Failed to load config: " + err.Error())
