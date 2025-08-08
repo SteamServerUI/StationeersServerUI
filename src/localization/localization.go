@@ -85,7 +85,7 @@ func GetString(key string) string {
 	mu.RLock()
 	defer mu.RUnlock()
 
-	logger.Localization.Debug("Looking up key: " + key + " in language: " + currentLanguage)
+	//logger.Localization.Debug("Looking up key: " + key + " in language: " + currentLanguage)
 
 	// Try current language
 	if langMap, exists := translations[currentLanguage]; exists {
