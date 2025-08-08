@@ -15,9 +15,14 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 )
 
-func ReloadAll() {
+func ReloadBackend() {
+
 	ReloadConfig()
+	ReloadSSCM()
+	ReloadBackupManager()
+	ReloadLocalizer()
 	ReloadDiscordBot()
+	PrintConfigDetails()
 }
 
 func ReloadConfig() {
@@ -25,15 +30,14 @@ func ReloadConfig() {
 		logger.Core.Error("Failed to load config: " + err.Error())
 		return
 	}
+	logger.Core.Info("Config loaded successfully")
 
-	logger.Core.Info("Config reloaded successfully")
+}
 
+func ReloadSSCM() {
 	if config.IsSSCMEnabled {
 		setup.InstallSSCM()
 	}
-	ReloadBackupManager()
-	ReloadLocalizer()
-	PrintConfigDetails()
 }
 
 func ReloadBackupManager() {

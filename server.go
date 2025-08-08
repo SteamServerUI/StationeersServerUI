@@ -47,8 +47,9 @@ func main() {
 
 	// Load config,discordbot, backupmgr and detectionmgr using the loader package
 	loader.InitVirtFS(v1uiFS)
-	loader.ReloadAll()
+	loader.ReloadBackend()
 	loader.InitDetector()
+
 	loader.AfterStartComplete()
 
 	terminal.StartConsole(&wg)
