@@ -11,8 +11,8 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.5.6"
-	Branch  = "indev"
+	Version = "5.5.7"
+	Branch  = "indev-no-steamcmd"
 )
 
 type JsonConfig struct {
