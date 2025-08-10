@@ -73,6 +73,7 @@ type JsonConfig struct {
 	AllowMajorUpdates         *bool             `json:"AllowMajorUpdates"`
 	IsConsoleEnabled          *bool             `json:"IsConsoleEnabled"`
 	LanguageSetting           string            `json:"LanguageSetting"`
+	AutoStartServerOnStartup  *bool             `json:"AutoStartServerOnStartup"`
 }
 
 type CustomDetection struct {
@@ -234,6 +235,11 @@ func applyConfig(cfg *JsonConfig) {
 	logClutterToConsoleVal := getBool(cfg.LogClutterToConsole, "LOG_CLUTTER_TO_CONSOLE", false)
 	LogClutterToConsole = logClutterToConsoleVal
 	cfg.LogClutterToConsole = &logClutterToConsoleVal
+
+	autoStartServerOnStartupVal := getBool(cfg.AutoStartServerOnStartup, "AUTO_START_SERVER_ON_STARTUP", false)
+	AutoStartServerOnStartup = autoStartServerOnStartupVal
+	cfg.AutoStartServerOnStartup = &autoStartServerOnStartupVal
+
 	// Process SaveInfo
 	parts := strings.Split(SaveInfo, " ")
 	if len(parts) > 0 {

@@ -10,6 +10,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
@@ -168,6 +169,10 @@ func AfterStartComplete() {
 	err = setup.CleanUpOldExecutables()
 	if err != nil {
 		logger.Core.Error("AfterStartComplete: Failed to clean up old executables: " + err.Error())
+	}
+	if config.AutoStartServerOnStartup {
+		logger.Core.Info("AutoStartServerOnStartup is enabled, starting server...")
+		gamemgr.InternalStartServer()
 	}
 }
 
