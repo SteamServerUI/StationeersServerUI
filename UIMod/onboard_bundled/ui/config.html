@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server Configuration</title>
+    <title>{{.UIText_ServerConfig}}</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/css/components.css">
@@ -21,18 +21,18 @@
         <img src="/static/stationeers.png" alt="Stationeers Banner" id="banner">
     </header>
     <main>
-        <h1>Server Configuration</h1>
+        <h1>{{.UIText_ServerConfig}}</h1>
 
         <div class="tab-container">
             <div class="tab-buttons">
                 <button class="tab-button active" onclick="showTab('server-config-tab')">
-                    <span class="icon server-icon"></span>Server Config
+                    <span class="icon server-icon"></span>{{.UIText_ServerConfig}}
                 </button>
                 <button class="tab-button" onclick="showTab('discord-config-tab')">
-                    <span class="icon discord-icon"></span>Discord Integration
+                    <span class="icon discord-icon"></span>{{.UIText_DiscordIntegration}}
                 </button>
                 <button class="tab-button" onclick="window.location.href = '/detectionmanager'">
-                    <span class="icon detection-icon"></span>Detection Manager
+                    <span class="icon detection-icon"></span>{{.UIText_DetectionManager}}
                 </button>
             </div>
         </div>
@@ -42,229 +42,223 @@
                 <div class="wizard-button-container">
                     <button class="wizard-button" onclick="window.location.href = '/setup'">
                         <span class="wizard-icon"></span>
-                        <span class="wizard-text">Configuration Wizard</span>
+                        <span class="wizard-text">{{.UIText_ConfigurationWizard}}</span>
                     </button>
                 </div>
                 <div class="config-sections">
                     <div class="section-navigation">
-                        <button class="section-nav-button" data-section="basic-settings">Basic Settings</button>
-                        <button class="section-nav-button" data-section="network-settings">Network Settings</button>
-                        <button class="section-nav-button" data-section="advanced-settings">Advanced Settings</button>
-                        <button class="section-nav-button" data-section="beta-settings">Beta Settings</button>
+                        <button class="section-nav-button" data-section="basic-settings">{{.UIText_BasicSettings}}</button>
+                        <button class="section-nav-button" data-section="network-settings">{{.UIText_NetworkSettings}}</button>
+                        <button class="section-nav-button" data-section="advanced-settings">{{.UIText_AdvancedSettings}}</button>
+                        <button class="section-nav-button" data-section="beta-settings">{{.UIText_BetaSettings}}</button>
                     </div>
 
                     <form id="server-config-form" action="/saveconfigasjson" method="post">
                         <div id="select-prompt"
                             style="text-align: center; margin: 30px 0; color: var(--primary); font-family: 'Share Tech Mono', monospace;">
-                            <h3>Please select a configuration section above</h3>
-                            <p>Alternatively, use the Configuration Wizard to configure the server.</p>
+                            <h3>{{.UIText_PleaseSelectSection}}</h3>
+                            <p>{{.UIText_UseWizardAlternative}}</p>
                         </div>
 
                         <div id="basic-settings" class="config-section">
-                            <h3 class="section-title">Basic Server Settings</h3>
+                            <h3 class="section-title">{{.UIText_BasicServerSettings}}</h3>
                             <div class="channel-grid">
                                 <div class="form-group">
-                                    <label for="ServerName">Server Name:</label>
-                                    <input type="text" id="ServerName" name="ServerName" value="{{ServerName}}">
-                                    <div class="input-info">Name displayed in server list</div>
+                                    <label for="ServerName">{{.UIText_ServerName}}:</label>
+                                    <input type="text" id="ServerName" name="ServerName" value="{{.ServerName}}">
+                                    <div class="input-info">{{.UIText_ServerNameInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="SaveInfo">Save File Name:</label>
-                                    <input type="text" id="SaveInfo" name="SaveInfo" value="{{SaveInfo}}"
+                                    <label for="SaveInfo">{{.UIText_SaveFileName}}:</label>
+                                    <input type="text" id="SaveInfo" name="SaveInfo" value="{{.SaveInfo}}"
                                         pattern="^[A-Z].*(\s[A-Z].*)?$" required>
-                                    <div class="input-info">Name of save folder. Must be capitalized. To create a new world,
-                                        provide the
-                                        World type to generate. (MyVulcanMap Vulcan) WorldTypes can be found in the Stationeers Wiki -> Dedicated Server page.</div>
+                                    <div class="input-info">{{.UIText_SaveFileNameInfo}}</div>
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label for="ServerMaxPlayers">Max Players:</label>
+                                    <label for="ServerMaxPlayers">{{.UIText_MaxPlayers}}:</label>
                                     <input type="text" id="ServerMaxPlayers" name="ServerMaxPlayers"
-                                        value="{{ServerMaxPlayers}}" pattern="^\S*$" required>
-                                    <div class="input-info">Maximum number of players allowed</div>
+                                        value="{{.ServerMaxPlayers}}" pattern="^\S*$" required>
+                                    <div class="input-info">{{.UIText_MaxPlayersInfo}}</div>
                                 </div>
 
                                 <div class="form-group password-field">
-                                    <label for="ServerPassword">Server Password:</label>
+                                    <label for="ServerPassword">{{.UIText_ServerPassword}}:</label>
                                     <input type="text" id="ServerPassword" name="ServerPassword"
-                                        value="{{ServerPassword}}" pattern="^\S*$">
-                                    <div class="input-info">Leave empty for no password</div>
+                                        value="{{.ServerPassword}}" pattern="^\S*$">
+                                    <div class="input-info">{{.UIText_ServerPasswordInfo}}</div>
                                 </div>
 
                                 <div class="form-group password-field">
-                                    <label for="AdminPassword">Admin Password:</label>
-                                    <input type="text" id="AdminPassword" name="AdminPassword" value="{{AdminPassword}}"
+                                    <label for="AdminPassword">{{.UIText_AdminPassword}}:</label>
+                                    <input type="text" id="AdminPassword" name="AdminPassword" value="{{.AdminPassword}}"
                                         pattern="^\S*$">
-                                    <div class="input-info">Server Admin Password</div>
+                                    <div class="input-info">{{.UIText_AdminPasswordInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="AutoSave">Auto Save:</label>
+                                    <label for="AutoSave">{{.UIText_AutoSave}}:</label>
                                     <select id="AutoSave" name="AutoSave" required>
-                                        <option value="true" {{AutoSaveTrueSelected}}>TRUE</option>
-                                        <option value="false" {{AutoSaveFalseSelected}}>FALSE</option>
+                                        <option value="true" {{.AutoSaveTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.AutoSaveFalseSelected}}>FALSE</option>
                                     </select>
-                                    <div class="input-info">Set to TRUE to enable automatic saving</div>
+                                    <div class="input-info">{{.UIText_AutoSaveInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="SaveInterval">Save Interval:</label>
-                                    <input type="text" id="SaveInterval" name="SaveInterval" value="{{SaveInterval}}"
+                                    <label for="SaveInterval">{{.UIText_SaveInterval}}:</label>
+                                    <input type="text" id="SaveInterval" name="SaveInterval" value="{{.SaveInterval}}"
                                         pattern="^\S*$" required>
-                                    <div class="input-info">Time in seconds between saves</div>
+                                    <div class="input-info">{{.UIText_SaveIntervalInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="AutoPauseServer">Auto Pause Server:</label>
+                                    <label for="AutoPauseServer">{{.UIText_AutoPauseServer}}:</label>
                                     <select id="AutoPauseServer" name="AutoPauseServer" required>
-                                        <option value="true" {{AutoPauseServerTrueSelected}}>TRUE</option>
-                                        <option value="false" {{AutoPauseServerFalseSelected}}>FALSE</option>
+                                        <option value="true" {{.AutoPauseServerTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.AutoPauseServerFalseSelected}}>FALSE</option>
                                     </select>
-                                    <div class="input-info">Automatically pause server when no players are connected
-                                    </div>
+                                    <div class="input-info">{{.UIText_AutoPauseServerInfo}}</div>
                                 </div>
                             </div>
                         </div>
 
                         <div id="network-settings" class="config-section">
-                            <h3 class="section-title">Network Configuration</h3>
+                            <h3 class="section-title">{{.UIText_NetworkConfiguration}}</h3>
                             <div class="channel-grid">
                                 <div class="form-group">
-                                    <label for="GamePort">Game Port:</label>
-                                    <input type="text" id="GamePort" name="GamePort" value="{{GamePort}}"
+                                    <label for="GamePort">{{.UIText_GamePort}}:</label>
+                                    <input type="text" id="GamePort" name="GamePort" value="{{.GamePort}}"
                                         pattern="^\S*$" required>
-                                    <div class="input-info">Default: 27016</div>
+                                    <div class="input-info">{{.UIText_GamePortInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="UpdatePort">Update Port:</label>
-                                    <input type="text" id="UpdatePort" name="UpdatePort" value="{{UpdatePort}}"
+                                    <label for="UpdatePort">{{.UIText_UpdatePort}}:</label>
+                                    <input type="text" id="UpdatePort" name="UpdatePort" value="{{.UpdatePort}}"
                                         pattern="^\S*$" required>
-                                    <div class="input-info">Default: 27015</div>
+                                    <div class="input-info">{{.UIText_UpdatePortInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="UPNPEnabled">UPNP Enabled:</label>
+                                    <label for="UPNPEnabled">{{.UIText_UPNPEnabled}}:</label>
                                     <select id="UPNPEnabled" name="UPNPEnabled" required>
-                                        <option value="true" {{UPNPEnabledTrueSelected}}>TRUE</option>
-                                        <option value="false" {{UPNPEnabledFalseSelected}}>FALSE</option>
+                                        <option value="true" {{.UPNPEnabledTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.UPNPEnabledFalseSelected}}>FALSE</option>
                                     </select>
-                                    <div class="input-info">Enable automatic UPNP port forwarding</div>
+                                    <div class="input-info">{{.UIText_UPNPEnabledInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="LocalIpAddress">Local IP Address:</label>
+                                    <label for="LocalIpAddress">{{.UIText_LocalIpAddress}}:</label>
                                     <input type="text" id="LocalIpAddress" name="LocalIpAddress"
-                                        value="{{LocalIpAddress}}" pattern="^\S*$" required>
-                                    <div class="input-info">IP address to bind to</div>
+                                        value="{{.LocalIpAddress}}" pattern="^\S*$" required>
+                                    <div class="input-info">{{.UIText_LocalIpAddressInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="StartLocalHost">Start Local Host:</label>
+                                    <label for="StartLocalHost">{{.UIText_StartLocalHost}}:</label>
                                     <select id="StartLocalHost" name="StartLocalHost" required>
-                                        <option value="true" {{StartLocalHostTrueSelected}}>TRUE</option>
-                                        <option value="false" {{StartLocalHostFalseSelected}}>FALSE</option>
+                                        <option value="true" {{.StartLocalHostTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.StartLocalHostFalseSelected}}>FALSE</option>
                                     </select>
-                                    <div class="input-info">Set to TRUE to listen only on local network</div>
+                                    <div class="input-info">{{.UIText_StartLocalHostInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="ServerVisible">Server Visible:</label>
+                                    <label for="ServerVisible">{{.UIText_ServerVisible}}:</label>
                                     <select id="ServerVisible" name="ServerVisible" required>
-                                        <option value="true" {{ServerVisibleTrueSelected}}>TRUE</option>
-                                        <option value="false" {{ServerVisibleFalseSelected}}>FALSE</option>
+                                        <option value="true" {{.ServerVisibleTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.ServerVisibleFalseSelected}}>FALSE</option>
                                     </select>
-                                    <div class="input-info">Set to TRUE to list server publicly</div>
+                                    <div class="input-info">{{.UIText_ServerVisibleInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="UseSteamP2P">Use Steam P2P:</label>
+                                    <label for="UseSteamP2P">{{.UIText_UseSteamP2P}}:</label>
                                     <select id="UseSteamP2P" name="UseSteamP2P" required>
-                                        <option value="true" {{UseSteamP2PTrueSelected}}>TRUE</option>
-                                        <option value="false" {{UseSteamP2PFalseSelected}}>FALSE</option>
+                                        <option value="true" {{.UseSteamP2PTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.UseSteamP2PFalseSelected}}>FALSE</option>
                                     </select>
-                                    <div class="input-info">Enable Steam Peer-to-Peer networking</div>
+                                    <div class="input-info">{{.UIText_UseSteamP2PInfo}}</div>
                                 </div>
                             </div>
                         </div>
 
                         <div id="advanced-settings" class="config-section">
-                            <h3 class="section-title">Advanced Configuration</h3>
+                            <h3 class="section-title">{{.UIText_AdvancedConfiguration}}</h3>
                             <div class="channel-grid">
                                 <div class="form-group">
-                                    <label for="ServerAuthSecret">Server Auth Secret:</label>
+                                    <label for="ServerAuthSecret">{{.UIText_ServerAuthSecret}}:</label>
                                     <input type="text" id="ServerAuthSecret" name="ServerAuthSecret"
-                                        value="{{ServerAuthSecret}}">
-                                    <div class="input-info">Authentication secret for the server (optional)</div>
+                                        value="{{.ServerAuthSecret}}">
+                                    <div class="input-info">{{.UIText_ServerAuthSecretInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="ExePath">Server Executable Path:</label>
-                                    <input type="text" id="ExePath" name="ExePath" value="{{ExePath}}" readonly>
-                                    <div class="input-info">System path to server executable</div>
-                                    <div class="input-info">Not editable from the UI for security reasons, but you can
-                                        edit it
-                                        manually in the config.json file.</div>
+                                    <label for="ExePath">{{.UIText_ServerExePath}}:</label>
+                                    <input type="text" id="ExePath" name="ExePath" value="{{.ExePath}}" readonly>
+                                    <div class="input-info">{{.UIText_ServerExePathInfo}}</div>
+                                    <div class="input-info">{{.UIText_ServerExePathInfo2}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="AdditionalParams">Additional Parameters:</label>
+                                    <label for="AdditionalParams">{{.UIText_AdditionalParams}}:</label>
                                     <input type="text" id="AdditionalParams" name="AdditionalParams"
-                                        value="{{AdditionalParams}}">
-                                    <div class="input-info">Format: CustomParam1 Value1 CustomParam2 Value2</div>
+                                        value="{{.AdditionalParams}}">
+                                    <div class="input-info">{{.UIText_AdditionalParamsInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="AutoRestartServerTimer">Scheduled Gameserver Restart:</label>
+                                    <label for="AutoRestartServerTimer">{{.UIText_AutoRestartServerTimer}}:</label>
                                     <input type="text" id="AutoRestartServerTimer" name="AutoRestartServerTimer"
-                                        value="{{AutoRestartServerTimer}}">
-                                    <div class="input-info">Timeframe in <strong> minutes </strong> to schedule an automatic gameserver restart. 0 = disabled, 1440 = 24 hours, etc.. If SSCM is enabled, you will see "Attention, server is restarting in 30/20/10/5 seconds!" messages <strong> ingame </strong> before restarting.</div>
+                                        value="{{.AutoRestartServerTimer}}">
+                                    <div class="input-info">{{.UIText_AutoRestartServerTimerInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="gameBranch">Game Branch</label>
+                                    <label for="gameBranch">{{.UIText_GameBranch}}</label>
                                     <input type="text" id="gameBranch" name="gameBranch"
-                                        value="{{gameBranch}}">
-                                    <div class="input-info">Branch of the game to use. When changed, requires to restart SSUI!</div>
+                                        value="{{.GameBranch}}">
+                                    <div class="input-info">{{.UIText_GameBranchInfo}}</div>
                                 </div>
                                 
                             </div>
                         </div>
 
                         <div id="beta-settings" class="config-section">
-                            <h3 class="section-title">BETA ONLY: NEW TERRAIN AND SAVE SYSTEM SETTINGS</h3>
-                            <div class = "beta-warning"></div>
-                                <p>These settings are only useful if you are running the Stationeers Dedicated Server Beta. Switching is possible from Advanced Settings -> Game Branch. Old savegames are NOT compatible with the new system, but can be migrated with JacksonTheMaster's <a href="https://sst.jxsn.dev">Migration tool.</a>. Related "how to" Information on the FAQ there also applies to the Dedicated Server.</a></p>
+                            <h3 class="section-title">{{.UIText_BetaOnlySettings}}</h3>
+                            <div class="beta-warning">{{.UIText_BetaWarning}}</div>
                             <div class="channel-grid">
                                 <div class="form-group">
-                                    <label for="IsNewTerrainAndSaveSystem">Use New Terrain and Save System:</label>
+                                    <label for="IsNewTerrainAndSaveSystem">{{.UIText_UseNewTerrainAndSave}}:</label>
                                     <select id="IsNewTerrainAndSaveSystem" name="IsNewTerrainAndSaveSystem" required>
-                                        <option value="true" {{IsNewTerrainAndSaveSystemTrueSelected}}>TRUE</option>
-                                        <option value="false" {{IsNewTerrainAndSaveSystemFalseSelected}}>FALSE</option>
+                                        <option value="true" {{.IsNewTerrainAndSaveSystemTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.IsNewTerrainAndSaveSystemFalseSelected}}>FALSE</option>
                                     </select>
-                                    <div class="input-info">Set to TRUE to enable handling of .save files in the Backup manager and argument parsing. If set to false, only Stationeers versions before the terrain rework (≈ mid 2025) will work. Defaults to false until new Stationeers Terrain and Save System is released.</div>
+                                    <div class="input-info">{{.UIText_UseNewTerrainAndSaveInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="Difficulty">Difficulty:</label>
+                                    <label for="Difficulty">{{.UIText_Difficulty}}:</label>
                                     <input type="text" id="Difficulty" name="Difficulty"
-                                        value="{{Difficulty}}" pattern="^\S*$" required>
-                                    <div class="input-info">Difficulty to create the world with. Defaults to Normal if empty.</div>
+                                        value="{{.Difficulty}}" pattern="^\S*$" required>
+                                    <div class="input-info">{{.UIText_DifficultyInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="StartCondition">Start Condition:</label>
+                                    <label for="StartCondition">{{.UIText_StartCondition}}:</label>
                                     <input type="text" id="StartCondition" name="StartCondition"
-                                        value="{{StartCondition}}" pattern="^\S*$" required>
-                                    <div class="input-info">Start condition to create the world with. Defaults to the default start condition for the world type if empty.</div>
+                                        value="{{.StartCondition}}" pattern="^\S*$" required>
+                                    <div class="input-info">{{.UIText_StartConditionInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="StartLocation">Start Location:</label>
+                                    <label for="StartLocation">{{.UIText_StartLocation}}:</label>
                                     <input type="text" id="StartLocation" name="StartLocation"
-                                        value="{{StartLocation}}" pattern="^\S*$" required>
-                                    <div class="input-info">Start location to create the world with. Defaults to "DefaultStartLocation" if empty.</div>
+                                        value="{{.StartLocation}}" pattern="^\S*$" required>
+                                    <div class="input-info">{{.UIText_StartLocationInfo}}</div>
                                 </div>
                             </div>
                         </div>
@@ -282,74 +276,74 @@
         <div id="discord-config-tab" class="tab-content">
             <form id="discord-config-form" action="/saveconfigasjson" method="post">
                 <div class="integration-status">
-                    <label for="isDiscordEnabled" class="highlight-label">Discord Integration:</label>
+                    <label for="isDiscordEnabled" class="highlight-label">{{.UIText_DiscordIntegration}}:</label>
                     <select id="isDiscordEnabled" name="isDiscordEnabled">
-                        <option value="true" {{IsDiscordEnabledTrueSelected}}>ENABLED</option>
-                        <option value="false" {{IsDiscordEnabledFalseSelected}}>DISABLED</option>
+                        <option value="true" {{.IsDiscordEnabledTrueSelected}}>ENABLED</option>
+                        <option value="false" {{.IsDiscordEnabledFalseSelected}}>DISABLED</option>
                     </select>
                     <div class="feature-badge">RECOMMENDED</div>
                 </div>
                 </br>
                 <div class="discord-container">
                     <div class="form-group">
-                        <label for="discordToken">Discord Bot Token:</label>
-                        <input type="password" id="discordToken" name="discordToken" value="{{discordToken}}">
-                        <div class="input-info">Your Discord bot's authentication token</div>
+                        <label for="discordToken">{{.UIText_DiscordBotToken}}:</label>
+                        <input type="password" id="discordToken" name="discordToken" value="{{.DiscordToken}}">
+                        <div class="input-info">{{.UIText_DiscordBotTokenInfo}}</div>
                     </div>
 
-                    <h2>Channel Configuration</h2>
+                    <h2>{{.UIText_ChannelConfiguration}}</h2>
                     <div class="channel-grid">
                         <div class="form-group">
-                            <label for="controlChannelID">Admin Command Channel:</label>
+                            <label for="controlChannelID">{{.UIText_AdminCommandChannel}}:</label>
                             <input type="text" id="controlChannelID" name="controlChannelID"
-                                value="{{controlChannelID}}">
-                            <div class="input-info">Channel for admin commands</div>
+                                value="{{.ControlChannelID}}">
+                            <div class="input-info">{{.UIText_AdminCommandChannelInfo}}</div>
                         </div>
 
                         <div class="form-group">
-                            <label for="controlPanelChannelID">Control Panel Channel:</label>
+                            <label for="controlPanelChannelID">{{.UIText_ControlPanelChannel}}:</label>
                             <input type="text" id="controlPanelChannelID" name="controlPanelChannelID"
-                                value="{{controlPanelChannelID}}">
-                            <div class="input-info">Channel for control panel</div>
+                                value="{{.ControlPanelChannelID}}">
+                            <div class="input-info">{{.UIText_ControlPanelChannelInfo}}</div>
                         </div>
 
                         <div class="form-group">
-                            <label for="statusChannelID">Status Channel:</label>
-                            <input type="text" id="statusChannelID" name="statusChannelID" value="{{statusChannelID}}">
-                            <div class="input-info">Server status updates</div>
+                            <label for="statusChannelID">{{.UIText_StatusChannel}}:</label>
+                            <input type="text" id="statusChannelID" name="statusChannelID" value="{{.StatusChannelID}}">
+                            <div class="input-info">{{.UIText_StatusChannelInfo}}</div>
                         </div>
 
                         <div class="form-group">
-                            <label for="connectionListChannelID">Connection List Channel:</label>
-                            <input type="text" id="connectionListChannelID" name="connectionListChannelID"
-                                value="{{connectionListChannelID}}">
-                            <div class="input-info">Player connection tracking</div>
+                            <label for="connectionListChannelID">{{.UIText_ConnectionListChannel}}:</label>
+                            <input type="text" id="connectionListChannelID" name="ConnectionListChannelID"
+                                value="{{.ConnectionListChannelID}}">
+                            <div class="input-info">{{.UIText_ConnectionListChannelInfo}}</div>
                         </div>
 
                         <div class="form-group">
-                            <label for="logChannelID">Log Channel:</label>
-                            <input type="text" id="logChannelID" name="logChannelID" value="{{logChannelID}}">
-                            <div class="input-info">Server log output</div>
+                            <label for="logChannelID">{{.UIText_LogChannel}}:</label>
+                            <input type="text" id="logChannelID" name="logChannelID" value="{{.LogChannelID}}">
+                            <div class="input-info">{{.UIText_LogChannelInfo}}</div>
                         </div>
 
                         <div class="form-group">
-                            <label for="saveChannelID">Save Info Channel:</label>
-                            <input type="text" id="saveChannelID" name="saveChannelID" value="{{saveChannelID}}">
-                            <div class="input-info">Save file information</div>
+                            <label for="saveChannelID">{{.UIText_SaveInfoChannel}}:</label>
+                            <input type="text" id="saveChannelID" name="saveChannelID" value="{{.SaveChannelID}}">
+                            <div class="input-info">{{.UIText_SaveInfoChannelInfo}}</div>
                         </div>
 
                         <div class="form-group">
-                            <label for="errorChannelID">Error Channel:</label>
-                            <input type="text" id="errorChannelID" name="errorChannelID" value="{{errorChannelID}}">
-                            <div class="input-info">Server error messages</div>
+                            <label for="errorChannelID">{{.UIText_ErrorChannel}}:</label>
+                            <input type="text" id="errorChannelID" name="errorChannelID" value="{{.ErrorChannelID}}">
+                            <div class="input-info">{{.UIText_ErrorChannelInfo}}</div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="blackListFilePath">Banned Players List Path:</label>
+                        <label for="blackListFilePath">{{.UIText_BannedPlayersListPath}}:</label>
                         <input type="text" id="blackListFilePath" name="blackListFilePath"
-                            value="{{blackListFilePath}}">
-                        <div class="input-info">File path to banned players list</div>
+                            value="{{.BlackListFilePath}}">
+                        <div class="input-info">{{.UIText_BannedPlayersListPathInfo}}</div>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="back-button" onclick="window.location.href = '/'"></button>
@@ -359,22 +353,22 @@
                 </div>
             </form>
             <div class="info-panel">
-                <h3>Discord Integration Benefits</h3>
+                <h3>{{.UIText_DiscordIntegrationBenefits}}</h3>
                 <ul class="feature-list">
-                    <li>Monitor server status in real-time</li>
-                    <li>Manage restarts and restores remotely</li>
-                    <li>Track player connections</li>
-                    <li>Community management options</li>
-                    <li>Real-time error notifications</li>
+                    <li>{{.UIText_DiscordBenefit1}}</li>
+                    <li>{{.UIText_DiscordBenefit2}}</li>
+                    <li>{{.UIText_DiscordBenefit3}}</li>
+                    <li>{{.UIText_DiscordBenefit4}}</li>
+                    <li>{{.UIText_DiscordBenefit5}}</li>
                 </ul>
-                <p>For setup instructions, visit the <a href="https://github.com/jacksonthemaster/StationeersServerUI"
+                <p>{{.UIText_DiscordSetupInstructions}} <a href="https://github.com/jacksonthemaster/StationeersServerUI"
                         target="_blank">GitHub repository</a></p>
             </div>
         </div>
     </main>
     <footer>
         <div class="copyright">Copyright &copy; 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a>
-            Licensed under <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">Proprietary License</a>.</div>
+            {{.UIText_CopyrightConfig1}} <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">{{.UIText_CopyrightConfig2}}</a>.</div>
     </footer>
 
     <script>
