@@ -79,7 +79,7 @@ async function checkSSCMEnabled() {
             input.placeholder = "Enter command...";
         } else {
             input.onclick = () => {
-                window.location.href = "/setup?step=sscm_opt_in";
+                window.location.href = "/setup?step=sscm";
             };
             input.placeholder = "SSCM is not enabled, commands unavailable. Click here to configure.";
         }

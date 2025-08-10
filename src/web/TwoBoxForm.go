@@ -418,19 +418,19 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SubmitButtonText:         "Save & Continue",
 			SkipButtonText:           "Skip Authentication",
 			ConfigField:              "", // Special handling for admin account
-			NextStep:                 "sscm_opt_in",
+			NextStep:                 "sscm",
 		},
-		"sscm_opt_in": {
-			ID:                     "sscm_opt_in",
+		"sscm": {
+			ID:                     "sscm",
 			Title:                  "Stationeers Server Command Manager",
 			HeaderTitle:            "Unique Feature",
-			StepMessage:            "SSCM is a custom server plugin that allows you to execute commands directly from SSUI. It doesn't affect vanilla server functionality while giving you the ability to run commands from the Web console.",
-			PrimaryPlaceholderText: "yes",
-			PrimaryLabel:           "Enable SSCM",
+			StepMessage:            "SSCM is a custom server plugin that allows you to execute server commands directly from SSUI. It gives you the ability to run commands from the Web console without disrupting vanlilla behaviour, you dont need any client side mods.",
+			PrimaryPlaceholderText: "type 'no' to disable",
+			PrimaryLabel:           "Opting out is NOT recommended.",
 			SecondaryLabel:         "",
 			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       "Enable & Continue",
-			SkipButtonText:         "Skip",
+			SubmitButtonText:       "Continue",
+			SkipButtonText:         "Keep enabled",
 			ConfigField:            "IsSSCMEnabled",
 			NextStep:               "finalize",
 		},
@@ -479,8 +479,8 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			data.NextStep = step.NextStep
 			data.PrimaryPlaceholderText = step.PrimaryPlaceholderText
 			data.SecondaryPlaceholderText = step.SecondaryPlaceholderText
-			if stepID == "sscm_opt_in" {
-				data.FooterText = "Opt in to SSCM for the most powerful Stationeers server management! This license protects this unique feature, ensuring it stays exclusive to SSUI users. Check the terms in the SSUI GitHub Wiki. Don’t be worried, the license simply protects SSCM’s integrity and its integration with SSUI."
+			if stepID == "sscm" {
+				data.FooterText = "Use SSCM for the most powerful Stationeers server management! You can run commands from the Web console without disrupting vanilla behaviour!"
 			}
 		} else {
 			// Default to welcome page if step is invalid

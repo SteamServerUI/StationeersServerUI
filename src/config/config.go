@@ -224,7 +224,7 @@ func applyConfig(cfg *JsonConfig) {
 
 	SubsystemFilters = getStringSlice(cfg.SubsystemFilters, "SUBSYSTEM_FILTERS", []string{})
 	AutoRestartServerTimer = getString(cfg.AutoRestartServerTimer, "AUTO_RESTART_SERVER_TIMER", "0")
-	isSSCMEnabledVal := getBool(cfg.IsSSCMEnabled, "IS_SSCM_ENABLED", false)
+	isSSCMEnabledVal := getBool(cfg.IsSSCMEnabled, "IS_SSCM_ENABLED", true)
 	IsSSCMEnabled = isSSCMEnabledVal
 	cfg.IsSSCMEnabled = &isSSCMEnabledVal
 
