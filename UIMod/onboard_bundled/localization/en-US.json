@@ -74,6 +74,8 @@
   "UIText_StartConditionInfo": "Start condition to create the world with. Defaults to the default start condition for the world type if empty.",
   "UIText_StartLocation": "Start Location",
   "UIText_StartLocationInfo": "Start location to create the world with. Defaults to \"DefaultStartLocation\" if empty.",
+  "UIText_AutoStartServerOnStartup": "Auto Start Server on Startup",
+  "UIText_AutoStartServerOnStartupInfo": "Automatically start the gameserver when the SSUI is started. Defaults to false.",
   "UIText_DiscordIntegrationTitle": "Discord Integration Benefits",
   "UIText_DiscordBotToken": "Discord Bot Token",
   "UIText_DiscordBotTokenInfo": "Your Discord bot's authentication token",

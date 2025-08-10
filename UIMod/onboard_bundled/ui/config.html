@@ -90,11 +90,12 @@
                                     <div class="input-info">{{.UIText_ServerPasswordInfo}}</div>
                                 </div>
 
-                                <div class="form-group password-field">
-                                    <label for="AdminPassword">{{.UIText_AdminPassword}}:</label>
-                                    <input type="text" id="AdminPassword" name="AdminPassword" value="{{.AdminPassword}}"
-                                        pattern="^\S*$">
-                                    <div class="input-info">{{.UIText_AdminPasswordInfo}}</div>
+                                
+                                <div class="form-group">
+                                    <label for="ServerAuthSecret">{{.UIText_ServerAuthSecret}}:</label>
+                                    <input type="text" id="ServerAuthSecret" name="ServerAuthSecret"
+                                        value="{{.ServerAuthSecret}}">
+                                    <div class="input-info">{{.UIText_ServerAuthSecretInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
@@ -189,11 +190,12 @@
                         <div id="advanced-settings" class="config-section">
                             <h3 class="section-title">{{.UIText_AdvancedConfiguration}}</h3>
                             <div class="channel-grid">
-                                <div class="form-group">
-                                    <label for="ServerAuthSecret">{{.UIText_ServerAuthSecret}}:</label>
-                                    <input type="text" id="ServerAuthSecret" name="ServerAuthSecret"
-                                        value="{{.ServerAuthSecret}}">
-                                    <div class="input-info">{{.UIText_ServerAuthSecretInfo}}</div>
+
+                                <div class="form-group password-field">
+                                    <label for="AdminPassword">{{.UIText_AdminPassword}}:</label>
+                                    <input type="text" id="AdminPassword" name="AdminPassword" value="{{.AdminPassword}}"
+                                        pattern="^\S*$">
+                                    <div class="input-info">{{.UIText_AdminPasswordInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
@@ -222,6 +224,15 @@
                                     <input type="text" id="gameBranch" name="gameBranch"
                                         value="{{.GameBranch}}">
                                     <div class="input-info">{{.UIText_GameBranchInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="AutoStartServerOnStartup">{{.UIText_AutoStartServerOnStartup}}:</label>
+                                    <select id="AutoStartServerOnStartup" name="AutoStartServerOnStartup" required>
+                                        <option value="true" {{.AutoStartServerOnStartupTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.AutoStartServerOnStartupFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_AutoStartServerOnStartupInfo}}</div>
                                 </div>
                                 
                             </div>

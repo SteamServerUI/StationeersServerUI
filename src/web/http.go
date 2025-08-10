@@ -90,72 +90,78 @@ type ConfigTemplateData struct {
 	IsNewTerrainAndSaveSystem              string
 	IsNewTerrainAndSaveSystemTrueSelected  string
 	IsNewTerrainAndSaveSystemFalseSelected string
+	AutoStartServerOnStartup               string
+	AutoStartServerOnStartupTrueSelected   string
+	AutoStartServerOnStartupFalseSelected  string
 
-	// Localized UI text
-	UIText_ServerConfig               string
-	UIText_DiscordIntegration         string
-	UIText_DetectionManager           string
-	UIText_ConfigurationWizard        string
-	UIText_PleaseSelectSection        string
-	UIText_UseWizardAlternative       string
-	UIText_BasicSettings              string
-	UIText_NetworkSettings            string
-	UIText_AdvancedSettings           string
-	UIText_BetaSettings               string
-	UIText_BasicServerSettings        string
-	UIText_ServerName                 string
-	UIText_ServerNameInfo             string
-	UIText_SaveFileName               string
-	UIText_SaveFileNameInfo           string
-	UIText_MaxPlayers                 string
-	UIText_MaxPlayersInfo             string
-	UIText_ServerPassword             string
-	UIText_ServerPasswordInfo         string
-	UIText_AdminPassword              string
-	UIText_AdminPasswordInfo          string
-	UIText_AutoSave                   string
-	UIText_AutoSaveInfo               string
-	UIText_SaveInterval               string
-	UIText_SaveIntervalInfo           string
-	UIText_AutoPauseServer            string
-	UIText_AutoPauseServerInfo        string
-	UIText_NetworkConfiguration       string
-	UIText_GamePort                   string
-	UIText_GamePortInfo               string
-	UIText_UpdatePort                 string
-	UIText_UpdatePortInfo             string
-	UIText_UPNPEnabled                string
-	UIText_UPNPEnabledInfo            string
-	UIText_LocalIpAddress             string
-	UIText_LocalIpAddressInfo         string
-	UIText_StartLocalHost             string
-	UIText_StartLocalHostInfo         string
-	UIText_ServerVisible              string
-	UIText_ServerVisibleInfo          string
-	UIText_UseSteamP2P                string
-	UIText_UseSteamP2PInfo            string
-	UIText_AdvancedConfiguration      string
-	UIText_ServerAuthSecret           string
-	UIText_ServerAuthSecretInfo       string
-	UIText_ServerExePath              string
-	UIText_ServerExePathInfo          string
-	UIText_ServerExePathInfo2         string
-	UIText_AdditionalParams           string
-	UIText_AdditionalParamsInfo       string
-	UIText_AutoRestartServerTimer     string
-	UIText_AutoRestartServerTimerInfo string
-	UIText_GameBranch                 string
-	UIText_GameBranchInfo             string
-	UIText_BetaOnlySettings           string
-	UIText_BetaWarning                string
-	UIText_UseNewTerrainAndSave       string
-	UIText_UseNewTerrainAndSaveInfo   string
-	UIText_Difficulty                 string
-	UIText_DifficultyInfo             string
-	UIText_StartCondition             string
-	UIText_StartConditionInfo         string
-	UIText_StartLocation              string
-	UIText_StartLocationInfo          string
+	UIText_ServerConfig         string
+	UIText_DiscordIntegration   string
+	UIText_DetectionManager     string
+	UIText_ConfigurationWizard  string
+	UIText_PleaseSelectSection  string
+	UIText_UseWizardAlternative string
+	UIText_BasicSettings        string
+	UIText_NetworkSettings      string
+	UIText_AdvancedSettings     string
+	UIText_BetaSettings         string
+	UIText_BasicServerSettings  string
+
+	UIText_ServerName                   string
+	UIText_ServerNameInfo               string
+	UIText_SaveFileName                 string
+	UIText_SaveFileNameInfo             string
+	UIText_MaxPlayers                   string
+	UIText_MaxPlayersInfo               string
+	UIText_ServerPassword               string
+	UIText_ServerPasswordInfo           string
+	UIText_AdminPassword                string
+	UIText_AdminPasswordInfo            string
+	UIText_AutoSave                     string
+	UIText_AutoSaveInfo                 string
+	UIText_SaveInterval                 string
+	UIText_SaveIntervalInfo             string
+	UIText_AutoPauseServer              string
+	UIText_AutoPauseServerInfo          string
+	UIText_NetworkConfiguration         string
+	UIText_GamePort                     string
+	UIText_GamePortInfo                 string
+	UIText_UpdatePort                   string
+	UIText_UpdatePortInfo               string
+	UIText_UPNPEnabled                  string
+	UIText_UPNPEnabledInfo              string
+	UIText_LocalIpAddress               string
+	UIText_LocalIpAddressInfo           string
+	UIText_StartLocalHost               string
+	UIText_StartLocalHostInfo           string
+	UIText_ServerVisible                string
+	UIText_ServerVisibleInfo            string
+	UIText_UseSteamP2P                  string
+	UIText_UseSteamP2PInfo              string
+	UIText_AdvancedConfiguration        string
+	UIText_ServerAuthSecret             string
+	UIText_ServerAuthSecretInfo         string
+	UIText_ServerExePath                string
+	UIText_ServerExePathInfo            string
+	UIText_ServerExePathInfo2           string
+	UIText_AdditionalParams             string
+	UIText_AdditionalParamsInfo         string
+	UIText_AutoRestartServerTimer       string
+	UIText_AutoRestartServerTimerInfo   string
+	UIText_GameBranch                   string
+	UIText_GameBranchInfo               string
+	UIText_BetaOnlySettings             string
+	UIText_BetaWarning                  string
+	UIText_UseNewTerrainAndSave         string
+	UIText_UseNewTerrainAndSaveInfo     string
+	UIText_Difficulty                   string
+	UIText_DifficultyInfo               string
+	UIText_StartCondition               string
+	UIText_StartConditionInfo           string
+	UIText_StartLocation                string
+	UIText_StartLocationInfo            string
+	UIText_AutoStartServerOnStartup     string
+	UIText_AutoStartServerOnStartupInfo string
+
 	UIText_DiscordIntegrationTitle    string
 	UIText_DiscordBotToken            string
 	UIText_DiscordBotTokenInfo        string
@@ -183,9 +189,10 @@ type ConfigTemplateData struct {
 	UIText_DiscordBenefit4            string
 	UIText_DiscordBenefit5            string
 	UIText_DiscordSetupInstructions   string
-	UIText_Copyright                  string
-	UIText_CopyrightConfig1           string
-	UIText_CopyrightConfig2           string
+
+	UIText_Copyright        string
+	UIText_CopyrightConfig1 string
+	UIText_CopyrightConfig2 string
 }
 
 func ServeIndex(w http.ResponseWriter, r *http.Request) {
@@ -328,6 +335,14 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		isNewTerrainAndSaveSystemFalseSelected = "selected"
 	}
 
+	autoStartServerTrueSelected := ""
+	autoStartServerFalseSelected := ""
+	if config.AutoStartServerOnStartup {
+		autoStartServerTrueSelected = "selected"
+	} else {
+		autoStartServerFalseSelected = "selected"
+	}
+
 	steamP2PTrueSelected := ""
 	steamP2PFalseSelected := ""
 	if config.UseSteamP2P {
@@ -388,72 +403,79 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		IsNewTerrainAndSaveSystem:              fmt.Sprintf("%v", config.IsNewTerrainAndSaveSystem),
 		IsNewTerrainAndSaveSystemTrueSelected:  isNewTerrainAndSaveSystemTrueSelected,
 		IsNewTerrainAndSaveSystemFalseSelected: isNewTerrainAndSaveSystemFalseSelected,
+		AutoStartServerOnStartup:               fmt.Sprintf("%v", config.AutoStartServerOnStartup),
+		AutoStartServerOnStartupTrueSelected:   autoStartServerTrueSelected,
+		AutoStartServerOnStartupFalseSelected:  autoStartServerFalseSelected,
 
 		// Localized UI text
-		UIText_ServerConfig:               localization.GetString("UIText_ServerConfig"),
-		UIText_DiscordIntegration:         localization.GetString("UIText_DiscordIntegration"),
-		UIText_DetectionManager:           localization.GetString("UIText_DetectionManager"),
-		UIText_ConfigurationWizard:        localization.GetString("UIText_ConfigurationWizard"),
-		UIText_PleaseSelectSection:        localization.GetString("UIText_PleaseSelectSection"),
-		UIText_UseWizardAlternative:       localization.GetString("UIText_UseWizardAlternative"),
-		UIText_BasicSettings:              localization.GetString("UIText_BasicSettings"),
-		UIText_NetworkSettings:            localization.GetString("UIText_NetworkSettings"),
-		UIText_AdvancedSettings:           localization.GetString("UIText_AdvancedSettings"),
-		UIText_BetaSettings:               localization.GetString("UIText_BetaSettings"),
-		UIText_BasicServerSettings:        localization.GetString("UIText_BasicServerSettings"),
-		UIText_ServerName:                 localization.GetString("UIText_ServerName"),
-		UIText_ServerNameInfo:             localization.GetString("UIText_ServerNameInfo"),
-		UIText_SaveFileName:               localization.GetString("UIText_SaveFileName"),
-		UIText_SaveFileNameInfo:           localization.GetString("UIText_SaveFileNameInfo"),
-		UIText_MaxPlayers:                 localization.GetString("UIText_MaxPlayers"),
-		UIText_MaxPlayersInfo:             localization.GetString("UIText_MaxPlayersInfo"),
-		UIText_ServerPassword:             localization.GetString("UIText_ServerPassword"),
-		UIText_ServerPasswordInfo:         localization.GetString("UIText_ServerPasswordInfo"),
-		UIText_AdminPassword:              localization.GetString("UIText_AdminPassword"),
-		UIText_AdminPasswordInfo:          localization.GetString("UIText_AdminPasswordInfo"),
-		UIText_AutoSave:                   localization.GetString("UIText_AutoSave"),
-		UIText_AutoSaveInfo:               localization.GetString("UIText_AutoSaveInfo"),
-		UIText_SaveInterval:               localization.GetString("UIText_SaveInterval"),
-		UIText_SaveIntervalInfo:           localization.GetString("UIText_SaveIntervalInfo"),
-		UIText_AutoPauseServer:            localization.GetString("UIText_AutoPauseServer"),
-		UIText_AutoPauseServerInfo:        localization.GetString("UIText_AutoPauseServerInfo"),
-		UIText_NetworkConfiguration:       localization.GetString("UIText_NetworkConfiguration"),
-		UIText_GamePort:                   localization.GetString("UIText_GamePort"),
-		UIText_GamePortInfo:               localization.GetString("UIText_GamePortInfo"),
-		UIText_UpdatePort:                 localization.GetString("UIText_UpdatePort"),
-		UIText_UpdatePortInfo:             localization.GetString("UIText_UpdatePortInfo"),
-		UIText_UPNPEnabled:                localization.GetString("UIText_UPNPEnabled"),
-		UIText_UPNPEnabledInfo:            localization.GetString("UIText_UPNPEnabledInfo"),
-		UIText_LocalIpAddress:             localization.GetString("UIText_LocalIpAddress"),
-		UIText_LocalIpAddressInfo:         localization.GetString("UIText_LocalIpAddressInfo"),
-		UIText_StartLocalHost:             localization.GetString("UIText_StartLocalHost"),
-		UIText_StartLocalHostInfo:         localization.GetString("UIText_StartLocalHostInfo"),
-		UIText_ServerVisible:              localization.GetString("UIText_ServerVisible"),
-		UIText_ServerVisibleInfo:          localization.GetString("UIText_ServerVisibleInfo"),
-		UIText_UseSteamP2P:                localization.GetString("UIText_UseSteamP2P"),
-		UIText_UseSteamP2PInfo:            localization.GetString("UIText_UseSteamP2PInfo"),
-		UIText_AdvancedConfiguration:      localization.GetString("UIText_AdvancedConfiguration"),
-		UIText_ServerAuthSecret:           localization.GetString("UIText_ServerAuthSecret"),
-		UIText_ServerAuthSecretInfo:       localization.GetString("UIText_ServerAuthSecretInfo"),
-		UIText_ServerExePath:              localization.GetString("UIText_ServerExePath"),
-		UIText_ServerExePathInfo:          localization.GetString("UIText_ServerExePathInfo"),
-		UIText_ServerExePathInfo2:         localization.GetString("UIText_ServerExePathInfo2"),
-		UIText_AdditionalParams:           localization.GetString("UIText_AdditionalParams"),
-		UIText_AdditionalParamsInfo:       localization.GetString("UIText_AdditionalParamsInfo"),
-		UIText_AutoRestartServerTimer:     localization.GetString("UIText_AutoRestartServerTimer"),
-		UIText_AutoRestartServerTimerInfo: localization.GetString("UIText_AutoRestartServerTimerInfo"),
-		UIText_GameBranch:                 localization.GetString("UIText_GameBranch"),
-		UIText_GameBranchInfo:             localization.GetString("UIText_GameBranchInfo"),
-		UIText_BetaOnlySettings:           localization.GetString("UIText_BetaOnlySettings"),
-		UIText_BetaWarning:                localization.GetString("UIText_BetaWarning"),
-		UIText_UseNewTerrainAndSave:       localization.GetString("UIText_UseNewTerrainAndSave"),
-		UIText_UseNewTerrainAndSaveInfo:   localization.GetString("UIText_UseNewTerrainAndSaveInfo"),
-		UIText_Difficulty:                 localization.GetString("UIText_Difficulty"),
-		UIText_DifficultyInfo:             localization.GetString("UIText_DifficultyInfo"),
-		UIText_StartCondition:             localization.GetString("UIText_StartCondition"),
-		UIText_StartConditionInfo:         localization.GetString("UIText_StartConditionInfo"),
-		UIText_StartLocation:              localization.GetString("UIText_StartLocation"),
-		UIText_StartLocationInfo:          localization.GetString("UIText_StartLocationInfo"),
+		UIText_ServerConfig:         localization.GetString("UIText_ServerConfig"),
+		UIText_DiscordIntegration:   localization.GetString("UIText_DiscordIntegration"),
+		UIText_DetectionManager:     localization.GetString("UIText_DetectionManager"),
+		UIText_ConfigurationWizard:  localization.GetString("UIText_ConfigurationWizard"),
+		UIText_PleaseSelectSection:  localization.GetString("UIText_PleaseSelectSection"),
+		UIText_UseWizardAlternative: localization.GetString("UIText_UseWizardAlternative"),
+		UIText_BasicSettings:        localization.GetString("UIText_BasicSettings"),
+		UIText_NetworkSettings:      localization.GetString("UIText_NetworkSettings"),
+		UIText_AdvancedSettings:     localization.GetString("UIText_AdvancedSettings"),
+		UIText_BetaSettings:         localization.GetString("UIText_BetaSettings"),
+		UIText_BasicServerSettings:  localization.GetString("UIText_BasicServerSettings"),
+
+		UIText_ServerName:                   localization.GetString("UIText_ServerName"),
+		UIText_ServerNameInfo:               localization.GetString("UIText_ServerNameInfo"),
+		UIText_SaveFileName:                 localization.GetString("UIText_SaveFileName"),
+		UIText_SaveFileNameInfo:             localization.GetString("UIText_SaveFileNameInfo"),
+		UIText_MaxPlayers:                   localization.GetString("UIText_MaxPlayers"),
+		UIText_MaxPlayersInfo:               localization.GetString("UIText_MaxPlayersInfo"),
+		UIText_ServerPassword:               localization.GetString("UIText_ServerPassword"),
+		UIText_ServerPasswordInfo:           localization.GetString("UIText_ServerPasswordInfo"),
+		UIText_AdminPassword:                localization.GetString("UIText_AdminPassword"),
+		UIText_AdminPasswordInfo:            localization.GetString("UIText_AdminPasswordInfo"),
+		UIText_AutoSave:                     localization.GetString("UIText_AutoSave"),
+		UIText_AutoSaveInfo:                 localization.GetString("UIText_AutoSaveInfo"),
+		UIText_SaveInterval:                 localization.GetString("UIText_SaveInterval"),
+		UIText_SaveIntervalInfo:             localization.GetString("UIText_SaveIntervalInfo"),
+		UIText_AutoPauseServer:              localization.GetString("UIText_AutoPauseServer"),
+		UIText_AutoPauseServerInfo:          localization.GetString("UIText_AutoPauseServerInfo"),
+		UIText_NetworkConfiguration:         localization.GetString("UIText_NetworkConfiguration"),
+		UIText_GamePort:                     localization.GetString("UIText_GamePort"),
+		UIText_GamePortInfo:                 localization.GetString("UIText_GamePortInfo"),
+		UIText_UpdatePort:                   localization.GetString("UIText_UpdatePort"),
+		UIText_UpdatePortInfo:               localization.GetString("UIText_UpdatePortInfo"),
+		UIText_UPNPEnabled:                  localization.GetString("UIText_UPNPEnabled"),
+		UIText_UPNPEnabledInfo:              localization.GetString("UIText_UPNPEnabledInfo"),
+		UIText_LocalIpAddress:               localization.GetString("UIText_LocalIpAddress"),
+		UIText_LocalIpAddressInfo:           localization.GetString("UIText_LocalIpAddressInfo"),
+		UIText_StartLocalHost:               localization.GetString("UIText_StartLocalHost"),
+		UIText_StartLocalHostInfo:           localization.GetString("UIText_StartLocalHostInfo"),
+		UIText_ServerVisible:                localization.GetString("UIText_ServerVisible"),
+		UIText_ServerVisibleInfo:            localization.GetString("UIText_ServerVisibleInfo"),
+		UIText_UseSteamP2P:                  localization.GetString("UIText_UseSteamP2P"),
+		UIText_UseSteamP2PInfo:              localization.GetString("UIText_UseSteamP2PInfo"),
+		UIText_AdvancedConfiguration:        localization.GetString("UIText_AdvancedConfiguration"),
+		UIText_ServerAuthSecret:             localization.GetString("UIText_ServerAuthSecret"),
+		UIText_ServerAuthSecretInfo:         localization.GetString("UIText_ServerAuthSecretInfo"),
+		UIText_ServerExePath:                localization.GetString("UIText_ServerExePath"),
+		UIText_ServerExePathInfo:            localization.GetString("UIText_ServerExePathInfo"),
+		UIText_ServerExePathInfo2:           localization.GetString("UIText_ServerExePathInfo2"),
+		UIText_AdditionalParams:             localization.GetString("UIText_AdditionalParams"),
+		UIText_AdditionalParamsInfo:         localization.GetString("UIText_AdditionalParamsInfo"),
+		UIText_AutoRestartServerTimer:       localization.GetString("UIText_AutoRestartServerTimer"),
+		UIText_AutoRestartServerTimerInfo:   localization.GetString("UIText_AutoRestartServerTimerInfo"),
+		UIText_GameBranch:                   localization.GetString("UIText_GameBranch"),
+		UIText_GameBranchInfo:               localization.GetString("UIText_GameBranchInfo"),
+		UIText_BetaOnlySettings:             localization.GetString("UIText_BetaOnlySettings"),
+		UIText_BetaWarning:                  localization.GetString("UIText_BetaWarning"),
+		UIText_UseNewTerrainAndSave:         localization.GetString("UIText_UseNewTerrainAndSave"),
+		UIText_UseNewTerrainAndSaveInfo:     localization.GetString("UIText_UseNewTerrainAndSaveInfo"),
+		UIText_Difficulty:                   localization.GetString("UIText_Difficulty"),
+		UIText_DifficultyInfo:               localization.GetString("UIText_DifficultyInfo"),
+		UIText_StartCondition:               localization.GetString("UIText_StartCondition"),
+		UIText_StartConditionInfo:           localization.GetString("UIText_StartConditionInfo"),
+		UIText_StartLocation:                localization.GetString("UIText_StartLocation"),
+		UIText_StartLocationInfo:            localization.GetString("UIText_StartLocationInfo"),
+		UIText_AutoStartServerOnStartup:     localization.GetString("UIText_AutoStartServerOnStartup"),
+		UIText_AutoStartServerOnStartupInfo: localization.GetString("UIText_AutoStartServerOnStartupInfo"),
+
 		UIText_DiscordIntegrationTitle:    localization.GetString("UIText_DiscordIntegrationTitle"),
 		UIText_DiscordBotToken:            localization.GetString("UIText_DiscordBotToken"),
 		UIText_DiscordBotTokenInfo:        localization.GetString("UIText_DiscordBotTokenInfo"),
@@ -481,8 +503,9 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		UIText_DiscordBenefit4:            localization.GetString("UIText_DiscordBenefit4"),
 		UIText_DiscordBenefit5:            localization.GetString("UIText_DiscordBenefit5"),
 		UIText_DiscordSetupInstructions:   localization.GetString("UIText_DiscordSetupInstructions"),
-		UIText_CopyrightConfig1:           localization.GetString("UIText_Copyright1"),
-		UIText_CopyrightConfig2:           localization.GetString("UIText_Copyright2"),
+
+		UIText_CopyrightConfig1: localization.GetString("UIText_Copyright1"),
+		UIText_CopyrightConfig2: localization.GetString("UIText_Copyright2"),
 	}
 
 	err = tmpl.Execute(w, data)
