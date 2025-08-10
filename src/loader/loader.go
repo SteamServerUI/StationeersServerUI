@@ -4,6 +4,10 @@ package loader
 import (
 	"embed"
 	"fmt"
+	"io"
+	"io/fs"
+	"os"
+	"runtime"
 	"strconv"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/backupmgr"
@@ -134,6 +138,10 @@ func RestartBackend() {
 	setup.RestartMySelf()
 }
 
+func ReloadLocalizer() {
+	localization.ReloadLocalizer()
+}
+
 // InitBundler initialized the onboard bundled assets for the web UI
 func InitVirtFS(v1uiFS embed.FS) {
 	config.SetV1UIFS(v1uiFS)
@@ -174,8 +182,44 @@ func AfterStartComplete() {
 		logger.Core.Info("AutoStartServerOnStartup is enabled, starting server...")
 		gamemgr.InternalStartServer()
 	}
+	SetupAutostartScripts()
 }
 
-func ReloadLocalizer() {
-	localization.ReloadLocalizer()
+func SetupAutostartScripts() {
+	scriptFS, err := fs.Sub(config.V1UIFS, "UIMod/onboard_bundled/scripts")
+	if err != nil {
+		return
+	}
+
+	if runtime.GOOS == "windows" {
+		logger.Install.Info("🔄Creating autostart scripts...")
+		script, err := scriptFS.Open("autostart.ps1")
+		if err != nil {
+			return
+		}
+		defer script.Close()
+		data, err := io.ReadAll(script)
+		if err != nil {
+			return
+		}
+		err = os.WriteFile("autostart.ps1", data, 0755)
+		if err != nil {
+			return
+		}
+	}
+	if runtime.GOOS == "linux" {
+		script, err := scriptFS.Open("autostart.sh")
+		if err != nil {
+			return
+		}
+		defer script.Close()
+		data, err := io.ReadAll(script)
+		if err != nil {
+			return
+		}
+		err = os.WriteFile("autostart.service", data, 0755)
+		if err != nil {
+			return
+		}
+	}
 }
