@@ -7,11 +7,11 @@ import (
 	"net/http/pprof"
 	"sync"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/backupmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/configchanger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/detectionmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config/configchanger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/security"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/terminal"
 )

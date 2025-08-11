@@ -12,9 +12,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
 	"github.com/google/uuid"
 )
 
