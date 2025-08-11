@@ -7,7 +7,6 @@ import (
 	"runtime"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 func SetupAutostartScripts() {
@@ -17,7 +16,6 @@ func SetupAutostartScripts() {
 	}
 
 	if runtime.GOOS == "windows" {
-		logger.Install.Info("🔄Creating autostart scripts...")
 		script, err := scriptFS.Open("autostart.ps1")
 		if err != nil {
 			return
