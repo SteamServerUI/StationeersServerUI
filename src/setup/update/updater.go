@@ -1,4 +1,4 @@
-package setup
+package update
 
 import (
 	"encoding/json"

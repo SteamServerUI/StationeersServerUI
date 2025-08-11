@@ -1,6 +1,6 @@
 //go:build linux
 
-package setup
+package update
 
 import (
 	"os/exec"

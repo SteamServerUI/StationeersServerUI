@@ -1,6 +1,6 @@
 //go:build windows
 
-package setup
+package update
 
 import (
 	"os/exec"

@@ -16,6 +16,7 @@ import (
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
 )
 
 var downloadBranch string // Holds the branch to download from
@@ -25,7 +26,7 @@ func Install(wg *sync.WaitGroup) {
 	defer wg.Done() // Signal that installation is complete
 
 	// Step 0: Check for updates
-	if err := UpdateExecutable(); err != nil {
+	if err := update.UpdateExecutable(); err != nil {
 		logger.Install.Error("❌Update check went sideways: " + err.Error())
 	}
 

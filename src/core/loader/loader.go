@@ -11,6 +11,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
 )
 
 // only call this once at startup
@@ -74,7 +75,7 @@ func InitDetector() {
 }
 
 func RestartBackend() {
-	setup.RestartMySelf()
+	update.RestartMySelf()
 }
 
 func ReloadLocalizer() {
