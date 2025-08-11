@@ -65,11 +65,14 @@ func loadTranslations() {
 		}
 		file.Close()
 
-		var langMap map[string]string
-		if err := json.Unmarshal(data, &langMap); err != nil {
+		var rawData map[string]any
+		if err := json.Unmarshal(data, &rawData); err != nil {
 			logger.Localization.Error("Failed to parse JSON in " + entry.Name() + ": " + err.Error())
 			continue
 		}
+
+		langMap := make(map[string]string)
+		flattenJSON(rawData, langMap)
 
 		translations[langCode] = langMap
 		logger.Localization.Debug("Loaded translations for language: " + langCode)
@@ -77,6 +80,20 @@ func loadTranslations() {
 
 	if _, exists := translations[fallbackLanguage]; !exists {
 		logger.Localization.Warn("Fallback language en-us not found in localization files")
+	}
+}
+
+func flattenJSON(data map[string]interface{}, output map[string]string) {
+	for key, value := range data {
+		switch v := value.(type) {
+		case map[string]interface{}:
+			flattenJSON(v, output)
+		case string:
+			// stor str vals directly
+			output[key] = v
+		default:
+			logger.Localization.Warn("Ignoring non-string value for key: " + key)
+		}
 	}
 }
 
