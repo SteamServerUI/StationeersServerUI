@@ -7,13 +7,13 @@ import (
 	"net/http/pprof"
 	"sync"
 
+	terminal "github.com/JacksonTheMaster/StationeersServerUI/v5/src/cli"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config/configchanger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/security"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/security"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/terminal"
 )
 
 func StartWebServer(wg *sync.WaitGroup) {

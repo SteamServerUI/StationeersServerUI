@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/ssestream"
 )
 
 // readPipe for Windows

@@ -1,6 +1,6 @@
 // Package misc provides a non-blocking command-line interface for entering commands
 // while allowing the application to continue its operations normally.
-package terminal
+package cli
 
 import (
 	"bufio"
@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"

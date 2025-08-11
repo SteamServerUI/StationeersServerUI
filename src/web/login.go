@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/security"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/security"
 )
 
 var setupReminderCount = 0 // to limit the number of setup reminders shown to the user

@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
 )
 
 func SaveConfigForm(w http.ResponseWriter, r *http.Request) {

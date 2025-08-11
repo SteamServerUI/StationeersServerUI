@@ -24,10 +24,10 @@ import (
 	"embed"
 	"sync"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/cli"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/terminal"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/web"
 )
 
@@ -52,7 +52,7 @@ func main() {
 
 	loader.AfterStartComplete()
 
-	terminal.StartConsole(&wg)
+	cli.StartConsole(&wg)
 
 	web.StartWebServer(&wg)
 }

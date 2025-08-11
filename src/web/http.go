@@ -12,12 +12,12 @@ import (
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/ssestream"
 )
 
 // TemplateData holds data to be passed to templates
