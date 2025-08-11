@@ -349,20 +349,6 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			ConfigField:            "UPNPEnabled",
 			NextStep:               "local_ip_address",
 		},
-		//skipped for now, not needed and bugged, wontfix for now
-		"server_visible": {
-			ID:                     "server_visible",
-			Title:                  localization.GetString("UIText_ServerVisible_Title"),
-			HeaderTitle:            localization.GetString("UIText_ServerVisible_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_ServerVisible_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_ServerVisible_PrimaryPlaceholder"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_ServerVisible_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_ServerVisible_SkipButton"),
-			ConfigField:            "ServerVisible", // We'll handle the boolean conversion in JS
-			NextStep:               "local_ip_address",
-		},
 		"local_ip_address": {
 			ID:                     "local_ip_address",
 			Title:                  localization.GetString("UIText_LocalIPAddress_Title"),
