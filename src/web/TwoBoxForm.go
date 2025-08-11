@@ -347,8 +347,9 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SubmitButtonText:       localization.GetString("UIText_UPnPEnabled_SubmitButton"),
 			SkipButtonText:         localization.GetString("UIText_UPnPEnabled_SkipButton"),
 			ConfigField:            "UPNPEnabled",
-			NextStep:               "server_visible",
+			NextStep:               "local_ip_address",
 		},
+		//skipped for now, not needed and bugged, wontfix for now
 		"server_visible": {
 			ID:                     "server_visible",
 			Title:                  localization.GetString("UIText_ServerVisible_Title"),
@@ -360,20 +361,6 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SubmitButtonText:       localization.GetString("UIText_ServerVisible_SubmitButton"),
 			SkipButtonText:         localization.GetString("UIText_ServerVisible_SkipButton"),
 			ConfigField:            "ServerVisible", // We'll handle the boolean conversion in JS
-			NextStep:               "use_steam_p2p",
-		},
-		"use_steam_p2p": {
-			ID:                     "use_steam_p2p",
-			Title:                  localization.GetString("UIText_UseSteamP2P_Title"),
-			HeaderTitle:            localization.GetString("UIText_UseSteamP2P_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_UseSteamP2P_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_UseSteamP2P_PrimaryPlaceholder"),
-			PrimaryLabel:           localization.GetString("UIText_UseSteamP2P_PrimaryLabel"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_UseSteamP2P_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_UseSteamP2P_SkipButton"),
-			ConfigField:            "UseSteamP2P",
 			NextStep:               "local_ip_address",
 		},
 		"local_ip_address": {
@@ -383,7 +370,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			StepMessage:            localization.GetString("UIText_LocalIPAddress_StepMessage"),
 			PrimaryPlaceholderText: localization.GetString("UIText_LocalIPAddress_PrimaryPlaceholder"),
 			PrimaryLabel:           localization.GetString("UIText_LocalIPAddress_PrimaryLabel"),
-			SecondaryLabel:         localization.GetString("UIText_LocalIPAddress_SecondaryLabel"),
+			SecondaryLabel:         "",
 			SecondaryLabelType:     "hidden",
 			SubmitButtonText:       localization.GetString("UIText_LocalIPAddress_SubmitButton"),
 			SkipButtonText:         localization.GetString("UIText_LocalIPAddress_SkipButton"),
