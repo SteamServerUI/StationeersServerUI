@@ -84,45 +84,47 @@ func CleanUpOldExecutables() error {
 		return fmt.Errorf("failed to get current directory: %w", err)
 	}
 
-	// Walk through the directory
-	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+	// Read only the root directory
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return fmt.Errorf("error reading directory: %w", err)
+	}
+
+	// Process each entry in the root directory
+	for _, entry := range entries {
+		info, err := entry.Info()
 		if err != nil {
 			return err
 		}
 
 		// Skip directories, non-matching files, and files with _old prefix
 		if info.IsDir() || !re.MatchString(info.Name()) || strings.HasPrefix(info.Name(), "_old") {
-			return nil
+			continue
 		}
 
 		// Extract version from filename
 		matches := re.FindStringSubmatch(info.Name())
 		if len(matches) < 2 {
-			return nil
+			continue
 		}
 		fileVersion := matches[1]
 
 		// Skip if the version matches the current backend version
 		if fileVersion == currentBackendVersion {
-			return nil
+			continue
 		}
 
 		// Generate new filename with _old prefix
 		newName := "_old" + info.Name()
-		newPath := filepath.Join(filepath.Dir(path), newName)
+		newPath := filepath.Join(dir, newName)
 
 		// Rename the file
+		path := filepath.Join(dir, info.Name())
 		err = os.Rename(path, newPath)
 		if err != nil {
 			return fmt.Errorf("failed to rename %s to %s: %w", path, newName, err)
 		}
 		logger.Install.Info(fmt.Sprintf("Old Executable cleanup: Renamed %s to %s", path, newName))
-
-		return nil
-	})
-
-	if err != nil {
-		return fmt.Errorf("error walking directory: %w", err)
 	}
 
 	return nil

@@ -39,6 +39,13 @@ func StartWebServer(wg *sync.WaitGroup) {
 	protectedMux.HandleFunc("/detectionmanager", ServeDetectionManager)
 	protectedMux.HandleFunc("/", ServeIndex)
 
+	// --- SVELTE UI ---
+	protectedMux.HandleFunc("/v2", ServeSvelteUI)
+	svelteAssetsFS, _ := fs.Sub(config.V1UIFS, "UIMod/onboard_bundled/v2/assets")
+	protectedMux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.FS(svelteAssetsFS))))
+	protectedMux.HandleFunc("/api/v2/loader/reloadbackend", HandleReloadAll)
+
+	// Config
 	protectedMux.HandleFunc("/saveconfigasjson", configchanger.SaveConfigForm)
 
 	// SSE routes

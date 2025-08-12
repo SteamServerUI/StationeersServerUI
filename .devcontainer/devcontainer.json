@@ -1,5 +1,5 @@
 {
-    "name": "StationeersServerUI (Go)",
+    "name": "StationeersServerUI (Go+Svelte)",
     "build": {
         "dockerfile": "Dockerfile"
     },
@@ -10,22 +10,25 @@
             "version": "1.24.2"
         }
     },
-    "forwardPorts": [8443],
+    "forwardPorts": [8443, 5173],
     "portsAttributes": {
-        "8443": { "label": "Go Backend Server" }
+        "8443": { "label": "Go Backend Server" },
+        "5173": { "label": "Svelte UI Dev Server" }
         
     },
     "customizations": {
         "vscode": {
             "extensions": [
                 "golang.go",
+                "svelte.svelte-vscode",
                 "supermaven.supermaven",
                 "eamodio.gitlens"
             ],
             "settings": {
-                "go.toolsManagement.autoUpdate": true
+                "go.toolsManagement.autoUpdate": true,
+                "svelte.enable-ts-plugin": true
             }
         }
     },
-    "postCreateCommand": "go mod tidy"
+    "postCreateCommand": "go mod tidy && cd frontend && npm install && npm install @sveltejs/vite-plugin-svelte"
 }
