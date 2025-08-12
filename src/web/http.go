@@ -11,6 +11,7 @@ import (
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
@@ -25,7 +26,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		logger.Web.Core("Error starting server: " + err.Error())
 		return
 	}
-	fmt.Fprint(w, "Server started.")
+	fmt.Fprint(w, localization.GetString("BackendText_ServerStarted"))
 	logger.Web.Core("Server started.")
 }
 
@@ -34,7 +35,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	logger.Web.Debug("Received stop request from API")
 	if err := gamemgr.InternalStopServer(); err != nil {
 		if err.Error() == "server not running" {
-			fmt.Fprint(w, "Server was not running or was already stopped")
+			fmt.Fprint(w, localization.GetString("BackendText_ServerNotRunningOrAlreadyStopped"))
 			logger.Web.Core("Server not running or was already stopped")
 			return
 		}
@@ -42,7 +43,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 		logger.Web.Core("Error stopping server: " + err.Error())
 		return
 	}
-	fmt.Fprint(w, "Server stopped.")
+	fmt.Fprint(w, localization.GetString("BackendText_ServerStopped"))
 	logger.Web.Core("Server stopped.")
 }
 

@@ -298,13 +298,14 @@
     }
   },
   "BackendText": {
-    "top1": {
-    },
-    "nest1": {
-      "nestINnest1": {
-      },
-      "nestINnest2": {
-      }
+    "gamemgr": {
+      "BackendText_ServerStarted": "Server started.",
+      "BackendText_ServerNotRunningOrAlreadyStopped": "Server was not running or was already stopped",
+      "BackendText_ServerStopped": "Server stopped."
     }
+  },
+  "nest1": {
+    "nestINnest1": {},
+    "nestINnest2": {}
   }
 }
