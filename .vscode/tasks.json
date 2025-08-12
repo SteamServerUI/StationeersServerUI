@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "go: run build.go",
+            "command": "go",
+            "args": [
+                "run",
+                "./build/build.go"
+            ],
+            "problemMatcher": [
+                "$go"
+            ],
+            "group": "build",
+            "detail": "Build Go binarys in ./build with fresh svelte assets",
+            "hide": false
+        }
+    ]
+}
