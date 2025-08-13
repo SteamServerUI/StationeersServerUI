@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 
 	"github.com/bwmarrin/discordgo"
 )

@@ -7,180 +7,16 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"text/template"
+	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/ssestream"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 )
-
-// TemplateData holds data to be passed to templates
-type TemplateData struct {
-	Version string
-	Branch  string
-}
-
-func ServeIndex(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles(config.IndexHtmlPath)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	data := TemplateData{
-		Version: config.Version,
-		Branch:  config.Branch,
-	}
-	if data.Version == "" {
-		data.Version = "unknown"
-	}
-	if data.Branch == "" {
-		data.Branch = "unknown"
-	}
-
-	err = tmpl.Execute(w, data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
-func ServeDetectionManager(w http.ResponseWriter, r *http.Request) {
-
-	htmlFile, err := os.ReadFile(config.DetectionManagerHtmlPath)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error reading detectionmanager.html: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	htmlContent := string(htmlFile)
-
-	fmt.Fprint(w, htmlContent)
-}
-
-func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
-
-	htmlFile, err := os.ReadFile(config.ConfigHtmlPath)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error reading config.html: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	htmlContent := string(htmlFile)
-
-	// Determine selected attributes for boolean fields
-	upnpTrueSelected := ""
-	upnpFalseSelected := ""
-	if config.UPNPEnabled {
-		upnpTrueSelected = "selected"
-	} else {
-		upnpFalseSelected = "selected"
-	}
-
-	discordTrueSelected := ""
-	discordFalseSelected := ""
-	if config.IsDiscordEnabled {
-		discordTrueSelected = "selected"
-	} else {
-		discordFalseSelected = "selected"
-	}
-
-	autoSaveTrueSelected := ""
-	autoSaveFalseSelected := ""
-	if config.AutoSave {
-		autoSaveTrueSelected = "selected"
-	} else {
-		autoSaveFalseSelected = "selected"
-	}
-
-	autoPauseTrueSelected := ""
-	autoPauseFalseSelected := ""
-	if config.AutoPauseServer {
-		autoPauseTrueSelected = "selected"
-	} else {
-		autoPauseFalseSelected = "selected"
-	}
-
-	startLocalTrueSelected := ""
-	startLocalFalseSelected := ""
-	if config.StartLocalHost {
-		startLocalTrueSelected = "selected"
-	} else {
-		startLocalFalseSelected = "selected"
-	}
-
-	serverVisibleTrueSelected := ""
-	serverVisibleFalseSelected := ""
-	if config.ServerVisible {
-		serverVisibleTrueSelected = "selected"
-	} else {
-		serverVisibleFalseSelected = "selected"
-	}
-
-	steamP2PTrueSelected := ""
-	steamP2PFalseSelected := ""
-	if config.UseSteamP2P {
-		steamP2PTrueSelected = "selected"
-	} else {
-		steamP2PFalseSelected = "selected"
-	}
-
-	// Replace placeholders in the HTML with actual config values
-	replacements := map[string]string{
-		"{{discordToken}}":                  config.DiscordToken,
-		"{{controlChannelID}}":              config.ControlChannelID,
-		"{{statusChannelID}}":               config.StatusChannelID,
-		"{{connectionListChannelID}}":       config.ConnectionListChannelID,
-		"{{logChannelID}}":                  config.LogChannelID,
-		"{{saveChannelID}}":                 config.SaveChannelID,
-		"{{controlPanelChannelID}}":         config.ControlPanelChannelID,
-		"{{blackListFilePath}}":             config.BlackListFilePath,
-		"{{errorChannelID}}":                config.ErrorChannelID,
-		"{{isDiscordEnabled}}":              fmt.Sprintf("%v", config.IsDiscordEnabled),
-		"{{IsDiscordEnabledTrueSelected}}":  discordTrueSelected,
-		"{{IsDiscordEnabledFalseSelected}}": discordFalseSelected,
-		"{{gameBranch}}":                    config.GameBranch,
-		"{{ServerName}}":                    config.ServerName,
-		"{{SaveInfo}}":                      config.SaveInfo,
-		"{{ServerMaxPlayers}}":              config.ServerMaxPlayers,
-		"{{ServerPassword}}":                config.ServerPassword,
-		"{{ServerAuthSecret}}":              config.ServerAuthSecret,
-		"{{AdminPassword}}":                 config.AdminPassword,
-		"{{GamePort}}":                      config.GamePort,
-		"{{UpdatePort}}":                    config.UpdatePort,
-		"{{UPNPEnabled}}":                   fmt.Sprintf("%v", config.UPNPEnabled),
-		"{{UPNPEnabledTrueSelected}}":       upnpTrueSelected,
-		"{{UPNPEnabledFalseSelected}}":      upnpFalseSelected,
-		"{{AutoSave}}":                      fmt.Sprintf("%v", config.AutoSave),
-		"{{AutoSaveTrueSelected}}":          autoSaveTrueSelected,
-		"{{AutoSaveFalseSelected}}":         autoSaveFalseSelected,
-		"{{SaveInterval}}":                  config.SaveInterval,
-		"{{AutoPauseServer}}":               fmt.Sprintf("%v", config.AutoPauseServer),
-		"{{AutoPauseServerTrueSelected}}":   autoPauseTrueSelected,
-		"{{AutoPauseServerFalseSelected}}":  autoPauseFalseSelected,
-		"{{LocalIpAddress}}":                config.LocalIpAddress,
-		"{{StartLocalHost}}":                fmt.Sprintf("%v", config.StartLocalHost),
-		"{{StartLocalHostTrueSelected}}":    startLocalTrueSelected,
-		"{{StartLocalHostFalseSelected}}":   startLocalFalseSelected,
-		"{{ServerVisible}}":                 fmt.Sprintf("%v", config.ServerVisible),
-		"{{ServerVisibleTrueSelected}}":     serverVisibleTrueSelected,
-		"{{ServerVisibleFalseSelected}}":    serverVisibleFalseSelected,
-		"{{UseSteamP2P}}":                   fmt.Sprintf("%v", config.UseSteamP2P),
-		"{{UseSteamP2PTrueSelected}}":       steamP2PTrueSelected,
-		"{{UseSteamP2PFalseSelected}}":      steamP2PFalseSelected,
-		"{{ExePath}}":                       config.ExePath,
-		"{{AdditionalParams}}":              config.AdditionalParams,
-		"{{AutoRestartServerTimer}}":        config.AutoRestartServerTimer,
-	}
-
-	for placeholder, value := range replacements {
-		htmlContent = strings.ReplaceAll(htmlContent, placeholder, value)
-	}
-
-	fmt.Fprint(w, htmlContent)
-}
 
 // StartServer HTTP handler
 func StartServer(w http.ResponseWriter, r *http.Request) {
@@ -190,7 +26,7 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 		logger.Web.Core("Error starting server: " + err.Error())
 		return
 	}
-	fmt.Fprint(w, "Server started.")
+	fmt.Fprint(w, localization.GetString("BackendText_ServerStarted"))
 	logger.Web.Core("Server started.")
 }
 
@@ -199,7 +35,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	logger.Web.Debug("Received stop request from API")
 	if err := gamemgr.InternalStopServer(); err != nil {
 		if err.Error() == "server not running" {
-			fmt.Fprint(w, "Server was not running or was already stopped")
+			fmt.Fprint(w, localization.GetString("BackendText_ServerNotRunningOrAlreadyStopped"))
 			logger.Web.Core("Server not running or was already stopped")
 			return
 		}
@@ -207,7 +43,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 		logger.Web.Core("Error stopping server: " + err.Error())
 		return
 	}
-	fmt.Fprint(w, "Server stopped.")
+	fmt.Fprint(w, localization.GetString("BackendText_ServerStopped"))
 	logger.Web.Core("Server stopped.")
 }
 
@@ -242,21 +78,6 @@ func StartConsoleStream() http.HandlerFunc {
 // StartDetectionEventStream creates an HTTP handler for detection event SSE streaming
 func StartDetectionEventStream() http.HandlerFunc {
 	return ssestream.EventStreamManager.CreateStreamHandler("Event")
-}
-
-func ServeTwoBoxCss(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/css")
-	http.ServeFile(w, r, config.UIModFolder+"twoboxform/twoboxform.css")
-}
-
-func ServeTwoBoxJs(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/javascript")
-	http.ServeFile(w, r, config.UIModFolder+"twoboxform/twoboxform.js")
-}
-
-func ServeSSCMJs(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/javascript")
-	http.ServeFile(w, r, config.SSCMWebDir+"sscm.js")
 }
 
 // CommandHandler handles POST requests to execute commands via commandmgr.
@@ -314,4 +135,40 @@ func HandleIsSSCMEnabled(w http.ResponseWriter, r *http.Request) {
 
 	// Success: return 200 OK
 	w.WriteHeader(http.StatusOK)
+}
+
+var lastSteamCMDExecution time.Time // last time SteamCMD was executed via API.
+
+// run SteamCMD from API, but only allow once every 5 minutes to "kinda" prevent concurrent executions although that woluldnt hurn.
+// If the user has a 5mbit connection, I cannot help them anyways.
+func HandleRunSteamCMD(w http.ResponseWriter, r *http.Request) {
+	const rateLimitDuration = 30 * time.Second
+
+	// Only allow GET requests
+	if r.Method != http.MethodGet {
+		http.Error(w, "Only GET requests are allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Check rate limit
+	if time.Since(lastSteamCMDExecution) < rateLimitDuration {
+		json.NewEncoder(w).Encode(map[string]string{"statuscode": "200", "status": "Rejected", "message": "Slow down, you just called SteamCMD.", "advanced": "Use SSUICLI or restart SSUI to run SteamCMD repeatedly without limit."})
+		return
+	}
+
+	if gamemgr.InternalIsServerRunning() {
+		logger.Core.Warn("Server is running, stopping server first...")
+		gamemgr.InternalStopServer()
+		time.Sleep(10000 * time.Millisecond)
+	}
+	logger.Core.Info("Running SteamCMD")
+	setup.InstallAndRunSteamCMD()
+
+	// Update last execution time
+	lastSteamCMDExecution = time.Now()
+
+	// Success: return 202 Accepted and JSON
+	w.WriteHeader(http.StatusAccepted)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"statuscode": "202", "status": "Accepted", "message": "SteamCMD ran successfully."})
 }

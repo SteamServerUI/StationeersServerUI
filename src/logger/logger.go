@@ -13,16 +13,17 @@ import (
 
 // Logger instances
 var (
-	Main      = &Logger{prefix: SYS_MAIN}
-	Web       = &Logger{prefix: SYS_WEB}
-	Discord   = &Logger{prefix: SYS_DISCORD}
-	Backup    = &Logger{prefix: SYS_BACKUP}
-	Detection = &Logger{prefix: SYS_DETECT}
-	Core      = &Logger{prefix: SYS_CORE}
-	Config    = &Logger{prefix: SYS_CONFIG}
-	Install   = &Logger{prefix: SYS_INSTALL}
-	SSE       = &Logger{prefix: SYS_SSE}
-	Security  = &Logger{prefix: SYS_SECURITY}
+	Main         = &Logger{prefix: SYS_MAIN}
+	Web          = &Logger{prefix: SYS_WEB}
+	Discord      = &Logger{prefix: SYS_DISCORD}
+	Backup       = &Logger{prefix: SYS_BACKUP}
+	Detection    = &Logger{prefix: SYS_DETECT}
+	Core         = &Logger{prefix: SYS_CORE}
+	Config       = &Logger{prefix: SYS_CONFIG}
+	Install      = &Logger{prefix: SYS_INSTALL}
+	SSE          = &Logger{prefix: SYS_SSE}
+	Security     = &Logger{prefix: SYS_SECURITY}
+	Localization = &Logger{prefix: SYS_LOCALIZATION}
 )
 
 // Severity Levels
@@ -35,16 +36,17 @@ const (
 
 // Subsystems
 const (
-	SYS_MAIN     = "MAIN"
-	SYS_WEB      = "WEB"
-	SYS_DISCORD  = "DISCORD"
-	SYS_BACKUP   = "BACKUP"
-	SYS_DETECT   = "DETECT"
-	SYS_CORE     = "CORE"
-	SYS_CONFIG   = "CONFIG"
-	SYS_INSTALL  = "INSTALL"
-	SYS_SSE      = "SSE"
-	SYS_SECURITY = "SECURITY"
+	SYS_MAIN         = "MAIN"
+	SYS_WEB          = "WEB"
+	SYS_DISCORD      = "DISCORD"
+	SYS_BACKUP       = "BACKUP"
+	SYS_DETECT       = "DETECT"
+	SYS_CORE         = "CORE"
+	SYS_CONFIG       = "CONFIG"
+	SYS_INSTALL      = "INSTALL"
+	SYS_SSE          = "SSE"
+	SYS_SECURITY     = "SECURITY"
+	SYS_LOCALIZATION = "LOCALIZATION"
 )
 
 const (
@@ -59,16 +61,17 @@ const (
 
 // Subsystem color map (distinct colors, cohesive vibe)
 var subsystemColors = map[string]string{
-	SYS_MAIN:     colorBlue,    // Calm, default system
-	SYS_WEB:      colorCyan,    // Clean, UI-related
-	SYS_DISCORD:  colorMagenta, // Flashy, chatty subsystem
-	SYS_BACKUP:   colorGreen,   // Safe, reliable vibe
-	SYS_DETECT:   colorYellow,  // Attention-grabbing for detection
-	SYS_CORE:     colorMagenta, // Critical, stands out
-	SYS_CONFIG:   colorYellow,  // Warning-like, config tweaks
-	SYS_INSTALL:  colorBlue,    // Matches MAIN, setup-related
-	SYS_SSE:      colorCyan,    // Matches WEB, streaming vibe
-	SYS_SECURITY: colorRed,     // Screams "pay attention"
+	SYS_MAIN:         colorBlue,    // Calm, default system
+	SYS_WEB:          colorCyan,    // Clean, UI-related
+	SYS_DISCORD:      colorMagenta, // Flashy, chatty subsystem
+	SYS_BACKUP:       colorGreen,   // Safe, reliable vibe
+	SYS_DETECT:       colorYellow,  // Attention-grabbing for detection
+	SYS_CORE:         colorMagenta, // Critical, stands out
+	SYS_CONFIG:       colorYellow,  // Warning-like, config tweaks
+	SYS_INSTALL:      colorBlue,    // Matches MAIN, setup-related
+	SYS_SSE:          colorCyan,    // Matches WEB, streaming vibe
+	SYS_SECURITY:     colorRed,     // Screams "pay attention"
+	SYS_LOCALIZATION: colorCyan,    // Matches WEB, localization-related
 }
 
 type Logger struct {
@@ -237,4 +240,8 @@ func (l *Logger) SSE(message string) {
 
 func (l *Logger) Security(message string) {
 	l.log(logEntry{ERROR, "SECURITY", colorReset, message}) // Red via subsystem
+}
+
+func (l *Logger) Localization(message string) {
+	l.log(logEntry{INFO, "LOCALIZATION", colorReset, message}) // Cyan via subsystem
 }

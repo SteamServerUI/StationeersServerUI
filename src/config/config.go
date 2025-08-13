@@ -11,61 +11,69 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.4.34"
-	Branch  = "release"
+	Version = "5.5.8"
+	Branch  = "indev-no-steamcmd"
 )
 
 type JsonConfig struct {
-	DiscordToken            string            `json:"discordToken"`
-	ControlChannelID        string            `json:"controlChannelID"`
-	StatusChannelID         string            `json:"statusChannelID"`
-	ConnectionListChannelID string            `json:"connectionListChannelID"`
-	LogChannelID            string            `json:"logChannelID"`
-	SaveChannelID           string            `json:"saveChannelID"`
-	ControlPanelChannelID   string            `json:"controlPanelChannelID"`
-	DiscordCharBufferSize   int               `json:"DiscordCharBufferSize"`
-	BlackListFilePath       string            `json:"blackListFilePath"`
-	IsDiscordEnabled        *bool             `json:"isDiscordEnabled"`
-	ErrorChannelID          string            `json:"errorChannelID"`
-	BackupKeepLastN         int               `json:"backupKeepLastN"`
-	IsCleanupEnabled        *bool             `json:"isCleanupEnabled"`
-	BackupKeepDailyFor      int               `json:"backupKeepDailyFor"`
-	BackupKeepWeeklyFor     int               `json:"backupKeepWeeklyFor"`
-	BackupKeepMonthlyFor    int               `json:"backupKeepMonthlyFor"`
-	BackupCleanupInterval   int               `json:"backupCleanupInterval"`
-	BackupWaitTime          int               `json:"backupWaitTime"`
-	GameBranch              string            `json:"gameBranch"`
-	ServerName              string            `json:"ServerName"`
-	SaveInfo                string            `json:"SaveInfo"`
-	ServerMaxPlayers        string            `json:"ServerMaxPlayers"`
-	ServerPassword          string            `json:"ServerPassword"`
-	ServerAuthSecret        string            `json:"ServerAuthSecret"`
-	AdminPassword           string            `json:"AdminPassword"`
-	GamePort                string            `json:"GamePort"`
-	UpdatePort              string            `json:"UpdatePort"`
-	UPNPEnabled             *bool             `json:"UPNPEnabled"`
-	AutoSave                *bool             `json:"AutoSave"`
-	SaveInterval            string            `json:"SaveInterval"`
-	AutoPauseServer         *bool             `json:"AutoPauseServer"`
-	LocalIpAddress          string            `json:"LocalIpAddress"`
-	StartLocalHost          *bool             `json:"StartLocalHost"`
-	ServerVisible           *bool             `json:"ServerVisible"`
-	UseSteamP2P             *bool             `json:"UseSteamP2P"`
-	ExePath                 string            `json:"ExePath"`
-	AdditionalParams        string            `json:"AdditionalParams"`
-	Users                   map[string]string `json:"users"`       // Map of username to hashed password
-	AuthEnabled             *bool             `json:"authEnabled"` // Toggle for enabling/disabling auth
-	JwtKey                  string            `json:"JwtKey"`
-	AuthTokenLifetime       int               `json:"AuthTokenLifetime"`
-	Debug                   *bool             `json:"Debug"`
-	CreateSSUILogFile       *bool             `json:"CreateSSUILogFile"`
-	LogLevel                int               `json:"LogLevel"`
-	SubsystemFilters        []string          `json:"subsystemFilters"`
-	IsUpdateEnabled         *bool             `json:"IsUpdateEnabled"`
-	IsSSCMEnabled           *bool             `json:"IsSSCMEnabled"`
-	AutoRestartServerTimer  string            `json:"AutoRestartServerTimer"`
-	AllowPrereleaseUpdates  *bool             `json:"AllowPrereleaseUpdates"`
-	AllowMajorUpdates       *bool             `json:"AllowMajorUpdates"`
+	DiscordToken              string            `json:"discordToken"`
+	ControlChannelID          string            `json:"controlChannelID"`
+	StatusChannelID           string            `json:"statusChannelID"`
+	ConnectionListChannelID   string            `json:"connectionListChannelID"`
+	LogChannelID              string            `json:"logChannelID"`
+	SaveChannelID             string            `json:"saveChannelID"`
+	ControlPanelChannelID     string            `json:"controlPanelChannelID"`
+	DiscordCharBufferSize     int               `json:"DiscordCharBufferSize"`
+	BlackListFilePath         string            `json:"blackListFilePath"`
+	IsDiscordEnabled          *bool             `json:"isDiscordEnabled"`
+	ErrorChannelID            string            `json:"errorChannelID"`
+	BackupKeepLastN           int               `json:"backupKeepLastN"`
+	IsCleanupEnabled          *bool             `json:"isCleanupEnabled"`
+	BackupKeepDailyFor        int               `json:"backupKeepDailyFor"`
+	BackupKeepWeeklyFor       int               `json:"backupKeepWeeklyFor"`
+	BackupKeepMonthlyFor      int               `json:"backupKeepMonthlyFor"`
+	BackupCleanupInterval     int               `json:"backupCleanupInterval"`
+	BackupWaitTime            int               `json:"backupWaitTime"`
+	IsNewTerrainAndSaveSystem *bool             `json:"IsNewTerrainAndSaveSystem"`
+	GameBranch                string            `json:"gameBranch"`
+	Difficulty                string            `json:"Difficulty"`
+	StartCondition            string            `json:"StartCondition"`
+	StartLocation             string            `json:"StartLocation"`
+	ServerName                string            `json:"ServerName"`
+	SaveInfo                  string            `json:"SaveInfo"`
+	ServerMaxPlayers          string            `json:"ServerMaxPlayers"`
+	ServerPassword            string            `json:"ServerPassword"`
+	ServerAuthSecret          string            `json:"ServerAuthSecret"`
+	AdminPassword             string            `json:"AdminPassword"`
+	GamePort                  string            `json:"GamePort"`
+	UpdatePort                string            `json:"UpdatePort"`
+	UPNPEnabled               *bool             `json:"UPNPEnabled"`
+	AutoSave                  *bool             `json:"AutoSave"`
+	SaveInterval              string            `json:"SaveInterval"`
+	AutoPauseServer           *bool             `json:"AutoPauseServer"`
+	LocalIpAddress            string            `json:"LocalIpAddress"`
+	StartLocalHost            *bool             `json:"StartLocalHost"`
+	ServerVisible             *bool             `json:"ServerVisible"`
+	UseSteamP2P               *bool             `json:"UseSteamP2P"`
+	ExePath                   string            `json:"ExePath"`
+	AdditionalParams          string            `json:"AdditionalParams"`
+	Users                     map[string]string `json:"users"`       // Map of username to hashed password
+	AuthEnabled               *bool             `json:"authEnabled"` // Toggle for enabling/disabling auth
+	JwtKey                    string            `json:"JwtKey"`
+	AuthTokenLifetime         int               `json:"AuthTokenLifetime"`
+	Debug                     *bool             `json:"Debug"`
+	CreateSSUILogFile         *bool             `json:"CreateSSUILogFile"`
+	LogLevel                  int               `json:"LogLevel"`
+	LogClutterToConsole       *bool             `json:"LogClutterToConsole"`
+	SubsystemFilters          []string          `json:"subsystemFilters"`
+	IsUpdateEnabled           *bool             `json:"IsUpdateEnabled"`
+	IsSSCMEnabled             *bool             `json:"IsSSCMEnabled"`
+	AutoRestartServerTimer    string            `json:"AutoRestartServerTimer"`
+	AllowPrereleaseUpdates    *bool             `json:"AllowPrereleaseUpdates"`
+	AllowMajorUpdates         *bool             `json:"AllowMajorUpdates"`
+	IsConsoleEnabled          *bool             `json:"IsConsoleEnabled"`
+	LanguageSetting           string            `json:"LanguageSetting"`
+	AutoStartServerOnStartup  *bool             `json:"AutoStartServerOnStartup"`
 }
 
 type CustomDetection struct {
@@ -78,6 +86,8 @@ type CustomDetection struct {
 
 // LoadConfig loads and initializes the configuration
 func LoadConfig() (*JsonConfig, error) {
+	ConfigMu.Lock()
+
 	var jsonConfig JsonConfig
 	file, err := os.Open(ConfigPath)
 	if err == nil {
@@ -88,13 +98,14 @@ func LoadConfig() (*JsonConfig, error) {
 			return nil, fmt.Errorf("failed to decode config: %v", err)
 		}
 	} else if os.IsNotExist(err) {
-		// File is missing, log it and proceed with defaults
-		fmt.Println("Config file does not exist. Using defaults and environment variables.")
+		// File is missing, log it and proceed with defaults (probably first time setup)
+		fmt.Println("config file was not found, proceeding with defaults.")
 	} else {
 		// Other errors (e.g., permissions), fail immediately
 		return nil, fmt.Errorf("failed to open config file: %v", err)
 	}
-	// Apply configuration with hierarchy
+	ConfigMu.Unlock()
+	// Apply configuration
 	applyConfig(&jsonConfig)
 
 	return &jsonConfig, nil
@@ -131,15 +142,24 @@ func applyConfig(cfg *JsonConfig) {
 	BackupKeepMonthlyFor = time.Duration(getInt(cfg.BackupKeepMonthlyFor, "BACKUP_KEEP_MONTHLY_FOR", 730)) * time.Hour
 	BackupCleanupInterval = time.Duration(getInt(cfg.BackupCleanupInterval, "BACKUP_CLEANUP_INTERVAL", 730)) * time.Hour
 	BackupWaitTime = time.Duration(getInt(cfg.BackupWaitTime, "BACKUP_WAIT_TIME", 30)) * time.Second
+
+	isNewTerrainAndSaveSystemVal := getBool(cfg.IsNewTerrainAndSaveSystem, "ENABLE_DOT_SAVES", false)
+	IsNewTerrainAndSaveSystem = isNewTerrainAndSaveSystemVal
+	cfg.IsNewTerrainAndSaveSystem = &isNewTerrainAndSaveSystemVal
+
 	GameBranch = getString(cfg.GameBranch, "GAME_BRANCH", "public")
+	Difficulty = getString(cfg.Difficulty, "DIFFICULTY", "")
+	StartCondition = getString(cfg.StartCondition, "START_CONDITION", "")
+	StartLocation = getString(cfg.StartLocation, "START_LOCATION", "")
 	ServerName = getString(cfg.ServerName, "SERVER_NAME", "Stationeers Server UI")
-	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "Moon Moon")
+	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "Vulcan Vulcan")
 	ServerMaxPlayers = getString(cfg.ServerMaxPlayers, "SERVER_MAX_PLAYERS", "6")
 	ServerPassword = getString(cfg.ServerPassword, "SERVER_PASSWORD", "")
 	ServerAuthSecret = getString(cfg.ServerAuthSecret, "SERVER_AUTH_SECRET", "")
 	AdminPassword = getString(cfg.AdminPassword, "ADMIN_PASSWORD", "")
 	GamePort = getString(cfg.GamePort, "GAME_PORT", "27016")
 	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27015")
+	LanguageSetting = getString(cfg.LanguageSetting, "LANGUAGE_SETTING", "en-US")
 
 	upnpEnabledVal := getBool(cfg.UPNPEnabled, "UPNP_ENABLED", false)
 	UPNPEnabled = upnpEnabledVal
@@ -204,9 +224,21 @@ func applyConfig(cfg *JsonConfig) {
 
 	SubsystemFilters = getStringSlice(cfg.SubsystemFilters, "SUBSYSTEM_FILTERS", []string{})
 	AutoRestartServerTimer = getString(cfg.AutoRestartServerTimer, "AUTO_RESTART_SERVER_TIMER", "0")
-	isSSCMEnabledVal := getBool(cfg.IsSSCMEnabled, "IS_SSCM_ENABLED", false)
+	isSSCMEnabledVal := getBool(cfg.IsSSCMEnabled, "IS_SSCM_ENABLED", true)
 	IsSSCMEnabled = isSSCMEnabledVal
 	cfg.IsSSCMEnabled = &isSSCMEnabledVal
+
+	isConsoleEnabledVal := getBool(cfg.IsConsoleEnabled, "IS_CONSOLE_ENABLED", true)
+	IsConsoleEnabled = isConsoleEnabledVal
+	cfg.IsConsoleEnabled = &isConsoleEnabledVal
+
+	logClutterToConsoleVal := getBool(cfg.LogClutterToConsole, "LOG_CLUTTER_TO_CONSOLE", false)
+	LogClutterToConsole = logClutterToConsoleVal
+	cfg.LogClutterToConsole = &logClutterToConsoleVal
+
+	autoStartServerOnStartupVal := getBool(cfg.AutoStartServerOnStartup, "AUTO_START_SERVER_ON_STARTUP", false)
+	AutoStartServerOnStartup = autoStartServerOnStartupVal
+	cfg.AutoStartServerOnStartup = &autoStartServerOnStartupVal
 
 	// Process SaveInfo
 	parts := strings.Split(SaveInfo, " ")
@@ -217,7 +249,31 @@ func applyConfig(cfg *JsonConfig) {
 		BackupWorldName = parts[1]
 	}
 
-	// Set backup paths
-	ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "Backup")
+	// Set backup paths for old or new style saves
+	if IsNewTerrainAndSaveSystem {
+		// use new new style autosave folder
+		ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "autosave")
+	} else {
+		// use old style Backups folder
+		ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "Backup")
+	}
+	// use Safebackups folder either way.
 	ConfiguredSafeBackupDir = filepath.Join("./saves/", WorldName, "Safebackups")
+}
+
+// use SaveConfig EXCLUSIVELY though loader.SaveConfig to trigger a reload afterwards!
+func SaveConfig(cfg *JsonConfig) error {
+	file, err := os.Create(ConfigPath)
+	if err != nil {
+		return fmt.Errorf("error creating config.json: %v", err)
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(cfg); err != nil {
+		return fmt.Errorf("error encoding config.json: %v", err)
+	}
+
+	return nil
 }

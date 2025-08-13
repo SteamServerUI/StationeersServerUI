@@ -10,10 +10,9 @@ import (
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/configchanger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/security"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/security"
 )
 
 var setupReminderCount = 0 // to limit the number of setup reminders shown to the user
@@ -192,7 +191,7 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	existingConfig.Users[creds.Username] = hashedPassword
 
 	// Persist the updated config
-	if err := configchanger.SaveConfig(existingConfig); err != nil {
+	if err := loader.SaveConfig(existingConfig); err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error - Failed to save config"})
@@ -214,7 +213,7 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 	if len(config.Users) == 0 {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - No users registered - cannot finalize setup at this time"})
+		json.NewEncoder(w).Encode(map[string]string{"error": "No users registered - cannot finalize setup at this time. You should really enable authentication - or click 'Skip authentication'"})
 		return
 	}
 
@@ -235,7 +234,7 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 	newConfig.AuthEnabled = &isTrue // Set the pointer to true
 
 	// Save the updated config
-	err = configchanger.SaveConfig(newConfig)
+	err = loader.SaveConfig(newConfig)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -250,5 +249,5 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 		"message":      "Setup finalized successfully",
 		"restart_hint": "You will be redirected to the login page...",
 	})
-	loader.ReloadConfig()
+	loader.ReloadBackend()
 }

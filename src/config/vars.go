@@ -1,6 +1,7 @@
 package config
 
 import (
+	"embed"
 	"sync"
 	"time"
 
@@ -43,24 +44,31 @@ var (
 	SaveInterval     string
 	AutoPauseServer  bool
 	AutoSave         bool
+	Difficulty       string
+	StartCondition   string
+	StartLocation    string
 )
 
 // Logging, debugging and misc
 var (
-	IsDebugMode            bool //only used for pprof server, keep it like this and check the log level instead. Debug = 10
-	CreateSSUILogFile      bool
-	LogLevel               int
-	LogMessageBuffer       string
-	IsFirstTimeSetup       bool
-	BufferFlushTicker      *time.Ticker
-	SSEMessageBufferSize   = 2000
-	MaxSSEConnections      = 20
-	GameServerAppID        = "600760"
-	ExePath                string
-	GameBranch             string
-	SubsystemFilters       []string
-	GameServerUUID         uuid.UUID // Assined at startup to the current instance of the server we are managing. Currently unused.
-	AutoRestartServerTimer string
+	IsDebugMode              bool //only used for pprof server, keep it like this and check the log level instead. Debug = 10
+	CreateSSUILogFile        bool
+	LogLevel                 int
+	LogMessageBuffer         string
+	IsFirstTimeSetup         bool
+	BufferFlushTicker        *time.Ticker
+	SSEMessageBufferSize     = 2000
+	MaxSSEConnections        = 20
+	GameServerAppID          = "600760"
+	ExePath                  string
+	GameBranch               string
+	SubsystemFilters         []string
+	GameServerUUID           uuid.UUID // Assined at startup to the current instance of the server we are managing. Currently unused.
+	AutoRestartServerTimer   string
+	IsConsoleEnabled         bool
+	LogClutterToConsole      bool // surpresses clutter mono logs from the gameserver
+	LanguageSetting          string
+	AutoStartServerOnStartup bool
 )
 
 // Discord integration
@@ -83,15 +91,16 @@ var (
 
 // Backup and cleanup settings
 var (
-	IsCleanupEnabled        bool
-	BackupKeepLastN         int
-	BackupKeepDailyFor      time.Duration
-	BackupKeepWeeklyFor     time.Duration
-	BackupKeepMonthlyFor    time.Duration
-	BackupCleanupInterval   time.Duration
-	ConfiguredBackupDir     string
-	ConfiguredSafeBackupDir string
-	BackupWaitTime          time.Duration
+	IsCleanupEnabled          bool
+	BackupKeepLastN           int
+	BackupKeepDailyFor        time.Duration
+	BackupKeepWeeklyFor       time.Duration
+	BackupKeepMonthlyFor      time.Duration
+	BackupCleanupInterval     time.Duration
+	ConfiguredBackupDir       string
+	ConfiguredSafeBackupDir   string
+	BackupWaitTime            time.Duration
+	IsNewTerrainAndSaveSystem bool
 )
 
 // Authentication and security
@@ -120,7 +129,7 @@ var (
 	TLSCertPath              = "./UIMod/tls/cert.pem"
 	TLSKeyPath               = "./UIMod/tls/key.pem"
 	ConfigPath               = "./UIMod/config/config.json"
-	CustomDetectionsFilePath = "./UIMod/detectionmanager/customdetections.json"
+	CustomDetectionsFilePath = "./UIMod/config/customdetections.json"
 	LogFolder                = "./UIMod/logs/"
 	UIModFolder              = "./UIMod/"
 	TwoBoxFormFolder         = "./UIMod/twoboxform/"
@@ -132,3 +141,7 @@ var (
 	SSCMFilePath             = "./BepInEx/plugins/SSCM/SSCM.socket"
 	SSCMPluginDir            = "./BepInEx/plugins/SSCM/"
 )
+
+// Bundled Assets
+
+var V1UIFS embed.FS
