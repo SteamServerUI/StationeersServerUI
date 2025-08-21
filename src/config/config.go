@@ -74,6 +74,7 @@ type JsonConfig struct {
 	IsConsoleEnabled          *bool             `json:"IsConsoleEnabled"`
 	LanguageSetting           string            `json:"LanguageSetting"`
 	AutoStartServerOnStartup  *bool             `json:"AutoStartServerOnStartup"`
+	AdditionalLoginHeaderText string            `json:"AdditionalLoginHeaderText"`
 }
 
 type CustomDetection struct {
@@ -160,6 +161,7 @@ func applyConfig(cfg *JsonConfig) {
 	GamePort = getString(cfg.GamePort, "GAME_PORT", "27016")
 	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27015")
 	LanguageSetting = getString(cfg.LanguageSetting, "LANGUAGE_SETTING", "en-US")
+	AdditionalLoginHeaderText = getString(cfg.AdditionalLoginHeaderText, "ADDITIONAL_LOGIN_HEADER_TEXT", "")
 
 	upnpEnabledVal := getBool(cfg.UPNPEnabled, "UPNP_ENABLED", false)
 	UPNPEnabled = upnpEnabledVal
