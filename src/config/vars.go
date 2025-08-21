@@ -110,6 +110,7 @@ var (
 	JwtKey            string
 	AuthTokenLifetime int
 	Users             map[string]string
+	SSUIWebPort       string
 )
 
 // SSUI Updates
