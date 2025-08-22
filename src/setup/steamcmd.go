@@ -1,6 +1,7 @@
 package setup
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -26,24 +27,25 @@ const (
 )
 
 // InstallAndRunSteamCMD installs and runs SteamCMD based on the platform (Windows/Linux).
-// It automatically detects the OS and calls the appropriate installation function.
-func InstallAndRunSteamCMD() {
+// It returns the exit status of the SteamCMD execution and any error encountered.
+func InstallAndRunSteamCMD() (int, error) {
 	if config.Branch == "indev-no-steamcmd" {
 		logger.Install.Info("🔍 Detected indev-no-steamcmd branch, skipping SteamCMD installation")
-		return
+		return 0, nil
 	}
 
 	if runtime.GOOS == "windows" {
-		installSteamCMDWindows()
+		return installSteamCMDWindows()
 	} else if runtime.GOOS == "linux" {
-		installSteamCMDLinux()
+		return installSteamCMDLinux()
 	} else {
-		logger.Install.Error("❌ SteamCMD installation is not supported on this OS.\n")
-		return
+		err := fmt.Errorf("SteamCMD installation is not supported on this OS")
+		logger.Install.Error("❌ " + err.Error() + "\n")
+		return -1, err
 	}
 }
 
-func installSteamCMD(platform string, steamCMDDir string, downloadURL string, extractFunc ExtractorFunc) {
+func installSteamCMD(platform string, steamCMDDir string, downloadURL string, extractFunc ExtractorFunc) (int, error) {
 	// Check if SteamCMD is already installed
 	if _, err := os.Stat(steamCMDDir); os.IsNotExist(err) {
 		logger.Install.Warn("⚠️ SteamCMD not found for " + platform + ", downloading...\n")
@@ -51,7 +53,7 @@ func installSteamCMD(platform string, steamCMDDir string, downloadURL string, ex
 		// Create SteamCMD directory
 		if err := createSteamCMDDirectory(steamCMDDir); err != nil {
 			logger.Install.Error("❌ Error creating SteamCMD directory: " + err.Error() + "\n")
-			return
+			return -1, err
 		}
 
 		// Ensure cleanup on failure
@@ -66,55 +68,54 @@ func installSteamCMD(platform string, steamCMDDir string, downloadURL string, ex
 		// Install required libraries
 		if err := installRequiredLibraries(); err != nil {
 			logger.Install.Error("❌ Error installing required libraries: " + err.Error() + "\n")
-			return
+			return -1, err
 		}
 
 		// Download and extract SteamCMD
 		if err := downloadAndExtractSteamCMD(downloadURL, steamCMDDir, extractFunc); err != nil {
 			logger.Install.Error("❌ " + err.Error() + "\n")
-			return
+			return -1, err
 		}
 
 		// Set executable permissions for SteamCMD files
 		if err := setExecutablePermissions(steamCMDDir); err != nil {
 			logger.Install.Error("❌ Error setting executable permissions: " + err.Error() + "\n")
-			return
+			return -1, err
 		}
 
 		// Verify the steamcmd binary
 		if err := verifySteamCMDBinary(steamCMDDir); err != nil {
 			logger.Install.Error("❌ " + err.Error() + "\n")
-			return
+			return -1, err
 		}
 
 		// Mark installation as successful
 		success = true
 		logger.Install.Info("✅ SteamCMD installed successfully.\n")
 	} else {
-
 		logger.Install.Info("✅ SteamCMD is already installed.")
 	}
 
-	// Run SteamCMD
-	runSteamCMD(steamCMDDir)
+	// Run SteamCMD and return its exit status and error
+	return runSteamCMD(steamCMDDir)
 }
 
 // installSteamCMDLinux downloads and installs SteamCMD on Linux.
-func installSteamCMDLinux() {
-	installSteamCMD("Linux", SteamCMDLinuxDir, SteamCMDLinuxURL, untarWrapper)
+func installSteamCMDLinux() (int, error) {
+	return installSteamCMD("Linux", SteamCMDLinuxDir, SteamCMDLinuxURL, untarWrapper)
 }
 
 // installSteamCMDWindows downloads and installs SteamCMD on Windows.
-func installSteamCMDWindows() {
-	installSteamCMD("Windows", SteamCMDWindowsDir, SteamCMDWindowsURL, unzip)
+func installSteamCMDWindows() (int, error) {
+	return installSteamCMD("Windows", SteamCMDWindowsDir, SteamCMDWindowsURL, unzip)
 }
 
-// runSteamCMD runs the SteamCMD command to update the game.
-func runSteamCMD(steamCMDDir string) {
+// runSteamCMD runs the SteamCMD command to update the game and returns its exit status and any error.
+func runSteamCMD(steamCMDDir string) (int, error) {
 	currentDir, err := os.Getwd()
 	if err != nil {
 		logger.Install.Error("❌ Error getting current working directory: " + err.Error() + "\n")
-		return
+		return -1, err
 	}
 	logger.Install.Debug("✅ Current working directory: " + currentDir + "\n")
 
@@ -122,7 +123,7 @@ func runSteamCMD(steamCMDDir string) {
 	if runtime.GOOS != "windows" {
 		if err := setExecutablePermissions(steamCMDDir); err != nil {
 			logger.Install.Error("❌ Error setting executable permissions, your Steamcmd install might be broken: " + err.Error() + "\n")
-			return
+			return -1, err
 		}
 	}
 
@@ -142,10 +143,15 @@ func runSteamCMD(steamCMDDir string) {
 	}
 	err = cmd.Run()
 	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			logger.Install.Error("❌ SteamCMD exited unsuccessfully: " + err.Error() + "\n")
+			return exitErr.ExitCode(), err
+		}
 		logger.Install.Error("❌ Error running SteamCMD: " + err.Error() + "\n")
-		return
+		return -1, err
 	}
 	logger.Install.Info("✅ SteamCMD executed successfully.\n")
+	return 0, nil
 }
 
 // buildSteamCMDCommand constructs the SteamCMD command based on the OS.

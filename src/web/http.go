@@ -162,7 +162,7 @@ func HandleRunSteamCMD(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(10000 * time.Millisecond)
 	}
 	logger.Core.Info("Running SteamCMD")
-	setup.InstallAndRunSteamCMD()
+	_, err := setup.InstallAndRunSteamCMD()
 
 	// Update last execution time
 	lastSteamCMDExecution = time.Now()
@@ -170,5 +170,10 @@ func HandleRunSteamCMD(w http.ResponseWriter, r *http.Request) {
 	// Success: return 202 Accepted and JSON
 	w.WriteHeader(http.StatusAccepted)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"statuscode": "202", "status": "Accepted", "message": "SteamCMD ran successfully."})
+	if err == nil {
+		json.NewEncoder(w).Encode(map[string]string{"statuscode": "202", "status": "Success", "message": "SteamCMD ran successfully."})
+		return
+	}
+	// Failure: return 202 Accepted and JSON with the error message
+	json.NewEncoder(w).Encode(map[string]string{"statuscode": "202", "status": "Failed", "message": "SteamCMD ran unsuccessfully:" + err.Error()})
 }
