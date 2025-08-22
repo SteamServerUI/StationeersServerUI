@@ -58,7 +58,7 @@ func (m *BackupManager) RestoreBackup(index int) error {
 				existingFile := filepath.Join(saveDir, file.Name())
 				// Move existing .save file to SafeBackupDir with timestamp to avoid overwrites
 				timestamp := time.Now().Format("2006-01-02_15-04-05")
-				savedPreviousHeadSaveFilePath := filepath.Join(m.config.SafeBackupDir, fmt.Sprintf("%s_%s_%s", "oldHeadSaveBackup", timestamp, file.Name()))
+				savedPreviousHeadSaveFilePath := filepath.Join(m.config.SafeBackupDir, fmt.Sprintf("%s_%s_%s", "pre-restore-HEAD-", timestamp, file.Name()))
 				if err := os.Rename(existingFile, savedPreviousHeadSaveFilePath); err != nil {
 					return fmt.Errorf("failed to move existing HEAD .save file %s to %s: %w", existingFile, savedPreviousHeadSaveFilePath, err)
 				}
