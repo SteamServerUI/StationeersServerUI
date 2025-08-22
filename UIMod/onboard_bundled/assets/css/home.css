@@ -204,6 +204,7 @@
 
 /* Backups */
 #backups {
+  position: relative;
   margin-top: 40px;
   background-color: rgba(0, 255, 171, 0.05);
   padding: 20px;
@@ -214,6 +215,19 @@
 
 #backups:hover {
   transform: translateY(-2px);
+}
+
+#backupRefreshButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 5px 10px;
+    font-size: 1.3rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .backup-item {
