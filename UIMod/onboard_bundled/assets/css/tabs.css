@@ -7,34 +7,34 @@
   
   .tab-buttons {
     display: flex;
-    border-bottom: 2px solid var(--primary);
     margin-bottom: 0;
   }
   
   .tab-button {
     background: rgba(0, 0, 0, 0.3);
     border: 2px solid var(--primary-dim);
-    border-bottom: none;
+    border-bottom: 2px solid #00000000;
     padding: 10px 20px;
     margin-right: 5px;
     color: var(--primary);
     cursor: pointer;
-    border-radius: 8px 8px 0 0;
+    border-radius: 8px 8px 8px 8px;
     opacity: 0.7;
     transition: all var(--transition-normal);
     font-size: 0.9rem;
+    margin-bottom: -2px;
   }
   
   .tab-button:hover {
     background-color: rgba(0, 255, 171, 0.1);
     box-shadow: 0 -4px 10px rgba(0, 255, 171, 0.3);
+    border-bottom: 2px solid var(--primary-dim);
   }
   
   .tab-button.active {
     background-color: rgba(0, 255, 171, 0.2);
     opacity: 1;
     box-shadow: 0 -4px 10px rgba(0, 255, 171, 0.5);
-    border-color: var(--primary);
   }
   
   .tab-content {
