@@ -1,6 +1,6 @@
 module github.com/JacksonTheMaster/StationeersServerUI/v5
 
-go 1.25
+go 1.25.0
 
 require (
 	github.com/bwmarrin/discordgo v0.28.1
