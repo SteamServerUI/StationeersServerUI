@@ -2,6 +2,7 @@ package loader
 
 import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordrpc"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
@@ -29,4 +30,6 @@ func AfterStartComplete() {
 		gamemgr.InternalStartServer()
 	}
 	setup.SetupAutostartScripts()
+	// start discordrpc in a separate goroutine
+	discordrpc.StartDiscordRPC()
 }
