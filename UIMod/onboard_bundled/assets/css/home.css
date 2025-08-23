@@ -243,7 +243,11 @@
   line-height: 1.6;
 }
 
-.backup-item:hover {
+.backup-item.animate-in {
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+.backup-item:hover, .backup-item.animate-in:hover {
   background-color: rgba(0, 0, 0, 0.6);
   border-color: var(--primary);
   transform: translateX(5px);
@@ -266,14 +270,13 @@
   color: #000;
 }
 
-@keyframes blink {
-
-  0%,
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateX(-20px);
+  }
   100% {
     opacity: 1;
-  }
-
-  50% {
-    opacity: 0;
+    transform: scale(1) translateX(0);
   }
 }

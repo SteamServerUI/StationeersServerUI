@@ -25,7 +25,7 @@ function toggleServer(endpoint) {
 function triggerSteamCMD() {
     const status = document.getElementById('status');
     status.hidden = false;
-    typeTextWithCallback(status, 'Running SteamCMD, please wait. ', 20, () => {
+    typeTextWithCallback(status, 'Running SteamCMD, please wait... ', 20, () => {
         fetch('/api/v2/steamcmd/run')
             .then(response => response.json())
             .then(data => {
@@ -40,7 +40,6 @@ function triggerSteamCMD() {
     });
 }
 
-// Backup management
 function fetchBackups() {
     fetch('/api/v2/backups?mode=classic')
         .then(response => response.text())
@@ -51,11 +50,18 @@ function fetchBackups() {
             if (data.trim() === "No valid backup files found.") {
                 backupList.textContent = data;
             } else {
-                data.split('\n').filter(Boolean).forEach(backup => {
+                let animationCount = 0; // Track number of animated items
+                data.split('\n').filter(Boolean).forEach((backup) => {
                     const li = document.createElement('li');
                     li.className = 'backup-item';
                     li.innerHTML = `${backup} <button onclick="restoreBackup(${extractIndex(backup)})">Restore</button>`;
                     backupList.appendChild(li);
+                    if (animationCount < 20) {
+                        setTimeout(() => {
+                            li.classList.add('animate-in');
+                        }, animationCount * 100);
+                        animationCount++;
+                    }
                 });
             }
         })
