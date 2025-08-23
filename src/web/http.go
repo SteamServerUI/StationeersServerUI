@@ -168,10 +168,10 @@ func HandleRunSteamCMD(w http.ResponseWriter, r *http.Request) {
 	lastSteamCMDExecution = time.Now()
 
 	// Success: return 202 Accepted and JSON
-	w.WriteHeader(http.StatusAccepted)
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	if err == nil {
-		json.NewEncoder(w).Encode(map[string]string{"statuscode": "202", "status": "Success", "message": "SteamCMD ran successfully."})
+		json.NewEncoder(w).Encode(map[string]string{"statuscode": "202", "status": "Success", "message": "SteamCMD ran successfully, gameserver files are up-to-date!"})
 		return
 	}
 	// Failure: return 202 Accepted and JSON with the error message

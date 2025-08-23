@@ -25,13 +25,11 @@ function toggleServer(endpoint) {
 function triggerSteamCMD() {
     const status = document.getElementById('status');
     status.hidden = false;
-    typeTextWithCallback(status, 'Triggering SteamCMD, please wait. SteamCMD will print log output only to the CLI ', 20, () => {
+    typeTextWithCallback(status, 'Running SteamCMD, please wait. ', 20, () => {
         fetch('/api/v2/steamcmd/run')
             .then(response => response.json())
             .then(data => {
-                typeTextWithCallback(status, data.message, 20, () => {
-                    setTimeout(() => status.hidden = true, 10000);
-                });
+                showPopup("info", data.message);
             })
             .catch(err => {
                 typeTextWithCallback(status, 'Error: Failed to trigger SteamCMD', 20, () => {
