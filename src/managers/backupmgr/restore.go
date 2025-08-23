@@ -1,7 +1,9 @@
 package backupmgr
 
 import (
+	"archive/zip"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -56,7 +58,7 @@ func (m *BackupManager) RestoreBackup(index int) error {
 				existingFile := filepath.Join(saveDir, file.Name())
 				// Move existing .save file to SafeBackupDir with timestamp to avoid overwrites
 				timestamp := time.Now().Format("2006-01-02_15-04-05")
-				savedPreviousHeadSaveFilePath := filepath.Join(m.config.SafeBackupDir, fmt.Sprintf("%s_%s_%s", "oldHeadSaveBackup", timestamp, file.Name()))
+				savedPreviousHeadSaveFilePath := filepath.Join(m.config.SafeBackupDir, fmt.Sprintf("%s_%s_%s", "pre-restore-HEAD-", timestamp, file.Name()))
 				if err := os.Rename(existingFile, savedPreviousHeadSaveFilePath); err != nil {
 					return fmt.Errorf("failed to move existing HEAD .save file %s to %s: %w", existingFile, savedPreviousHeadSaveFilePath, err)
 				}
@@ -64,12 +66,123 @@ func (m *BackupManager) RestoreBackup(index int) error {
 			}
 		}
 
-		// Now copy the new .save file
-		if err := copyFile(backupFile, destFile); err != nil {
+		// Create temp directory for mod time shenenigans (https://discordapp.com/channels/276525882049429515/392080751648178188/1407157281606336602)
+		tempDir := filepath.Join("./saves", m.config.WorldName, "tmp")
+		if err := os.MkdirAll(tempDir, os.ModePerm); err != nil {
+			return fmt.Errorf("failed to create temp directory %s: %w", tempDir, err)
+		}
+		defer os.RemoveAll(tempDir)
+
+		// Extract .save (zip) file to tempDir
+		r, err := zip.OpenReader(backupFile)
+		if err != nil {
+			return fmt.Errorf("failed to open zip reader for %s: %w", backupFile, err)
+		}
+		defer r.Close()
+
+		for _, f := range r.File {
+			path := filepath.Join(tempDir, f.Name)
+			if f.FileInfo().IsDir() {
+				if err := os.MkdirAll(path, f.Mode()); err != nil {
+					m.revertRestore(restoredFiles)
+					return fmt.Errorf("failed to create directory %s: %w", path, err)
+				}
+				continue
+			}
+
+			if err := os.MkdirAll(filepath.Dir(path), os.ModePerm); err != nil {
+				m.revertRestore(restoredFiles)
+				return fmt.Errorf("failed to create parent directory for %s: %w", path, err)
+			}
+
+			outFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+			if err != nil {
+				m.revertRestore(restoredFiles)
+				return fmt.Errorf("failed to create file %s: %w", path, err)
+			}
+
+			rc, err := f.Open()
+			if err != nil {
+				outFile.Close()
+				m.revertRestore(restoredFiles)
+				return fmt.Errorf("failed to open file in zip %s: %w", f.Name, err)
+			}
+
+			if _, err := io.Copy(outFile, rc); err != nil {
+				rc.Close()
+				outFile.Close()
+				m.revertRestore(restoredFiles)
+				return fmt.Errorf("failed to extract file %s: %w", path, err)
+			}
+			rc.Close()
+			outFile.Close()
+		}
+
+		// Modify timestamps of extracted files to current system time
+		now := time.Now()
+		if err := filepath.Walk(tempDir, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if info.IsDir() {
+				return nil
+			}
+			return os.Chtimes(path, now, now)
+		}); err != nil {
+			m.revertRestore(restoredFiles)
+			return fmt.Errorf("failed to modify timestamps in %s: %w", tempDir, err)
+		}
+
+		// Create new .save (zip) file at destFile with updated timestamps
+		dest, err := os.Create(destFile)
+		if err != nil {
+			m.revertRestore(restoredFiles)
+			return fmt.Errorf("failed to create destination .save file %s: %w", destFile, err)
+		}
+		defer dest.Close()
+
+		w := zip.NewWriter(dest)
+		defer w.Close()
+
+		if err := filepath.Walk(tempDir, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if info.IsDir() {
+				return nil
+			}
+			relPath, err := filepath.Rel(tempDir, path)
+			if err != nil {
+				return fmt.Errorf("failed to get relative path for %s: %w", path, err)
+			}
+			relPath = filepath.ToSlash(relPath)
+
+			// Create zip entry with current system timestamp
+			fw, err := w.CreateHeader(&zip.FileHeader{
+				Name:     relPath,
+				Method:   zip.Deflate,
+				Modified: now,
+			})
+			if err != nil {
+				return fmt.Errorf("failed to create zip entry %s: %w", relPath, err)
+			}
+
+			srcFile, err := os.Open(path)
+			if err != nil {
+				return fmt.Errorf("failed to open file %s: %w", path, err)
+			}
+			defer srcFile.Close()
+
+			if _, err := io.Copy(fw, srcFile); err != nil {
+				return fmt.Errorf("failed to write file %s to zip: %w", relPath, err)
+			}
+			return nil
+		}); err != nil {
 			m.revertRestore(restoredFiles)
 			return fmt.Errorf("failed to restore .save file %s: %w", backupFile, err)
 		}
 		restoredFiles[destFile] = backupFile
+		return nil // restore and mod time shenanigans successful, no need to return an error
 	} else {
 		// Old-style trio (world_meta.xml, world.xml, world.bin)
 		files := []struct {

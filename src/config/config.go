@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.5.8"
+	Version = "5.5.9"
 	Branch  = "release"
 )
 
@@ -74,6 +74,8 @@ type JsonConfig struct {
 	IsConsoleEnabled          *bool             `json:"IsConsoleEnabled"`
 	LanguageSetting           string            `json:"LanguageSetting"`
 	AutoStartServerOnStartup  *bool             `json:"AutoStartServerOnStartup"`
+	AdditionalLoginHeaderText string            `json:"AdditionalLoginHeaderText"`
+	SSUIWebPort               string            `json:"SSUIWebPort"`
 }
 
 type CustomDetection struct {
@@ -160,6 +162,8 @@ func applyConfig(cfg *JsonConfig) {
 	GamePort = getString(cfg.GamePort, "GAME_PORT", "27016")
 	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27015")
 	LanguageSetting = getString(cfg.LanguageSetting, "LANGUAGE_SETTING", "en-US")
+	AdditionalLoginHeaderText = getString(cfg.AdditionalLoginHeaderText, "ADDITIONAL_LOGIN_HEADER_TEXT", "")
+	SSUIWebPort = getString(cfg.SSUIWebPort, "SSUI_WEB_PORT", "8443")
 
 	upnpEnabledVal := getBool(cfg.UPNPEnabled, "UPNP_ENABLED", false)
 	UPNPEnabled = upnpEnabledVal

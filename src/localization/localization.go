@@ -120,6 +120,6 @@ func GetString(key string) string {
 	}
 
 	// Return key as final fallback
-	logger.Localization.Warn("Translation not found for key: " + key)
+	logger.Localization.Debug("Translation not found for key: " + key)
 	return key
 }

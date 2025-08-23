@@ -1,12 +1,13 @@
 module github.com/JacksonTheMaster/StationeersServerUI/v5
 
-go 1.24.2
+go 1.25
 
 require (
 	github.com/bwmarrin/discordgo v0.28.1
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/uuid v1.6.0
+	github.com/jacksonthemaster/discordrichpresence v1.0.3
 	golang.org/x/crypto v0.37.0
 )
 

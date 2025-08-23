@@ -30,6 +30,8 @@
 Explore your fututre Stationeers Server UI in action—no setup required!
 And the "best part?" The Demo current is not on the V5 but V4, so if you are convinced by the Demo, it will only get better when you actually try it out!
 
+### Preview is not available any more, but will be available soon!
+
 [![v4 Live Preview - Stationeers UI](https://img.shields.io/badge/Live%20Preview-Stationeers%20Server%20UI-blueviolet?style=for-the-badge&logo=github)](https://jacksonthemaster.github.io/StationeersServerUI/server.html)
 [![Download latest Version](https://img.shields.io/badge/Download-Stationeers%20Server%20UI-orange?style=for-the-badge)](https://jacksonthemaster.github.io/StationeersServerUI)
 </div>
@@ -52,7 +54,7 @@ And the "best part?" The Demo current is not on the V5 but V4, so if you are con
 2. 📁 Place in empty folder and run it on Linux or Windows (chmod +x on linux)
 3. 🌐 Access UI at `https://<<server-ip>>:8443`
 4. 📚 See [First-Time Setup](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup) in the wiki
-5. 🔒 If you set this up too quickly and are in search of the Default Username/Password, see [Security Considerations](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/Security-Considerations) for more details!
+5. 📖 Read the [Wiki](https://github.com/JacksonTheMaster/StationeersServerUI/wiki) and follow the chained pages (links at bottom of page)!
 
 ## What is This?
 

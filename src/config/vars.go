@@ -51,24 +51,25 @@ var (
 
 // Logging, debugging and misc
 var (
-	IsDebugMode              bool //only used for pprof server, keep it like this and check the log level instead. Debug = 10
-	CreateSSUILogFile        bool
-	LogLevel                 int
-	LogMessageBuffer         string
-	IsFirstTimeSetup         bool
-	BufferFlushTicker        *time.Ticker
-	SSEMessageBufferSize     = 2000
-	MaxSSEConnections        = 20
-	GameServerAppID          = "600760"
-	ExePath                  string
-	GameBranch               string
-	SubsystemFilters         []string
-	GameServerUUID           uuid.UUID // Assined at startup to the current instance of the server we are managing. Currently unused.
-	AutoRestartServerTimer   string
-	IsConsoleEnabled         bool
-	LogClutterToConsole      bool // surpresses clutter mono logs from the gameserver
-	LanguageSetting          string
-	AutoStartServerOnStartup bool
+	IsDebugMode               bool //only used for pprof server, keep it like this and check the log level instead. Debug = 10
+	CreateSSUILogFile         bool
+	LogLevel                  int
+	LogMessageBuffer          string
+	IsFirstTimeSetup          bool
+	BufferFlushTicker         *time.Ticker
+	SSEMessageBufferSize      = 2000
+	MaxSSEConnections         = 20
+	GameServerAppID           = "600760"
+	ExePath                   string
+	GameBranch                string
+	SubsystemFilters          []string
+	GameServerUUID            uuid.UUID // Assined at startup to the current instance of the server we are managing. Currently unused.
+	AutoRestartServerTimer    string
+	IsConsoleEnabled          bool
+	LogClutterToConsole       bool // surpresses clutter mono logs from the gameserver
+	LanguageSetting           string
+	AutoStartServerOnStartup  bool
+	AdditionalLoginHeaderText string
 )
 
 // Discord integration
@@ -109,6 +110,7 @@ var (
 	JwtKey            string
 	AuthTokenLifetime int
 	Users             map[string]string
+	SSUIWebPort       string
 )
 
 // SSUI Updates

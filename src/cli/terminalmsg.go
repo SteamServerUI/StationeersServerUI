@@ -36,7 +36,7 @@ func PrintStartupMessage() {
 	fmt.Println("  ╚═══════════════════════════════════════════════════════════════════════════════════════════════════╝")
 
 	// Web UI info
-	fmt.Println("\n  🌐 Web UI available at: https://localhost:8443 (default) or https://<server-ip>:8443")
+	fmt.Println("\n  🌐 Web UI available at: https://localhost:8443 (default) or https://<server-ip>:" + config.SSUIWebPort)
 	fmt.Println("\n  🌐 Support available at: https://discord.gg/8n3vN92MyJ")
 
 	// Quote

@@ -12,7 +12,7 @@
       "UIText_API_Info": "API Endpoint Reference",
       "UIText_Copyright": "Copyright",
       "UIText_Copyright1": "Licensed under",
-      "UIText_Copyright2": "Proprietary License."
+      "UIText_Copyright2": "Proprietary License"
     },
     "config": {
       "UIText_ServerConfig": "Server Configuration",
@@ -284,6 +284,7 @@
       "UIText_Finalize_SubmitButton": "Return to Start",
       "UIText_Finalize_SkipButton": "Skip Authentication",
       "UIText_Login_Title": "Stationeers Server UI",
+      "UIText_Login_HeaderTitle": "Login",
       "UIText_Login_PrimaryLabel": "Username",
       "UIText_Login_SecondaryLabel": "Password",
       "UIText_Login_PrimaryPlaceholder": "Enter Username",
