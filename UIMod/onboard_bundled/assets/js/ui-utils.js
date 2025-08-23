@@ -82,3 +82,10 @@ function getEventClassName(eventText) {
         condition ? eventText.includes(text) && eventText.includes(condition) : eventText.includes(text)
     )?.[1] || '';
 }
+
+document.querySelectorAll('.info-notice h3').forEach(header => {
+    header.addEventListener('click', () => {
+        const notice = header.parentElement;
+        notice.classList.toggle('open');
+    });
+});

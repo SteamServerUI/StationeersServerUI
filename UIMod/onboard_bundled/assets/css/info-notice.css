@@ -9,12 +9,32 @@
 }
 
 .info-notice h3 {
-    margin: 0 0 12px 0;
+    margin: 0;
     font-size: 1.1em;
     display: flex;
     align-items: center;
     gap: 8px;
     color: #4a90e2;
+    cursor: pointer;
+}
+
+.info-notice h3::after {
+    content: '▶';
+    font-size: 0.9em;
+    transition: transform 0.2s ease;
+}
+
+.info-notice.open h3::after {
+    transform: rotate(90deg);
+}
+
+.info-notice .collapsible-content {
+    display: none;
+    margin-top: 12px;
+}
+
+.info-notice.open .collapsible-content {
+    display: block;
 }
 
 .info-notice p {
@@ -74,11 +94,11 @@
     }
 
     .info-notice h3 {
-font-size: 1em;
+        font-size: 1em;
     }
 
     .info-notice p {
-font-size: 0.85em;
+        font-size: 0.85em;
     }
 
     .positive-update {

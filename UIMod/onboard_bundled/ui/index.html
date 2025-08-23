@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
     <link rel="stylesheet" href="/static/css/info-notice.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
+
 <body>
     <div id="space-background"></div>
     <div id="planet-container"></div>
@@ -66,7 +68,7 @@
         <div class="update" style="display: none;">
             <h3>
                 <span class="notice-icon">⚠️</span>
-                    Headline
+                Headline
                 <span class="notice-icon">⚠️</span>
             </h3>
             <span class="notice-icon">📢</span>
@@ -89,50 +91,65 @@
         <div class="info-notice">
             <h3>
                 <span class="notice-icon">ℹ️</span>
-                Transitioning to SteamServerUI
+                Transitioning to SteamServerUI (click to expand)
             </h3>
-            <p>
-                <strong>StationeersServerUI (V5)</strong> is slowly evolving into <strong><a
-                        href="https://steamserverui.github.io/SteamServerUI/" target="_blank">SteamServerUI
-                        (V6)</a></strong> — a modern, multi-game server management tool that supports any Steam game
-                while keeping Stationeers at its core.
-            </p>
-            <p>ℹ️ Sit back and relax: If you have auto updates enabled, you'll get notified and guided once V6 is ready. Current plan: End of Q42025, StationeersServerUI will get LTS until Q4026.
-                You can check the <a
-                    href="https://github.com/SteamServerUI/SteamServerUI/wiki/Migration-from-StationeersServerUI"
-                    target="_blank">Migration Guide</a> to plan your transition.</p>
-            <p>
-                <strong>Why are we doing this?</strong> StationeersServerUI has been great for Stationeers servers with
-                its one-click setups, Discord bots, and smart backups. However, its Stationeers-only focus and retro,
-                hard-to-maintain frontend code limited its potential. SteamServerUI uses the same reliable Go backend
-                but adds a modern Svelte-based UI, desktop app, and flexible system supporting any Steam game — from
-                Satisfactory to Project Zomboid and beyond.
-            </p>
-            <p>
-                <strong>What's changing:</strong> V6 features a sleek new interface, universal Steam game support, and
-                enhanced reliability. You're gaining a future-proof tool that's easier to use and can grow with you.
-            </p>
-            <p>
-                <strong>Timeline:</strong> A Stable SteamServerUI release planned for Q4-2025. Christmas, probably. StationeersServerUI will continue receiving long time support updates until Q42026. See the Roadmap <a
-                    href="https://github.com/SteamServerUI/SteamServerUI/wiki/Roadmap" target="_blank">here</a> for more
-                details.
-            </p>
+            <div class="collapsible-content">
+                <p>
+                    <strong>StationeersServerUI (V5)</strong> is slowly evolving into <strong><a
+                            href="https://steamserverui.github.io/SteamServerUI/" target="_blank">SteamServerUI
+                            (V6)</a></strong> — a modern, multi-game server management tool that supports any Steam game
+                    while keeping Stationeers at its core.
+                </p>
+                <p>ℹ️ Sit back and relax: If you have auto updates enabled, you'll get notified and guided once V6 is
+                    ready. Current plan: End of Q42025, StationeersServerUI will get LTS until Q4026.
+                    You can check the <a
+                        href="https://github.com/SteamServerUI/SteamServerUI/wiki/Migration-from-StationeersServerUI"
+                        target="_blank">Migration Guide</a> to plan your transition.</p>
+                <p>
+                    <strong>Why are we doing this?</strong> StationeersServerUI has been great for Stationeers servers
+                    with
+                    its one-click setups, Discord bots, and smart backups. However, its Stationeers-only focus and
+                    retro,
+                    hard-to-maintain frontend code limited its potential. SteamServerUI uses the same reliable Go
+                    backend
+                    but adds a modern Svelte-based UI, desktop app, and flexible system supporting any Steam game — from
+                    Satisfactory to Project Zomboid and beyond.
+                </p>
+                <p>
+                    <strong>What's changing:</strong> V6 features a sleek new interface, universal Steam game support,
+                    and
+                    enhanced reliability. You're gaining a future-proof tool that's easier to use and can grow with you.
+                </p>
+                <p>
+                    <strong>Timeline:</strong> A Stable SteamServerUI release planned for Q4-2025. Christmas, probably.
+                    StationeersServerUI will continue receiving long time support updates until Q42026. See the Roadmap
+                    <a href="https://github.com/SteamServerUI/SteamServerUI/wiki/Roadmap" target="_blank">here</a> for
+                    more
+                    details.
+                </p>
+            </div>
         </div>
     </main>
 
     <discord-button>
         <a href="https://discord.gg/8n3vN92MyJ" target="_blank">
-            <img src="https://cdn.discordapp.com/icons/1357524183260729404/3626cdbaa442efdad6e619a65b4f037a.png?size=128&quality=lossless" alt="SSUI Discord" width="40" height="40">
+            <img src="https://cdn.discordapp.com/icons/1357524183260729404/3626cdbaa442efdad6e619a65b4f037a.png?size=128&quality=lossless"
+                alt="SSUI Discord" width="40" height="40">
         </a>
     </discord-button>
-    <span onclick="navigateTo('https://discord.gg/8n3vN92MyJ')" style="cursor: pointer; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">{{.UIText_Discord_Info}}</span>
+    <span onclick="navigateTo('https://discord.gg/8n3vN92MyJ')" style="cursor: pointer; text-decoration: none;"
+        onmouseover="this.style.textDecoration='underline'"
+        onmouseout="this.style.textDecoration='none'">{{.UIText_Discord_Info}}</span>
     <br>
-    <span onclick="navigateTo('/static/apiinfo.html')" style="cursor: pointer; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">{{.UIText_API_Info}}</span>
+    <span onclick="navigateTo('/static/apiinfo.html')" style="cursor: pointer; text-decoration: none;"
+        onmouseover="this.style.textDecoration='underline'"
+        onmouseout="this.style.textDecoration='none'">{{.UIText_API_Info}}</span>
     <br>
     <footer>
         <div class="copyright">
             Copyright © 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a>
-            {{.UIText_Copyright1}} <a href="https://github.com/SteamServerUI/StationeersServerUI/blob/main/LICENSE">{{.UIText_Copyright2}}</a>.
+            {{.UIText_Copyright1}} <a
+                href="https://github.com/SteamServerUI/StationeersServerUI/blob/main/LICENSE">{{.UIText_Copyright2}}</a>.
         </div>
     </footer>
 
@@ -143,4 +160,5 @@
     <script src="/static/js/main.js"></script>
     <script src="/static/js/popup.js"></script>
 </body>
+
 </html>
