@@ -7,7 +7,7 @@ require (
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/uuid v1.6.0
-	github.com/jacksonthemaster/discordrichpresence v1.0.3
+	github.com/jacksonthemaster/discordrichpresence v1.1.0
 	golang.org/x/crypto v0.37.0
 )
 
