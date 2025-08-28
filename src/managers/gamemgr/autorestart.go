@@ -54,7 +54,8 @@ func startAutoRestart(schedule string, done chan struct{}) {
 				time.Sleep(10 * time.Second)
 				commandmgr.WriteCommand("say Attention, server is restarting in 20 seconds!")
 				time.Sleep(10 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 10 seconds!")
+				commandmgr.WriteCommand("say Attention, server is restarting in 10 seconds, saving world now!")
+				commandmgr.WriteCommand("save")
 				time.Sleep(5 * time.Second)
 				commandmgr.WriteCommand("say Attention, server is restarting in 5 seconds!")
 				time.Sleep(5 * time.Second)
@@ -110,7 +111,8 @@ func scheduleDailyRestart(t time.Time, done chan struct{}) {
 				time.Sleep(10 * time.Second)
 				commandmgr.WriteCommand("say Attention, server is restarting in 20 seconds!")
 				time.Sleep(10 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 10 seconds!")
+				commandmgr.WriteCommand("say Attention, server is restarting in 10 seconds, saving world now!")
+				commandmgr.WriteCommand("save")
 				time.Sleep(5 * time.Second)
 				commandmgr.WriteCommand("say Attention, server is restarting in 5 seconds!")
 				time.Sleep(5 * time.Second)
@@ -121,7 +123,7 @@ func scheduleDailyRestart(t time.Time, done chan struct{}) {
 				continue
 			}
 
-			logger.Core.Info("Daily auto-restart: waiting 5 seconds before restarting")
+			logger.Core.Debug("Daily auto-restart: waiting 5 seconds before restarting")
 			time.Sleep(5 * time.Second)
 
 			logger.Core.Info("Daily auto-restart: starting server")
