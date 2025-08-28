@@ -24,6 +24,13 @@ func startAutoRestart(schedule string, done chan struct{}) {
 		return
 	}
 
+	// Try parsing as a time in HH:MMAM/PM format
+	if t, err := time.Parse("03:04PM", schedule); err == nil {
+		// Valid HH:MMAM/PM format, schedule daily restart
+		go scheduleDailyRestart(t, done)
+		return
+	}
+
 	// Fallback to parsing as minutes duration
 	minutesInt, err := strconv.Atoi(schedule)
 	if err != nil {
@@ -31,7 +38,7 @@ func startAutoRestart(schedule string, done chan struct{}) {
 		return
 	}
 	if minutesInt <= 0 {
-		logger.Core.Error("AutoRestartServerTimer must be a positive number of minutes or valid HH:MM time")
+		logger.Core.Error("AutoRestartServerTimer must be a positive number of minutes or valid HH:MM or HH:MMAM/PM time")
 		return
 	}
 
