@@ -14,6 +14,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 )
@@ -176,4 +177,30 @@ func HandleRunSteamCMD(w http.ResponseWriter, r *http.Request) {
 	}
 	// Failure: return 202 Accepted and JSON with the error message
 	json.NewEncoder(w).Encode(map[string]string{"statuscode": "202", "status": "Failed", "message": "SteamCMD ran unsuccessfully:" + err.Error()})
+}
+
+// PrintConnectedPlayersHandler handles HTTP requests to list connected players.
+func HandleConnectedPlayersList(w http.ResponseWriter, r *http.Request) {
+
+	// only allow GET requests
+	if r.Method != http.MethodGet {
+		http.Error(w, "Only GET requests are allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	detector := detectionmgr.GetDetector()
+	players := detectionmgr.GetPlayers(detector)
+
+	playerList := make([]map[string]string, 0, len(players))
+	for steamID, username := range players {
+		playerList = append(playerList, map[string]string{
+			"username": username,
+			"steamID":  steamID,
+		})
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(playerList); err != nil {
+		http.Error(w, "Failed to encode player list", http.StatusInternalServerError)
+	}
 }
