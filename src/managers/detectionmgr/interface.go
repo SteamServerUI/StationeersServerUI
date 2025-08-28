@@ -1,6 +1,8 @@
 // interface.go
 package detectionmgr
 
+import "sync"
+
 /*
 Code-Public Detection API interface
 - Exposes simplified interface for external references if needed
@@ -11,9 +13,25 @@ Code-Public Detection API interface
   - State queries (connected players currently)
 */
 
-// Start initializes the detector and returns it
+var (
+	detectorInstance *Detector
+	once             sync.Once
+)
+
+// Start initializes the detector and stores it as the singleton instance
 func Start() *Detector {
-	return NewDetector()
+	once.Do(func() {
+		detectorInstance = NewDetector()
+	})
+	return detectorInstance
+}
+
+// GetDetector returns the singleton detector instance
+func GetDetector() *Detector {
+	if detectorInstance == nil {
+		panic("Detector not initialized. Call Start() first.")
+	}
+	return detectorInstance
 }
 
 // AddHandler is a convenient method to register a handler for an event type
