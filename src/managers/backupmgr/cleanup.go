@@ -135,6 +135,10 @@ func (m *BackupManager) getBackupGroups() ([]BackupGroup, error) {
 		return nil
 	})
 	if err != nil {
+		// if the error contains no such file or directory, return nil but return a custom string intsted 	of the error
+		if strings.Contains(err.Error(), "no such file or directory") {
+			return nil, fmt.Errorf("save dir doesn't seem to exist (yet). Try starting the gameserver and click ↻ once it's up. If the Save folder exists and you still get this error, verify the 'Use New Terrain and Save System' setting. Detailed Error: %w", err)
+		}
 		return nil, fmt.Errorf("failed to walk safe backup dir: %w", err)
 	}
 
