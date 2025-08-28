@@ -106,7 +106,7 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 	}{
 		{
 			// Player ready pattern
-			pattern: regexp.MustCompile(`Client\s+(.+)\s+\((\d+)\)\s+is\s+ready!`),
+			pattern: regexp.MustCompile(`Client\s+(.+)\s+\((\d+)\)\s+is\s+ready!?`),
 			handler: func(matches []string, logMessage string) {
 				username := matches[1]
 				steamID := matches[2]
@@ -148,7 +148,7 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 		},
 		{
 			// Player disconnect pattern
-			pattern: regexp.MustCompile(`Client\s+disconnected:\s+\d+\s+\|\s+(.+)\s+connectTime:\s+\d+,\d+s,\s+ClientId:\s+(\d+)`),
+			pattern: regexp.MustCompile(`Client\s+disconnected:\s+\d+\s+\|\s+(.+)\s+connectTime:\s+\d+[\.,]\d+s,\s+ClientId:\s+(\d+)`),
 			handler: func(matches []string, logMessage string) {
 				username := matches[1]
 				steamID := matches[2]
