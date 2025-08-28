@@ -97,7 +97,7 @@ func StartWebServer(wg *sync.WaitGroup) {
 	}()
 
 	// Start the pprof server if debug mode is enabled (HTTP/1.1)
-	if config.IsDebugMode && config.LogLevel < 20 { // if debug mode is enabled and log level is lower than 20 (if this triggers LogLevel is probably 10 and probably debug, but who knows), start pprof server
+	if config.IsDebugMode { // if debug mode is enabled, start pprof server
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
