@@ -12,6 +12,7 @@
         }
     },
     "forwardPorts": [8443],
+    "runArgs": ["-p=27015:27015/udp", "-p=27016:27016/udp"],
     "portsAttributes": {
         "8443": { "label": "Go Backend Server" }
         
