@@ -1,13 +1,14 @@
 {
     "name": "StationeersServerUI (Go)",
     "build": {
-        "dockerfile": "Dockerfile"
+        "dockerfile": "Dockerfile",
+        "args": { "TZ": "${localEnv:TZ:Europe/Stockholm}" }
     },
     "workspaceFolder": "/workspaces/project",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/project,type=bind,consistency=cached",
     "features": {
         "ghcr.io/devcontainers/features/go:1": {
-            "version": "1.24.2"
+            "version": "1.25.0"
         }
     },
     "forwardPorts": [8443],
