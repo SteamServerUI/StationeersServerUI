@@ -140,6 +140,7 @@ func (m *SSEManager) excludeClutterLogs(message string) bool {
 		"memorysetup":                               true,
 		"Microsoft Media Foundation video decoding": true,
 		"The referenced script on this Behaviour":   true,
+		"Fallback handler could not load library":   true,
 	}
 
 	// Check if message contains any of the drop messages
