@@ -68,7 +68,7 @@ func CleanUpOldUIModFolderFiles() error {
 
 func CleanUpOldExecutables() error {
 	// Exit early if update is disabled to allow running old versions if needed
-	if !config.IsUpdateEnabled {
+	if !config.IsUpdateEnabled || config.IsDebugMode {
 		return nil
 	}
 	currentBackendVersion := config.Version

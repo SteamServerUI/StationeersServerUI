@@ -217,6 +217,58 @@
   transform: translateY(-2px);
 }
 
+/* Players */
+#players {
+  position: relative;
+  margin-top: 40px;
+  background-color: rgba(0, 255, 171, 0.05);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 255, 171, 0.3);
+  transition: transform var(--transition-normal);
+}
+
+#players:hover {
+  transform: translateY(-2px);
+}
+
+#playerListRefreshButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 5px 10px;
+    font-size: 1.3rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-item {
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 2px solid rgba(0, 255, 171, 0.5);
+  transition: all var(--transition-normal);
+  line-height: 1.6;
+}
+
+.player-item:hover, .player-item.animate-in:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+  border-color: var(--primary);
+  transform: translateX(5px);
+}
+
+.player-item.animate-in {
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+/* Backups */
 #backupRefreshButton {
     position: absolute;
     top: 20px;
