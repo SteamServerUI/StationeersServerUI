@@ -76,6 +76,7 @@ type JsonConfig struct {
 	AutoStartServerOnStartup  *bool             `json:"AutoStartServerOnStartup"`
 	AdditionalLoginHeaderText string            `json:"AdditionalLoginHeaderText"`
 	SSUIWebPort               string            `json:"SSUIWebPort"`
+	JXSNDevApiKey             string            `json:"JXSNDevApiKey"`
 }
 
 type CustomDetection struct {
@@ -127,6 +128,7 @@ func applyConfig(cfg *JsonConfig) {
 	ControlPanelChannelID = getString(cfg.ControlPanelChannelID, "CONTROL_PANEL_CHANNEL_ID", "")
 	DiscordCharBufferSize = getInt(cfg.DiscordCharBufferSize, "DISCORD_CHAR_BUFFER_SIZE", 1000)
 	BlackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "./Blacklist.txt")
+	JXSNDevApiKey = getString(cfg.JXSNDevApiKey, "JXSN_DEV_API_KEY", "")
 
 	isDiscordEnabledVal := getBool(cfg.IsDiscordEnabled, "IS_DISCORD_ENABLED", false)
 	IsDiscordEnabled = isDiscordEnabledVal

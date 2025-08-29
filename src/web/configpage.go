@@ -149,6 +149,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		ExePath:                                config.ExePath,
 		AdditionalParams:                       config.AdditionalParams,
 		AutoRestartServerTimer:                 config.AutoRestartServerTimer,
+		JXSNDevApiKey:                          config.JXSNDevApiKey,
 		IsNewTerrainAndSaveSystem:              fmt.Sprintf("%v", config.IsNewTerrainAndSaveSystem),
 		IsNewTerrainAndSaveSystemTrueSelected:  isNewTerrainAndSaveSystemTrueSelected,
 		IsNewTerrainAndSaveSystemFalseSelected: isNewTerrainAndSaveSystemFalseSelected,
@@ -224,6 +225,8 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		UIText_StartLocationInfo:            localization.GetString("UIText_StartLocationInfo"),
 		UIText_AutoStartServerOnStartup:     localization.GetString("UIText_AutoStartServerOnStartup"),
 		UIText_AutoStartServerOnStartupInfo: localization.GetString("UIText_AutoStartServerOnStartupInfo"),
+		UIText_JXSNDevApiKey:                localization.GetString("UIText_JXSNDevApiKey"),
+		UIText_JXSNDevApiKeyInfo:            localization.GetString("UIText_JXSNDevApiKeyInfo"),
 
 		UIText_DiscordIntegrationTitle:    localization.GetString("UIText_DiscordIntegrationTitle"),
 		UIText_DiscordBotToken:            localization.GetString("UIText_DiscordBotToken"),

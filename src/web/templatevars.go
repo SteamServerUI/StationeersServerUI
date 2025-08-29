@@ -67,6 +67,7 @@ type ConfigTemplateData struct {
 	ExePath                                string
 	AdditionalParams                       string
 	AutoRestartServerTimer                 string
+	JXSNDevApiKey                          string
 	IsNewTerrainAndSaveSystem              string
 	IsNewTerrainAndSaveSystemTrueSelected  string
 	IsNewTerrainAndSaveSystemFalseSelected string
@@ -141,6 +142,8 @@ type ConfigTemplateData struct {
 	UIText_StartLocationInfo            string
 	UIText_AutoStartServerOnStartup     string
 	UIText_AutoStartServerOnStartupInfo string
+	UIText_JXSNDevApiKey                string
+	UIText_JXSNDevApiKeyInfo            string
 
 	UIText_DiscordIntegrationTitle    string
 	UIText_DiscordBotToken            string
