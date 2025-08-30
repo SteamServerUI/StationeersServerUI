@@ -111,7 +111,6 @@ var (
 	AuthTokenLifetime int
 	Users             map[string]string
 	SSUIWebPort       string
-	JXSNDevApiKey     string
 )
 
 // SSUI Updates

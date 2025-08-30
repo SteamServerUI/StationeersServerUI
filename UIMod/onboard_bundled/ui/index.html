@@ -59,6 +59,12 @@
             </div>
         </div>
 
+        <div id="players">
+            <h2>{{.UIText_Connected_PlayersHeader}}</h2>
+            <button id="playerListRefreshButton" onclick="fetchPlayers()">↻</button>
+            <ul id="playerList"></ul>
+        </div>
+
         <div id="backups">
             <h2>{{.UIText_Backup_Manager}}</h2>
             <button id="backupRefreshButton" onclick="fetchBackups()">↻</button>

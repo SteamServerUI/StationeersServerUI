@@ -268,6 +268,31 @@
   animation: slideIn 0.5s ease-out forwards;
 }
 
+.player-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.player-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+  object-fit: cover;
+  object-position: center;
+}
+
+.player-avatar:hover {
+  transform: scale(1.1);
+}
+
+.player-name {
+  font-size: 1.1rem;
+  color: #fff;
+}
+
 /* Backups */
 #backupRefreshButton {
     position: absolute;

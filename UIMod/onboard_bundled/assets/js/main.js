@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setupTabs();
         fetchDetectionEvents();
         fetchBackups();
+        fetchPlayers();
         handleConsole();
         pollServerStatus();
         if (animationState != 'disabled') {
