@@ -66,10 +66,19 @@
         </div>
 
         <div id="backups">
-            <h2>{{.UIText_Backup_Manager}}</h2>
-            <button id="backupRefreshButton" onclick="fetchBackups()">↻</button>
-            <ul id="backupList"></ul>
-        </div>
+    <h2>{{.UIText_Backup_Manager}}</h2>
+    <div class="backup-controls">
+        <select id="backupLimit" onchange="fetchBackups()">
+            <option value="5">Last 5</option>
+            <option value="10">Last 10</option>
+            <option value="20">Last 20</option>
+            <option value="20">Last 50</option>
+            <option value="">All backups</option>
+        </select>
+        <button id="backupRefreshButton" onclick="fetchBackups()">↻</button>
+    </div>
+    <ul id="backupList"></ul>
+</div>
 
         <div class="update" style="display: none;">
             <h3>

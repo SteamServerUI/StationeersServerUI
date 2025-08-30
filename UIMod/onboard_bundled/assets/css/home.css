@@ -294,10 +294,9 @@
 }
 
 /* Backups */
+
+
 #backupRefreshButton {
-    position: absolute;
-    top: 20px;
-    right: 20px;
     padding: 5px 10px;
     font-size: 1.3rem;
     width: 40px;
@@ -307,21 +306,41 @@
     justify-content: center;
 }
 
+.backup-controls {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#backupLimit {
+    padding: 8px 12px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: var(--text-bright);
+    border: 1px solid rgba(0, 255, 171, 0.5);
+    border-radius: 4px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+}
+
 .backup-item {
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 2px solid rgba(0, 255, 171, 0.5);
-  transition: all var(--transition-normal);
-  line-height: 1.6;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid rgba(0, 255, 171, 0.3);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
 }
 
 .backup-item.animate-in {
-  animation: slideIn 0.5s ease-out forwards;
+    animation: slideIn 0.6s ease-out forwards;
 }
 
 .backup-item:hover, .backup-item.animate-in:hover {
@@ -330,30 +349,86 @@
   transform: translateX(5px);
 }
 
-.backup-item button {
-  padding: 8px 16px;
-  background-color: rgba(0, 255, 171, 0.2);
-  color: var(--text-bright);
-  border: 1px solid var(--primary);
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.8rem;
-  transition: all var(--transition-normal);
+
+
+.backup-info {
+    flex: 1;
 }
 
-.backup-item button:hover {
-  background-color: var(--primary);
-  color: #000;
+.backup-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.backup-name {
+    font-weight: bold;
+    color: var(--text-bright);
+    font-size: 0.9rem;
+}
+
+.backup-type {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.backup-type.legacy {
+    background-color: rgba(255, 165, 0, 0.2);
+    color: #ffa500;
+    border: 1px solid rgba(255, 165, 0, 0.4);
+}
+
+.backup-type.dotsave {
+    background-color: rgba(0, 255, 171, 0.2);
+    color: var(--primary);
+    border: 1px solid rgba(0, 255, 171, 0.4);
+}
+
+.backup-date {
+    color: var(--text-dim);
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+.restore-btn {
+    padding: 10px 18px;
+    background-color: rgba(0, 255, 171, 0.1);
+    color: var(--text-bright);
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    transition: all var(--transition-normal);
+    text-transform: uppercase;
+}
+
+.restore-btn:hover {
+    background-color: var(--primary);
+    color: #000;
+}
+
+.no-backups, .error {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+    font-style: italic;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px dashed rgba(0, 255, 171, 0.3);
 }
 
 @keyframes slideIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.95) translateX(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateX(0);
-  }
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateX(-30px) rotateX(10deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateX(0) rotateX(0deg);
+    }
 }

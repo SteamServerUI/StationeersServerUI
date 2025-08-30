@@ -41,31 +41,63 @@ function triggerSteamCMD() {
 }
 
 function fetchBackups() {
-    fetch('/api/v2/backups?mode=classic')
-        .then(response => response.text())
+    const limit = document.getElementById('backupLimit').value;
+    const url = limit ? `/api/v2/backups?limit=${limit}` : '/api/v2/backups';
+    
+    fetch(url)
+        .then(response => response.json())
         .then(data => {
             const backupList = document.getElementById('backupList');
             backupList.innerHTML = '';
             
-            if (data.trim() === "No valid backup files found.") {
-                backupList.textContent = data;
-            } else {
-                let animationCount = 0; // Track number of animated items
-                data.split('\n').filter(Boolean).forEach((backup) => {
-                    const li = document.createElement('li');
-                    li.className = 'backup-item';
-                    li.innerHTML = `${backup} <button onclick="restoreBackup(${extractIndex(backup)})">Restore</button>`;
-                    backupList.appendChild(li);
-                    if (animationCount < 20) {
-                        setTimeout(() => {
-                            li.classList.add('animate-in');
-                        }, animationCount * 100);
-                        animationCount++;
-                    }
-                });
+            if (!data || data.length === 0) {
+                backupList.innerHTML = '<li class="no-backups">No valid backup files found.</li>';
+                return;
             }
+            
+            let animationCount = 0;
+            data.forEach((backup) => {
+                const li = document.createElement('li');
+                li.className = 'backup-item';
+                
+                const backupType = getBackupType(backup);
+                const fileName = backup.BinFile.split('/').pop();
+                const formattedDate = new Date(backup.ModTime).toLocaleString();
+                
+                li.innerHTML = `
+                    <div class="backup-info">
+                        <div class="backup-header">
+                            <span class="backup-name">${fileName}</span>
+                            <span class="backup-type ${backupType.toLowerCase()}">${backupType}</span>
+                        </div>
+                        <div class="backup-date">${formattedDate}</div>
+                    </div>
+                    <button class="restore-btn" onclick="restoreBackup(${backup.Index})">Restore</button>
+                `;
+                
+                backupList.appendChild(li);
+                
+                if (animationCount < 20) {
+                    setTimeout(() => {
+                        li.classList.add('animate-in');
+                    }, animationCount * 50);
+                    animationCount++;
+                }
+            });
         })
-        .catch(err => console.error("Failed to fetch backups:", err));
+        .catch(err => {
+            console.error("Failed to fetch backups:", err);
+            document.getElementById('backupList').innerHTML = '<li class="error">Failed to load backups</li>';
+        });
+}
+
+function getBackupType(backup) {
+    if (backup.BinFile && backup.XMLFile && backup.MetaFile) {
+        return 'Legacy';
+    } else if (backup.BinFile && !backup.XMLFile && !backup.MetaFile) {
+        return 'Dotsave';
+    }
+    return 'Unknown';
 }
 
 function fetchPlayers() {
