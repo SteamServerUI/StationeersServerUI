@@ -87,7 +87,7 @@ function fetchBackups() {
         })
         .catch(err => {
             console.error("Failed to fetch backups:", err);
-            document.getElementById('backupList').innerHTML = '<li class="error">Failed to load backups</li>';
+            document.getElementById('backupList').innerHTML = '<li class="backuperror">Failed to load backups</li>';
         });
 }
 
@@ -195,6 +195,7 @@ function restoreBackup(index) {
             typeTextWithCallback(status, data, 20, () => {
                 setTimeout(() => status.hidden = true, 30000);
             });
+            showPopup('info', data);
         })
         .catch(err => console.error(`Failed to restore backup ${index}:`, err));
 }
