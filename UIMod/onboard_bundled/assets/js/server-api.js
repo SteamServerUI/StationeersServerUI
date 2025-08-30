@@ -61,8 +61,8 @@ function fetchBackups() {
                 li.className = 'backup-item';
                 
                 const backupType = getBackupType(backup);
-                const fileName = backup.BinFile.split('/').pop();
-                const formattedDate = new Date(backup.ModTime).toLocaleString();
+                const fileName = "Backup Index: " + backup.Index;
+                const formattedDate = "Created: " + new Date(backup.ModTime).toLocaleString();
                 
                 li.innerHTML = `
                     <div class="backup-info">
@@ -93,7 +93,7 @@ function fetchBackups() {
 
 function getBackupType(backup) {
     if (backup.BinFile && backup.XMLFile && backup.MetaFile) {
-        return 'Legacy';
+        return 'preterrain-trio';
     } else if (backup.BinFile && !backup.XMLFile && !backup.MetaFile) {
         return 'Dotsave';
     }
