@@ -44,28 +44,30 @@ func (m *BackupManager) RestoreBackup(index int) error {
 		backupFile := targetGroup.BinFile
 		destFile := filepath.Join("./saves/"+m.config.WorldName, m.config.WorldName+".save")
 
-		// Before restore, check if we have existing .save files in the root saves/WorldName dir
-		saveDir := filepath.Join("./saves/", m.config.WorldName)
-		files, err := os.ReadDir(saveDir)
-		if err != nil {
-			return fmt.Errorf("failed to read save directory %s: %w", saveDir, err)
-		}
+		// This check was disabled since it was relatively unnecessary and didnt bring much benefit
 
-		for _, file := range files {
-			if file.IsDir() {
-				continue
-			}
-			if strings.HasSuffix(file.Name(), ".save") {
-				existingFile := filepath.Join(saveDir, file.Name())
-				// Move existing .save file to SafeBackupDir with timestamp to avoid overwrites
-				timestamp := time.Now().Format("2006-01-02_15-04-05")
-				savedPreviousHeadSaveFilePath := filepath.Join(m.config.SafeBackupDir, fmt.Sprintf("%s_%s_%s", "pre-restore-HEAD-", timestamp, file.Name()))
-				if err := os.Rename(existingFile, savedPreviousHeadSaveFilePath); err != nil {
-					return fmt.Errorf("failed to move existing HEAD .save file %s to %s: %w", existingFile, savedPreviousHeadSaveFilePath, err)
-				}
-				logger.Backup.Info("Moved previous HEAD .save file to: " + savedPreviousHeadSaveFilePath)
-			}
-		}
+		// Before restore, check if we have existing .save files in the root saves/WorldName dir
+		//saveDir := filepath.Join("./saves/", m.config.WorldName)
+		//files, err := os.ReadDir(saveDir)
+		//if err != nil {
+		//	return fmt.Errorf("failed to read save directory %s: %w", saveDir, err)
+		//}
+
+		//for _, file := range files {
+		//	if file.IsDir() {
+		//		continue
+		//	}
+		//	if strings.HasSuffix(file.Name(), ".save") {
+		//		existingFile := filepath.Join(saveDir, file.Name())
+		//		// Move existing .save file to SafeBackupDir with timestamp to avoid overwrites
+		//		timestamp := time.Now().Format("2006-01-02_15-04-05")
+		//		savedPreviousHeadSaveFilePath := filepath.Join(m.config.SafeBackupDir, fmt.Sprintf("%s_%s_%s", "pre-restore-HEAD-", timestamp, file.Name()))
+		//		if err := os.Rename(existingFile, savedPreviousHeadSaveFilePath); err != nil {
+		//			return fmt.Errorf("failed to move existing HEAD .save file %s to %s: %w", existingFile, savedPreviousHeadSaveFilePath, err)
+		//		}
+		//		logger.Backup.Info("Moved previous HEAD .save file to: " + savedPreviousHeadSaveFilePath)
+		//	}
+		//}
 
 		// Create temp directory for mod time shenanigans (https://discordapp.com/channels/276525882049429515/392080751648178188/1407157281606336602)
 		tempDir := filepath.Join("./saves", m.config.WorldName, "tmp")
