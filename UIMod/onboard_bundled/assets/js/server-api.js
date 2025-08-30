@@ -154,8 +154,10 @@ function restoreBackup(index) {
         .catch(err => console.error(`Failed to restore backup ${index}:`, err));
 }
 
-function pollServerStatus() {
+function pollRecurringTasks() {
     window.gamserverstate = false;
+
+    // Poll server status every 3.5 seconds
     const statusInterval = setInterval(() => {
         fetch('/api/v2/server/status')
             .then(response => response.json())
@@ -169,10 +171,23 @@ function pollServerStatus() {
                 console.error("Failed to fetch server status:", err);
                 updateStatusIndicator(false, true); // Set error state
             });
-    }, 3500); // Poll every 3.5 seconds (adjusted from 1000 to reduce server load checking the status each time)
+    }, 3500);
 
-    // Store the interval ID so we can clear it if needed
-    window.statusPollingInterval = statusInterval;
+    // Poll connectred players every 10 seconds
+    const playersInterval = setInterval(() => {
+        fetchPlayers()
+            .catch(err => {
+                console.error("Failed to fetch connectedplayers:", err);
+            });
+    }, 10000);
+
+    // Poll backups every 30 seconds
+    const backupsInterval = setInterval(() => {
+        fetchBackups()
+            .catch(err => {
+                console.error("Failed to fetch backups:", err);
+            });
+    }, 30000);
 }
 
 function updateStatusIndicator(isRunning, isError = false) {

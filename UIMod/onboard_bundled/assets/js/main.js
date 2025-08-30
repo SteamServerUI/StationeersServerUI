@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchBackups();
         fetchPlayers();
         handleConsole();
-        pollServerStatus();
+        pollRecurringTasks();
         if (animationState != 'disabled') {
         // Create planets with size, orbit radius, speed, and color
         const planetContainer = document.getElementById('planet-container');
