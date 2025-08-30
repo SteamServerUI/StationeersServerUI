@@ -32,6 +32,7 @@ func ReloadBackend() {
 	ReloadBackupManager()
 	ReloadLocalizer()
 	PrintConfigDetails()
+	logger.Core.Info("Backend reload done!")
 }
 
 // should ideally not be called standalone, if feasable, call ReloadBackend instead

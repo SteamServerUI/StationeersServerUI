@@ -27,7 +27,7 @@ func CheckAndDownloadSSCM() {
 	} else {
 		downloadBranch = config.Branch
 	}
-	logger.Install.Info("Using branch: " + downloadBranch)
+	logger.Install.Debug("Using branch for SSCM: " + downloadBranch)
 
 	// Define file mappings
 	files := map[string]string{
@@ -60,8 +60,8 @@ func CheckAndDownloadSSCM() {
 		config.ConfigMu.Lock()
 		config.IsFirstTimeSetup = false
 		config.ConfigMu.Unlock()
-		logger.Install.Info(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
-		logger.Install.Info(fmt.Sprintf("IsFirstTimeSetup: %v", config.IsFirstTimeSetup))
+		logger.Install.Debug(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
+		logger.Install.Debug(fmt.Sprintf("IsFirstTimeSetup: %v", config.IsFirstTimeSetup))
 		if config.IsUpdateEnabled {
 			logger.Install.Info("🔍Validating SSCM files for updates...")
 			if config.Branch == "release" || config.Branch == "Release" {

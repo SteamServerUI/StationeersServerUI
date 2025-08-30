@@ -92,8 +92,8 @@ func CheckAndDownloadUIMod() {
 		config.ConfigMu.Lock()
 		config.IsFirstTimeSetup = false
 		config.ConfigMu.Unlock()
-		logger.Install.Info(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
-		logger.Install.Info(fmt.Sprintf("IsFirstTimeSetup: %v", config.IsFirstTimeSetup))
+		logger.Install.Debug(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
+		logger.Install.Debug(fmt.Sprintf("IsFirstTimeSetup: %v", config.IsFirstTimeSetup))
 		if config.IsUpdateEnabled {
 			logger.Install.Info("🔍Validating UIMod files for updates...")
 			if config.Branch == "release" || config.Branch == "Release" {
