@@ -163,7 +163,7 @@ func (m *BackupManager) handleNewBackup(filePath string) {
 			return
 		}
 
-		logger.Backup.Info("Backup successfully copied to safe location: " + dstPath)
+		logger.Backup.Debug("Backup successfully copied to safe location: " + dstPath)
 	}()
 }
 
