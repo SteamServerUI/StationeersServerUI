@@ -88,12 +88,12 @@ function fetchPlayers() {
         "/static/playerimages/ronald.webp",
     ];
 
-    fetch('/api/v2/server/status/connectedplayers')
+    return fetch('/api/v2/server/status/connectedplayers')
         .then(response => response.json())
         .then(data => {
             playerList.innerHTML = '';
             
-            if (!data || data.length === 0) {
+            if (!Array.isArray(data) || data.length === 0) {
                 playersDiv.style.display = 'none';
                 return;
             }
