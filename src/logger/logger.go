@@ -2,28 +2,26 @@ package logger
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
 )
 
 // Logger instances
 var (
-	Main         = &Logger{prefix: SYS_MAIN}
-	Web          = &Logger{prefix: SYS_WEB}
-	Discord      = &Logger{prefix: SYS_DISCORD}
-	Backup       = &Logger{prefix: SYS_BACKUP}
-	Detection    = &Logger{prefix: SYS_DETECT}
-	Core         = &Logger{prefix: SYS_CORE}
-	Config       = &Logger{prefix: SYS_CONFIG}
-	Install      = &Logger{prefix: SYS_INSTALL}
-	SSE          = &Logger{prefix: SYS_SSE}
-	Security     = &Logger{prefix: SYS_SECURITY}
-	Localization = &Logger{prefix: SYS_LOCALIZATION}
+	Main         = &Logger{suffix: SYS_MAIN}
+	Web          = &Logger{suffix: SYS_WEB}
+	Discord      = &Logger{suffix: SYS_DISCORD}
+	Backup       = &Logger{suffix: SYS_BACKUP}
+	Detection    = &Logger{suffix: SYS_DETECT}
+	Core         = &Logger{suffix: SYS_CORE}
+	Config       = &Logger{suffix: SYS_CONFIG}
+	Install      = &Logger{suffix: SYS_INSTALL}
+	SSE          = &Logger{suffix: SYS_SSE}
+	Security     = &Logger{suffix: SYS_SECURITY}
+	Localization = &Logger{suffix: SYS_LOCALIZATION}
 )
 
 // Severity Levels
@@ -76,123 +74,32 @@ var subsystemColors = map[string]string{
 
 type Logger struct {
 	mu     sync.Mutex
-	prefix string // Subsystem identifier (e.g., "DISCORD")
+	suffix string // Subsystem identifier (e.g., "DISCORD")
 }
 
 type logEntry struct {
 	severity int
-	prefix   string // Log type (e.g., "INFO", "CORE")
+	suffix   string // Log type (e.g., "INFO", "CORE"), now a suffix (prints INSTALL/WARN instead of WARN/INSTALL since v6.4.1)
 	color    string
 	message  string
 }
 
-// shouldLog checks severity and subsystem filters
-func (l *Logger) shouldLog(severity int) bool {
-	// Subsystem filtering first
-	if len(config.SubsystemFilters) > 0 {
-		allowed := false
-		for _, sub := range config.SubsystemFilters {
-			if sub == l.prefix {
-				allowed = true
-				break
-			}
-		}
-		if !allowed {
-			return false // Subsystem not in filter, skip it
-		}
-	}
-
-	effectiveLevel := config.LogLevel
-	return severity >= effectiveLevel
+func (l *Logger) Debugf(format string, args ...any) {
+	l.log(logEntry{DEBUG, "DEBUG", colorReset, fmt.Sprintf(format, args...)}) // Subsystem color
 }
 
-// log handles the core logging logic
-func (l *Logger) log(entry logEntry) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-
-	if !l.shouldLog(entry.severity) {
-		return
-	}
-
-	timestamp := time.Now().Format("2006-01-02 15:04:05")
-	// Use subsystem color by default, override with severity color if set
-	entryColor := subsystemColors[l.prefix]
-	if entry.color != colorReset {
-		entryColor = entry.color
-	}
-	// Console version with colors
-	consoleLine := fmt.Sprintf("%s%s [%s/%s] %s%s\n", entryColor, timestamp, entry.prefix, l.prefix, entry.message, colorReset)
-	// File version without colors
-	fileLine := fmt.Sprintf("%s [%s/%s] %s\n", timestamp, entry.prefix, l.prefix, entry.message)
-	// Console output
-	fmt.Print(consoleLine)
-
-	// File output if enabled
-	if config.CreateSSUILogFile {
-		l.writeToFile(fileLine, l.prefix)
-	}
+func (l *Logger) Infof(format string, args ...any) {
+	l.log(logEntry{INFO, "INFO", colorReset, fmt.Sprintf(format, args...)}) // Subsystem color
 }
 
-func (l *Logger) writeToFile(logLine, subsystem string) {
-	const maxRetries = 5
-	const retryDelay = 100 * time.Millisecond
-
-	// Files to write: combined log + subsystem-specific log
-	logFiles := []string{
-		config.LogFolder + "ssui.log",  // Combined log
-		getSubsystemLogPath(subsystem), // Subsystem log (e.g., logs/install.log)
-	}
-
-	for _, logFile := range logFiles {
-		for attempt := 0; attempt < maxRetries; attempt++ {
-			// Ensure directory exists
-			if err := os.MkdirAll(filepath.Dir(logFile), os.ModePerm); err != nil {
-				fmt.Printf("%s%s [ERROR/LOGGER] Failed to create log file %s: %v%s\n",
-					colorRed, time.Now().Format("2006-01-02 15:04:05"), filepath.Dir(logFile), err, colorReset)
-				return
-			}
-
-			// Open file
-			file, err := os.OpenFile(logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-			if err == nil {
-				defer file.Close()
-				if _, err := file.WriteString(logLine); err != nil {
-					fmt.Printf("%s%s [ERROR/LOGGER] Failed to write to log file %s: %v%s\n",
-						colorRed, time.Now().Format("2006-01-02 15:04:05"), logFile, err, colorReset)
-				}
-				break // Success, move to next file
-			}
-
-			// Retry on transient errors
-			if os.IsNotExist(err) || os.IsPermission(err) {
-				if attempt == maxRetries-1 {
-					fmt.Printf("%s%s [ERROR/LOGGER] Gave up writing to log file %s after %d attempts: %v%s\n",
-						colorRed, time.Now().Format("2006-01-02 15:04:05"), logFile, maxRetries, err, colorReset)
-					break
-				}
-				time.Sleep(retryDelay)
-				continue
-			}
-
-			// Non-retryable error
-			fmt.Printf("%s%s [ERROR/LOGGER] Failed to open log file %s: %v%s\n",
-				colorRed, time.Now().Format("2006-01-02 15:04:05"), logFile, err, colorReset)
-			break
-		}
-	}
+func (l *Logger) Warnf(format string, args ...any) {
+	l.log(logEntry{WARN, "WARN", colorYellow, fmt.Sprintf(format, args...)}) // Yellow for warnings
 }
 
-// getSubsystemLogPath generates path for subsystem-specific log file
-func getSubsystemLogPath(subsystem string) string {
-	// Assuming config.LogFilePath is like "logs/ssui.log"
-	dir := filepath.Dir(config.LogFolder)
-	// Lowercase subsystem for cleaner filenames (e.g., install.log)
-	filename := fmt.Sprintf("%s.log", strings.ToLower(subsystem))
-	return filepath.Join(dir, filename)
+func (l *Logger) Errorf(format string, args ...any) {
+	l.log(logEntry{ERROR, "ERROR", colorRed, fmt.Sprintf(format, args...)}) // Red for errors
 }
 
-// Severity-based methods
 func (l *Logger) Debug(message string) {
 	l.log(logEntry{DEBUG, "DEBUG", colorReset, message}) // Subsystem color
 }
@@ -209,39 +116,69 @@ func (l *Logger) Error(message string) {
 	l.log(logEntry{ERROR, "ERROR", colorRed, message}) // Red for errors
 }
 
-// Subsystem-specific methods (update colors for consistency)
-func (l *Logger) Backup(message string) {
-	l.log(logEntry{INFO, "BACKUP", colorReset, message}) // Green via subsystem
+// log handles the core logging logic
+func (l *Logger) log(entry logEntry) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+	// Use subsystem color by default, override with severity color if set
+	entryColor := subsystemColors[l.suffix]
+	if entry.color != colorReset {
+		entryColor = entry.color
+	}
+	// Console version with colors
+	consoleLine := fmt.Sprintf("%s%s [%s/%s] %s%s\n", entryColor, timestamp, l.suffix, entry.suffix, entry.message, colorReset)
+	// File version without colors
+	fileLine := fmt.Sprintf("%s [%s/%s] %s\n", timestamp, l.suffix, entry.suffix, entry.message)
+	// Console output
+
+	if entry.severity >= DEBUG {
+		ssestream.BroadcastDebugLog(fileLine)
+	}
+
+	if entry.severity == INFO {
+		ssestream.BroadcastInfoLog(fileLine)
+	}
+
+	if entry.severity == WARN {
+		ssestream.BroadcastWarnLog(fileLine)
+	}
+
+	if entry.severity == ERROR {
+		ssestream.BroadcastErrorLog(fileLine)
+	}
+
+	ssestream.BroadcastBackendLog(fileLine)
+
+	if !l.shouldLog(entry.severity) {
+		return
+	}
+
+	// File output if enabled
+	if config.CreateSSUILogFile {
+		l.writeToFile(fileLine, l.suffix)
+	}
+
+	fmt.Print(consoleLine)
 }
 
-func (l *Logger) Detection(message string) {
-	l.log(logEntry{INFO, "DETECT", colorReset, message}) // Yellow via subsystem
-}
+// shouldLog checks severity and subsystem filters
+func (l *Logger) shouldLog(severity int) bool {
+	// Subsystem filtering first
+	if len(config.SubsystemFilters) > 0 {
+		allowed := false
+		for _, sub := range config.SubsystemFilters {
+			if sub == l.suffix {
+				allowed = true
+				break
+			}
+		}
+		if !allowed {
+			return false // Subsystem not in filter, skip it
+		}
+	}
 
-func (l *Logger) Discord(message string) {
-	l.log(logEntry{INFO, "DISCORD", colorReset, message}) // Magenta via subsystem
-}
-
-func (l *Logger) Core(message string) {
-	l.log(logEntry{WARN, "CORE", colorReset, message}) // Magenta via subsystem
-}
-
-func (l *Logger) Config(message string) {
-	l.log(logEntry{WARN, "CONFIG", colorReset, message}) // Yellow via subsystem
-}
-
-func (l *Logger) Install(message string) {
-	l.log(logEntry{INFO, "INSTALL", colorReset, message}) // Blue via subsystem
-}
-
-func (l *Logger) SSE(message string) {
-	l.log(logEntry{INFO, "SSE", colorReset, message}) // Cyan via subsystem
-}
-
-func (l *Logger) Security(message string) {
-	l.log(logEntry{ERROR, "SECURITY", colorReset, message}) // Red via subsystem
-}
-
-func (l *Logger) Localization(message string) {
-	l.log(logEntry{INFO, "LOCALIZATION", colorReset, message}) // Cyan via subsystem
+	effectiveLevel := config.LogLevel
+	return severity >= effectiveLevel
 }

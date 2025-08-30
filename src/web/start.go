@@ -44,6 +44,11 @@ func StartWebServer(wg *sync.WaitGroup) {
 	// SSE routes
 	protectedMux.HandleFunc("/console", GetLogOutput)
 	protectedMux.HandleFunc("/events", GetEventOutput)
+	protectedMux.HandleFunc("/logs/debug", GetDebugLogOutput)
+	protectedMux.HandleFunc("/logs/info", GetInfoLogOutput)
+	protectedMux.HandleFunc("/logs/warn", GetWarnLogOutput)
+	protectedMux.HandleFunc("/logs/error", GetErrorLogOutput)
+	protectedMux.HandleFunc("/logs/backend", GetBackendLogOutput)
 
 	// Server Control
 	protectedMux.HandleFunc("/start", StartServer)
