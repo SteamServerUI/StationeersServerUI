@@ -92,9 +92,9 @@
   }
 }
 
-/* Console styling with custom scrollbar */
 #console,
-#detection-console {
+#detection-console,
+#backendlog-console {
   border: 2px solid var(--primary);
   padding: 20px;
   height: 400px;
@@ -113,31 +113,36 @@
 }
 
 #console::-webkit-scrollbar,
-#detection-console::-webkit-scrollbar {
+#detection-console::-webkit-scrollbar,
+#backendlog-console::-webkit-scrollbar {
   width: 8px;
 }
 
 #console::-webkit-scrollbar-track,
-#detection-console::-webkit-scrollbar-track {
+#detection-console::-webkit-scrollbar-track,
+#backendlog-console::-webkit-scrollbar-track {
   background: #000;
   border-radius: 4px;
 }
 
 #console::-webkit-scrollbar-thumb,
-#detection-console::-webkit-scrollbar-thumb {
+#detection-console::-webkit-scrollbar-thumb,
+#backendlog-console::-webkit-scrollbar-thumb {
   background: var(--primary);
   border-radius: 4px;
   transition: background var(--transition-fast);
 }
 
 #console::-webkit-scrollbar-thumb:hover,
-#detection-console::-webkit-scrollbar-thumb:hover {
+#detection-console::-webkit-scrollbar-thumb:hover,
+#backendlog-console::-webkit-scrollbar-thumb:hover {
   background: var(--primary-dim);
 }
 
 /* Console scanline effect */
 #console::before,
-#detection-console::before {
+#detection-console::before,
+#backendlog-console::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -155,6 +160,23 @@
   background-color: rgba(0, 255, 171, 0.05);
   transition: all var(--transition-normal);
   word-wrap: break-word;
+}
+
+.log-console-element {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 4px;
+  border-left: 3px solid var(--primary);
+  background-color: rgba(0, 255, 171, 0.05);
+  transition: all var(--transition-normal);
+  word-wrap: break-word;
+}
+
+.log-console-element-warn {
+  border-left-color: var(--warning)
+}
+.log-console-element-error {
+  border-left-color: var(--danger);
 }
 
 .detection-event:hover {

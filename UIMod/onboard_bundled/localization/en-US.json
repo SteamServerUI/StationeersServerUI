@@ -7,6 +7,7 @@
       "UIText_Update_SteamCMD": "Update Server",
       "UIText_Console": "Console",
       "UIText_Detection_Events": "Detection Events",
+      "UIText_Backend_Log": "Backend Log",
       "UIText_Backup_Manager": "Backup Manager",
       "UIText_Connected_PlayersHeader": "Connected Players",
       "UIText_Discord_Info": "Join the Discord and help make SSUI better or get support!",

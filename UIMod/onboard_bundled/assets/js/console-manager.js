@@ -194,7 +194,7 @@ function handleConsole() {
                         consoleElement.innerHTML = ''; // Clear console for fresh start
                         handleConsole();
                     }
-                }, 2000);
+                }, 5000);
             }
         };
     });
@@ -220,4 +220,64 @@ function handleConsole() {
             consoleElement.scrollTop = consoleElement.scrollHeight;
         }, 500);
     }
+}
+
+function setupLogStreams({ consoleId, streamUrls, maxMessages, messageClass }) {
+    const consoleElement = document.getElementById(consoleId);
+    if (!consoleElement) {
+        console.error(`Console element with ID '${consoleId}' not found.`);
+        return;
+    }
+
+    // Clear the console initially
+    consoleElement.innerHTML = '';
+
+    const connectStream = (streamUrl) => {
+        const eventSource = new EventSource(streamUrl);
+
+        eventSource.onmessage = event => {
+            const message = document.createElement('div');
+            let finalClass = messageClass;
+
+            // Check event.data for specific log levels and modify class
+            if (event.data.includes('/INFO')) {
+                finalClass += '-info';
+            } else if (event.data.includes('/WARN')) {
+                finalClass += '-warn';
+            } else if (event.data.includes('/ERROR')) {
+                finalClass += '-error';
+            }
+
+            message.classList.add("log-console-element", finalClass);
+
+            const content = document.createElement('span');
+            content.textContent = event.data;
+
+            message.append(content);
+            consoleElement.appendChild(message);
+
+            // Limit the number of messages
+            while (consoleElement.childElementCount > maxMessages) {
+                consoleElement.firstChild.remove();
+            }
+
+            // Auto-scroll to the bottom
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+        };
+
+        eventSource.onopen = () => {
+            console.log(`Stream ${streamUrl} connected for console ${consoleId}`);
+        };
+
+        eventSource.onerror = () => {
+            console.error(`Stream ${streamUrl} disconnected for console ${consoleId}`);
+            eventSource.close();
+            if (window.location.pathname === '/') {
+                setTimeout(() => connectStream(streamUrl), 5000); // Reconnect after 5 seconds
+            }
+        };
+    };
+
+    // Connect to all provided stream URLs
+    streamUrls.forEach(url => connectStream(url));
 }

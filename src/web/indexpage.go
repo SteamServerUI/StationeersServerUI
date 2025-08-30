@@ -33,6 +33,7 @@ func ServeIndex(w http.ResponseWriter, r *http.Request) {
 		UIText_Update_SteamCMD:         localization.GetString("UIText_Update_SteamCMD"),
 		UIText_Console:                 localization.GetString("UIText_Console"),
 		UIText_Detection_Events:        localization.GetString("UIText_Detection_Events"),
+		UIText_Backend_Log:             localization.GetString("UIText_Backend_Log"),
 		UIText_Backup_Manager:          localization.GetString("UIText_Backup_Manager"),
 		UIText_Connected_PlayersHeader: localization.GetString("UIText_Connected_PlayersHeader"),
 		UIText_Discord_Info:            localization.GetString("UIText_Discord_Info"),

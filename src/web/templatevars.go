@@ -10,6 +10,7 @@ type IndexTemplateData struct {
 	UIText_Update_SteamCMD         string
 	UIText_Console                 string
 	UIText_Detection_Events        string
+	UIText_Backend_Log             string
 	UIText_Backup_Manager          string
 	UIText_Connected_PlayersHeader string
 	UIText_Discord_Info            string

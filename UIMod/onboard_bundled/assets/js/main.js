@@ -11,6 +11,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname == '/') {
         setupTabs();
         fetchDetectionEvents();
+        setupLogStreams({
+            consoleId: 'backendlog-console',
+            streamUrls: [
+                '/logs/info',
+                '/logs/warn',
+                '/logs/error',
+     ],
+            maxMessages: 500,
+            messageClass: 'log-console-element'
+        });
         fetchBackups();
         fetchPlayers();
         handleConsole();
