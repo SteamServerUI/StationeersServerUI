@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Go 1.24.2
+# Install Go 1.25.0
 RUN wget -q https://go.dev/dl/go1.25.0.linux-amd64.tar.gz && \
     tar -C /usr/local -xzf go1.25.0.linux-amd64.tar.gz && \
     rm go1.25.0.linux-amd64.tar.gz
@@ -22,6 +22,10 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 ENV GOPATH=/go
 RUN mkdir -p /go/bin && chown -R vscode:vscode /go
 
+# Install Node.js 22.15.0
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm@latest
 
 # Set up non-root user and workspace
 USER vscode

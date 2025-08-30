@@ -1,5 +1,5 @@
 {
-    "name": "StationeersServerUI (Go)",
+    "name": "StationeersServerUI (Go+Svelte)",
     "build": {
         "dockerfile": "Dockerfile",
         "args": { "TZ": "${localEnv:TZ:Europe/Stockholm}" }
@@ -21,13 +21,15 @@
         "vscode": {
             "extensions": [
                 "golang.go",
+                "svelte.svelte-vscode",
                 "supermaven.supermaven",
                 "eamodio.gitlens"
             ],
             "settings": {
-                "go.toolsManagement.autoUpdate": true
+                "go.toolsManagement.autoUpdate": true,
+                "svelte.enable-ts-plugin": true
             }
         }
     },
-    "postCreateCommand": "go mod tidy"
+    "postCreateCommand": "go mod tidy && cd frontend && npm install && npm install @sveltejs/vite-plugin-svelte"
 }
