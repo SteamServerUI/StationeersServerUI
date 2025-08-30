@@ -1,0 +1,42 @@
+{
+  "name": "steamserverui",
+  "main": "main.cjs",
+  "private": true,
+  "version": "v5.5.8",
+  "description": "Svelte UI Interface for Steam Server UI (SSUI) Backend",
+  "author": {
+    "name": "JacksonTheMaster",
+    "email": "ssui@jmg-it.de"
+  },
+  "license": "proprietary",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SteamServerUI/SteamServerUI.git"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "vite": "vite",
+    "electron": "vite build && electron-builder --linux --win",
+    "build": "vite build",
+    "build:electron:dir": "vite build && electron-builder --linux --win --dir",
+    "build:electron": "vite build && electron-builder --linux --win",
+    "build:electron:win": "vite build && electron-builder --win",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "electron-updater": "^6.6.2",
+    "express": "^5.1.0",
+    "https": "^1.0.0",
+    "node-forge": "^1.3.1"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.1.1",
+    "concurrently": "^9.1.2",
+    "electron": "^36.1.0",
+    "electron-builder": "^26.0.12",
+    "svelte": "^5.23.1",
+    "vite": "^6.3.5",
+    "wait-on": "^8.0.3"
+  }
+}
