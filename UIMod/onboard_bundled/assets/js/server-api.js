@@ -103,8 +103,13 @@ function fetchPlayers() {
                 
                 // Avatar
                 const avatar = document.createElement('img');
-                // Use player avatar or random fallback
-                avatar.src = playerImages[Math.floor(Math.random() * playerImages.length)];
+                let persistedImage = sessionStorage.getItem(`playerImage_${player.steamID}`);
+                if (!persistedImage) {
+                    // Assign rnd image and persist it until page reload
+                    persistedImage = playerImages[Math.floor(Math.random() * playerImages.length)];
+                    sessionStorage.setItem(`playerImage_${player.steamID}`, persistedImage);
+                }
+                avatar.src = persistedImage;
                 avatar.alt = `${player.username}'s avatar`;
                 avatar.className = 'player-avatar';
                 avatar.title = player.steamID;
