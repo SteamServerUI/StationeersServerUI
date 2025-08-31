@@ -406,7 +406,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := TemplateData{
-		IsFirstTimeSetup: config.IsFirstTimeSetup,
+		IsFirstTimeSetup: config.GetIsFirstTimeSetup(),
 		Path:             path,
 		Step:             stepID,
 		FooterText:       localization.GetString("UIText_FooterText"),
@@ -414,7 +414,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 
 	switch {
 
-	case path == "/login" && !config.AuthEnabled:
+	case path == "/login" && !config.GetAuthEnabled():
 		http.Redirect(w, r, "/setup", http.StatusSeeOther)
 		return
 
@@ -468,7 +468,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 
 	default:
 		data.Title = localization.GetString("UIText_Login_Title")
-		data.HeaderTitle = localization.GetString("UIText_Login_HeaderTitle") + config.AdditionalLoginHeaderText
+		data.HeaderTitle = localization.GetString("UIText_Login_HeaderTitle") + config.GetAdditionalLoginHeaderText()
 		data.PrimaryLabel = localization.GetString("UIText_Login_PrimaryLabel")
 		data.SecondaryLabel = localization.GetString("UIText_Login_SecondaryLabel")
 		data.PrimaryPlaceholderText = localization.GetString("UIText_Login_PrimaryPlaceholder")

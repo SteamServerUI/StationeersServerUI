@@ -25,8 +25,8 @@ func ServeIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := IndexTemplateData{
-		Version:                        config.Version,
-		Branch:                         config.Branch,
+		Version:                        config.GetVersion(),
+		Branch:                         config.GetBranch(),
 		UIText_StartButton:             localization.GetString("UIText_StartButton"),
 		UIText_StopButton:              localization.GetString("UIText_StopButton"),
 		UIText_Settings:                localization.GetString("UIText_Settings"),

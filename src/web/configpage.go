@@ -29,7 +29,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 	// Determine selected attributes for boolean fields
 	upnpTrueSelected := ""
 	upnpFalseSelected := ""
-	if config.UPNPEnabled {
+	if config.GetUPNPEnabled() {
 		upnpTrueSelected = "selected"
 	} else {
 		upnpFalseSelected = "selected"
@@ -37,7 +37,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
 	discordTrueSelected := ""
 	discordFalseSelected := ""
-	if config.IsDiscordEnabled {
+	if config.GetIsDiscordEnabled() {
 		discordTrueSelected = "selected"
 	} else {
 		discordFalseSelected = "selected"
@@ -45,7 +45,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
 	autoSaveTrueSelected := ""
 	autoSaveFalseSelected := ""
-	if config.AutoSave {
+	if config.GetAutoSave() {
 		autoSaveTrueSelected = "selected"
 	} else {
 		autoSaveFalseSelected = "selected"
@@ -53,7 +53,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
 	autoPauseTrueSelected := ""
 	autoPauseFalseSelected := ""
-	if config.AutoPauseServer {
+	if config.GetAutoPauseServer() {
 		autoPauseTrueSelected = "selected"
 	} else {
 		autoPauseFalseSelected = "selected"
@@ -61,7 +61,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
 	startLocalTrueSelected := ""
 	startLocalFalseSelected := ""
-	if config.StartLocalHost {
+	if config.GetStartLocalHost() {
 		startLocalTrueSelected = "selected"
 	} else {
 		startLocalFalseSelected = "selected"
@@ -69,7 +69,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
 	serverVisibleTrueSelected := ""
 	serverVisibleFalseSelected := ""
-	if config.ServerVisible {
+	if config.GetServerVisible() {
 		serverVisibleTrueSelected = "selected"
 	} else {
 		serverVisibleFalseSelected = "selected"
@@ -78,7 +78,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 	isNewTerrainAndSaveSystemTrueSelected := ""
 	isNewTerrainAndSaveSystemFalseSelected := ""
 
-	if config.IsNewTerrainAndSaveSystem {
+	if config.GetIsNewTerrainAndSaveSystem() {
 		isNewTerrainAndSaveSystemTrueSelected = "selected"
 	} else {
 		isNewTerrainAndSaveSystemFalseSelected = "selected"
@@ -86,7 +86,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
 	autoStartServerTrueSelected := ""
 	autoStartServerFalseSelected := ""
-	if config.AutoStartServerOnStartup {
+	if config.GetAutoStartServerOnStartup() {
 		autoStartServerTrueSelected = "selected"
 	} else {
 		autoStartServerFalseSelected = "selected"
@@ -94,7 +94,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
 	steamP2PTrueSelected := ""
 	steamP2PFalseSelected := ""
-	if config.UseSteamP2P {
+	if config.GetUseSteamP2P() {
 		steamP2PTrueSelected = "selected"
 	} else {
 		steamP2PFalseSelected = "selected"
@@ -102,57 +102,57 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
 	data := ConfigTemplateData{
 		// Config values
-		DiscordToken:                           config.DiscordToken,
-		ControlChannelID:                       config.ControlChannelID,
-		StatusChannelID:                        config.StatusChannelID,
-		ConnectionListChannelID:                config.ConnectionListChannelID,
-		LogChannelID:                           config.LogChannelID,
-		SaveChannelID:                          config.SaveChannelID,
-		ControlPanelChannelID:                  config.ControlPanelChannelID,
-		BlackListFilePath:                      config.BlackListFilePath,
-		ErrorChannelID:                         config.ErrorChannelID,
-		IsDiscordEnabled:                       fmt.Sprintf("%v", config.IsDiscordEnabled),
+		DiscordToken:                           config.GetDiscordToken(),
+		ControlChannelID:                       config.GetControlChannelID(),
+		StatusChannelID:                        config.GetStatusChannelID(),
+		ConnectionListChannelID:                config.GetConnectionListChannelID(),
+		LogChannelID:                           config.GetLogChannelID(),
+		SaveChannelID:                          config.GetSaveChannelID(),
+		ControlPanelChannelID:                  config.GetControlPanelChannelID(),
+		BlackListFilePath:                      config.GetBlackListFilePath(),
+		ErrorChannelID:                         config.GetErrorChannelID(),
+		IsDiscordEnabled:                       fmt.Sprintf("%v", config.GetIsDiscordEnabled()),
 		IsDiscordEnabledTrueSelected:           discordTrueSelected,
 		IsDiscordEnabledFalseSelected:          discordFalseSelected,
-		GameBranch:                             config.GameBranch,
-		Difficulty:                             config.Difficulty,
-		StartCondition:                         config.StartCondition,
-		StartLocation:                          config.StartLocation,
-		ServerName:                             config.ServerName,
-		SaveInfo:                               config.SaveInfo,
-		ServerMaxPlayers:                       config.ServerMaxPlayers,
-		ServerPassword:                         config.ServerPassword,
-		ServerAuthSecret:                       config.ServerAuthSecret,
-		AdminPassword:                          config.AdminPassword,
-		GamePort:                               config.GamePort,
-		UpdatePort:                             config.UpdatePort,
-		UPNPEnabled:                            fmt.Sprintf("%v", config.UPNPEnabled),
+		GameBranch:                             config.GetGameBranch(),
+		Difficulty:                             config.GetDifficulty(),
+		StartCondition:                         config.GetStartCondition(),
+		StartLocation:                          config.GetStartLocation(),
+		ServerName:                             config.GetServerName(),
+		SaveInfo:                               config.GetSaveInfo(),
+		ServerMaxPlayers:                       config.GetServerMaxPlayers(),
+		ServerPassword:                         config.GetServerPassword(),
+		ServerAuthSecret:                       config.GetServerAuthSecret(),
+		AdminPassword:                          config.GetAdminPassword(),
+		GamePort:                               config.GetGamePort(),
+		UpdatePort:                             config.GetUpdatePort(),
+		UPNPEnabled:                            fmt.Sprintf("%v", config.GetUPNPEnabled()),
 		UPNPEnabledTrueSelected:                upnpTrueSelected,
 		UPNPEnabledFalseSelected:               upnpFalseSelected,
-		AutoSave:                               fmt.Sprintf("%v", config.AutoSave),
+		AutoSave:                               fmt.Sprintf("%v", config.GetAutoSave()),
 		AutoSaveTrueSelected:                   autoSaveTrueSelected,
 		AutoSaveFalseSelected:                  autoSaveFalseSelected,
-		SaveInterval:                           config.SaveInterval,
-		AutoPauseServer:                        fmt.Sprintf("%v", config.AutoPauseServer),
+		SaveInterval:                           config.GetSaveInterval(),
+		AutoPauseServer:                        fmt.Sprintf("%v", config.GetAutoPauseServer()),
 		AutoPauseServerTrueSelected:            autoPauseTrueSelected,
 		AutoPauseServerFalseSelected:           autoPauseFalseSelected,
-		LocalIpAddress:                         config.LocalIpAddress,
-		StartLocalHost:                         fmt.Sprintf("%v", config.StartLocalHost),
+		LocalIpAddress:                         config.GetLocalIpAddress(),
+		StartLocalHost:                         fmt.Sprintf("%v", config.GetStartLocalHost()),
 		StartLocalHostTrueSelected:             startLocalTrueSelected,
 		StartLocalHostFalseSelected:            startLocalFalseSelected,
-		ServerVisible:                          fmt.Sprintf("%v", config.ServerVisible),
+		ServerVisible:                          fmt.Sprintf("%v", config.GetServerVisible()),
 		ServerVisibleTrueSelected:              serverVisibleTrueSelected,
 		ServerVisibleFalseSelected:             serverVisibleFalseSelected,
-		UseSteamP2P:                            fmt.Sprintf("%v", config.UseSteamP2P),
+		UseSteamP2P:                            fmt.Sprintf("%v", config.GetUseSteamP2P()),
 		UseSteamP2PTrueSelected:                steamP2PTrueSelected,
 		UseSteamP2PFalseSelected:               steamP2PFalseSelected,
-		ExePath:                                config.ExePath,
-		AdditionalParams:                       config.AdditionalParams,
-		AutoRestartServerTimer:                 config.AutoRestartServerTimer,
-		IsNewTerrainAndSaveSystem:              fmt.Sprintf("%v", config.IsNewTerrainAndSaveSystem),
+		ExePath:                                config.GetExePath(),
+		AdditionalParams:                       config.GetAdditionalParams(),
+		AutoRestartServerTimer:                 config.GetAutoRestartServerTimer(),
+		IsNewTerrainAndSaveSystem:              fmt.Sprintf("%v", config.GetIsNewTerrainAndSaveSystem()),
 		IsNewTerrainAndSaveSystemTrueSelected:  isNewTerrainAndSaveSystemTrueSelected,
 		IsNewTerrainAndSaveSystemFalseSelected: isNewTerrainAndSaveSystemFalseSelected,
-		AutoStartServerOnStartup:               fmt.Sprintf("%v", config.AutoStartServerOnStartup),
+		AutoStartServerOnStartup:               fmt.Sprintf("%v", config.GetAutoStartServerOnStartup()),
 		AutoStartServerOnStartupTrueSelected:   autoStartServerTrueSelected,
 		AutoStartServerOnStartupFalseSelected:  autoStartServerFalseSelected,
 

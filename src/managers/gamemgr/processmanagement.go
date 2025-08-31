@@ -37,7 +37,7 @@ func InternalStartServer() error {
 
 	logger.Core.Info("=== GAMESERVER STARTING ===")
 
-	if config.IsSSCMEnabled && runtime.GOOS == "linux" {
+	if config.GetIsSSCMEnabled() && runtime.GOOS == "linux" {
 
 		var envVars []string
 		// Set up SSCM (BepInEx/Doorstop) environment
@@ -46,28 +46,28 @@ func InternalStartServer() error {
 			return fmt.Errorf("failed to set up SSCM environment: %v", err)
 		}
 		// Create command after environment is set
-		cmd = exec.Command(config.ExePath, args...)
+		cmd = exec.Command(config.GetExePath(), args...)
 		// Set the environment for the command
 		if envVars != nil {
 			cmd.Env = envVars
 			logger.Core.Info("BepInEx/Doorstop environment configured for server process")
 		}
-		logger.Core.Info("• Executable: " + config.ExePath + " (with SSCM)")
+		logger.Core.Info("• Executable: " + config.GetExePath() + " (with SSCM)")
 		logger.Core.Info("• Arguments: " + strings.Join(args, " "))
 	}
 
-	if !config.IsSSCMEnabled && runtime.GOOS == "linux" {
+	if !config.GetIsSSCMEnabled() && runtime.GOOS == "linux" {
 		// Use ExePath directly as the command
-		cmd = exec.Command(config.ExePath, args...)
-		logger.Core.Info("• Executable: " + config.ExePath)
+		cmd = exec.Command(config.GetExePath(), args...)
+		logger.Core.Info("• Executable: " + config.GetExePath())
 		logger.Core.Info("• Arguments: " + strings.Join(args, " "))
 	}
 
 	if runtime.GOOS == "windows" {
 
 		// On Windows, set the command to use the executable path and arguments
-		cmd = exec.Command(config.ExePath, args...)
-		logger.Core.Info("• Executable: " + config.ExePath)
+		cmd = exec.Command(config.GetExePath(), args...)
+		logger.Core.Info("• Executable: " + config.GetExePath())
 		logger.Core.Debug("Switching to pipes for logs as we are on Windows!")
 
 		stdout, err := cmd.StdoutPipe()
@@ -129,16 +129,15 @@ func InternalStartServer() error {
 	}
 	// create a UUID for this specific run
 	createGameServerUUID()
-	logger.Core.Debug("Created Game Server with internal UUID: " + config.GameServerUUID.String())
 
 	// Start auto-restart goroutine if AutoRestartServerTimer is set greater than 0
-	if config.AutoRestartServerTimer != "0" {
+	if config.GetAutoRestartServerTimer() != "0" {
 		if autoRestartDone != nil {
 			close(autoRestartDone)
 		}
 		autoRestartDone = make(chan struct{})
-		go startAutoRestart(config.AutoRestartServerTimer, autoRestartDone)
-		logger.Core.Info("New Auto-restart scheduled: " + config.AutoRestartServerTimer)
+		go startAutoRestart(config.GetAutoRestartServerTimer(), autoRestartDone)
+		logger.Core.Info("New Auto-restart scheduled: " + config.GetAutoRestartServerTimer())
 	}
 
 	return nil

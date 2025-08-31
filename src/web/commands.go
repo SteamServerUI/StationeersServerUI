@@ -26,7 +26,7 @@ func HandleCommand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !config.IsSSCMEnabled {
+	if !config.GetIsSSCMEnabled() {
 		sendErrorResponse(w, http.StatusForbidden, "SSCM is disabled, cannot execute commands")
 		return
 	}

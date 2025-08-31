@@ -54,7 +54,7 @@ func handleUnbanCommand() {
 // DEPRECATED
 func listenToDiscordMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-	if m.Author.ID == s.State.User.ID || m.ChannelID != config.ControlChannelID {
+	if m.Author.ID == s.State.User.ID || m.ChannelID != config.GetControlChannelID() {
 		logger.Discord.Debug("Ignoring message from " + m.Author.Username)
 		logger.Discord.Debug("Ignored message: " + m.Content)
 		logger.Discord.Debug("Message channel: " + m.ChannelID)

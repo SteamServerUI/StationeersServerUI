@@ -19,9 +19,9 @@ import (
 // EnsureTLSCerts ensures TLS certificates exist and are valid at config.TLSCertPath and config.TLSKeyPath, generating self-signed ones if needed.
 func EnsureTLSCerts() error {
 	// Check if cert and key files exist
-	certExists := fileExists(config.TLSCertPath)
-	keyExists := fileExists(config.TLSKeyPath)
-	tlsDir := config.UIModFolder + "tls/"
+	certExists := fileExists(config.GetTLSCertPath())
+	keyExists := fileExists(config.GetTLSKeyPath())
+	tlsDir := config.GetUIModFolder() + "tls/"
 
 	if _, err := os.Stat(tlsDir); os.IsNotExist(err) {
 		if err := os.MkdirAll(tlsDir, os.ModePerm); err != nil {
@@ -32,7 +32,7 @@ func EnsureTLSCerts() error {
 
 	if certExists && keyExists {
 		// Load and check if the cert is still valid
-		certData, err := os.ReadFile(config.TLSCertPath)
+		certData, err := os.ReadFile(config.GetTLSCertPath())
 		if err != nil {
 			return fmt.Errorf("failed to read cert file: %v", err)
 		}
@@ -59,13 +59,13 @@ func EnsureTLSCerts() error {
 		return fmt.Errorf("failed to generate self-signed cert: %v", err)
 	}
 
-	logger.Security.Info("Generated new self-signed TLS certificates at " + config.TLSCertPath + " and " + config.TLSKeyPath)
+	logger.Security.Info("Generated new self-signed TLS certificates at " + config.GetTLSCertPath() + " and " + config.GetTLSKeyPath())
 	return nil
 }
 
 // generateSelfSignedCert creates a self-signed certificate and key pair at config.TLSCertPath and config.TLSKeyPath.
 func generateSelfSignedCert() error {
-	dir := filepath.Dir(config.TLSCertPath)
+	dir := filepath.Dir(config.GetTLSCertPath())
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return fmt.Errorf("failed to create directory %s: %v", dir, err)
 	}
@@ -97,7 +97,7 @@ func generateSelfSignedCert() error {
 	}
 
 	// Write the certificate to file
-	certFile, err := os.Create(config.TLSCertPath)
+	certFile, err := os.Create(config.GetTLSCertPath())
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,7 @@ func generateSelfSignedCert() error {
 	pem.Encode(certFile, &pem.Block{Type: "CERTIFICATE", Bytes: certDER})
 
 	// Write the private key to file
-	keyFile, err := os.Create(config.TLSKeyPath)
+	keyFile, err := os.Create(config.GetTLSKeyPath())
 	if err != nil {
 		return err
 	}

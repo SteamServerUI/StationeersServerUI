@@ -16,8 +16,8 @@ func (l *Logger) writeToFile(logLine, subsystem string) {
 
 	// Files to write: combined log + subsystem-specific log
 	logFiles := []string{
-		config.LogFolder + "ssui.log",  // Combined log
-		getSubsystemLogPath(subsystem), // Subsystem log (e.g., logs/install.log)
+		config.GetLogFolder() + "ssui.log", // Combined log
+		getSubsystemLogPath(subsystem),     // Subsystem log (e.g., logs/install.log)
 	}
 
 	for _, logFile := range logFiles {
@@ -61,8 +61,7 @@ func (l *Logger) writeToFile(logLine, subsystem string) {
 
 // getSubsystemLogPath generates path for subsystem-specific log file
 func getSubsystemLogPath(subsystem string) string {
-	// Assuming config.LogFilePath is like "logs/ssui.log"
-	dir := filepath.Dir(config.LogFolder)
+	dir := filepath.Dir(config.GetLogFolder())
 	// Lowercase subsystem for cleaner filenames (e.g., install.log)
 	filename := fmt.Sprintf("%s.log", strings.ToLower(subsystem))
 	return filepath.Join(dir, filename)

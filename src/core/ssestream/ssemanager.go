@@ -141,7 +141,7 @@ func (m *SSEManager) streamMessages(
 
 // excludeClutterLogs checks if a message should be dropped due to kinematic warnings. This is a workaround "fix" for a bug in the gameserver.
 func (m *SSEManager) excludeClutterLogs(message string) bool {
-	if config.LogClutterToConsole {
+	if config.GetLogClutterToConsole() {
 		return false
 	}
 	dropMessages := map[string]bool{

@@ -23,7 +23,7 @@ func InitializeDiscordBot() {
 	}
 
 	// Create new session
-	config.DiscordSession, err = discordgo.New("Bot " + config.DiscordToken)
+	config.DiscordSession, err = discordgo.New("Bot " + config.GetDiscordToken())
 	if err != nil {
 		logger.Discord.Error("Error creating Discord session: " + err.Error())
 		return
@@ -33,12 +33,12 @@ func InitializeDiscordBot() {
 	config.DiscordSession.Identify.Intents = discordgo.IntentsGuilds | discordgo.IntentsGuildMessages | discordgo.IntentsGuildMessageReactions | discordgo.IntentsMessageContent
 
 	logger.Discord.Info("Starting Discord integration...")
-	logger.Discord.Debug("Discord token: " + config.DiscordToken)
-	logger.Discord.Debug("ControlChannelID: " + config.ControlChannelID)
-	logger.Discord.Debug("StatusChannelID: " + config.StatusChannelID)
-	logger.Discord.Debug("ConnectionListChannelID: " + config.ConnectionListChannelID)
-	logger.Discord.Debug("LogChannelID: " + config.LogChannelID)
-	logger.Discord.Debug("SaveChannelID: " + config.SaveChannelID)
+	logger.Discord.Debug("Discord token: " + config.GetDiscordToken())
+	logger.Discord.Debug("ControlChannelID: " + config.GetControlChannelID())
+	logger.Discord.Debug("StatusChannelID: " + config.GetStatusChannelID())
+	logger.Discord.Debug("ConnectionListChannelID: " + config.GetConnectionListChannelID())
+	logger.Discord.Debug("LogChannelID: " + config.GetLogChannelID())
+	logger.Discord.Debug("SaveChannelID: " + config.GetSaveChannelID())
 
 	// Open session first
 	err = config.DiscordSession.Open()
@@ -54,9 +54,9 @@ func InitializeDiscordBot() {
 	registerSlashCommands(config.DiscordSession)
 
 	logger.Discord.Info("Bot is now running.")
-	SendMessageToStatusChannel("🤖 Bot Version " + config.Version + " Branch " + config.Branch + " connected to Discord.")
+	SendMessageToStatusChannel("🤖 Bot Version " + config.GetVersion() + " Branch " + config.GetBranch() + " connected to Discord.")
 	sendControlPanel() // Send control panel message to Discord
-	UpdateBotStatusWithMessage("StationeersServerUI v" + config.Version)
+	UpdateBotStatusWithMessage("StationeersServerUI v" + config.GetVersion())
 	// Start buffer flush ticker
 	config.ConfigMu.Lock()
 	config.BufferFlushTicker = time.NewTicker(5 * time.Second)

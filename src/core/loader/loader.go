@@ -46,7 +46,7 @@ func ReloadConfig() {
 }
 
 func ReloadSSCM() {
-	if config.IsSSCMEnabled {
+	if config.GetIsSSCMEnabled() {
 		setup.InstallSSCM()
 	}
 }
@@ -60,7 +60,7 @@ func ReloadBackupManager() {
 }
 
 func ReloadDiscordBot() {
-	if config.IsDiscordEnabled {
+	if config.GetIsDiscordEnabled() {
 		go discordbot.InitializeDiscordBot()
 		logger.Discord.Info("Discord bot reloaded successfully")
 	}

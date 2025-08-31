@@ -49,7 +49,7 @@ func RegisterCommand(name string, handler CommandFunc, aliases ...string) {
 
 // StartConsole starts a non-blocking console input loop in a separate goroutine.
 func StartConsole(wg *sync.WaitGroup) {
-	if !config.IsConsoleEnabled {
+	if !config.GetIsConsoleEnabled() {
 		logger.Core.Info("SSUICLI runtime console is disabled in config, skipping...")
 		return
 	}
@@ -173,7 +173,7 @@ func exitfromcli() {
 
 func deleteConfig() {
 	//remove file at config.ConfigPath
-	if err := os.Remove(config.ConfigPath); err != nil {
+	if err := os.Remove(config.GetConfigPath()); err != nil {
 		logger.Core.Error("Error deleting config file: " + err.Error())
 		return
 	}
@@ -191,7 +191,7 @@ func runSteamCMD() {
 }
 
 func testLocalization() {
-	currentLanguageSetting := config.LanguageSetting
+	currentLanguageSetting := config.GetLanguageSetting()
 	s := localization.GetString("UIText_StartButton")
 	logger.Core.Info(s + " (current language: " + currentLanguageSetting + ")")
 }

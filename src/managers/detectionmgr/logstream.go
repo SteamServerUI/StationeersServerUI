@@ -23,7 +23,7 @@ func StreamLogs(detector *Detector) {
 	go func() {
 		logger.Detection.Debug("Connected to internal log stream.")
 		for logMessage := range logChan {
-			if config.IsDiscordEnabled {
+			if config.GetIsDiscordEnabled() {
 				discordbot.PassLogStreamToDiscordLogBuffer(logMessage)
 			}
 			ProcessLog(detector, logMessage)

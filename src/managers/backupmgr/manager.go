@@ -86,7 +86,7 @@ func (m *BackupManager) Start() error {
 	m.watcher = watcher
 	go m.watchBackups()
 
-	if config.IsCleanupEnabled {
+	if config.GetIsCleanupEnabled() {
 		go m.startCleanupRoutine()
 	}
 
@@ -135,7 +135,7 @@ func (m *BackupManager) handleNewBackup(filePath string) {
 		time.Sleep(m.config.WaitTime)
 
 		// save the world into Head save too if SSCM is enabled
-		if config.IsSSCMEnabled && config.IsNewTerrainAndSaveSystem {
+		if config.GetIsSSCMEnabled() && config.GetIsNewTerrainAndSaveSystem() {
 			commandmgr.WriteCommand("SAVE")
 			logger.Backup.Debug("HEAD Save triggered via SSCM")
 		} else {

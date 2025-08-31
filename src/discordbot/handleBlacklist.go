@@ -14,7 +14,7 @@ var blacklistMutex sync.Mutex
 
 func banSteamID(steamID string) error {
 	// Read the current blacklist
-	blacklist, err := readBlacklist(config.BlackListFilePath)
+	blacklist, err := readBlacklist(config.GetBlackListFilePath())
 	if err != nil {
 		return fmt.Errorf("error reading blacklist file: %v", err)
 	}
@@ -33,7 +33,7 @@ func banSteamID(steamID string) error {
 	// Write the updated blacklist back to the file
 	blacklistMutex.Lock()
 	defer blacklistMutex.Unlock()
-	err = os.WriteFile(config.BlackListFilePath, []byte(blacklist), 0644)
+	err = os.WriteFile(config.GetBlackListFilePath(), []byte(blacklist), 0644)
 	if err != nil {
 		return fmt.Errorf("error writing to blacklist file: %v", err)
 	}
@@ -43,7 +43,7 @@ func banSteamID(steamID string) error {
 
 func unbanSteamID(steamID string) error {
 	// Read the current blacklist
-	blacklist, err := readBlacklist(config.BlackListFilePath)
+	blacklist, err := readBlacklist(config.GetBlackListFilePath())
 	if err != nil {
 		return fmt.Errorf("error reading blacklist file: %v", err)
 	}
@@ -68,7 +68,7 @@ func unbanSteamID(steamID string) error {
 	// Write the updated blacklist back to the file
 	blacklistMutex.Lock()
 	defer blacklistMutex.Unlock()
-	err = os.WriteFile(config.BlackListFilePath, []byte(updatedBlacklist), 0644)
+	err = os.WriteFile(config.GetBlackListFilePath(), []byte(updatedBlacklist), 0644)
 	if err != nil {
 		return fmt.Errorf("error writing to blacklist file: %v", err)
 	}

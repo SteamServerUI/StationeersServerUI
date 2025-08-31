@@ -29,7 +29,7 @@ const (
 // InstallAndRunSteamCMD installs and runs SteamCMD based on the platform (Windows/Linux).
 // It returns the exit status of the SteamCMD execution and any error encountered.
 func InstallAndRunSteamCMD() (int, error) {
-	if config.Branch == "indev-no-steamcmd" || config.IsDebugMode {
+	if config.GetBranch() == "indev-no-steamcmd" || config.GetIsDebugMode() {
 		logger.Install.Info("🔍 Detected indev-no-steamcmd branch or debug=true, skipping SteamCMD run")
 		return 0, nil
 	}
@@ -135,7 +135,7 @@ func runSteamCMD(steamCMDDir string) (int, error) {
 	cmd.Stderr = os.Stderr
 
 	// Run the command
-	if config.LogLevel == 10 {
+	if config.GetLogLevel() == 10 {
 		cmdString := strings.Join(cmd.Args, " ")
 		logger.Install.Info("🕑 Running SteamCMD: " + cmdString)
 	} else {
@@ -157,11 +157,11 @@ func runSteamCMD(steamCMDDir string) (int, error) {
 // buildSteamCMDCommand constructs the SteamCMD command based on the OS.
 func buildSteamCMDCommand(steamCMDDir, currentDir string) *exec.Cmd {
 	//print the config.GameBranch and config.GameServerAppID
-	logger.Install.Info("🔍 Game Branch: " + config.GameBranch)
-	logger.Install.Debug("🔍 Game Server App ID: " + config.GameServerAppID)
+	logger.Install.Info("🔍 Game Branch: " + config.GetBranch())
+	logger.Install.Debug("🔍 Game Server App ID: " + config.GetGameServerAppID())
 
 	if runtime.GOOS == "windows" {
-		return exec.Command(filepath.Join(steamCMDDir, "steamcmd.exe"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GameServerAppID, "-beta", config.GameBranch, "validate", "+quit")
+		return exec.Command(filepath.Join(steamCMDDir, "steamcmd.exe"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GetGameServerAppID(), "-beta", config.GetGameBranch(), "validate", "+quit")
 	}
-	return exec.Command(filepath.Join(steamCMDDir, "steamcmd.sh"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GameServerAppID, "-beta", config.GameBranch, "validate", "+quit")
+	return exec.Command(filepath.Join(steamCMDDir, "steamcmd.sh"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GetGameServerAppID(), "-beta", config.GetGameServerAppID(), "validate", "+quit")
 }

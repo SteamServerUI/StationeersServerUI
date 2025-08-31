@@ -31,10 +31,10 @@ var handlers = map[string]commandHandler{
 
 // Check channel and handle initial validation
 func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	if i.Type != discordgo.InteractionApplicationCommand || i.ChannelID != config.ControlChannelID {
+	if i.Type != discordgo.InteractionApplicationCommand || i.ChannelID != config.GetControlChannelID() {
 		respond(s, i, EmbedData{
 			Title: "Wrong Channel", Description: "Commands must be sent to the configured control channel",
-			Color: 0xFF0000, Fields: []EmbedField{{Name: "Accepted Channel", Value: fmt.Sprintf("<#%s>", config.ControlChannelID), Inline: true}},
+			Color: 0xFF0000, Fields: []EmbedField{{Name: "Accepted Channel", Value: fmt.Sprintf("<#%s>", config.GetControlChannelID()), Inline: true}},
 		})
 		return
 	}

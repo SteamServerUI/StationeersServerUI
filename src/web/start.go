@@ -94,7 +94,7 @@ func StartWebServer(wg *sync.WaitGroup) {
 	go func() {
 		defer wg.Done()
 		terminal.PrintStartupMessage()
-		if config.IsFirstTimeSetup {
+		if config.GetIsFirstTimeSetup() {
 			terminal.PrintFirstTimeSetupMessage()
 		}
 		// Ensure TLS certs are ready
@@ -102,14 +102,14 @@ func StartWebServer(wg *sync.WaitGroup) {
 			logger.Web.Error("Error setting up TLS certificates: " + err.Error())
 			//os.Exit(1)
 		}
-		err := http.ListenAndServeTLS("0.0.0.0:"+config.SSUIWebPort, config.TLSCertPath, config.TLSKeyPath, mux)
+		err := http.ListenAndServeTLS("0.0.0.0:"+config.GetSSUIWebPort(), config.GetTLSCertPath(), config.GetTLSKeyPath(), mux)
 		if err != nil {
 			logger.Web.Error("Error starting HTTPS server: " + err.Error())
 		}
 	}()
 
 	// Start the pprof server if debug mode is enabled (HTTP/1.1)
-	if config.IsDebugMode { // if debug mode is enabled, start pprof server
+	if config.GetIsDebugMode() { // if debug mode is enabled, start pprof server
 		wg.Add(1)
 		go func() {
 			defer wg.Done()

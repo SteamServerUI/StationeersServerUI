@@ -7,13 +7,13 @@ import (
 
 // Global managers for SSE streams
 var (
-	ConsoleStreamManager    = NewSSEManager(config.MaxSSEConnections, config.SSEMessageBufferSize)
-	EventStreamManager      = NewSSEManager(config.MaxSSEConnections, config.SSEMessageBufferSize)
-	DebugLogStreamManager   = NewSSEManager(config.MaxSSEConnections, config.SSEMessageBufferSize)
-	InfoLogStreamManager    = NewSSEManager(config.MaxSSEConnections, config.SSEMessageBufferSize)
-	WarnLogStreamManager    = NewSSEManager(config.MaxSSEConnections, config.SSEMessageBufferSize)
-	ErrorLogStreamManager   = NewSSEManager(config.MaxSSEConnections, config.SSEMessageBufferSize)
-	BackendLogStreamManager = NewSSEManager(config.MaxSSEConnections, config.SSEMessageBufferSize)
+	ConsoleStreamManager    = NewSSEManager(config.GetMaxSSEConnections(), config.GetSSEMessageBufferSize())
+	EventStreamManager      = NewSSEManager(config.GetMaxSSEConnections(), config.GetSSEMessageBufferSize())
+	DebugLogStreamManager   = NewSSEManager(config.GetMaxSSEConnections(), config.GetSSEMessageBufferSize())
+	InfoLogStreamManager    = NewSSEManager(config.GetMaxSSEConnections(), config.GetSSEMessageBufferSize())
+	WarnLogStreamManager    = NewSSEManager(config.GetMaxSSEConnections(), config.GetSSEMessageBufferSize())
+	ErrorLogStreamManager   = NewSSEManager(config.GetMaxSSEConnections(), config.GetSSEMessageBufferSize())
+	BackendLogStreamManager = NewSSEManager(config.GetMaxSSEConnections(), config.GetSSEMessageBufferSize())
 )
 
 // BroadcastConsoleOutput sends log to all connected console log clients

@@ -28,7 +28,7 @@ func PrintStartupMessage() {
 	fmt.Println("  ║                      🎮 YOUR ONE-STOP SHOP FOR RUNNING A STATIONEERS SERVER  🎮                   ║")
 	// System info
 	fmt.Printf("  ║  🚀 Version: %s       📅 %s       💻 Runtime: %.3s/%s                       ║\n",
-		config.Version,
+		config.GetVersion(),
 		time.Now().Format("2006-01-02 15:04:05"),
 		runtime.GOOS,
 		runtime.GOARCH)
@@ -36,7 +36,7 @@ func PrintStartupMessage() {
 	fmt.Println("  ╚═══════════════════════════════════════════════════════════════════════════════════════════════════╝")
 
 	// Web UI info
-	fmt.Println("\n  🌐 Web UI available at: https://localhost:8443 (default) or https://<server-ip>:" + config.SSUIWebPort)
+	fmt.Println("\n  🌐 Web UI available at: https://localhost:8443 (default) or https://<server-ip>:" + config.GetSSUIWebPort())
 	fmt.Println("\n  🌐 Support available at: https://discord.gg/8n3vN92MyJ")
 
 	// Quote

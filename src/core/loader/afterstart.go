@@ -25,7 +25,7 @@ func AfterStartComplete() {
 	if err != nil {
 		logger.Core.Error("AfterStartComplete: Failed to clean up old executables: " + err.Error())
 	}
-	if config.AutoStartServerOnStartup {
+	if config.GetAutoStartServerOnStartup() {
 		logger.Core.Info("AutoStartServerOnStartup is enabled, starting server...")
 		gamemgr.InternalStartServer()
 	}

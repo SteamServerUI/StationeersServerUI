@@ -8,7 +8,7 @@ import (
 // PassLogMessageToDiscordLogBuffer is called from the detection module to add a log message to the buffer.
 func PassLogStreamToDiscordLogBuffer(logMessage string) {
 	config.LogMessageBuffer += logMessage + "\n"
-	if len(config.LogMessageBuffer) >= config.DiscordCharBufferSize && config.IsDiscordEnabled {
+	if len(config.LogMessageBuffer) >= config.GetDiscordCharBufferSize() && config.GetIsDiscordEnabled() {
 		flushLogBufferToDiscord()
 	}
 }
@@ -18,7 +18,7 @@ func flushLogBufferToDiscord() {
 	if len(config.LogMessageBuffer) == 0 {
 		return // No messages to send
 	}
-	if !config.IsDiscordEnabled || config.DiscordSession == nil {
+	if !config.GetIsDiscordEnabled() || config.DiscordSession == nil {
 		return
 	}
 
@@ -34,7 +34,7 @@ func flushLogBufferToDiscord() {
 		}
 
 		// Send the chunk to Discord
-		_, err := config.DiscordSession.ChannelMessageSend(config.LogChannelID, message[:chunkSize])
+		_, err := config.DiscordSession.ChannelMessageSend(config.GetLogChannelID(), message[:chunkSize])
 		if err != nil {
 			logger.Discord.Error("Error sending log to Discord: " + err.Error())
 			break

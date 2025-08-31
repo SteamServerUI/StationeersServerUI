@@ -12,9 +12,9 @@ import (
 )
 
 func CleanUpOldUIModFolderFiles() error {
-	uiModFolder := config.UIModFolder
+	uiModFolder := config.GetUIModFolder()
 	customdetectionsSourceFile := filepath.Join(uiModFolder, "detectionmanager", "customdetections.json")
-	customdetectionsDestinationFile := config.CustomDetectionsFilePath
+	customdetectionsDestinationFile := config.GetCustomDetectionsFilePath()
 	oldUiFolder := filepath.Join(uiModFolder, "ui") // used to test if we need clean up from a structure before v5.5 (since we now have embedded assets)
 
 	//if uiModFolder doesn't contain a folder called UI, return early as there is nothing to clean up
@@ -68,10 +68,10 @@ func CleanUpOldUIModFolderFiles() error {
 
 func CleanUpOldExecutables() error {
 	// Exit early if update is disabled to allow running old versions if needed
-	if !config.IsUpdateEnabled || config.IsDebugMode {
+	if !config.GetIsUpdateEnabled() || config.GetIsDebugMode() {
 		return nil
 	}
-	currentBackendVersion := config.Version
+	currentBackendVersion := config.GetVersion()
 	pattern := `StationeersServerControlv(\d+\.\d+\.\d+)(?:\.exe|\.x86_64)$`
 	re, err := regexp.Compile(pattern)
 	if err != nil {

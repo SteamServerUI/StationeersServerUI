@@ -15,9 +15,9 @@ import (
 // Returns a map of environment variables and an error if setup fails.
 func SetupBepInExEnvironment() ([]string, error) {
 
-	executablePath := config.ExePath
+	executablePath := config.GetExePath()
 
-	if !config.IsSSCMEnabled {
+	if !config.GetIsSSCMEnabled() {
 		logger.Core.Debug("SSCM is disabled, skipping environment setup")
 		return nil, nil
 	}

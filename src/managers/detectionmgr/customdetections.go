@@ -54,15 +54,15 @@ func (m *CustomDetectionsManager) LoadDetections() error {
 	defer m.mutex.Unlock()
 
 	// Create directory if it doesn't exist
-	dir := filepath.Dir(config.CustomDetectionsFilePath)
+	dir := filepath.Dir(config.GetCustomDetectionsFilePath())
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
 
 	// Check if file exists, create if not
-	if _, err := os.Stat(config.CustomDetectionsFilePath); os.IsNotExist(err) {
+	if _, err := os.Stat(config.GetCustomDetectionsFilePath()); os.IsNotExist(err) {
 		// Create empty file
-		file, err := os.Create(config.CustomDetectionsFilePath)
+		file, err := os.Create(config.GetCustomDetectionsFilePath())
 		if err != nil {
 			return fmt.Errorf("failed to create file: %w", err)
 		}
@@ -72,7 +72,7 @@ func (m *CustomDetectionsManager) LoadDetections() error {
 	}
 
 	// Read file
-	file, err := os.Open(config.CustomDetectionsFilePath)
+	file, err := os.Open(config.GetCustomDetectionsFilePath())
 	if err != nil {
 		return fmt.Errorf("failed to open file: %w", err)
 	}
@@ -109,7 +109,7 @@ func (m *CustomDetectionsManager) AddDetection(detection CustomDetection) error 
 	m.updateDetector()
 
 	// Save to file directly
-	file, err := os.Create(config.CustomDetectionsFilePath)
+	file, err := os.Create(config.GetCustomDetectionsFilePath())
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
@@ -139,7 +139,7 @@ func (m *CustomDetectionsManager) DeleteDetection(id string) error {
 			m.updateDetector()
 
 			// Save to file directly
-			file, err := os.Create(config.CustomDetectionsFilePath)
+			file, err := os.Create(config.GetCustomDetectionsFilePath())
 			if err != nil {
 				return fmt.Errorf("failed to create file: %w", err)
 			}

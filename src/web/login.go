@@ -56,7 +56,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "AuthToken",
 		Value:    tokenString,
-		Expires:  time.Now().Add(time.Duration(config.AuthTokenLifetime) * time.Minute),
+		Expires:  time.Now().Add(time.Duration(config.GetAuthTokenLifetime()) * time.Minute),
 		HttpOnly: true,
 		Secure:   true,
 		Path:     "/",
@@ -75,7 +75,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		//logger.Web.Debug("Request Path:" + r.URL.Path) //very spammy
 
 		// Check for first-time setup redirect
-		if config.IsFirstTimeSetup {
+		if config.GetIsFirstTimeSetup() {
 			totalSetupReminderCount := 3 // Defines how often we redirect the users reqests to the setup page
 			if setupReminderCount < totalSetupReminderCount {
 				if r.URL.Path == "/" && (r.Referer() == "" || r.Referer() != "/setup") {
@@ -89,7 +89,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			}
 		}
 
-		if !config.AuthEnabled {
+		if !config.GetAuthEnabled() {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -210,7 +210,7 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 
 	//check if users map is nil or empty
-	if len(config.Users) == 0 {
+	if len(config.GetUsers()) == 0 {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "No users registered - cannot finalize setup at this time. You should really enable authentication - or click 'Skip authentication'"})
@@ -227,9 +227,7 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Mark setup as complete and enable auth
-	config.ConfigMu.Lock()
-	config.IsFirstTimeSetup = false
-	config.ConfigMu.Unlock()
+	config.SetIsFirstTimeSetup(false)
 	isTrue := true
 	newConfig.AuthEnabled = &isTrue // Set the pointer to true
 

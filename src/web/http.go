@@ -107,7 +107,7 @@ func HandleIsSSCMEnabled(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if SSCM is enabled
-	if !config.IsSSCMEnabled {
+	if !config.GetIsSSCMEnabled() {
 		http.Error(w, "SSCM is disabled", http.StatusForbidden)
 		return
 	}

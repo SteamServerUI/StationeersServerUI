@@ -47,16 +47,16 @@ func RegisterHTTPHandler(handler *HTTPHandler) {
 func GetBackupConfig() BackupConfig {
 
 	return BackupConfig{
-		WorldName:     config.WorldName,
-		BackupDir:     config.ConfiguredBackupDir,
-		SafeBackupDir: config.ConfiguredSafeBackupDir,
-		WaitTime:      30 * time.Second,
+		WorldName:     config.GetWorldName(),
+		BackupDir:     config.GetConfiguredBackupDir(),
+		SafeBackupDir: config.GetConfiguredSafeBackupDir(),
+		WaitTime:      30 * time.Second, // not sure why we are not using config.BackupWaitTime here, but ill not touch it in this commit (config rework)
 		RetentionPolicy: RetentionPolicy{
-			KeepLastN:       config.BackupKeepLastN,
-			KeepDailyFor:    config.BackupKeepDailyFor,
-			KeepWeeklyFor:   config.BackupKeepWeeklyFor,
-			KeepMonthlyFor:  config.BackupKeepMonthlyFor,
-			CleanupInterval: config.BackupCleanupInterval,
+			KeepLastN:       config.GetBackupKeepLastN(),
+			KeepDailyFor:    config.GetBackupKeepDailyFor(),
+			KeepWeeklyFor:   config.GetBackupKeepWeeklyFor(),
+			KeepMonthlyFor:  config.GetBackupKeepMonthlyFor(),
+			CleanupInterval: config.GetBackupCleanupInterval(),
 		},
 	}
 }

@@ -156,7 +156,7 @@ func (l *Logger) log(entry logEntry) {
 	}
 
 	// File output if enabled
-	if config.CreateSSUILogFile {
+	if config.GetCreateSSUILogFile() {
 		l.writeToFile(fileLine, l.suffix)
 	}
 
@@ -166,9 +166,9 @@ func (l *Logger) log(entry logEntry) {
 // shouldLog checks severity and subsystem filters
 func (l *Logger) shouldLog(severity int) bool {
 	// Subsystem filtering first
-	if len(config.SubsystemFilters) > 0 {
+	if len(config.GetSubsystemFilters()) > 0 {
 		allowed := false
-		for _, sub := range config.SubsystemFilters {
+		for _, sub := range config.GetSubsystemFilters() {
 			if sub == l.suffix {
 				allowed = true
 				break
@@ -179,6 +179,6 @@ func (l *Logger) shouldLog(severity int) bool {
 		}
 	}
 
-	effectiveLevel := config.LogLevel
+	effectiveLevel := config.GetLogLevel()
 	return severity >= effectiveLevel
 }
