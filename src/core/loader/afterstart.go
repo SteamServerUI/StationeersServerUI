@@ -9,15 +9,9 @@ import (
 )
 
 func AfterStartComplete() {
-	existingConfig, err := config.LoadConfig()
-	if err != nil {
-		logger.Core.Error("AfterStartComplete: Failed to Load config: " + err.Error())
-	}
-	err = SaveConfig(existingConfig, false) // save config, but explicitly DONT reload backend since config is already loaded
-	if err != nil {
-		logger.Core.Error("AfterStartComplete: Failed to save config: " + err.Error())
-	}
-	err = setup.CleanUpOldUIModFolderFiles()
+
+	config.SetSaveConfig() // Save config after startup through setters
+	err := setup.CleanUpOldUIModFolderFiles()
 	if err != nil {
 		logger.Core.Error("AfterStartComplete: Failed to clean up old pre-v5.5 UI mod folder files: " + err.Error())
 	}
@@ -30,6 +24,5 @@ func AfterStartComplete() {
 		gamemgr.InternalStartServer()
 	}
 	setup.SetupAutostartScripts()
-	// start discordrpc in a separate goroutine
 	discordrpc.StartDiscordRPC()
 }
