@@ -8,20 +8,6 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
-// this is a Hack, but it works for now. Ideally, move the getter setter logic from SteamServerUI to StationeersServerUI, but not feasible at the moment.
-func SaveConfig(cfg *config.JsonConfig, reloadBackend ...bool) error {
-	err := config.SaveConfig(cfg)
-	if err != nil {
-		logger.Core.Error("Failed to save config: " + err.Error())
-		return err
-	}
-	// Call ReloadBackend by default, unless reloadBackend is explicitly false
-	if len(reloadBackend) == 0 || reloadBackend[0] {
-		ReloadBackend()
-	}
-	return nil
-}
-
 func PrintConfigDetails() {
 	logger.Config.Debug("Gameserver config values loaded")
 	logger.Config.Debug("---- GENERAL CONFIG VARS ----")

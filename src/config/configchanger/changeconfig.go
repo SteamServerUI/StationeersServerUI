@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
 )
 
 func SaveConfigForm(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +54,7 @@ func SaveConfigForm(w http.ResponseWriter, r *http.Request) {
 		switch fieldType.Kind() {
 		case reflect.String:
 			field.SetString(formValue) // Set the value, even if it's empty to allow clearing the field
-		case reflect.Ptr:
+		case reflect.Pointer:
 			if fieldType.Elem().Kind() == reflect.Bool {
 				newBool := formValue == "true"       // Convert form value to bool
 				field.Set(reflect.ValueOf(&newBool)) // Set the pointer to the new bool
@@ -64,7 +63,7 @@ func SaveConfigForm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save the updated config
-	if err := loader.SaveConfig(existingConfig); err != nil {
+	if err := SaveConfig(existingConfig); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -120,7 +119,7 @@ func SaveConfigRestful(w http.ResponseWriter, r *http.Request) {
 			if strValue, ok := value.(string); ok {
 				field.SetString(strValue)
 			}
-		case reflect.Ptr:
+		case reflect.Pointer:
 			if fieldType.Elem().Kind() == reflect.Bool {
 				if boolValue, ok := value.(bool); ok {
 					field.Set(reflect.ValueOf(&boolValue)) // Set the pointer to the new bool
@@ -156,7 +155,7 @@ func SaveConfigRestful(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save the updated config
-	if err := loader.SaveConfig(existingConfig); err != nil {
+	if err := SaveConfig(existingConfig); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
