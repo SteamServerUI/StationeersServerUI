@@ -89,6 +89,7 @@ type CustomDetection struct {
 // LoadConfig loads and initializes the configuration
 func LoadConfig() (*JsonConfig, error) {
 	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
 
 	var jsonConfig JsonConfig
 	file, err := os.Open(ConfigPath)
@@ -106,7 +107,6 @@ func LoadConfig() (*JsonConfig, error) {
 		// Other errors (e.g., permissions), fail immediately
 		return nil, fmt.Errorf("failed to open config file: %v", err)
 	}
-	ConfigMu.Unlock()
 	// Apply configuration
 	applyConfig(&jsonConfig)
 
@@ -115,8 +115,6 @@ func LoadConfig() (*JsonConfig, error) {
 
 // applyConfig applies the configuration with JSON -> env -> fallback hierarchy
 func applyConfig(cfg *JsonConfig) {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
 	// Apply values with hierarchy
 	DiscordToken = getString(cfg.DiscordToken, "DISCORD_TOKEN", "")
 	ControlChannelID = getString(cfg.ControlChannelID, "CONTROL_CHANNEL_ID", "")
@@ -265,7 +263,9 @@ func applyConfig(cfg *JsonConfig) {
 	ConfiguredSafeBackupDir = filepath.Join("./saves/", WorldName, "Safebackups")
 }
 
-func SafeSaveConfig() error {
+// use safeSaveConfig EXCLUSIVELY though setter functions
+// M U S T be called while holding a lock on ConfigMu!
+func safeSaveConfig() error {
 
 	cfg := JsonConfig{
 		DiscordToken:              DiscordToken,
@@ -346,7 +346,13 @@ func SafeSaveConfig() error {
 }
 
 // use SaveConfig EXCLUSIVELY though loader.SaveConfig to trigger a reload afterwards!
-func SaveConfig(cfg *JsonConfig) error {
+// when the config gets updated, changes do not get reflected at runtime UNLESS a backend reload / config reload is triggered
+// This can be done via configchanger.SaveConfig
+func SaveConfigToFile(cfg *JsonConfig) error {
+
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
 	file, err := os.Create(ConfigPath)
 	if err != nil {
 		return fmt.Errorf("error creating config.json: %v", err)
