@@ -15,6 +15,29 @@ func SetSaveConfig() error {
 	return SafeSaveConfig()
 }
 
+// Setup and System Settings
+func SetIsFirstTimeSetup(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	IsFirstTimeSetup = value
+	return SafeSaveConfig()
+}
+
+func SetIsSSCMEnabled(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	IsSSCMEnabled = value
+	return SafeSaveConfig()
+}
+
+// ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
+// ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
+// ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
+// ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
+// ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
+
 // Debug and Logging Settings
 func SetIsDebugMode(value bool) error {
 	ConfigMu.Lock()
@@ -74,15 +97,6 @@ func SetSubsystemFilters(value []string) error {
 	}
 
 	SubsystemFilters = value
-	return SafeSaveConfig()
-}
-
-// Setup and System Settings
-func SetIsFirstTimeSetup(value bool) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	IsFirstTimeSetup = value
 	return SafeSaveConfig()
 }
 
@@ -646,14 +660,6 @@ func SetAllowMajorUpdates(value bool) error {
 	defer ConfigMu.Unlock()
 
 	AllowMajorUpdates = value
-	return SafeSaveConfig()
-}
-
-func SetIsSSCMEnabled(value bool) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	IsSSCMEnabled = value
 	return SafeSaveConfig()
 }
 
