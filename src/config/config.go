@@ -27,14 +27,14 @@ type JsonConfig struct {
 	BlackListFilePath         string            `json:"blackListFilePath"`
 	IsDiscordEnabled          *bool             `json:"isDiscordEnabled"`
 	ErrorChannelID            string            `json:"errorChannelID"`
-	BackupKeepLastN           int               `json:"backupKeepLastN"`
-	IsCleanupEnabled          *bool             `json:"isCleanupEnabled"`
-	BackupKeepDailyFor        int               `json:"backupKeepDailyFor"`
-	BackupKeepWeeklyFor       int               `json:"backupKeepWeeklyFor"`
-	BackupKeepMonthlyFor      int               `json:"backupKeepMonthlyFor"`
-	BackupCleanupInterval     int               `json:"backupCleanupInterval"`
-	BackupWaitTime            int               `json:"backupWaitTime"`
-	IsNewTerrainAndSaveSystem *bool             `json:"IsNewTerrainAndSaveSystem"`
+	BackupKeepLastN           int               `json:"backupKeepLastN"`           // Number of most recent backups to keep (default: 2000)
+	IsCleanupEnabled          *bool             `json:"isCleanupEnabled"`          // Enable automatic cleanup of backups (default: false)
+	BackupKeepDailyFor        int               `json:"backupKeepDailyFor"`        // Retention period in hours for daily backups
+	BackupKeepWeeklyFor       int               `json:"backupKeepWeeklyFor"`       // Retention period in hours for weekly backups
+	BackupKeepMonthlyFor      int               `json:"backupKeepMonthlyFor"`      // Retention period in hours for monthly backups
+	BackupCleanupInterval     int               `json:"backupCleanupInterval"`     // Hours between backup cleanup operations
+	BackupWaitTime            int               `json:"backupWaitTime"`            // Seconds to wait before copying backups
+	IsNewTerrainAndSaveSystem *bool             `json:"IsNewTerrainAndSaveSystem"` // Use new terrain and save system
 	GameBranch                string            `json:"gameBranch"`
 	Difficulty                string            `json:"Difficulty"`
 	StartCondition            string            `json:"StartCondition"`
@@ -263,6 +263,86 @@ func applyConfig(cfg *JsonConfig) {
 	}
 	// use Safebackups folder either way.
 	ConfiguredSafeBackupDir = filepath.Join("./saves/", WorldName, "Safebackups")
+}
+
+func SafeSaveConfig() error {
+
+	cfg := JsonConfig{
+		DiscordToken:              DiscordToken,
+		ControlChannelID:          ControlChannelID,
+		StatusChannelID:           StatusChannelID,
+		ConnectionListChannelID:   ConnectionListChannelID,
+		LogChannelID:              LogChannelID,
+		SaveChannelID:             SaveChannelID,
+		ControlPanelChannelID:     ControlPanelChannelID,
+		DiscordCharBufferSize:     DiscordCharBufferSize,
+		BlackListFilePath:         BlackListFilePath,
+		IsDiscordEnabled:          &IsDiscordEnabled,
+		ErrorChannelID:            ErrorChannelID,
+		BackupKeepLastN:           BackupKeepLastN,
+		IsCleanupEnabled:          &IsCleanupEnabled,
+		BackupKeepDailyFor:        int(BackupKeepDailyFor / time.Hour),    // Convert to hours
+		BackupKeepWeeklyFor:       int(BackupKeepWeeklyFor / time.Hour),   // Convert to hours
+		BackupKeepMonthlyFor:      int(BackupKeepMonthlyFor / time.Hour),  // Convert to hours
+		BackupCleanupInterval:     int(BackupCleanupInterval / time.Hour), // Convert to hours
+		BackupWaitTime:            int(BackupWaitTime / time.Second),      // Convert to seconds
+		IsNewTerrainAndSaveSystem: &IsNewTerrainAndSaveSystem,
+		GameBranch:                GameBranch,
+		Difficulty:                Difficulty,
+		StartCondition:            StartCondition,
+		StartLocation:             StartLocation,
+		ServerName:                ServerName,
+		SaveInfo:                  SaveInfo,
+		ServerMaxPlayers:          ServerMaxPlayers,
+		ServerPassword:            ServerPassword,
+		ServerAuthSecret:          ServerAuthSecret,
+		AdminPassword:             AdminPassword,
+		GamePort:                  GamePort,
+		UpdatePort:                UpdatePort,
+		UPNPEnabled:               &UPNPEnabled,
+		AutoSave:                  &AutoSave,
+		SaveInterval:              SaveInterval,
+		AutoPauseServer:           &AutoPauseServer,
+		LocalIpAddress:            LocalIpAddress,
+		StartLocalHost:            &StartLocalHost,
+		ServerVisible:             &ServerVisible,
+		UseSteamP2P:               &UseSteamP2P,
+		ExePath:                   ExePath,
+		AdditionalParams:          AdditionalParams,
+		Users:                     Users,
+		AuthEnabled:               &AuthEnabled,
+		JwtKey:                    JwtKey,
+		AuthTokenLifetime:         AuthTokenLifetime,
+		Debug:                     &IsDebugMode,
+		CreateSSUILogFile:         &CreateSSUILogFile,
+		LogLevel:                  LogLevel,
+		LogClutterToConsole:       &LogClutterToConsole,
+		SubsystemFilters:          SubsystemFilters,
+		IsUpdateEnabled:           &IsUpdateEnabled,
+		IsSSCMEnabled:             &IsSSCMEnabled,
+		AutoRestartServerTimer:    AutoRestartServerTimer,
+		AllowPrereleaseUpdates:    &AllowPrereleaseUpdates,
+		AllowMajorUpdates:         &AllowMajorUpdates,
+		IsConsoleEnabled:          &IsConsoleEnabled,
+		LanguageSetting:           LanguageSetting,
+		AutoStartServerOnStartup:  &AutoStartServerOnStartup,
+		AdditionalLoginHeaderText: AdditionalLoginHeaderText,
+		SSUIWebPort:               SSUIWebPort,
+	}
+
+	file, err := os.Create(ConfigPath)
+	if err != nil {
+		return fmt.Errorf("error creating config.json: %v", err)
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(cfg); err != nil {
+		return fmt.Errorf("error encoding config.json: %v", err)
+	}
+
+	return nil
 }
 
 // use SaveConfig EXCLUSIVELY though loader.SaveConfig to trigger a reload afterwards!
