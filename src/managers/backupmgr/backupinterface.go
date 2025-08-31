@@ -56,7 +56,7 @@ func GetBackupConfig() BackupConfig {
 			KeepDailyFor:    config.BackupKeepDailyFor,
 			KeepWeeklyFor:   config.BackupKeepWeeklyFor,
 			KeepMonthlyFor:  config.BackupKeepMonthlyFor,
-			CleanupInterval: config.BackupKeepMonthlyFor,
+			CleanupInterval: config.BackupCleanupInterval,
 		},
 	}
 }
