@@ -163,5 +163,5 @@ func buildSteamCMDCommand(steamCMDDir, currentDir string) *exec.Cmd {
 	if runtime.GOOS == "windows" {
 		return exec.Command(filepath.Join(steamCMDDir, "steamcmd.exe"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GetGameServerAppID(), "-beta", config.GetGameBranch(), "validate", "+quit")
 	}
-	return exec.Command(filepath.Join(steamCMDDir, "steamcmd.sh"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GetGameServerAppID(), "-beta", config.GetGameServerAppID(), "validate", "+quit")
+	return exec.Command(filepath.Join(steamCMDDir, "steamcmd.sh"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", config.GetGameServerAppID(), "-beta", config.GetGameBranch(), "validate", "+quit")
 }
