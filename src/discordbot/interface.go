@@ -18,8 +18,8 @@ func InitializeDiscordBot() {
 		logger.Discord.Debug("Previous Discord session found, closing it...")
 		config.DiscordSession.Close()
 	}
-	if config.BufferFlushTicker != nil {
-		config.BufferFlushTicker.Stop()
+	if BufferFlushTicker != nil {
+		BufferFlushTicker.Stop()
 	}
 
 	// Create new session
@@ -58,11 +58,9 @@ func InitializeDiscordBot() {
 	sendControlPanel() // Send control panel message to Discord
 	UpdateBotStatusWithMessage("StationeersServerUI v" + config.GetVersion())
 	// Start buffer flush ticker
-	config.ConfigMu.Lock()
-	config.BufferFlushTicker = time.NewTicker(5 * time.Second)
-	config.ConfigMu.Unlock()
+	BufferFlushTicker = time.NewTicker(5 * time.Second)
 	go func() {
-		for range config.BufferFlushTicker.C {
+		for range BufferFlushTicker.C {
 			flushLogBufferToDiscord()
 		}
 	}()

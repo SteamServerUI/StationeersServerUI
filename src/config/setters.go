@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // Although this is a not a real setter, this function can be used to save the config safely
@@ -69,15 +67,6 @@ func SetLogLevel(value int) error {
 	return safeSaveConfig()
 }
 
-// SetLogMessageBuffer sets the LogMessageBuffer with validation
-func SetLogMessageBuffer(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	LogMessageBuffer = value
-	return safeSaveConfig()
-}
-
 func SetLogClutterToConsole(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
@@ -97,15 +86,6 @@ func SetSubsystemFilters(value []string) error {
 	}
 
 	SubsystemFilters = value
-	return safeSaveConfig()
-}
-
-// SetBufferFlushTicker sets the BufferFlushTicker
-func SetBufferFlushTicker(value *time.Ticker) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	BufferFlushTicker = value
 	return safeSaveConfig()
 }
 
@@ -173,18 +153,6 @@ func SetGameBranch(value string) error {
 	}
 
 	GameBranch = value
-	return safeSaveConfig()
-}
-
-func SetGameServerUUID(value uuid.UUID) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	if value == uuid.Nil {
-		return fmt.Errorf("game server UUID cannot be nil")
-	}
-
-	GameServerUUID = value
 	return safeSaveConfig()
 }
 
@@ -551,14 +519,6 @@ func SetDiscordCharBufferSize(value int) error {
 	}
 
 	DiscordCharBufferSize = value
-	return safeSaveConfig()
-}
-
-func SetControlMessageID(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	ControlMessageID = value
 	return safeSaveConfig()
 }
 

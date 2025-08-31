@@ -10,6 +10,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+var ControlMessageID string
+
 func SendMessageToControlChannel(message string) {
 	if !config.GetIsDiscordEnabled() {
 		return
@@ -166,9 +168,7 @@ func sendControlPanel() {
 	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "▶️") // Start
 	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "⏹️") // Stop
 	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "♻️") // Restart
-	config.ConfigMu.Lock()
-	config.ControlMessageID = msg.ID
-	config.ConfigMu.Unlock()
+	ControlMessageID = msg.ID
 	clearMessagesAboveLastN(config.GetControlPanelChannelID(), 1) // Clear all old control panel messages
 }
 

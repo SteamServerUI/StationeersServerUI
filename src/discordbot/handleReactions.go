@@ -19,7 +19,7 @@ func listenToDiscordReactions(s *discordgo.Session, r *discordgo.MessageReaction
 	}
 
 	// Check if the reaction was added to the control message for server control
-	if r.MessageID == config.ControlMessageID {
+	if r.MessageID == ControlMessageID {
 		handleControlReactions(s, r)
 		return
 	}

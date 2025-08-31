@@ -28,7 +28,6 @@ func PrintConfigDetails() {
 	logger.Config.Debug(fmt.Sprintf("ErrorChannelID: %s", config.ErrorChannelID))
 	logger.Config.Debug(fmt.Sprintf("IsDiscordEnabled: %v", config.IsDiscordEnabled))
 	logger.Config.Debug(fmt.Sprintf("LogChannelID: %s", config.LogChannelID))
-	logger.Config.Debug(fmt.Sprintf("LogMessageBuffer: %s", config.LogMessageBuffer))
 	logger.Config.Debug(fmt.Sprintf("SaveChannelID: %s", config.SaveChannelID))
 	logger.Config.Debug(fmt.Sprintf("StatusChannelID: %s", config.StatusChannelID))
 
