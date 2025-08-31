@@ -468,7 +468,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 
 	default:
 		data.Title = localization.GetString("UIText_Login_Title")
-		data.HeaderTitle = localization.GetString("UIText_Login_HeaderTitle") + config.GetAdditionalLoginHeaderText()
+		data.HeaderTitle = localization.GetString("UIText_Login_HeaderTitle") + config.GetSSUIIdentifier()
 		data.PrimaryLabel = localization.GetString("UIText_Login_PrimaryLabel")
 		data.SecondaryLabel = localization.GetString("UIText_Login_SecondaryLabel")
 		data.PrimaryPlaceholderText = localization.GetString("UIText_Login_PrimaryPlaceholder")

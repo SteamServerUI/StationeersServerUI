@@ -4,6 +4,7 @@ package web
 type IndexTemplateData struct {
 	Version                        string
 	Branch                         string
+	SSUIIdentifier                 string
 	UIText_StartButton             string
 	UIText_StopButton              string
 	UIText_Settings                string

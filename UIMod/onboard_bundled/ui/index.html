@@ -37,7 +37,7 @@
     <main>
 
         <div id="status-indicator" class="status-indicator offline" title="Server status unknown"></div>
-        <h1>Stationeers Server UI v{{.Version}} ({{.Branch}})</h1>
+        <h1>Stationeers Server UI v{{.Version}}{{.SSUIIdentifier}}</h1>
         <div id="controls">
             <button onclick="startServer()">{{.UIText_StartButton}}</button>
             <button onclick="stopServer()">{{.UIText_StopButton}}</button>

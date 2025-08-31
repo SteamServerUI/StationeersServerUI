@@ -155,11 +155,11 @@ func SetSSUIWebPort(value string) error {
 	return safeSaveConfig()
 }
 
-func SetAdditionalLoginHeaderText(value string) error {
+func SetSSUIIdentifier(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	AdditionalLoginHeaderText = value
+	SSUIIdentifier = value
 	return safeSaveConfig()
 }
 

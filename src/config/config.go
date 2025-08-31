@@ -74,7 +74,7 @@ type JsonConfig struct {
 	IsConsoleEnabled          *bool             `json:"IsConsoleEnabled"`
 	LanguageSetting           string            `json:"LanguageSetting"`
 	AutoStartServerOnStartup  *bool             `json:"AutoStartServerOnStartup"`
-	AdditionalLoginHeaderText string            `json:"AdditionalLoginHeaderText"`
+	SSUIIdentifier            string            `json:"SSUIIdentifier"`
 	SSUIWebPort               string            `json:"SSUIWebPort"`
 }
 
@@ -160,7 +160,7 @@ func applyConfig(cfg *JsonConfig) {
 	GamePort = getString(cfg.GamePort, "GAME_PORT", "27016")
 	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27015")
 	LanguageSetting = getString(cfg.LanguageSetting, "LANGUAGE_SETTING", "en-US")
-	AdditionalLoginHeaderText = getString(cfg.AdditionalLoginHeaderText, "ADDITIONAL_LOGIN_HEADER_TEXT", "")
+	SSUIIdentifier = getString(cfg.SSUIIdentifier, "SSUI_IDENTIFIER", "")
 	SSUIWebPort = getString(cfg.SSUIWebPort, "SSUI_WEB_PORT", "8443")
 
 	upnpEnabledVal := getBool(cfg.UPNPEnabled, "UPNP_ENABLED", false)
@@ -326,7 +326,7 @@ func safeSaveConfig() error {
 		IsConsoleEnabled:          &IsConsoleEnabled,
 		LanguageSetting:           LanguageSetting,
 		AutoStartServerOnStartup:  &AutoStartServerOnStartup,
-		AdditionalLoginHeaderText: AdditionalLoginHeaderText,
+		SSUIIdentifier:            SSUIIdentifier,
 		SSUIWebPort:               SSUIWebPort,
 	}
 

@@ -377,10 +377,10 @@ func GetAutoStartServerOnStartup() bool {
 	return AutoStartServerOnStartup
 }
 
-func GetAdditionalLoginHeaderText() string {
+func GetSSUIIdentifier() string {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
-	return AdditionalLoginHeaderText
+	return SSUIIdentifier
 }
 
 func GetSSUIWebPort() string {
