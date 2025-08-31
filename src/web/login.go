@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config/configchanger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/security"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
@@ -155,6 +156,13 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 // RegisterUserHandler registers new users
 func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Handle preflight OPTIONS requests
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	var creds security.UserCredentials
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
@@ -173,30 +181,13 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Load existing config to update it
-	existingConfig, err := config.LoadConfig()
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error - Failed to load config"})
-		return
-	}
-
 	// Initialize Users map if nil
-	if existingConfig.Users == nil {
-		existingConfig.Users = make(map[string]string)
+	if config.GetUsers() == nil {
+		config.SetUsers(make(map[string]string))
 	}
 
 	// Add or update the user
-	existingConfig.Users[creds.Username] = hashedPassword
-
-	// Persist the updated config
-	if err := loader.SaveConfig(existingConfig); err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error - Failed to save config"})
-		return
-	}
+	config.SetUsers(map[string]string{creds.Username: hashedPassword})
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -232,7 +223,7 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 	newConfig.AuthEnabled = &isTrue // Set the pointer to true
 
 	// Save the updated config
-	err = loader.SaveConfig(newConfig)
+	err = configchanger.SaveConfig(newConfig)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
