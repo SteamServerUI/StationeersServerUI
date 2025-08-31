@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 )
 
 // HTTPHandler provides HTTP endpoints for backup operations
@@ -79,6 +80,8 @@ func (h *HTTPHandler) RestoreBackupHandler(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "invalid index parameter", http.StatusBadRequest)
 		return
 	}
+
+	gamemgr.InternalStopServer()
 
 	if err := h.manager.RestoreBackup(index); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
