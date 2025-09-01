@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -43,30 +44,32 @@ func (m *BackupManager) RestoreBackup(index int) error {
 		backupFile := targetGroup.BinFile
 		destFile := filepath.Join("./saves/"+m.config.WorldName, m.config.WorldName+".save")
 
+		// This check was disabled since it was relatively unnecessary and didnt bring much benefit
+
 		// Before restore, check if we have existing .save files in the root saves/WorldName dir
-		saveDir := filepath.Join("./saves/", m.config.WorldName)
-		files, err := os.ReadDir(saveDir)
-		if err != nil {
-			return fmt.Errorf("failed to read save directory %s: %w", saveDir, err)
-		}
+		//saveDir := filepath.Join("./saves/", m.config.WorldName)
+		//files, err := os.ReadDir(saveDir)
+		//if err != nil {
+		//	return fmt.Errorf("failed to read save directory %s: %w", saveDir, err)
+		//}
 
-		for _, file := range files {
-			if file.IsDir() {
-				continue
-			}
-			if strings.HasSuffix(file.Name(), ".save") {
-				existingFile := filepath.Join(saveDir, file.Name())
-				// Move existing .save file to SafeBackupDir with timestamp to avoid overwrites
-				timestamp := time.Now().Format("2006-01-02_15-04-05")
-				savedPreviousHeadSaveFilePath := filepath.Join(m.config.SafeBackupDir, fmt.Sprintf("%s_%s_%s", "pre-restore-HEAD-", timestamp, file.Name()))
-				if err := os.Rename(existingFile, savedPreviousHeadSaveFilePath); err != nil {
-					return fmt.Errorf("failed to move existing HEAD .save file %s to %s: %w", existingFile, savedPreviousHeadSaveFilePath, err)
-				}
-				logger.Backup.Info("Moved previous HEAD .save file to: " + savedPreviousHeadSaveFilePath)
-			}
-		}
+		//for _, file := range files {
+		//	if file.IsDir() {
+		//		continue
+		//	}
+		//	if strings.HasSuffix(file.Name(), ".save") {
+		//		existingFile := filepath.Join(saveDir, file.Name())
+		//		// Move existing .save file to SafeBackupDir with timestamp to avoid overwrites
+		//		timestamp := time.Now().Format("2006-01-02_15-04-05")
+		//		savedPreviousHeadSaveFilePath := filepath.Join(m.config.SafeBackupDir, fmt.Sprintf("%s_%s_%s", "pre-restore-HEAD-", timestamp, file.Name()))
+		//		if err := os.Rename(existingFile, savedPreviousHeadSaveFilePath); err != nil {
+		//			return fmt.Errorf("failed to move existing HEAD .save file %s to %s: %w", existingFile, savedPreviousHeadSaveFilePath, err)
+		//		}
+		//		logger.Backup.Info("Moved previous HEAD .save file to: " + savedPreviousHeadSaveFilePath)
+		//	}
+		//}
 
-		// Create temp directory for mod time shenenigans (https://discordapp.com/channels/276525882049429515/392080751648178188/1407157281606336602)
+		// Create temp directory for mod time shenanigans (https://discordapp.com/channels/276525882049429515/392080751648178188/1407157281606336602)
 		tempDir := filepath.Join("./saves", m.config.WorldName, "tmp")
 		if err := os.MkdirAll(tempDir, os.ModePerm); err != nil {
 			return fmt.Errorf("failed to create temp directory %s: %w", tempDir, err)
@@ -118,8 +121,42 @@ func (m *BackupManager) RestoreBackup(index int) error {
 			outFile.Close()
 		}
 
-		// Modify timestamps of extracted files to current system time
+		// Update world_meta.xml DateTime with current Windows file time using regex
 		now := time.Now()
+		metaFilePath := filepath.Join(tempDir, "world_meta.xml")
+		if _, err := os.Stat(metaFilePath); err == nil {
+			// Read world_meta.xml
+			data, err := os.ReadFile(metaFilePath)
+			if err != nil {
+				m.revertRestore(restoredFiles)
+				return fmt.Errorf("failed to read world_meta.xml: %w", err)
+			}
+
+			// Calculate Windows file time
+			const windowsEpochToUnixEpoch = 116444736000000000 // 100-ns intervals from 1601 to 1970
+			windowsFileTime := now.UnixNano()/100 + windowsEpochToUnixEpoch
+
+			re, err := regexp.Compile(`<DateTime>\d+</DateTime>`)
+			if err != nil {
+				m.revertRestore(restoredFiles)
+				return fmt.Errorf("failed to compile DateTime regex: %w", err)
+			}
+			newDateTime := fmt.Sprintf("<DateTime>%d</DateTime>", windowsFileTime)
+			updatedData := re.ReplaceAll(data, []byte(newDateTime))
+
+			if !re.Match(data) {
+				logger.Backup.Warn("Restore: DateTime element not found in world_meta.xml, proceeding without updating. Server might not load correct save.")
+			} else {
+				if err := os.WriteFile(metaFilePath, updatedData, 0644); err != nil {
+					m.revertRestore(restoredFiles)
+					return fmt.Errorf("failed to write updated world_meta.xml: %w", err)
+				}
+			}
+		} else {
+			logger.Backup.Warn("world_meta.xml not found in extracted files, proceeding without updating DateTime")
+		}
+
+		// Modify timestamps of extracted files to current system time
 		if err := filepath.Walk(tempDir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err

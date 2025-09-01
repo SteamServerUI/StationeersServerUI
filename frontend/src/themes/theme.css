@@ -1,0 +1,88 @@
+/* themes/theme.css */
+:root {
+    /* Only used on login page, fix this later */
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #252526;
+    --bg-tertiary: #2d2d2d;
+    --bg-hover: #3c3c3c;
+    --bg-active: #3e4033;
+    
+    --text-primary: #d4d4d4;
+    --text-secondary: #a9a9a9;
+    --text-accent: #6a9955; /* Forest green accent */
+    --text-warning: #ce9178;
+    
+    --border-color: #3e3e3e;
+    
+    --accent-primary: #6a9955; /* Forest green */
+    --accent-secondary: #4d7240;
+    --accent-tertiary: #5f7e52;
+    
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.4);
+    
+    --transition-speed: 250ms;
+    
+    /* Layout */
+    --top-nav-height: 3rem;
+    --sidebar-width: 150px;
+    --sidebar-collapsed-width: 60px;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    overflow: hidden;
+  }
+  
+  button {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+  }
+  
+  button:hover {
+    background-color: var(--bg-hover);
+    border-color: var(--accent-primary);
+  }
+  
+  button.active {
+    background-color: var(--bg-active);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+  }
+  
+  a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: color var(--transition-speed) ease;
+  }
+  
+  a:hover {
+    color: var(--accent-tertiary);
+  }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 5px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-secondary);
+  }

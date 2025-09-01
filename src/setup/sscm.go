@@ -16,18 +16,18 @@ import (
 var installMutex sync.Mutex
 
 func CheckAndDownloadSSCM() {
-	SSCMPluginDir := config.SSCMPluginDir
-	sscmDir := config.SSCMWebDir
+	SSCMPluginDir := config.GetSSCMPluginDir()
+	sscmDir := config.GetSSCMWebDir()
 
 	requiredDirs := []string{SSCMPluginDir, sscmDir}
 
 	// Set branch
-	if config.Branch == "release" || config.Branch == "Release" {
+	if config.GetBranch() == "release" || config.GetBranch() == "Release" {
 		downloadBranch = "main"
 	} else {
-		downloadBranch = config.Branch
+		downloadBranch = config.GetBranch()
 	}
-	logger.Install.Info("Using branch: " + downloadBranch)
+	logger.Install.Debug("Using branch for SSCM: " + downloadBranch)
 
 	// Define file mappings
 	files := map[string]string{
@@ -51,24 +51,20 @@ func CheckAndDownloadSSCM() {
 		}
 
 		// Initial download
-		config.ConfigMu.Lock()
-		config.IsFirstTimeSetup = true
-		config.ConfigMu.Unlock()
+		config.SetIsFirstTimeSetup(true)
 		downloadAllFiles(files)
 	} else {
 		// Directory exists
-		config.ConfigMu.Lock()
-		config.IsFirstTimeSetup = false
-		config.ConfigMu.Unlock()
-		logger.Install.Info(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
-		logger.Install.Info(fmt.Sprintf("IsFirstTimeSetup: %v", config.IsFirstTimeSetup))
-		if config.IsUpdateEnabled {
+		config.SetIsFirstTimeSetup(false)
+		logger.Install.Debug(fmt.Sprintf("IsUpdateEnabled: %v", config.GetIsUpdateEnabled()))
+		logger.Install.Debug(fmt.Sprintf("IsFirstTimeSetup: %v", config.GetIsFirstTimeSetup()))
+		if config.GetIsUpdateEnabled() {
 			logger.Install.Info("🔍Validating SSCM files for updates...")
-			if config.Branch == "release" || config.Branch == "Release" {
+			if config.GetBranch() == "release" || config.GetBranch() == "Release" {
 				downloadBranch = "main"
 				updateFilesIfDifferent(files)
 			} else {
-				downloadBranch = config.Branch
+				downloadBranch = config.GetBranch()
 				updateFilesIfDifferent(files)
 			}
 		} else {
@@ -170,9 +166,7 @@ func InstallSSCM() {
 	CheckAndDownloadSSCM()
 
 	// Enable SSCM
-	config.ConfigMu.Lock()
-	config.IsSSCMEnabled = true
-	config.ConfigMu.Unlock()
+	config.SetIsSSCMEnabled(true)
 
 	logger.Install.Info("✅SSCM enabled")
 }

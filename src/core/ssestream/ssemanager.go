@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 // The SSE blocking issue is NOT related to the backend; the API handles 200 clients per channel fine.
@@ -52,7 +51,24 @@ func (m *SSEManager) CreateStreamHandler(streamType string) http.HandlerFunc {
 		w.Header().Set("Content-Type", "text/event-stream")
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Header().Set("Connection", "keep-alive")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		origin := r.Header.Get("Origin")
+		if origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		} else {
+			// Default to the server's origin if none provided
+			serverOrigin := r.Host
+			if !strings.HasPrefix(serverOrigin, "http") {
+				if r.TLS != nil {
+					serverOrigin = "https://" + serverOrigin
+				} else {
+					serverOrigin = "http://" + serverOrigin
+				}
+			}
+			w.Header().Set("Access-Control-Allow-Origin", serverOrigin)
+		}
+
+		// Allow credentials
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		// Ensure the response writer supports flushing
 		flusher, ok := w.(http.Flusher)
@@ -81,7 +97,7 @@ func (m *SSEManager) CreateStreamHandler(streamType string) http.HandlerFunc {
 		_, err := fmt.Fprintf(w, "data: %s Stream Connected\n\n", streamType)
 		if err != nil {
 			m.removeClient(client)
-			logger.SSE.Error(" ⚠️ Failed to send initial message: " + err.Error())
+			//logger.SSE.Error(" ⚠️ Failed to send initial message: " + err.Error())
 			return
 		}
 		flusher.Flush()
@@ -112,7 +128,7 @@ func (m *SSEManager) streamMessages(
 		case msg := <-client.messages:
 			_, err := fmt.Fprintf(w, "data: %s\n\n", msg)
 			if err != nil {
-				logger.SSE.Error(" ❌ Failed to send message: " + err.Error())
+				//logger.SSE.Error(" ❌ Failed to send message: " + err.Error())
 				return
 			}
 			flusher.Flush()
@@ -125,7 +141,7 @@ func (m *SSEManager) streamMessages(
 
 // excludeClutterLogs checks if a message should be dropped due to kinematic warnings. This is a workaround "fix" for a bug in the gameserver.
 func (m *SSEManager) excludeClutterLogs(message string) bool {
-	if config.LogClutterToConsole {
+	if config.GetLogClutterToConsole() {
 		return false
 	}
 	dropMessages := map[string]bool{
@@ -140,6 +156,7 @@ func (m *SSEManager) excludeClutterLogs(message string) bool {
 		"memorysetup":                               true,
 		"Microsoft Media Foundation video decoding": true,
 		"The referenced script on this Behaviour":   true,
+		"Fallback handler could not load library":   true,
 	}
 
 	// Check if message contains any of the drop messages
@@ -153,7 +170,7 @@ func (m *SSEManager) excludeClutterLogs(message string) bool {
 
 			// Log only if it's been more than a minute since last log and we have messages to report
 			if m.kinematicDropCount > 0 && now.Sub(m.lastKinematicLog) >= time.Minute {
-				logger.SSE.Info(fmt.Sprintf("🗑️ Detected and Dropped %d unhelpful game server log messages. (Workaround for Gameserver Bug)", m.kinematicDropCount))
+				//logger.SSE.Info(fmt.Sprintf("🗑️ Detected and Dropped %d unhelpful game server log messages. (Workaround for Gameserver Bug)", m.kinematicDropCount))
 				m.lastKinematicLog = now
 				m.kinematicDropCount = 0 // Reset count after logging
 			}
@@ -180,7 +197,7 @@ func (m *SSEManager) Broadcast(message string) {
 			// Message sent successfully
 		default:
 			// Client channel is full, log and skip
-			logger.SSE.Warn("⏳ Message dropped for slow client")
+			//logger.SSE.Warn("⏳ Message dropped for slow client")
 		}
 	}
 }

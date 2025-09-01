@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Server Control</title>
+    <title>SSUI v{{.Version}}{{.SSUIIdentifier}}</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/css/components.css">
@@ -37,7 +37,7 @@
     <main>
 
         <div id="status-indicator" class="status-indicator offline" title="Server status unknown"></div>
-        <h1>Stationeers Server UI v{{.Version}} ({{.Branch}})</h1>
+        <h1>Stationeers Server UI v{{.Version}}{{.SSUIIdentifier}}</h1>
         <div id="controls">
             <button onclick="startServer()">{{.UIText_StartButton}}</button>
             <button onclick="stopServer()">{{.UIText_StopButton}}</button>
@@ -50,6 +50,7 @@
             <div class="tab-buttons">
                 <button class="tab-button active" onclick="showTab('console-tab')">{{.UIText_Console}}</button>
                 <button class="tab-button" onclick="showTab('detection-tab')">{{.UIText_Detection_Events}}</button>
+                <button class="tab-button" onclick="showTab('log-tab')">{{.UIText_Backend_Log}}</button>
             </div>
             <div id="console-tab" class="tab-content active">
                 <div id="console"></div>
@@ -57,13 +58,31 @@
             <div id="detection-tab" class="tab-content">
                 <div id="detection-console"></div>
             </div>
+            <div id="log-tab" class="tab-content">
+                <div id="backendlog-console"></div>
+            </div>
+        </div>
+
+        <div id="players">
+            <h2>{{.UIText_Connected_PlayersHeader}}</h2>
+            <button id="playerListRefreshButton" onclick="fetchPlayers()">↻</button>
+            <ul id="playerList"></ul>
         </div>
 
         <div id="backups">
-            <h2>{{.UIText_Backup_Manager}}</h2>
-            <button id="backupRefreshButton" onclick="fetchBackups()">↻</button>
-            <ul id="backupList"></ul>
-        </div>
+    <h2>{{.UIText_Backup_Manager}}</h2>
+    <div class="backup-controls">
+        <select id="backupLimit" onchange="fetchBackups()">
+            <option value="5">Last 5</option>
+            <option value="10">Last 10</option>
+            <option value="20">Last 20</option>
+            <option value="50">Last 50</option>
+            <option value="">All backups</option>
+        </select>
+        <button id="backupRefreshButton" onclick="fetchBackups()">↻</button>
+    </div>
+    <ul id="backupList"></ul>
+</div>
 
         <div class="update" style="display: none;">
             <h3>

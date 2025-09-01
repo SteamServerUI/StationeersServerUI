@@ -1,0 +1,11 @@
+{
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "svelte.plugin.typescript.diagnostics.enable": true,
+    "files.watcherExclude": {
+      "**/node_modules": true,
+      "**/.svelte-kit": true
+    },
+    "[svelte]": {
+      "editor.defaultFormatter": "svelte.svelte-vscode"
+    }
+  }

@@ -16,21 +16,21 @@ var (
 )
 
 func AddToConnectedPlayers(username, steamID string, connectionTime time.Time, players map[string]string) {
-	if !config.IsDiscordEnabled || config.DiscordSession == nil {
+	if !config.GetIsDiscordEnabled() || config.DiscordSession == nil {
 		logger.Discord.Debug("Discord not enabled or session not initialized")
 		return
 	}
 	content := formatConnectedPlayers(players)
-	sendAndEditMessageInConnectedPlayersChannel(config.ConnectionListChannelID, content)
+	sendAndEditMessageInConnectedPlayersChannel(config.GetConnectionListChannelID(), content)
 }
 
 func RemoveFromConnectedPlayers(steamID string, players map[string]string) {
-	if !config.IsDiscordEnabled || config.DiscordSession == nil {
+	if !config.GetIsDiscordEnabled() || config.DiscordSession == nil {
 		logger.Discord.Debug("Discord not enabled or session not initialized")
 		return
 	}
 	content := formatConnectedPlayers(players)
-	sendAndEditMessageInConnectedPlayersChannel(config.ConnectionListChannelID, content)
+	sendAndEditMessageInConnectedPlayersChannel(config.GetConnectionListChannelID(), content)
 }
 
 func sendAndEditMessageInConnectedPlayersChannel(channelID, message string) {

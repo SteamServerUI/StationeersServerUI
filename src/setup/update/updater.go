@@ -37,7 +37,7 @@ type Version struct {
 
 // UpdateExecutable checks for and applies the latest release from GitHub
 func UpdateExecutable() error {
-	if !config.IsUpdateEnabled {
+	if !config.GetIsUpdateEnabled() {
 		logger.Install.Warn("⚠️ Update check is disabled. Skipping update check. Change 'IsUpdateEnabled' in config.json to true to re-enable update checks.")
 		time.Sleep(1000 * time.Millisecond)
 		logger.Install.Info("⚠️ Continuing in 3 seconds...")
@@ -49,12 +49,12 @@ func UpdateExecutable() error {
 		return nil
 	}
 
-	if config.Branch != "release" {
+	if config.GetBranch() != "release" {
 		logger.Install.Warn("⚠️ You are running a development build. Skipping update check.")
 		return nil
 	}
 
-	if config.AllowPrereleaseUpdates {
+	if config.GetAllowPrereleaseUpdates() {
 		logger.Install.Info("🕵️ Querying GitHub API for the latest (pre)release...")
 	} else {
 		logger.Install.Info("🕵️ Querying GitHub API for the latest stable release...")
@@ -65,16 +65,16 @@ func UpdateExecutable() error {
 	}
 
 	// Parse current and latest versions
-	currentVer, err := parseVersion(config.Version)
+	currentVer, err := parseVersion(config.GetVersion())
 	if err != nil {
-		return fmt.Errorf("❌ Failed to parse current version %s: %v", config.Version, err)
+		return fmt.Errorf("❌ Failed to parse current version %s: %v", config.GetVersion(), err)
 	}
 	latestVer, err := parseVersion(latestRelease.TagName)
 	if err != nil {
 		return fmt.Errorf("❌ Failed to parse latest version %s: %v", latestRelease.TagName, err)
 	}
 
-	logger.Install.Info(fmt.Sprintf("Current version: %s, Latest version: %s", config.Version, latestRelease.TagName))
+	logger.Install.Info(fmt.Sprintf("Current version: %s, Latest version: %s", config.GetVersion(), latestRelease.TagName))
 
 	// Check if we should update
 	updateReason, shouldUpdate := shouldUpdate(currentVer, latestVer)
@@ -115,16 +115,16 @@ func UpdateExecutable() error {
 	}
 
 	// Download and replace
-	logger.Install.Info(fmt.Sprintf("📡 Updating from %s to %s...", config.Version, latestRelease.TagName))
+	logger.Install.Info(fmt.Sprintf("📡 Updating from %s to %s...", config.GetVersion(), latestRelease.TagName))
 	if err := downloadNewExecutable(expectedExe, downloadURL); err != nil {
-		logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: %v. Keeping version %s.", err, config.Version))
+		logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: %v. Keeping version %s.", err, config.GetVersion()))
 		return err
 	}
 
 	// Set executable permissions on Linux
 	if runtime.GOOS != "windows" {
 		if err := os.Chmod(expectedExe, 0755); err != nil {
-			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t make %s executable: %v. Keeping version %s.", expectedExe, err, config.Version))
+			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t make %s executable: %v. Keeping version %s.", expectedExe, err, config.GetVersion()))
 			return err
 		}
 	}
@@ -133,13 +133,13 @@ func UpdateExecutable() error {
 	logger.Install.Info("🚀 Launching the new version and retiring the old one...")
 	if runtime.GOOS == "windows" {
 		if err := runAndExit(expectedExe); err != nil {
-			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t launch %s: %v. Keeping version %s.", expectedExe, err, config.Version))
+			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t launch %s: %v. Keeping version %s.", expectedExe, err, config.GetVersion()))
 			return err
 		}
 	}
 	if runtime.GOOS == "linux" {
 		if err := runAndExitLinux(expectedExe); err != nil {
-			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t launch %s: %v. Keeping version %s.", expectedExe, err, config.Version))
+			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t launch %s: %v. Keeping version %s.", expectedExe, err, config.GetVersion()))
 			return err
 		}
 	}
@@ -150,19 +150,19 @@ func UpdateExecutable() error {
 func RestartMySelf() {
 	currentExe, err := os.Executable()
 	if err != nil {
-		logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t get current executable path: %v. Keeping version %s.", err, config.Version))
+		logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t get current executable path: %v. Keeping version %s.", err, config.GetVersion()))
 		return
 	}
 
 	if runtime.GOOS == "windows" {
 		if err := runAndExit(currentExe); err != nil {
-			logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t launch %s: %v. Keeping version %s.", currentExe, err, config.Version))
+			logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t launch %s: %v. Keeping version %s.", currentExe, err, config.GetVersion()))
 			return
 		}
 	}
 	if runtime.GOOS == "linux" {
 		if err := runAndExitLinux(currentExe); err != nil {
-			logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t launch %s: %v. Keeping version %s.", currentExe, err, config.Version))
+			logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t launch %s: %v. Keeping version %s.", currentExe, err, config.GetVersion()))
 			return
 		}
 	}
@@ -193,7 +193,7 @@ func shouldUpdate(current, latest Version) (string, bool) {
 	}
 
 	// Check if it’s a major update and not allowed
-	if current.Major != latest.Major && !config.AllowMajorUpdates {
+	if current.Major != latest.Major && !config.GetAllowMajorUpdates() {
 		return "major-update", false
 	}
 
@@ -232,7 +232,7 @@ func getLatestRelease() (*githubRelease, error) {
 			continue
 		}
 		if i == 0 || isReleaseNewerVersion(version, latestVersion) {
-			currentVersion, err := parseVersion(config.Version)
+			currentVersion, err := parseVersion(config.GetVersion())
 			if err == nil && isReleaseNewerVersion(currentVersion, version) {
 				if release.Prerelease {
 					logger.Install.Warn("Found a prerelease, but it is older than the running version. Skipping...")
@@ -250,7 +250,7 @@ func getLatestRelease() (*githubRelease, error) {
 	}
 
 	// Log warning if the latest release is a prerelease
-	if latestRelease.Prerelease && !config.AllowPrereleaseUpdates {
+	if latestRelease.Prerelease && !config.GetAllowPrereleaseUpdates() {
 		logger.Install.Warn(fmt.Sprintf("⚠️ Pre-release Update found: Latest version %s is a pre-release. Enable 'AllowPrereleaseUpdates' in config.json to update to it.", latestRelease.TagName))
 		time.Sleep(1000 * time.Millisecond)
 		logger.Install.Info("⚠️ Continuing in 3 seconds...")
@@ -262,7 +262,7 @@ func getLatestRelease() (*githubRelease, error) {
 	}
 
 	// If prerelease and AllowPrereleaseUpdates is false, find the latest stable release
-	if latestRelease.Prerelease && !config.AllowPrereleaseUpdates {
+	if latestRelease.Prerelease && !config.GetAllowPrereleaseUpdates() {
 		var stableRelease *githubRelease
 		var stableVersion Version
 		for i, release := range releases {

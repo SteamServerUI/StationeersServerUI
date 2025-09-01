@@ -86,7 +86,7 @@ func (m *BackupManager) Start() error {
 	m.watcher = watcher
 	go m.watchBackups()
 
-	if config.IsCleanupEnabled {
+	if config.GetIsCleanupEnabled() {
 		go m.startCleanupRoutine()
 	}
 
@@ -128,18 +128,19 @@ func (m *BackupManager) handleNewBackup(filePath string) {
 		return
 	}
 
-	if config.IsSSCMEnabled && config.IsNewTerrainAndSaveSystem {
-		commandmgr.WriteCommand("SAVE")
-		logger.Backup.Info("HEAD Save triggered via SSCM")
-	} else {
-		logger.Backup.Info("HEAD Save NOT refreshed via SSCM")
-	}
-
 	m.wg.Add(1)
 	go func() {
 		defer m.wg.Done()
 
 		time.Sleep(m.config.WaitTime)
+
+		// save the world into Head save too if SSCM is enabled
+		if config.GetIsSSCMEnabled() && config.GetIsNewTerrainAndSaveSystem() {
+			commandmgr.WriteCommand("SAVE")
+			logger.Backup.Debug("HEAD Save triggered via SSCM")
+		} else {
+			logger.Backup.Debug("HEAD Save NOT refreshed via SSCM")
+		}
 
 		m.mu.Lock()
 		defer m.mu.Unlock()
@@ -162,7 +163,7 @@ func (m *BackupManager) handleNewBackup(filePath string) {
 			return
 		}
 
-		logger.Backup.Info("Backup successfully copied to safe location: " + dstPath)
+		logger.Backup.Debug("Backup successfully copied to safe location: " + dstPath)
 	}()
 }
 

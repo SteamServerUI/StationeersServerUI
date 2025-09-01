@@ -6,22 +6,16 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/google/uuid"
 )
 
 /*
 config.Version and config.Branch can be found in config.go
 
 ConfigMu protects all config variables. Lock it for writes; reads are safe
-if writes only happen via applyConfig or with ConfigMu locked.
-
-WARNING: Do NOT set any config vars without locking ConfigMu:
-config.ConfigMu.Lock()
-config.SomeConfigVar = newValue
-config.ConfigMu.Unlock()
+if writes only happen via applyConfig or with ConfigMu locked. Uses getters where possible.
 */
 
-var ConfigMu sync.Mutex
+var ConfigMu sync.RWMutex
 
 // Game Server configuration
 var (
@@ -51,25 +45,22 @@ var (
 
 // Logging, debugging and misc
 var (
-	IsDebugMode               bool //only used for pprof server, keep it like this and check the log level instead. Debug = 10
-	CreateSSUILogFile         bool
-	LogLevel                  int
-	LogMessageBuffer          string
-	IsFirstTimeSetup          bool
-	BufferFlushTicker         *time.Ticker
-	SSEMessageBufferSize      = 2000
-	MaxSSEConnections         = 20
-	GameServerAppID           = "600760"
-	ExePath                   string
-	GameBranch                string
-	SubsystemFilters          []string
-	GameServerUUID            uuid.UUID // Assined at startup to the current instance of the server we are managing. Currently unused.
-	AutoRestartServerTimer    string
-	IsConsoleEnabled          bool
-	LogClutterToConsole       bool // surpresses clutter mono logs from the gameserver
-	LanguageSetting           string
-	AutoStartServerOnStartup  bool
-	AdditionalLoginHeaderText string
+	IsDebugMode              bool //only used for pprof server, keep it like this and check the log level instead. Debug = 10
+	CreateSSUILogFile        bool
+	LogLevel                 int
+	IsFirstTimeSetup         bool
+	SSEMessageBufferSize     = 2000
+	MaxSSEConnections        = 20
+	GameServerAppID          = "600760"
+	ExePath                  string
+	GameBranch               string
+	SubsystemFilters         []string
+	AutoRestartServerTimer   string
+	IsConsoleEnabled         bool
+	LogClutterToConsole      bool // surpresses clutter mono logs from the gameserver
+	LanguageSetting          string
+	AutoStartServerOnStartup bool
+	SSUIIdentifier           string
 )
 
 // Discord integration
@@ -85,7 +76,6 @@ var (
 	SaveChannelID           string
 	ControlPanelChannelID   string
 	DiscordCharBufferSize   int
-	ControlMessageID        string
 	ExceptionMessageID      string
 	BlackListFilePath       string
 )

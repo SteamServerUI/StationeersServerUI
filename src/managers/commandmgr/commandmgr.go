@@ -24,12 +24,12 @@ func generateSalt() string {
 // It checks if SSCM is enabled and ensures thread-safe file access.
 func WriteCommand(command string) error {
 	// Check if SSCM is enabled
-	if !config.IsSSCMEnabled {
+	if !config.GetIsSSCMEnabled() {
 		return nil // Silently return if disabled
 	}
 
 	// Validate file path
-	if config.SSCMFilePath == "" {
+	if config.GetSSCMFilePath() == "" {
 		return os.ErrNotExist
 	}
 
@@ -47,13 +47,13 @@ func WriteCommand(command string) error {
 	prefixedCommand := prefix + " " + command
 
 	// Ensure directory exists
-	dir := filepath.Dir(config.SSCMFilePath)
+	dir := filepath.Dir(config.GetSSCMFilePath())
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
 	}
 
 	// Write to file
-	err := os.WriteFile(config.SSCMFilePath, []byte(prefixedCommand), 0644)
+	err := os.WriteFile(config.GetSSCMFilePath(), []byte(prefixedCommand), 0644)
 	if err != nil {
 		return err
 	}

@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 )
@@ -23,11 +23,11 @@ func StartServer(w http.ResponseWriter, r *http.Request) {
 	logger.Web.Debug("Received start request from API")
 	if err := gamemgr.InternalStartServer(); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		logger.Web.Core("Error starting server: " + err.Error())
+		logger.Web.Error("Error starting server: " + err.Error())
 		return
 	}
 	fmt.Fprint(w, localization.GetString("BackendText_ServerStarted"))
-	logger.Web.Core("Server started.")
+	logger.Web.Info("Server started.")
 }
 
 // StopServer HTTP handler
@@ -36,48 +36,29 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 	if err := gamemgr.InternalStopServer(); err != nil {
 		if err.Error() == "server not running" {
 			fmt.Fprint(w, localization.GetString("BackendText_ServerNotRunningOrAlreadyStopped"))
-			logger.Web.Core("Server not running or was already stopped")
+			logger.Web.Warn("Server not running or was already stopped")
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		logger.Web.Core("Error stopping server: " + err.Error())
+		logger.Web.Error("Error stopping server: " + err.Error())
 		return
 	}
+	detectionmgr.ClearPlayers(detectionmgr.GetDetector())
 	fmt.Fprint(w, localization.GetString("BackendText_ServerStopped"))
-	logger.Web.Core("Server stopped.")
+	logger.Web.Info("Server stopped.")
 }
 
 func GetGameServerRunState(w http.ResponseWriter, r *http.Request) {
 	runState := gamemgr.InternalIsServerRunning()
 	response := map[string]interface{}{
 		"isRunning": runState,
-		"uuid":      config.GameServerUUID.String(),
+		"uuid":      gamemgr.GameServerUUID.String(),
 	}
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, "Failed to respond with Game Server status", http.StatusInternalServerError)
 		return
 	}
-}
-
-// handler for the /console endpoint
-func GetLogOutput(w http.ResponseWriter, r *http.Request) {
-	StartConsoleStream()(w, r)
-}
-
-// handler for the /console endpoint
-func GetEventOutput(w http.ResponseWriter, r *http.Request) {
-	StartDetectionEventStream()(w, r)
-}
-
-// StartConsoleStream creates an HTTP handler for console log SSE streaming
-func StartConsoleStream() http.HandlerFunc {
-	return ssestream.ConsoleStreamManager.CreateStreamHandler("Console")
-}
-
-// StartDetectionEventStream creates an HTTP handler for detection event SSE streaming
-func StartDetectionEventStream() http.HandlerFunc {
-	return ssestream.EventStreamManager.CreateStreamHandler("Event")
 }
 
 // CommandHandler handles POST requests to execute commands via commandmgr.
@@ -128,7 +109,7 @@ func HandleIsSSCMEnabled(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if SSCM is enabled
-	if !config.IsSSCMEnabled {
+	if !config.GetIsSSCMEnabled() {
 		http.Error(w, "SSCM is disabled", http.StatusForbidden)
 		return
 	}

@@ -3,7 +3,56 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "go: run build.go",
+            "label": "npm: install",
+            "command": "npm",
+            "args": [
+                "install"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "problemMatcher": [],
+            "group": "build",
+            "detail": "Install Svelte UI dependencies",
+            "hide": true
+        },
+        {
+            "type": "shell",
+            "label": "npm: build",
+            "command": "npm",
+            "args": [
+                "run",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "dependsOn": [
+                "go: sync backend version with frontend version"
+            ],
+            "problemMatcher": [],
+            "group": "build",
+            "detail": "Build Svelte UI production bundle",
+            "hide": true
+        },
+        {
+            "type": "shell",
+            "label": "go: sync backend version with frontend version",
+            "command": "go",
+            "args": [
+                "run",
+                "./build/version.go"
+            ],
+            "problemMatcher": [
+                "$go"
+            ],
+            "group": "build",
+            "detail": "Sync the backend version to package.json so the Electron auto updater can find its latest update on GitHub",
+            "hide": true
+        },
+        {
+            "type": "shell",
+            "label": "Build: Go Server with fresh assets",
             "command": "go",
             "args": [
                 "run",
@@ -14,7 +63,29 @@
             ],
             "group": "build",
             "detail": "Build Go binarys in ./build with fresh svelte assets",
+            "dependsOn": [
+                "npm: build"
+            ],
+            "dependsOrder": "sequence",
             "hide": false
+        },
+        {   
+            "label": "Run: Go Server with fresh assets",
+            "type": "shell",
+            "command": "go",
+            "args": [
+                "run",
+                "./server.go"
+            ],
+            "problemMatcher": [
+                "$go"
+            ],
+            "group": "test",
+            "detail": "Tip: press F5 for the VsCode Debugger instead of this task",
+            "dependsOn": [
+                "npm: build"
+            ],
+            "dependsOrder": "sequence"
         }
     ]
 }

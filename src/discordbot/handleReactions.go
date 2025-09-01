@@ -19,7 +19,7 @@ func listenToDiscordReactions(s *discordgo.Session, r *discordgo.MessageReaction
 	}
 
 	// Check if the reaction was added to the control message for server control
-	if r.MessageID == config.ControlMessageID {
+	if r.MessageID == ControlMessageID {
 		handleControlReactions(s, r)
 		return
 	}
@@ -81,7 +81,7 @@ func handleControlReactions(s *discordgo.Session, r *discordgo.MessageReactionAd
 	SendMessageToStatusChannel(fmt.Sprintf("%s triggered by %s.", actionMessage, username))
 
 	// Remove the reaction after processing
-	err = s.MessageReactionRemove(config.ControlPanelChannelID, r.MessageID, r.Emoji.APIName(), r.UserID)
+	err = s.MessageReactionRemove(config.GetControlPanelChannelID(), r.MessageID, r.Emoji.APIName(), r.UserID)
 	if err != nil {
 		logger.Discord.Error("Error removing reaction: " + err.Error())
 	}
@@ -116,7 +116,7 @@ func handleExceptionReactions(s *discordgo.Session, r *discordgo.MessageReaction
 	sendMessageToErrorChannel(fmt.Sprintf("%s triggered by %s.", actionMessage, username))
 
 	// Remove the reaction after processing
-	err = s.MessageReactionRemove(config.ErrorChannelID, r.MessageID, r.Emoji.APIName(), r.UserID)
+	err = s.MessageReactionRemove(config.GetErrorChannelID(), r.MessageID, r.Emoji.APIName(), r.UserID)
 	if err != nil {
 		logger.Discord.Error("Error removing reaction: " + err.Error())
 	}

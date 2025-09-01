@@ -20,7 +20,7 @@ const fallbackLanguage = "en-us"
 // reloads all translations and resets to the current language
 func ReloadLocalizer() {
 	logger.Localization.Info("Reloading localization data")
-	currentLanguage = strings.ToLower(config.LanguageSetting)
+	currentLanguage = strings.ToLower(config.GetLanguageSetting())
 	loadTranslations()
 }
 

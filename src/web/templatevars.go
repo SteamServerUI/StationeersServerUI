@@ -2,19 +2,22 @@ package web
 
 // TemplateData holds data to be passed to templates
 type IndexTemplateData struct {
-	Version                 string
-	Branch                  string
-	UIText_StartButton      string
-	UIText_StopButton       string
-	UIText_Settings         string
-	UIText_Update_SteamCMD  string
-	UIText_Console          string
-	UIText_Detection_Events string
-	UIText_Backup_Manager   string
-	UIText_Discord_Info     string
-	UIText_API_Info         string
-	UIText_Copyright1       string
-	UIText_Copyright2       string
+	Version                        string
+	Branch                         string
+	SSUIIdentifier                 string
+	UIText_StartButton             string
+	UIText_StopButton              string
+	UIText_Settings                string
+	UIText_Update_SteamCMD         string
+	UIText_Console                 string
+	UIText_Detection_Events        string
+	UIText_Backend_Log             string
+	UIText_Backup_Manager          string
+	UIText_Connected_PlayersHeader string
+	UIText_Discord_Info            string
+	UIText_API_Info                string
+	UIText_Copyright1              string
+	UIText_Copyright2              string
 }
 
 // ConfigTemplateData holds data for the config page template

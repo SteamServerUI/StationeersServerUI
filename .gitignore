@@ -39,4 +39,7 @@ UIMod/config/customdetections.json
 winhttp.dll
 autostart*
 __debug_bin*
-
+frontend/node_modules
+frontend/dist
+frontend/build
+UIMod/onboard_bundled/v2

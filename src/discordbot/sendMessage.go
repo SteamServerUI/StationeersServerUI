@@ -10,8 +10,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+var ControlMessageID string
+
 func SendMessageToControlChannel(message string) {
-	if !config.IsDiscordEnabled {
+	if !config.GetIsDiscordEnabled() {
 		return
 	}
 	if config.DiscordSession == nil {
@@ -19,14 +21,14 @@ func SendMessageToControlChannel(message string) {
 		return
 	}
 	//clearMessagesAboveLastN(config.ControlChannelID, 20)
-	_, err := config.DiscordSession.ChannelMessageSend(config.ControlChannelID, message)
+	_, err := config.DiscordSession.ChannelMessageSend(config.GetControlChannelID(), message)
 	if err != nil {
 		logger.Discord.Error("Error sending message to control channel: " + err.Error())
 	}
 }
 
 func SendMessageToStatusChannel(message string) {
-	if !config.IsDiscordEnabled {
+	if !config.GetIsDiscordEnabled() {
 		return
 	}
 	if config.DiscordSession == nil {
@@ -34,14 +36,14 @@ func SendMessageToStatusChannel(message string) {
 		return
 	}
 	//clearMessagesAboveLastN(config.StatusChannelID, 10)
-	_, err := config.DiscordSession.ChannelMessageSend(config.StatusChannelID, message)
+	_, err := config.DiscordSession.ChannelMessageSend(config.GetStatusChannelID(), message)
 	if err != nil {
 		logger.Discord.Error("Error sending message to status channel: " + err.Error())
 	}
 }
 
 func SendMessageToSavesChannel(message string) {
-	if !config.IsDiscordEnabled {
+	if !config.GetIsDiscordEnabled() {
 		return
 	}
 	if config.DiscordSession == nil {
@@ -49,14 +51,14 @@ func SendMessageToSavesChannel(message string) {
 		return
 	}
 	//clearMessagesAboveLastN(config.SaveChannelID, 300)
-	_, err := config.DiscordSession.ChannelMessageSend(config.SaveChannelID, message)
+	_, err := config.DiscordSession.ChannelMessageSend(config.GetSaveChannelID(), message)
 	if err != nil {
 		logger.Discord.Error("Error sending message to saves channel: " + err.Error())
 	}
 }
 
 func SendUntrackedMessageToErrorChannel(message string) {
-	if !config.IsDiscordEnabled {
+	if !config.GetIsDiscordEnabled() {
 		return
 	}
 	if config.DiscordSession == nil {
@@ -76,7 +78,7 @@ func SendUntrackedMessageToErrorChannel(message string) {
 			}
 
 			// Send the chunk
-			_, err := config.DiscordSession.ChannelMessageSend(config.ErrorChannelID, message[:splitIndex])
+			_, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message[:splitIndex])
 			if err != nil {
 				logger.Discord.Error("Error sending message to error channel: " + err.Error())
 				return
@@ -86,7 +88,7 @@ func SendUntrackedMessageToErrorChannel(message string) {
 			message = message[splitIndex:]
 		} else {
 			// Send the remaining part of the message
-			_, err := config.DiscordSession.ChannelMessageSend(config.ErrorChannelID, message)
+			_, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message)
 			if err != nil {
 				logger.Discord.Error("Error sending message to error channel: " + err.Error())
 				return // Return whatever was sent before the error
@@ -98,7 +100,7 @@ func SendUntrackedMessageToErrorChannel(message string) {
 
 // unsused (replaced with SendUntrackedMessageToErrorChannel) in 4.3, needed for having a restart button on the last exception message like in v2. Might remve this in the future, but for now let's keep it.
 func sendMessageToErrorChannel(message string) []*discordgo.Message {
-	if !config.IsDiscordEnabled {
+	if !config.GetIsDiscordEnabled() {
 		return nil
 	}
 	if config.DiscordSession == nil {
@@ -119,7 +121,7 @@ func sendMessageToErrorChannel(message string) []*discordgo.Message {
 			}
 
 			// Send the chunk
-			sentMessage, err := config.DiscordSession.ChannelMessageSend(config.ErrorChannelID, message[:splitIndex])
+			sentMessage, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message[:splitIndex])
 			if err != nil {
 				logger.Discord.Error("Error sending message to error channel: " + err.Error())
 				return sentMessages // Return whatever was sent before the error
@@ -132,7 +134,7 @@ func sendMessageToErrorChannel(message string) []*discordgo.Message {
 			message = message[splitIndex:]
 		} else {
 			// Send the remaining part of the message
-			sentMessage, err := config.DiscordSession.ChannelMessageSend(config.ErrorChannelID, message)
+			sentMessage, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message)
 			if err != nil {
 				logger.Discord.Error("Error sending message to error channel: " + err.Error())
 				return sentMessages // Return whatever was sent before the error
@@ -148,7 +150,7 @@ func sendMessageToErrorChannel(message string) []*discordgo.Message {
 }
 
 func sendControlPanel() {
-	if !config.IsDiscordEnabled {
+	if !config.GetIsDiscordEnabled() {
 		return
 	}
 	messageContent := "Control Panel:\n\nReact with the following to perform actions:\n" +
@@ -156,26 +158,24 @@ func sendControlPanel() {
 		"⏹️ Stop the server\n\n" +
 		"♻️ Restart the server\n\n"
 
-	msg, err := config.DiscordSession.ChannelMessageSend(config.ControlPanelChannelID, messageContent)
+	msg, err := config.DiscordSession.ChannelMessageSend(config.GetControlPanelChannelID(), messageContent)
 	if err != nil {
 		logger.Discord.Error("Error sending control panel: " + err.Error())
 		return
 	}
 
 	// Add reactions (acting as buttons) to the control message
-	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "▶️") // Start
-	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "⏹️") // Stop
-	config.DiscordSession.MessageReactionAdd(config.ControlPanelChannelID, msg.ID, "♻️") // Restart
-	config.ConfigMu.Lock()
-	config.ControlMessageID = msg.ID
-	config.ConfigMu.Unlock()
-	clearMessagesAboveLastN(config.ControlPanelChannelID, 1) // Clear all old control panel messages
+	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "▶️") // Start
+	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "⏹️") // Stop
+	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "♻️") // Restart
+	ControlMessageID = msg.ID
+	clearMessagesAboveLastN(config.GetControlPanelChannelID(), 1) // Clear all old control panel messages
 }
 
 // This function is used to clear messages above the last N messages in a channel. If you call this with 5, it will clear all messages in the channel besides the most recent 5.
 func clearMessagesAboveLastN(channelID string, keep int) {
 	go func() {
-		if !config.IsDiscordEnabled {
+		if !config.GetIsDiscordEnabled() {
 			return
 		}
 		if config.DiscordSession == nil {

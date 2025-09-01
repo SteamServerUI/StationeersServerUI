@@ -3,6 +3,7 @@ package loader
 
 import (
 	"embed"
+	"sync"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
@@ -15,12 +16,15 @@ import (
 )
 
 // only call this once at startup
-func InitBackend() {
+func InitBackend(wg *sync.WaitGroup) {
+	wg.Add(1)
+	defer wg.Done()
 	ReloadConfig()
 	ReloadSSCM()
 	ReloadBackupManager()
 	ReloadLocalizer()
 	ReloadDiscordBot()
+	InitDetector()
 }
 
 // use this to reload backend at runtime
@@ -32,6 +36,7 @@ func ReloadBackend() {
 	ReloadBackupManager()
 	ReloadLocalizer()
 	PrintConfigDetails()
+	logger.Core.Info("Backend reload done!")
 }
 
 // should ideally not be called standalone, if feasable, call ReloadBackend instead
@@ -45,7 +50,7 @@ func ReloadConfig() {
 }
 
 func ReloadSSCM() {
-	if config.IsSSCMEnabled {
+	if config.GetIsSSCMEnabled() {
 		setup.InstallSSCM()
 	}
 }
@@ -59,7 +64,7 @@ func ReloadBackupManager() {
 }
 
 func ReloadDiscordBot() {
-	if config.IsDiscordEnabled {
+	if config.GetIsDiscordEnabled() {
 		go discordbot.InitializeDiscordBot()
 		logger.Discord.Info("Discord bot reloaded successfully")
 	}

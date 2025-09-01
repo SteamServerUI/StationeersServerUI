@@ -11,9 +11,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname == '/') {
         setupTabs();
         fetchDetectionEvents();
+        setupLogStreams({
+            consoleId: 'backendlog-console',
+            streamUrls: [
+                '/logs/info',
+                '/logs/warn',
+                '/logs/error',
+     ],
+            maxMessages: 500,
+            messageClass: 'log-console-element'
+        });
         fetchBackups();
+        fetchPlayers();
         handleConsole();
-        pollServerStatus();
+        pollRecurringTasks();
         if (animationState != 'disabled') {
         // Create planets with size, orbit radius, speed, and color
         const planetContainer = document.getElementById('planet-container');

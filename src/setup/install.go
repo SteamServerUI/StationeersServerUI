@@ -23,6 +23,7 @@ var downloadBranch string // Holds the branch to download from
 
 // Install performs the entire installation process and ensures the server waits for it to complete
 func Install(wg *sync.WaitGroup) {
+	wg.Add(1)
 	defer wg.Done() // Signal that installation is complete
 
 	// Step 0: Check for updates
@@ -45,17 +46,17 @@ func Install(wg *sync.WaitGroup) {
 }
 
 func CheckAndDownloadUIMod() {
-	uiModDir := config.UIModFolder
-	configDir := config.UIModFolder + "config/"
-	tlsDir := config.UIModFolder + "tls/"
+	uiModDir := config.GetUIModFolder()
+	configDir := config.GetUIModFolder() + "config/"
+	tlsDir := config.GetUIModFolder() + "tls/"
 
 	requiredDirs := []string{uiModDir, configDir}
 
 	// Set branch
-	if config.Branch == "release" || config.Branch == "Release" {
+	if config.GetBranch() == "release" || config.GetBranch() == "Release" {
 		downloadBranch = "main"
 	} else {
-		downloadBranch = config.Branch
+		downloadBranch = config.GetBranch()
 	}
 	logger.Install.Debug("Using branch: " + downloadBranch)
 
@@ -77,30 +78,25 @@ func CheckAndDownloadUIMod() {
 	// Check if the directory exists
 	if _, err := os.Stat(uiModDir); os.IsNotExist(err) {
 		// Initial download
-		config.ConfigMu.Lock()
 		//check if tlsDir exists, if not, set isFirstTimeSetup to true
 		if _, err := os.Stat(tlsDir); os.IsNotExist(err) {
-			config.IsFirstTimeSetup = true
+			config.SetIsFirstTimeSetup(true)
 		} else {
-			config.IsFirstTimeSetup = false
+			config.SetIsFirstTimeSetup(false)
 		}
-
-		config.ConfigMu.Unlock()
 		downloadAllFiles(files)
 	} else {
 		// Directory exists
-		config.ConfigMu.Lock()
-		config.IsFirstTimeSetup = false
-		config.ConfigMu.Unlock()
-		logger.Install.Info(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
-		logger.Install.Info(fmt.Sprintf("IsFirstTimeSetup: %v", config.IsFirstTimeSetup))
-		if config.IsUpdateEnabled {
+		config.SetIsFirstTimeSetup(false)
+		logger.Install.Debug(fmt.Sprintf("IsUpdateEnabled: %v", config.GetIsUpdateEnabled()))
+		logger.Install.Debug(fmt.Sprintf("IsFirstTimeSetup: %v", config.GetIsFirstTimeSetup()))
+		if config.GetIsUpdateEnabled() {
 			logger.Install.Info("🔍Validating UIMod files for updates...")
-			if config.Branch == "release" || config.Branch == "Release" {
+			if config.GetBranch() == "release" || config.GetBranch() == "Release" {
 				downloadBranch = "main"
 				updateFilesIfDifferent(files)
 			} else {
-				downloadBranch = config.Branch
+				downloadBranch = config.GetBranch()
 				updateFilesIfDifferent(files)
 			}
 		} else {
@@ -359,7 +355,7 @@ func createRequiredDirs(requiredDirs []string) {
 	// Create directories
 	for _, dir := range requiredDirs {
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			config.IsFirstTimeSetup = true
+			config.SetIsFirstTimeSetup(true)
 			err := os.MkdirAll(dir, os.ModePerm)
 			if err != nil {
 				logger.Install.Error("❌Error creating folder: " + err.Error())

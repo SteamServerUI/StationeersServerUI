@@ -14,60 +14,16 @@ import (
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
-	"github.com/google/uuid"
 )
 
 var (
-	cmd             *exec.Cmd
-	mu              sync.Mutex
-	logDone         chan struct{}
-	err             error
-	autoRestartDone chan struct{}
-	processExited   chan struct{}
+	cmd           *exec.Cmd
+	mu            sync.Mutex
+	logDone       chan struct{}
+	err           error
+	processExited chan struct{}
+	// autoRestartDone is defined in autorestart.go
 )
-
-// InternalIsServerRunning checks if the server process is running.
-// Safe to call standalone as it manages its own locking.
-func InternalIsServerRunning() bool {
-	mu.Lock()
-	defer mu.Unlock()
-	return internalIsServerRunningNoLock()
-}
-
-// internalIsServerRunningNoLock checks if the server process is running.
-// Caller M U S T hold mu.Lock().
-func internalIsServerRunningNoLock() bool {
-	if cmd == nil || cmd.Process == nil {
-		return false
-	}
-
-	if runtime.GOOS == "windows" {
-		select {
-		case <-processExited:
-			cmd = nil
-			clearGameServerUUID()
-			return false
-		default:
-			// Process is still running
-			return true
-		}
-	}
-
-	if runtime.GOOS == "linux" {
-		// On Unix-like systems, use Signal(0)
-		if err := cmd.Process.Signal(syscall.Signal(0)); err != nil {
-			logger.Core.Debug("Signal(0) failed, assuming process is dead: " + err.Error())
-			cmd = nil
-			clearGameServerUUID()
-			return false
-		}
-		return true
-	}
-
-	logger.Core.Warn("Failed to check if server is running, assuming it's dead")
-	return false
-}
 
 func InternalStartServer() error {
 	mu.Lock()
@@ -81,7 +37,7 @@ func InternalStartServer() error {
 
 	logger.Core.Info("=== GAMESERVER STARTING ===")
 
-	if config.IsSSCMEnabled && runtime.GOOS == "linux" {
+	if config.GetIsSSCMEnabled() && runtime.GOOS == "linux" {
 
 		var envVars []string
 		// Set up SSCM (BepInEx/Doorstop) environment
@@ -90,28 +46,28 @@ func InternalStartServer() error {
 			return fmt.Errorf("failed to set up SSCM environment: %v", err)
 		}
 		// Create command after environment is set
-		cmd = exec.Command(config.ExePath, args...)
+		cmd = exec.Command(config.GetExePath(), args...)
 		// Set the environment for the command
 		if envVars != nil {
 			cmd.Env = envVars
 			logger.Core.Info("BepInEx/Doorstop environment configured for server process")
 		}
-		logger.Core.Info("• Executable: " + config.ExePath + " (with SSCM)")
+		logger.Core.Info("• Executable: " + config.GetExePath() + " (with SSCM)")
 		logger.Core.Info("• Arguments: " + strings.Join(args, " "))
 	}
 
-	if !config.IsSSCMEnabled && runtime.GOOS == "linux" {
+	if !config.GetIsSSCMEnabled() && runtime.GOOS == "linux" {
 		// Use ExePath directly as the command
-		cmd = exec.Command(config.ExePath, args...)
-		logger.Core.Info("• Executable: " + config.ExePath)
+		cmd = exec.Command(config.GetExePath(), args...)
+		logger.Core.Info("• Executable: " + config.GetExePath())
 		logger.Core.Info("• Arguments: " + strings.Join(args, " "))
 	}
 
 	if runtime.GOOS == "windows" {
 
 		// On Windows, set the command to use the executable path and arguments
-		cmd = exec.Command(config.ExePath, args...)
-		logger.Core.Info("• Executable: " + config.ExePath)
+		cmd = exec.Command(config.GetExePath(), args...)
+		logger.Core.Info("• Executable: " + config.GetExePath())
 		logger.Core.Debug("Switching to pipes for logs as we are on Windows!")
 
 		stdout, err := cmd.StdoutPipe()
@@ -173,16 +129,15 @@ func InternalStartServer() error {
 	}
 	// create a UUID for this specific run
 	createGameServerUUID()
-	logger.Core.Debug("Created Game Server with internal UUID: " + config.GameServerUUID.String())
 
 	// Start auto-restart goroutine if AutoRestartServerTimer is set greater than 0
-	if config.AutoRestartServerTimer != "0" {
+	if config.GetAutoRestartServerTimer() != "0" {
 		if autoRestartDone != nil {
 			close(autoRestartDone)
 		}
 		autoRestartDone = make(chan struct{})
-		go startAutoRestart(config.AutoRestartServerTimer, autoRestartDone)
-		logger.Core.Info("Auto-restart scheduled every " + config.AutoRestartServerTimer + " minutes")
+		go startAutoRestart(config.GetAutoRestartServerTimer(), autoRestartDone)
+		logger.Core.Info("New Auto-restart scheduled: " + config.GetAutoRestartServerTimer())
 	}
 
 	return nil
@@ -200,7 +155,6 @@ func InternalStopServer() error {
 	if autoRestartDone != nil {
 		close(autoRestartDone)
 		autoRestartDone = nil
-		logger.Core.Info("Auto-restart cycle interrupted due to manual stop")
 	}
 
 	// Process is running, stop it
@@ -265,63 +219,4 @@ func InternalStopServer() error {
 	cmd = nil
 	clearGameServerUUID()
 	return nil
-}
-
-// startAutoRestart runs a goroutine that restarts the server after the specified timeframe in minutes.
-func startAutoRestart(minutes string, done chan struct{}) {
-	minutesInt, _ := strconv.Atoi(minutes)
-	ticker := time.NewTicker(time.Duration(minutesInt) * time.Minute)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ticker.C:
-			mu.Lock()
-			if !internalIsServerRunningNoLock() {
-				mu.Unlock()
-				logger.Core.Info("Auto-restart skipped: server is not running")
-				return
-			}
-			mu.Unlock()
-
-			if config.IsSSCMEnabled {
-				commandmgr.WriteCommand("say Attention, server is restarting in 30 seconds!")
-				time.Sleep(10 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 20 seconds!")
-				time.Sleep(10 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 10 seconds!")
-				time.Sleep(5 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 5 seconds!")
-				time.Sleep(5 * time.Second)
-			}
-			logger.Core.Info("Auto-restart triggered: stopping server")
-			if err := InternalStopServer(); err != nil {
-				logger.Core.Error("Auto-restart failed to stop server: " + err.Error())
-				return
-			}
-
-			logger.Core.Info("Auto-restart: waiting 5 seconds before restarting")
-			time.Sleep(5 * time.Second)
-
-			logger.Core.Info("Auto-restart: starting server")
-			if err := InternalStartServer(); err != nil {
-				logger.Core.Error("Auto-restart failed to start server: " + err.Error())
-				return
-			}
-		case <-done:
-			return
-		}
-	}
-}
-
-func clearGameServerUUID() {
-	config.ConfigMu.Lock()
-	defer config.ConfigMu.Unlock()
-	config.GameServerUUID = uuid.Nil
-}
-
-func createGameServerUUID() {
-	config.ConfigMu.Lock()
-	defer config.ConfigMu.Unlock()
-	config.GameServerUUID = uuid.New()
 }

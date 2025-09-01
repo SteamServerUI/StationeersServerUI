@@ -3,10 +3,16 @@
 package cli
 
 import (
+	"archive/zip"
 	"bufio"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -24,6 +30,8 @@ import (
 const (
 	cliPrompt = "\033[32m" + "SSUICLI" + " » " + "\033[0m"
 )
+
+var isSupportMode bool
 
 // CommandFunc defines the signature for command handler functions.
 type CommandFunc func(args []string) error
@@ -49,7 +57,7 @@ func RegisterCommand(name string, handler CommandFunc, aliases ...string) {
 
 // StartConsole starts a non-blocking console input loop in a separate goroutine.
 func StartConsole(wg *sync.WaitGroup) {
-	if !config.IsConsoleEnabled {
+	if !config.GetIsConsoleEnabled() {
 		logger.Core.Info("SSUICLI runtime console is disabled in config, skipping...")
 		return
 	}
@@ -150,6 +158,8 @@ func init() {
 	RegisterCommand("stopserver", WrapNoReturn(stopServer), "stop")
 	RegisterCommand("runsteamcmd", WrapNoReturn(runSteamCMD), "steamcmd", "stcmd")
 	RegisterCommand("testlocalization", WrapNoReturn(testLocalization), "tl")
+	RegisterCommand("supportmode", WrapNoReturn(supportMode), "sm")
+	RegisterCommand("supportpackage", WrapNoReturn(supportPackage), "sp")
 }
 
 func startServer() {
@@ -173,7 +183,7 @@ func exitfromcli() {
 
 func deleteConfig() {
 	//remove file at config.ConfigPath
-	if err := os.Remove(config.ConfigPath); err != nil {
+	if err := os.Remove(config.GetConfigPath()); err != nil {
 		logger.Core.Error("Error deleting config file: " + err.Error())
 		return
 	}
@@ -191,7 +201,96 @@ func runSteamCMD() {
 }
 
 func testLocalization() {
-	currentLanguageSetting := config.LanguageSetting
+	currentLanguageSetting := config.GetLanguageSetting()
 	s := localization.GetString("UIText_StartButton")
-	logger.Core.Info(s + " (current language: " + currentLanguageSetting + ")")
+	logger.Core.Info("Start Server Button text (current language: " + currentLanguageSetting + "): " + s)
+}
+
+func supportMode() {
+
+	if isSupportMode {
+		config.SetIsDebugMode(false)
+		config.SetLogLevel(20)
+		config.SetCreateSSUILogFile(false)
+		isSupportMode = false
+		logger.Core.Info("Support mode disabled.")
+		return
+	}
+	config.SetIsDebugMode(true)
+	config.SetLogLevel(10)
+	config.SetCreateSSUILogFile(true)
+	isSupportMode = true
+	loader.ReloadBackend()
+	time.Sleep(1000 * time.Millisecond)
+	logger.Core.Info("Support mode enabled. To generate a support package, type 'supportpackage' or 'sp'.")
+}
+
+func supportPackage() {
+	if !isSupportMode {
+		logger.Core.Error("Support mode is not enabled.")
+		return
+	}
+	zipFileName := fmt.Sprintf("support_package_%s.zip", time.Now().Format("20060102_150405"))
+	zipFile, _ := os.Create(zipFileName)
+	defer zipFile.Close()
+	zw := zip.NewWriter(zipFile)
+	defer zw.Close()
+
+	filepath.Walk("./UIMod/logs", func(p string, i os.FileInfo, err error) error {
+		if err != nil || i.IsDir() {
+			return nil
+		}
+		f, _ := os.Open(p)
+		defer f.Close()
+		w, _ := zw.Create(strings.TrimPrefix(p, "./"))
+		io.Copy(w, f)
+		return nil
+	})
+
+	configData, _ := os.ReadFile("./UIMod/config/config.json")
+
+	var configMap map[string]interface{}
+	if err := json.Unmarshal(configData, &configMap); err != nil {
+		logger.Core.Error("Failed to unmarshal config.json for support package")
+		return
+	}
+	delete(configMap, "discordToken")
+	delete(configMap, "users")
+	delete(configMap, "JwtKey")
+	delete(configMap, "AdminPassword")
+	sanitizedConfig, err := json.MarshalIndent(configMap, "", "  ")
+	if err != nil {
+		logger.Core.Error("Failed to marshal sanitized config into support package")
+		return
+	}
+
+	// Write sanitized config to zip
+	w, _ := zw.Create("UIMod/config/config.json")
+
+	if _, err := w.Write(sanitizedConfig); err != nil {
+		logger.Core.Error("Failed to write sanitized config to support package")
+	}
+
+	// Gather system information
+	var osVersion string
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("cmd", "/c", "ver")
+		output, _ := cmd.Output()
+		osVersion = strings.TrimSpace(string(output))
+	} else if runtime.GOOS == "linux" {
+		d, _ := os.ReadFile("/etc/os-release")
+		for _, l := range strings.Split(string(d), "\n") {
+			if strings.HasPrefix(l, "PRETTY_NAME=") {
+				osVersion = strings.TrimPrefix(l, "PRETTY_NAME=")
+				break
+			}
+		}
+	} else {
+		osVersion = "unknown"
+	}
+
+	info := fmt.Sprintf("OS: %s\nVersion: %s\nArch: %s\nBranch: %s\nVersion: %s\nTime: %s",
+		runtime.GOOS, osVersion, runtime.GOARCH, config.GetBranch(), config.GetVersion(), time.Now().Format(time.RFC3339))
+	w, _ = zw.Create("system_info.txt")
+	w.Write([]byte(info))
 }

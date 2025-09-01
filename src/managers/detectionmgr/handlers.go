@@ -25,50 +25,50 @@ func DefaultHandlers() map[EventType]Handler {
 
 		EventCustomDetection: func(event Event) {
 			message := fmt.Sprintf("🎮 [Custom Detection] %s", event.Message)
-			logger.Detection.Detection(message)
+			logger.Detection.Info(message)
 			ssestream.BroadcastDetectionEvent(message)
 			discordbot.SendMessageToStatusChannel(message)
 		},
 
 		EventServerReady: func(event Event) {
 			message := "🎮 [Gameserver] 🔔 Server is ready to connect!"
-			logger.Detection.Detection(message)
+			logger.Detection.Info(message)
 			ssestream.BroadcastDetectionEvent(message)
 			discordbot.SendMessageToStatusChannel(message)
 		},
 		EventServerStarting: func(event Event) {
 			message := "🎮 [Gameserver] 🕑 Server is starting up..."
-			logger.Detection.Detection(message)
+			logger.Detection.Info(message)
 			ssestream.BroadcastDetectionEvent(message)
 			discordbot.SendMessageToStatusChannel(message)
 		},
 		EventServerError: func(event Event) {
 			message := "🎮 [Gameserver] ⚠️ Server error detected"
-			logger.Detection.Detection(message)
+			logger.Detection.Info(message)
 			ssestream.BroadcastDetectionEvent(message)
 			discordbot.SendMessageToStatusChannel(message)
 		},
 		EventSettingsChanged: func(event Event) {
 			message := fmt.Sprintf("🎮 [Gameserver] ⚙️ %s", event.Message)
-			logger.Detection.Detection(message)
+			logger.Detection.Info(message)
 			ssestream.BroadcastDetectionEvent(message)
 			discordbot.SendMessageToStatusChannel(message)
 		},
 		EventServerHosted: func(event Event) {
 			message := fmt.Sprintf("🎮 [Gameserver] 🌐 %s", event.Message)
-			logger.Detection.Detection(message)
+			logger.Detection.Info(message)
 			ssestream.BroadcastDetectionEvent(message)
 			discordbot.SendMessageToStatusChannel(message)
 		},
 		EventNewGameStarted: func(event Event) {
 			message := fmt.Sprintf("🎮 [Gameserver] 🎲 %s", event.Message)
-			logger.Detection.Detection(message)
+			logger.Detection.Info(message)
 			ssestream.BroadcastDetectionEvent(message)
 			discordbot.SendMessageToStatusChannel(message)
 		},
 		EventServerRunning: func(event Event) {
 			message := "🎮 [Gameserver] ✅ Server process has started!"
-			logger.Detection.Detection(message)
+			logger.Detection.Info(message)
 			ssestream.BroadcastDetectionEvent(message)
 			discordbot.SendMessageToStatusChannel(message)
 		},
@@ -76,7 +76,7 @@ func DefaultHandlers() map[EventType]Handler {
 			if event.PlayerInfo != nil {
 				message := fmt.Sprintf("🎮 [Gameserver] 🔄 Player %s (SteamID: %s) is connecting...",
 					event.PlayerInfo.Username, event.PlayerInfo.SteamID)
-				logger.Detection.Detection(message)
+				logger.Detection.Info(message)
 				ssestream.BroadcastDetectionEvent(message)
 				discordbot.SendMessageToStatusChannel(message)
 			}
@@ -85,7 +85,7 @@ func DefaultHandlers() map[EventType]Handler {
 			if event.PlayerInfo != nil {
 				message := fmt.Sprintf("🎮 [Gameserver] ✅ Player %s (SteamID: %s) is ready!",
 					event.PlayerInfo.Username, event.PlayerInfo.SteamID)
-				logger.Detection.Detection(message)
+				logger.Detection.Info(message)
 				ssestream.BroadcastDetectionEvent(message)
 				discordbot.SendMessageToStatusChannel(message)
 			}
@@ -94,7 +94,7 @@ func DefaultHandlers() map[EventType]Handler {
 			if event.PlayerInfo != nil {
 				message := fmt.Sprintf("🎮 [Gameserver] 👋 Player %s disconnected",
 					event.PlayerInfo.Username)
-				logger.Detection.Detection(message)
+				logger.Detection.Info(message)
 				ssestream.BroadcastDetectionEvent(message)
 				discordbot.SendMessageToStatusChannel(message)
 			}
@@ -104,7 +104,7 @@ func DefaultHandlers() map[EventType]Handler {
 				timeStr := time.Now().UTC().Format(time.RFC3339)
 				message := fmt.Sprintf("🎮 [Gameserver] 💾 World Saved: BackupIndex: %s UTC Time: %s",
 					event.BackupInfo.BackupIndex, timeStr)
-				logger.Detection.Detection(message)
+				logger.Detection.Info(message)
 				ssestream.BroadcastDetectionEvent(message)
 				discordbot.SendMessageToSavesChannel(message)
 			}
@@ -112,7 +112,7 @@ func DefaultHandlers() map[EventType]Handler {
 		EventException: func(event Event) {
 			// Initial alert message
 			alertMessage := "🎮 [Gameserver] 🚨 Exception detected!"
-			logger.Detection.Detection(alertMessage)
+			logger.Detection.Info(alertMessage)
 			ssestream.BroadcastDetectionEvent(alertMessage)
 			discordbot.SendUntrackedMessageToErrorChannel(alertMessage)
 
@@ -121,7 +121,7 @@ func DefaultHandlers() map[EventType]Handler {
 				stackTrace := strings.ReplaceAll(event.ExceptionInfo.StackTrace, "\n", " | ")
 				message := fmt.Sprintf("Exception Details: Stack Trace: %s", stackTrace)
 
-				logger.Detection.Detection(message)
+				logger.Detection.Info(message)
 				ssestream.BroadcastDetectionEvent(message)
 				discordbot.SendUntrackedMessageToErrorChannel(message)
 			}

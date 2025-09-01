@@ -3,27 +3,26 @@ package logger
 import (
 	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
 )
 
 // Logger instances
 var (
-	Main         = &Logger{prefix: SYS_MAIN}
-	Web          = &Logger{prefix: SYS_WEB}
-	Discord      = &Logger{prefix: SYS_DISCORD}
-	Backup       = &Logger{prefix: SYS_BACKUP}
-	Detection    = &Logger{prefix: SYS_DETECT}
-	Core         = &Logger{prefix: SYS_CORE}
-	Config       = &Logger{prefix: SYS_CONFIG}
-	Install      = &Logger{prefix: SYS_INSTALL}
-	SSE          = &Logger{prefix: SYS_SSE}
-	Security     = &Logger{prefix: SYS_SECURITY}
-	Localization = &Logger{prefix: SYS_LOCALIZATION}
+	Main         = &Logger{suffix: SYS_MAIN}
+	Web          = &Logger{suffix: SYS_WEB}
+	Discord      = &Logger{suffix: SYS_DISCORD}
+	Backup       = &Logger{suffix: SYS_BACKUP}
+	Detection    = &Logger{suffix: SYS_DETECT}
+	Core         = &Logger{suffix: SYS_CORE}
+	Config       = &Logger{suffix: SYS_CONFIG}
+	Install      = &Logger{suffix: SYS_INSTALL}
+	SSE          = &Logger{suffix: SYS_SSE}
+	Security     = &Logger{suffix: SYS_SECURITY}
+	Localization = &Logger{suffix: SYS_LOCALIZATION}
 )
 
 // Severity Levels
@@ -32,6 +31,7 @@ const (
 	INFO  = 20 // Normal operations
 	WARN  = 30 // Potential issues
 	ERROR = 40 // Critical errors
+	CLEAN = 50 // Just the message, no timestamp or severity
 )
 
 // Subsystems
@@ -74,174 +74,179 @@ var subsystemColors = map[string]string{
 	SYS_LOCALIZATION: colorCyan,    // Matches WEB, localization-related
 }
 
+// Global channels and mutex for all loggers
+var (
+	globalLogChan     chan logEntry
+	globalConsoleChan chan string
+	globalOnce        sync.Once
+)
+
 type Logger struct {
 	mu     sync.Mutex
-	prefix string // Subsystem identifier (e.g., "DISCORD")
+	suffix string // Subsystem identifier (e.g., "DISCORD")
 }
 
 type logEntry struct {
-	severity int
-	prefix   string // Log type (e.g., "INFO", "CORE")
-	color    string
-	message  string
+	severity    int
+	suffix      string // Log type (e.g., "INFO", "DEBUG")
+	color       string
+	message     string
+	consoleLine string
+	fileLine    string
+	logger      *Logger // Reference to the logger for file writing
+}
+
+// Init initializes the global logging and console output goroutines
+func (l *Logger) Init() {
+	globalOnce.Do(func() {
+		globalLogChan = make(chan logEntry, 1000) // Buffered global channel for log processing
+		globalConsoleChan = make(chan string, 20) // Buffered global channel for console output
+		go processLogs()
+		go processConsoleOutput()
+	})
+}
+
+// Debugf logs a formatted debug message
+func (l *Logger) Debugf(format string, args ...any) {
+	l.log(logEntry{DEBUG, "DEBUG", colorReset, fmt.Sprintf(format, args...), "", "", l})
+}
+
+// Infof logs a formatted info message
+func (l *Logger) Infof(format string, args ...any) {
+	l.log(logEntry{INFO, "INFO", colorReset, fmt.Sprintf(format, args...), "", "", l})
+}
+
+// Warnf logs a formatted warning message
+func (l *Logger) Warnf(format string, args ...any) {
+	l.log(logEntry{WARN, "WARN", colorYellow, fmt.Sprintf(format, args...), "", "", l})
+}
+
+// Errorf logs a formatted error message
+func (l *Logger) Errorf(format string, args ...any) {
+	l.log(logEntry{ERROR, "ERROR", colorRed, fmt.Sprintf(format, args...), "", "", l})
+}
+
+// Debug logs a debug message
+func (l *Logger) Debug(message string) {
+	l.log(logEntry{DEBUG, "DEBUG", colorReset, message, "", "", l})
+}
+
+// Info logs an info message
+func (l *Logger) Info(message string) {
+	l.log(logEntry{INFO, "INFO", colorReset, message, "", "", l})
+}
+
+// Warn logs a warning message
+func (l *Logger) Warn(message string) {
+	l.log(logEntry{WARN, "WARN", colorYellow, message, "", "", l})
+}
+
+// Error logs an error message
+func (l *Logger) Error(message string) {
+	l.log(logEntry{ERROR, "ERROR", colorRed, message, "", "", l})
+}
+
+// Error logs an error message
+func (l *Logger) Clean(message string) {
+	l.log(logEntry{CLEAN, "", "", message, "", "", l})
+}
+
+// Errorf logs a formatted error message
+func (l *Logger) Cleanf(format string, args ...any) {
+	l.log(logEntry{CLEAN, "", "", fmt.Sprintf(format, args...), "", "", l})
+}
+
+// log sends the log entry to the global channel
+func (l *Logger) log(entry logEntry) {
+	l.mu.Lock()
+	if !l.shouldLog(entry.severity) {
+		l.mu.Unlock()
+		return
+	}
+
+	// Initialize global channels if not already done
+	l.Init()
+
+	timestamp := time.Now().Format("2006-01-02 15:04:05")
+	// Handle CLEAN severity separately
+	if entry.severity == CLEAN {
+		entry.consoleLine = fmt.Sprintf("%s\n", entry.message)
+		entry.fileLine = fmt.Sprintf("%s\n", entry.message)
+	} else {
+		// Use subsystem color by default, override with severity color if set
+		entryColor := subsystemColors[l.suffix]
+		if entry.color != colorReset {
+			entryColor = entry.color
+		}
+		entry.consoleLine = fmt.Sprintf("%s%s [%s/%s] %s%s\n", entryColor, timestamp, l.suffix, entry.suffix, entry.message, colorReset)
+		entry.fileLine = fmt.Sprintf("%s [%s/%s] %s\n", timestamp, l.suffix, entry.suffix, entry.message)
+	}
+	l.mu.Unlock()
+
+	// Send to global log channel (non-blocking unless channel is full)
+	select {
+	case globalLogChan <- entry:
+	default:
+		// Channel full, log to stderr
+		fmt.Fprintf(os.Stderr, "%s%s [ERROR/LOGGER] Log channel full, dropping: %s%s\n",
+			colorRed, timestamp, entry.fileLine, colorReset)
+	}
+}
+
+// processLogs handles SSE broadcasts and file output for all loggers
+func processLogs() {
+	for entry := range globalLogChan {
+		// Broadcast to SSE streams
+		if entry.severity >= DEBUG {
+			ssestream.BroadcastDebugLog(entry.fileLine)
+		}
+		if entry.severity == INFO {
+			ssestream.BroadcastInfoLog(entry.fileLine)
+		}
+		if entry.severity == WARN {
+			ssestream.BroadcastWarnLog(entry.fileLine)
+		}
+		if entry.severity == ERROR {
+			ssestream.BroadcastErrorLog(entry.fileLine)
+		}
+		ssestream.BroadcastBackendLog(entry.fileLine)
+
+		// File output if enabled
+		if config.GetCreateSSUILogFile() {
+			entry.logger.writeToFile(entry.fileLine, entry.logger.suffix)
+		}
+
+		// Send to global console channel
+		select {
+		case globalConsoleChan <- entry.consoleLine:
+		default:
+			// Console channel full, alert on SSE streams to inform user
+			ssestream.BroadcastErrorLog("ATTENTION: WINDOWS-RELATED ISSUE: THE TERMINAL WHERE SSUI IS RUNNING IS NO LONGER ACCEPTING MESSAGES. PLEASE CHECK THE TERMINAL AND PRESS ENTER TO FREE THE BUFFER.")
+			ssestream.BroadcastConsoleOutput("ATTENTION: WINDOWS-RELATED ISSUE: THE TERMINAL WHERE SSUI IS RUNNING IS NO LONGER ACCEPTING MESSAGES. PLEASE CHECK THE TERMINAL AND PRESS ENTER TO FREE THE BUFFER.")
+		}
+	}
+}
+
+// processConsoleOutput handles console output for all loggers
+func processConsoleOutput() {
+	for consoleLine := range globalConsoleChan {
+		fmt.Print(consoleLine)
+	}
 }
 
 // shouldLog checks severity and subsystem filters
 func (l *Logger) shouldLog(severity int) bool {
-	// Subsystem filtering first
-	if len(config.SubsystemFilters) > 0 {
+	if len(config.GetSubsystemFilters()) > 0 {
 		allowed := false
-		for _, sub := range config.SubsystemFilters {
-			if sub == l.prefix {
+		for _, sub := range config.GetSubsystemFilters() {
+			if sub == l.suffix {
 				allowed = true
 				break
 			}
 		}
 		if !allowed {
-			return false // Subsystem not in filter, skip it
+			return false
 		}
 	}
-
-	effectiveLevel := config.LogLevel
-	return severity >= effectiveLevel
-}
-
-// log handles the core logging logic
-func (l *Logger) log(entry logEntry) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-
-	if !l.shouldLog(entry.severity) {
-		return
-	}
-
-	timestamp := time.Now().Format("2006-01-02 15:04:05")
-	// Use subsystem color by default, override with severity color if set
-	entryColor := subsystemColors[l.prefix]
-	if entry.color != colorReset {
-		entryColor = entry.color
-	}
-	// Console version with colors
-	consoleLine := fmt.Sprintf("%s%s [%s/%s] %s%s\n", entryColor, timestamp, entry.prefix, l.prefix, entry.message, colorReset)
-	// File version without colors
-	fileLine := fmt.Sprintf("%s [%s/%s] %s\n", timestamp, entry.prefix, l.prefix, entry.message)
-	// Console output
-	fmt.Print(consoleLine)
-
-	// File output if enabled
-	if config.CreateSSUILogFile {
-		l.writeToFile(fileLine, l.prefix)
-	}
-}
-
-func (l *Logger) writeToFile(logLine, subsystem string) {
-	const maxRetries = 5
-	const retryDelay = 100 * time.Millisecond
-
-	// Files to write: combined log + subsystem-specific log
-	logFiles := []string{
-		config.LogFolder + "ssui.log",  // Combined log
-		getSubsystemLogPath(subsystem), // Subsystem log (e.g., logs/install.log)
-	}
-
-	for _, logFile := range logFiles {
-		for attempt := 0; attempt < maxRetries; attempt++ {
-			// Ensure directory exists
-			if err := os.MkdirAll(filepath.Dir(logFile), os.ModePerm); err != nil {
-				fmt.Printf("%s%s [ERROR/LOGGER] Failed to create log file %s: %v%s\n",
-					colorRed, time.Now().Format("2006-01-02 15:04:05"), filepath.Dir(logFile), err, colorReset)
-				return
-			}
-
-			// Open file
-			file, err := os.OpenFile(logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-			if err == nil {
-				defer file.Close()
-				if _, err := file.WriteString(logLine); err != nil {
-					fmt.Printf("%s%s [ERROR/LOGGER] Failed to write to log file %s: %v%s\n",
-						colorRed, time.Now().Format("2006-01-02 15:04:05"), logFile, err, colorReset)
-				}
-				break // Success, move to next file
-			}
-
-			// Retry on transient errors
-			if os.IsNotExist(err) || os.IsPermission(err) {
-				if attempt == maxRetries-1 {
-					fmt.Printf("%s%s [ERROR/LOGGER] Gave up writing to log file %s after %d attempts: %v%s\n",
-						colorRed, time.Now().Format("2006-01-02 15:04:05"), logFile, maxRetries, err, colorReset)
-					break
-				}
-				time.Sleep(retryDelay)
-				continue
-			}
-
-			// Non-retryable error
-			fmt.Printf("%s%s [ERROR/LOGGER] Failed to open log file %s: %v%s\n",
-				colorRed, time.Now().Format("2006-01-02 15:04:05"), logFile, err, colorReset)
-			break
-		}
-	}
-}
-
-// getSubsystemLogPath generates path for subsystem-specific log file
-func getSubsystemLogPath(subsystem string) string {
-	// Assuming config.LogFilePath is like "logs/ssui.log"
-	dir := filepath.Dir(config.LogFolder)
-	// Lowercase subsystem for cleaner filenames (e.g., install.log)
-	filename := fmt.Sprintf("%s.log", strings.ToLower(subsystem))
-	return filepath.Join(dir, filename)
-}
-
-// Severity-based methods
-func (l *Logger) Debug(message string) {
-	l.log(logEntry{DEBUG, "DEBUG", colorReset, message}) // Subsystem color
-}
-
-func (l *Logger) Info(message string) {
-	l.log(logEntry{INFO, "INFO", colorReset, message}) // Subsystem color
-}
-
-func (l *Logger) Warn(message string) {
-	l.log(logEntry{WARN, "WARN", colorYellow, message}) // Yellow for warnings
-}
-
-func (l *Logger) Error(message string) {
-	l.log(logEntry{ERROR, "ERROR", colorRed, message}) // Red for errors
-}
-
-// Subsystem-specific methods (update colors for consistency)
-func (l *Logger) Backup(message string) {
-	l.log(logEntry{INFO, "BACKUP", colorReset, message}) // Green via subsystem
-}
-
-func (l *Logger) Detection(message string) {
-	l.log(logEntry{INFO, "DETECT", colorReset, message}) // Yellow via subsystem
-}
-
-func (l *Logger) Discord(message string) {
-	l.log(logEntry{INFO, "DISCORD", colorReset, message}) // Magenta via subsystem
-}
-
-func (l *Logger) Core(message string) {
-	l.log(logEntry{WARN, "CORE", colorReset, message}) // Magenta via subsystem
-}
-
-func (l *Logger) Config(message string) {
-	l.log(logEntry{WARN, "CONFIG", colorReset, message}) // Yellow via subsystem
-}
-
-func (l *Logger) Install(message string) {
-	l.log(logEntry{INFO, "INSTALL", colorReset, message}) // Blue via subsystem
-}
-
-func (l *Logger) SSE(message string) {
-	l.log(logEntry{INFO, "SSE", colorReset, message}) // Cyan via subsystem
-}
-
-func (l *Logger) Security(message string) {
-	l.log(logEntry{ERROR, "SECURITY", colorReset, message}) // Red via subsystem
-}
-
-func (l *Logger) Localization(message string) {
-	l.log(logEntry{INFO, "LOCALIZATION", colorReset, message}) // Cyan via subsystem
+	return severity >= config.GetLogLevel()
 }
