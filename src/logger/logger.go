@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -73,53 +74,71 @@ var subsystemColors = map[string]string{
 }
 
 type Logger struct {
-	mu     sync.Mutex
-	suffix string // Subsystem identifier (e.g., "DISCORD")
+	mu      sync.Mutex
+	suffix  string // Subsystem identifier (e.g., "DISCORD")
+	logChan chan logEntry
+	once    sync.Once
 }
 
 type logEntry struct {
-	severity int
-	suffix   string // Log type (e.g., "INFO", "CORE"), now a suffix (prints INSTALL/WARN instead of WARN/INSTALL since v6.4.1)
-	color    string
-	message  string
+	severity    int
+	suffix      string // Log type (e.g., "INFO", "DEBUG")
+	color       string
+	message     string
+	consoleLine string
+	fileLine    string
+}
+
+// Init initializes the logger's asynchronous logging goroutine
+func (l *Logger) Init() {
+	l.once.Do(func() {
+		l.logChan = make(chan logEntry, 1000) // Buffered channel to handle bursts
+		go l.processLogs()
+	})
 }
 
 func (l *Logger) Debugf(format string, args ...any) {
-	l.log(logEntry{DEBUG, "DEBUG", colorReset, fmt.Sprintf(format, args...)}) // Subsystem color
+	l.log(logEntry{DEBUG, "DEBUG", colorReset, fmt.Sprintf(format, args...), "", ""})
 }
 
 func (l *Logger) Infof(format string, args ...any) {
-	l.log(logEntry{INFO, "INFO", colorReset, fmt.Sprintf(format, args...)}) // Subsystem color
+	l.log(logEntry{INFO, "INFO", colorReset, fmt.Sprintf(format, args...), "", ""})
 }
 
 func (l *Logger) Warnf(format string, args ...any) {
-	l.log(logEntry{WARN, "WARN", colorYellow, fmt.Sprintf(format, args...)}) // Yellow for warnings
+	l.log(logEntry{WARN, "WARN", colorYellow, fmt.Sprintf(format, args...), "", ""})
 }
 
 func (l *Logger) Errorf(format string, args ...any) {
-	l.log(logEntry{ERROR, "ERROR", colorRed, fmt.Sprintf(format, args...)}) // Red for errors
+	l.log(logEntry{ERROR, "ERROR", colorRed, fmt.Sprintf(format, args...), "", ""})
 }
 
 func (l *Logger) Debug(message string) {
-	l.log(logEntry{DEBUG, "DEBUG", colorReset, message}) // Subsystem color
+	l.log(logEntry{DEBUG, "DEBUG", colorReset, message, "", ""})
 }
 
 func (l *Logger) Info(message string) {
-	l.log(logEntry{INFO, "INFO", colorReset, message}) // Subsystem color
+	l.log(logEntry{INFO, "INFO", colorReset, message, "", ""})
 }
 
 func (l *Logger) Warn(message string) {
-	l.log(logEntry{WARN, "WARN", colorYellow, message}) // Yellow for warnings
+	l.log(logEntry{WARN, "WARN", colorYellow, message, "", ""})
 }
 
 func (l *Logger) Error(message string) {
-	l.log(logEntry{ERROR, "ERROR", colorRed, message}) // Red for errors
+	l.log(logEntry{ERROR, "ERROR", colorRed, message, "", ""})
 }
 
-// log handles the core logging logic
+// log sends the log entry to the channel
 func (l *Logger) log(entry logEntry) {
 	l.mu.Lock()
-	defer l.mu.Unlock()
+	if !l.shouldLog(entry.severity) {
+		l.mu.Unlock()
+		return
+	}
+
+	// Initialize log channel if not already done
+	l.Init()
 
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
 	// Use subsystem color by default, override with severity color if set
@@ -127,45 +146,50 @@ func (l *Logger) log(entry logEntry) {
 	if entry.color != colorReset {
 		entryColor = entry.color
 	}
-	// Console version with colors
-	consoleLine := fmt.Sprintf("%s%s [%s/%s] %s%s\n", entryColor, timestamp, l.suffix, entry.suffix, entry.message, colorReset)
-	// File version without colors
-	fileLine := fmt.Sprintf("%s [%s/%s] %s\n", timestamp, l.suffix, entry.suffix, entry.message)
-	// Console output
+	entry.consoleLine = fmt.Sprintf("%s%s [%s/%s] %s%s\n", entryColor, timestamp, l.suffix, entry.suffix, entry.message, colorReset)
+	entry.fileLine = fmt.Sprintf("%s [%s/%s] %s\n", timestamp, l.suffix, entry.suffix, entry.message)
+	l.mu.Unlock()
 
-	if entry.severity >= DEBUG {
-		ssestream.BroadcastDebugLog(fileLine)
+	// Send to channel (non-blocking unless channel is full)
+	select {
+	case l.logChan <- entry:
+	default:
+		// Channel full, log to stderr to avoid dropping
+		fmt.Fprintf(os.Stderr, "%s%s [ERROR/LOGGER] Log channel full, dropping: %s%s\n",
+			colorRed, timestamp, entry.fileLine, colorReset)
 	}
+}
 
-	if entry.severity == INFO {
-		ssestream.BroadcastInfoLog(fileLine)
+// processLogs runs in a separate goroutine to handle console and file output
+func (l *Logger) processLogs() {
+	for entry := range l.logChan {
+		// Broadcast to SSE streams
+		if entry.severity >= DEBUG {
+			ssestream.BroadcastDebugLog(entry.fileLine)
+		}
+		if entry.severity == INFO {
+			ssestream.BroadcastInfoLog(entry.fileLine)
+		}
+		if entry.severity == WARN {
+			ssestream.BroadcastWarnLog(entry.fileLine)
+		}
+		if entry.severity == ERROR {
+			ssestream.BroadcastErrorLog(entry.fileLine)
+		}
+		ssestream.BroadcastBackendLog(entry.fileLine)
+
+		// Console output
+		fmt.Print(entry.consoleLine)
+
+		// File output if enabled
+		if config.GetCreateSSUILogFile() {
+			l.writeToFile(entry.fileLine, l.suffix)
+		}
 	}
-
-	if entry.severity == WARN {
-		ssestream.BroadcastWarnLog(fileLine)
-	}
-
-	if entry.severity == ERROR {
-		ssestream.BroadcastErrorLog(fileLine)
-	}
-
-	ssestream.BroadcastBackendLog(fileLine)
-
-	if !l.shouldLog(entry.severity) {
-		return
-	}
-
-	// File output if enabled
-	if config.GetCreateSSUILogFile() {
-		l.writeToFile(fileLine, l.suffix)
-	}
-
-	fmt.Print(consoleLine)
 }
 
 // shouldLog checks severity and subsystem filters
 func (l *Logger) shouldLog(severity int) bool {
-	// Subsystem filtering first
 	if len(config.GetSubsystemFilters()) > 0 {
 		allowed := false
 		for _, sub := range config.GetSubsystemFilters() {
@@ -175,10 +199,8 @@ func (l *Logger) shouldLog(severity int) bool {
 			}
 		}
 		if !allowed {
-			return false // Subsystem not in filter, skip it
+			return false
 		}
 	}
-
-	effectiveLevel := config.GetLogLevel()
-	return severity >= effectiveLevel
+	return severity >= config.GetLogLevel()
 }
