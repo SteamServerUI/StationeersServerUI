@@ -31,6 +31,7 @@ const (
 	INFO  = 20 // Normal operations
 	WARN  = 30 // Potential issues
 	ERROR = 40 // Critical errors
+	CLEAN = 50 // Just the message, no timestamp or severity
 )
 
 // Subsystems
@@ -73,11 +74,16 @@ var subsystemColors = map[string]string{
 	SYS_LOCALIZATION: colorCyan,    // Matches WEB, localization-related
 }
 
+// Global channels and mutex for all loggers
+var (
+	globalLogChan     chan logEntry
+	globalConsoleChan chan string
+	globalOnce        sync.Once
+)
+
 type Logger struct {
-	mu      sync.Mutex
-	suffix  string // Subsystem identifier (e.g., "DISCORD")
-	logChan chan logEntry
-	once    sync.Once
+	mu     sync.Mutex
+	suffix string // Subsystem identifier (e.g., "DISCORD")
 }
 
 type logEntry struct {
@@ -87,49 +93,70 @@ type logEntry struct {
 	message     string
 	consoleLine string
 	fileLine    string
+	logger      *Logger // Reference to the logger for file writing
 }
 
-// Init initializes the logger's asynchronous logging goroutine
+// Init initializes the global logging and console output goroutines
 func (l *Logger) Init() {
-	l.once.Do(func() {
-		l.logChan = make(chan logEntry, 1000) // Buffered channel to handle bursts
-		go l.processLogs()
+	globalOnce.Do(func() {
+		globalLogChan = make(chan logEntry, 1000) // Buffered global channel for log processing
+		globalConsoleChan = make(chan string, 20) // Buffered global channel for console output
+		go processLogs()
+		go processConsoleOutput()
 	})
 }
 
+// Debugf logs a formatted debug message
 func (l *Logger) Debugf(format string, args ...any) {
-	l.log(logEntry{DEBUG, "DEBUG", colorReset, fmt.Sprintf(format, args...), "", ""})
+	l.log(logEntry{DEBUG, "DEBUG", colorReset, fmt.Sprintf(format, args...), "", "", l})
 }
 
+// Infof logs a formatted info message
 func (l *Logger) Infof(format string, args ...any) {
-	l.log(logEntry{INFO, "INFO", colorReset, fmt.Sprintf(format, args...), "", ""})
+	l.log(logEntry{INFO, "INFO", colorReset, fmt.Sprintf(format, args...), "", "", l})
 }
 
+// Warnf logs a formatted warning message
 func (l *Logger) Warnf(format string, args ...any) {
-	l.log(logEntry{WARN, "WARN", colorYellow, fmt.Sprintf(format, args...), "", ""})
+	l.log(logEntry{WARN, "WARN", colorYellow, fmt.Sprintf(format, args...), "", "", l})
 }
 
+// Errorf logs a formatted error message
 func (l *Logger) Errorf(format string, args ...any) {
-	l.log(logEntry{ERROR, "ERROR", colorRed, fmt.Sprintf(format, args...), "", ""})
+	l.log(logEntry{ERROR, "ERROR", colorRed, fmt.Sprintf(format, args...), "", "", l})
 }
 
+// Debug logs a debug message
 func (l *Logger) Debug(message string) {
-	l.log(logEntry{DEBUG, "DEBUG", colorReset, message, "", ""})
+	l.log(logEntry{DEBUG, "DEBUG", colorReset, message, "", "", l})
 }
 
+// Info logs an info message
 func (l *Logger) Info(message string) {
-	l.log(logEntry{INFO, "INFO", colorReset, message, "", ""})
+	l.log(logEntry{INFO, "INFO", colorReset, message, "", "", l})
 }
 
+// Warn logs a warning message
 func (l *Logger) Warn(message string) {
-	l.log(logEntry{WARN, "WARN", colorYellow, message, "", ""})
+	l.log(logEntry{WARN, "WARN", colorYellow, message, "", "", l})
 }
 
+// Error logs an error message
 func (l *Logger) Error(message string) {
-	l.log(logEntry{ERROR, "ERROR", colorRed, message, "", ""})
+	l.log(logEntry{ERROR, "ERROR", colorRed, message, "", "", l})
 }
 
-// log sends the log entry to the channel
+// Error logs an error message
+func (l *Logger) Clean(message string) {
+	l.log(logEntry{CLEAN, "", "", message, "", "", l})
+}
+
+// Errorf logs a formatted error message
+func (l *Logger) Cleanf(format string, args ...any) {
+	l.log(logEntry{CLEAN, "", "", fmt.Sprintf(format, args...), "", "", l})
+}
+
+// log sends the log entry to the global channel
 func (l *Logger) log(entry logEntry) {
 	l.mu.Lock()
 	if !l.shouldLog(entry.severity) {
@@ -137,32 +164,38 @@ func (l *Logger) log(entry logEntry) {
 		return
 	}
 
-	// Initialize log channel if not already done
+	// Initialize global channels if not already done
 	l.Init()
 
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
-	// Use subsystem color by default, override with severity color if set
-	entryColor := subsystemColors[l.suffix]
-	if entry.color != colorReset {
-		entryColor = entry.color
+	// Handle CLEAN severity separately
+	if entry.severity == CLEAN {
+		entry.consoleLine = fmt.Sprintf("%s\n", entry.message)
+		entry.fileLine = fmt.Sprintf("%s\n", entry.message)
+	} else {
+		// Use subsystem color by default, override with severity color if set
+		entryColor := subsystemColors[l.suffix]
+		if entry.color != colorReset {
+			entryColor = entry.color
+		}
+		entry.consoleLine = fmt.Sprintf("%s%s [%s/%s] %s%s\n", entryColor, timestamp, l.suffix, entry.suffix, entry.message, colorReset)
+		entry.fileLine = fmt.Sprintf("%s [%s/%s] %s\n", timestamp, l.suffix, entry.suffix, entry.message)
 	}
-	entry.consoleLine = fmt.Sprintf("%s%s [%s/%s] %s%s\n", entryColor, timestamp, l.suffix, entry.suffix, entry.message, colorReset)
-	entry.fileLine = fmt.Sprintf("%s [%s/%s] %s\n", timestamp, l.suffix, entry.suffix, entry.message)
 	l.mu.Unlock()
 
-	// Send to channel (non-blocking unless channel is full)
+	// Send to global log channel (non-blocking unless channel is full)
 	select {
-	case l.logChan <- entry:
+	case globalLogChan <- entry:
 	default:
-		// Channel full, log to stderr to avoid dropping
+		// Channel full, log to stderr
 		fmt.Fprintf(os.Stderr, "%s%s [ERROR/LOGGER] Log channel full, dropping: %s%s\n",
 			colorRed, timestamp, entry.fileLine, colorReset)
 	}
 }
 
-// processLogs runs in a separate goroutine to handle console and file output
-func (l *Logger) processLogs() {
-	for entry := range l.logChan {
+// processLogs handles SSE broadcasts and file output for all loggers
+func processLogs() {
+	for entry := range globalLogChan {
 		// Broadcast to SSE streams
 		if entry.severity >= DEBUG {
 			ssestream.BroadcastDebugLog(entry.fileLine)
@@ -178,13 +211,26 @@ func (l *Logger) processLogs() {
 		}
 		ssestream.BroadcastBackendLog(entry.fileLine)
 
-		// Console output
-		fmt.Print(entry.consoleLine)
-
 		// File output if enabled
 		if config.GetCreateSSUILogFile() {
-			l.writeToFile(entry.fileLine, l.suffix)
+			entry.logger.writeToFile(entry.fileLine, entry.logger.suffix)
 		}
+
+		// Send to global console channel
+		select {
+		case globalConsoleChan <- entry.consoleLine:
+		default:
+			// Console channel full, alert on SSE streams to inform user
+			ssestream.BroadcastErrorLog("ATTENTION: WINDOWS-RELATED ISSUE: THE TERMINAL WHERE SSUI IS RUNNING IS NO LONGER ACCEPTING MESSAGES. PLEASE CHECK THE TERMINAL AND PRESS ENTER TO FREE THE BUFFER.")
+			ssestream.BroadcastConsoleOutput("ATTENTION: WINDOWS-RELATED ISSUE: THE TERMINAL WHERE SSUI IS RUNNING IS NO LONGER ACCEPTING MESSAGES. PLEASE CHECK THE TERMINAL AND PRESS ENTER TO FREE THE BUFFER.")
+		}
+	}
+}
+
+// processConsoleOutput handles console output for all loggers
+func processConsoleOutput() {
+	for consoleLine := range globalConsoleChan {
+		fmt.Print(consoleLine)
 	}
 }
 
