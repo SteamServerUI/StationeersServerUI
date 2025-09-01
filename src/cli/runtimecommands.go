@@ -5,6 +5,7 @@ package cli
 import (
 	"archive/zip"
 	"bufio"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -246,11 +247,31 @@ func supportPackage() {
 		return nil
 	})
 
-	f, _ := os.Open("./UIMod/config/config.json")
-	defer f.Close()
-	w, _ := zw.Create("UIMod/config/config.json")
-	io.Copy(w, f)
+	configData, _ := os.ReadFile("./UIMod/config/config.json")
 
+	var configMap map[string]interface{}
+	if err := json.Unmarshal(configData, &configMap); err != nil {
+		logger.Core.Error("Failed to unmarshal config.json for support package")
+		return
+	}
+	delete(configMap, "discordToken")
+	delete(configMap, "users")
+	delete(configMap, "JwtKey")
+	delete(configMap, "AdminPassword")
+	sanitizedConfig, err := json.MarshalIndent(configMap, "", "  ")
+	if err != nil {
+		logger.Core.Error("Failed to marshal sanitized config into support package")
+		return
+	}
+
+	// Write sanitized config to zip
+	w, _ := zw.Create("UIMod/config/config.json")
+
+	if _, err := w.Write(sanitizedConfig); err != nil {
+		logger.Core.Error("Failed to write sanitized config to support package")
+	}
+
+	// Gather system information
 	var osVersion string
 	if runtime.GOOS == "windows" {
 		cmd := exec.Command("cmd", "/c", "ver")
