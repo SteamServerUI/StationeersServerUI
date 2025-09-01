@@ -13,6 +13,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 )
@@ -42,6 +43,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 		logger.Web.Error("Error stopping server: " + err.Error())
 		return
 	}
+	detectionmgr.ClearPlayers(detectionmgr.GetDetector())
 	fmt.Fprint(w, localization.GetString("BackendText_ServerStopped"))
 	logger.Web.Info("Server stopped.")
 }

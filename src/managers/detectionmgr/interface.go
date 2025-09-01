@@ -48,3 +48,8 @@ func ProcessLog(detector *Detector, logMessage string) {
 func GetPlayers(detector *Detector) map[string]string {
 	return detector.GetConnectedPlayers()
 }
+
+// Clearplayers clears the connected players
+func ClearPlayers(detector *Detector) {
+	detector.ClearConnectedPlayers()
+}

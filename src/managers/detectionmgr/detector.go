@@ -267,6 +267,11 @@ func (d *Detector) GetConnectedPlayers() map[string]string {
 	return players
 }
 
+// ClearConnectedPlayers clears the connected players map
+func (d *Detector) ClearConnectedPlayers() {
+	d.connectedPlayers = make(map[string]string)
+}
+
 func (d *Detector) SetCustomPatterns(patterns []CustomPattern) {
 	d.customPatterns = patterns
 }
