@@ -37,7 +37,7 @@ var v1uiFS embed.FS
 func main() {
 	var wg sync.WaitGroup
 	logger.ConfigureConsole()
-	logger.Main.Clean("Starting setup...")
+	logger.Install.Info("Starting setup...")
 	loader.ReloadConfig() // Load the config file before starting the setup process
 	setup.Install(&wg)
 	wg.Wait()
