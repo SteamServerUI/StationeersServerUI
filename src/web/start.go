@@ -7,7 +7,6 @@ import (
 	"net/http/pprof"
 	"sync"
 
-	terminal "github.com/JacksonTheMaster/StationeersServerUI/v5/src/cli"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config/configchanger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/security"
@@ -93,10 +92,6 @@ func StartWebServer(wg *sync.WaitGroup) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		terminal.PrintStartupMessage()
-		if config.GetIsFirstTimeSetup() {
-			terminal.PrintFirstTimeSetupMessage()
-		}
 		// Ensure TLS certs are ready
 		if err := security.EnsureTLSCerts(); err != nil {
 			logger.Web.Error("Error setting up TLS certificates: " + err.Error())
@@ -123,8 +118,4 @@ func StartWebServer(wg *sync.WaitGroup) {
 			}
 		}()
 	}
-
-	// Wait for both servers to be running
-	wg.Wait()
-
 }

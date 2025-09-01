@@ -37,23 +37,21 @@ var v1uiFS embed.FS
 func main() {
 	var wg sync.WaitGroup
 	logger.ConfigureConsole()
-	logger.Main.Info("Starting setup...")
+	logger.Main.Clean("Starting setup...")
 	loader.ReloadConfig() // Load the config file before starting the setup process
-	// Start the installation process and wait for it to complete
-	wg.Add(1)
-	go setup.Install(&wg)
-
-	// Wait for the installation to finish before starting the rest of the server
+	setup.Install(&wg)
 	wg.Wait()
-
-	// Load config,discordbot, backupmgr and detectionmgr using the loader package
+	logger.Main.Debug("Initializing resources...")
 	loader.InitVirtFS(v1uiFS)
-	loader.InitBackend()
-	loader.InitDetector()
-
-	loader.AfterStartComplete()
-
-	cli.StartConsole(&wg)
-
+	logger.Main.Debug("Initializing Backend...")
+	loader.InitBackend(&wg)
+	wg.Wait()
+	logger.Main.Debug("Initializing after start tasks...")
+	loader.AfterStartComplete(&wg)
+	wg.Wait()
+	logger.Main.Debug("Starting webserver...")
 	web.StartWebServer(&wg)
+	logger.Main.Debug("Initializing SSUICLI...")
+	cli.StartConsole(&wg)
+	wg.Wait()
 }

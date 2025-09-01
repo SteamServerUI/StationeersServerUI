@@ -23,6 +23,7 @@ var downloadBranch string // Holds the branch to download from
 
 // Install performs the entire installation process and ensures the server waits for it to complete
 func Install(wg *sync.WaitGroup) {
+	wg.Add(1)
 	defer wg.Done() // Signal that installation is complete
 
 	// Step 0: Check for updates
