@@ -54,7 +54,7 @@ func buildCommandArgs() []string {
 			{Flag: "AdminPassword", Value: config.GetAdminPassword(), Condition: func() bool { return config.GetAdminPassword() != "" }, RequiresValue: true},
 		}
 	}
-	if !config.IsNewTerrainAndSaveSystem {
+	if !config.GetIsNewTerrainAndSaveSystem() {
 		argOrder = []Arg{
 			{Flag: "-nographics", RequiresValue: false},
 			{Flag: "-batchmode", RequiresValue: false},
