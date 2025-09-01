@@ -2,61 +2,150 @@ package loader
 
 import (
 	"fmt"
-	"strconv"
+	"strings"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
 func PrintConfigDetails() {
-	logger.Config.Debug("Gameserver config values loaded")
-	logger.Config.Debug("---- GENERAL CONFIG VARS ----")
-	logger.Config.Debug(fmt.Sprintf("Branch: %s", config.Branch))
-	logger.Config.Debug(fmt.Sprintf("GameBranch: %s", config.GameBranch))
-	logger.Config.Debug("IsDiscordEnabled: " + strconv.FormatBool(config.IsDiscordEnabled))
-	logger.Config.Debug("IsCleanupEnabled: " + strconv.FormatBool(config.IsCleanupEnabled))
-	logger.Config.Debug("IsDebugMode (pprof Server): " + strconv.FormatBool(config.IsDebugMode))
-	logger.Config.Debug("IsFirstTimeSetup: " + strconv.FormatBool(config.IsFirstTimeSetup))
+	logger.Config.Debug("=== Game Server Configuration Details ===")
 
-	logger.Config.Debug("---- DISCORD CONFIG VARS ----")
-	logger.Config.Debug(fmt.Sprintf("BlackListFilePath: %s", config.BlackListFilePath))
-	logger.Config.Debug(fmt.Sprintf("ConnectionListChannelID: %s", config.ConnectionListChannelID))
-	logger.Config.Debug(fmt.Sprintf("ControlChannelID: %s", config.ControlChannelID))
-	logger.Config.Debug(fmt.Sprintf("ControlPanelChannelID: %s", config.ControlPanelChannelID))
-	logger.Config.Debug(fmt.Sprintf("DiscordCharBufferSize: %d", config.DiscordCharBufferSize))
-	logger.Config.Debug(fmt.Sprintf("DiscordToken: %s", config.DiscordToken))
-	logger.Config.Debug(fmt.Sprintf("ErrorChannelID: %s", config.ErrorChannelID))
-	logger.Config.Debug(fmt.Sprintf("IsDiscordEnabled: %v", config.IsDiscordEnabled))
-	logger.Config.Debug(fmt.Sprintf("LogChannelID: %s", config.LogChannelID))
-	logger.Config.Debug(fmt.Sprintf("SaveChannelID: %s", config.SaveChannelID))
-	logger.Config.Debug(fmt.Sprintf("StatusChannelID: %s", config.StatusChannelID))
+	// Helper function to print sections
+	printSection := func(title string, fields map[string]string) {
+		logger.Config.Debug(fmt.Sprintf("\n%s", title))
+		logger.Config.Debug(strings.Repeat("-", len(title)))
+		for key, value := range fields {
+			logger.Config.Debug(fmt.Sprintf("%-30s: %s", key, value))
+		}
+	}
 
-	logger.Config.Debug("---- BACKUP CONFIG VARS ----")
-	logger.Config.Debug(fmt.Sprintf("BackupKeepLastN: %d", config.BackupKeepLastN))
-	logger.Config.Debug(fmt.Sprintf("BackupKeepDailyFor: %s", config.BackupKeepDailyFor))
-	logger.Config.Debug(fmt.Sprintf("BackupKeepWeeklyFor: %s", config.BackupKeepWeeklyFor))
-	logger.Config.Debug(fmt.Sprintf("BackupKeepMonthlyFor: %s", config.BackupKeepMonthlyFor))
-	logger.Config.Debug(fmt.Sprintf("BackupCleanupInterval: %s", config.BackupCleanupInterval))
-	logger.Config.Debug(fmt.Sprintf("ConfiguredBackupDir: %s", config.ConfiguredBackupDir))
-	logger.Config.Debug(fmt.Sprintf("ConfiguredSafeBackupDir: %s", config.ConfiguredSafeBackupDir))
-	logger.Config.Debug(fmt.Sprintf("BackupWaitTime: %s", config.BackupWaitTime))
+	// General Configuration
+	general := map[string]string{
+		"Branch":                   config.GetBranch(),
+		"Version":                  config.GetVersion(),
+		"IsFirstTimeSetup":         fmt.Sprintf("%v", config.GetIsFirstTimeSetup()),
+		"IsDebugMode":              fmt.Sprintf("%v", config.GetIsDebugMode()),
+		"IsConsoleEnabled":         fmt.Sprintf("%v", config.GetIsConsoleEnabled()),
+		"AutoStartServerOnStartup": fmt.Sprintf("%v", config.GetAutoStartServerOnStartup()),
+		"LanguageSetting":          config.GetLanguageSetting(),
+		"ConfigPath":               config.GetConfigPath(),
+	}
+	printSection("General Configuration", general)
 
-	logger.Config.Debug("---- AUTHENTICATION CONFIG VARS ----")
-	logger.Config.Debug(fmt.Sprintf("AuthTokenLifetime: %d", config.AuthTokenLifetime))
-	logger.Config.Debug(fmt.Sprintf("JwtKey: %s", config.JwtKey))
+	// Server Configuration
+	server := map[string]string{
+		"GameBranch":                config.GetGameBranch(),
+		"ServerName":                config.GetServerName(),
+		"WorldName":                 config.GetWorldName(),
+		"BackupWorldName":           config.GetBackupWorldName(),
+		"ServerMaxPlayers":          config.GetServerMaxPlayers(),
+		"GamePort":                  config.GetGamePort(),
+		"UpdatePort":                config.GetUpdatePort(),
+		"UPNPEnabled":               fmt.Sprintf("%v", config.GetUPNPEnabled()),
+		"AutoSave":                  fmt.Sprintf("%v", config.GetAutoSave()),
+		"SaveInterval":              config.GetSaveInterval(),
+		"AutoPauseServer":           fmt.Sprintf("%v", config.GetAutoPauseServer()),
+		"LocalIpAddress":            config.GetLocalIpAddress(),
+		"StartLocalHost":            fmt.Sprintf("%v", config.GetStartLocalHost()),
+		"ServerVisible":             fmt.Sprintf("%v", config.GetServerVisible()),
+		"UseSteamP2P":               fmt.Sprintf("%v", config.GetUseSteamP2P()),
+		"ExePath":                   config.GetExePath(),
+		"AdditionalParams":          config.GetAdditionalParams(),
+		"GameServerAppID":           config.GetGameServerAppID(),
+		"Difficulty":                config.GetDifficulty(),
+		"StartCondition":            config.GetStartCondition(),
+		"StartLocation":             config.GetStartLocation(),
+		"SaveInfo":                  config.GetSaveInfo(),
+		"IsNewTerrainAndSaveSystem": fmt.Sprintf("%v", config.GetIsNewTerrainAndSaveSystem()),
+	}
+	printSection("Server Configuration", server)
 
-	logger.Config.Debug("---- MISC CONFIG VARS ----")
-	logger.Config.Debug(fmt.Sprintf("Branch: %s", config.Branch))
-	logger.Config.Debug(fmt.Sprintf("GameServerAppID: %s", config.GameServerAppID))
-	logger.Config.Debug(fmt.Sprintf("Version: %s", config.Version))
-	logger.Config.Debug(fmt.Sprintf("IsNewTerrainAndSaveSystem: %v", config.IsNewTerrainAndSaveSystem))
+	// Discord Configuration
+	discord := map[string]string{
+		"IsDiscordEnabled":        fmt.Sprintf("%v", config.GetIsDiscordEnabled()),
+		"ControlChannelID":        config.GetControlChannelID(),
+		"StatusChannelID":         config.GetStatusChannelID(),
+		"ConnectionListChannelID": config.GetConnectionListChannelID(),
+		"LogChannelID":            config.GetLogChannelID(),
+		"SaveChannelID":           config.GetSaveChannelID(),
+		"ControlPanelChannelID":   config.GetControlPanelChannelID(),
+		"ErrorChannelID":          config.GetErrorChannelID(),
+		"DiscordCharBufferSize":   fmt.Sprintf("%d", config.GetDiscordCharBufferSize()),
+		"BlackListFilePath":       config.GetBlackListFilePath(),
+	}
+	printSection("Discord Configuration", discord)
 
-	logger.Config.Debug("----  UPDATER CONFIG VARS ----")
-	logger.Config.Debug(fmt.Sprintf("AllowPrereleaseUpdates: %v", config.AllowPrereleaseUpdates))
-	logger.Config.Debug(fmt.Sprintf("AllowMajorUpdates: %v", config.AllowMajorUpdates))
-	logger.Config.Debug(fmt.Sprintf("IsUpdateEnabled: %v", config.IsUpdateEnabled))
+	// Backup Configuration
+	backup := map[string]string{
+		"BackupKeepLastN":         fmt.Sprintf("%d", config.GetBackupKeepLastN()),
+		"IsCleanupEnabled":        fmt.Sprintf("%v", config.GetIsCleanupEnabled()),
+		"BackupKeepDailyFor":      fmt.Sprintf("%v", config.GetBackupKeepDailyFor()),
+		"BackupKeepWeeklyFor":     fmt.Sprintf("%v", config.GetBackupKeepWeeklyFor()),
+		"BackupKeepMonthlyFor":    fmt.Sprintf("%v", config.GetBackupKeepMonthlyFor()),
+		"BackupCleanupInterval":   fmt.Sprintf("%v", config.GetBackupCleanupInterval()),
+		"ConfiguredBackupDir":     config.GetConfiguredBackupDir(),
+		"ConfiguredSafeBackupDir": config.GetConfiguredSafeBackupDir(),
+	}
+	printSection("Backup Configuration", backup)
 
-	logger.Config.Debug("----  SSCM CONFIG VARS ----")
-	logger.Config.Debug(fmt.Sprintf("SSCMFilePath: %s", config.SSCMFilePath))
-	logger.Config.Debug(fmt.Sprintf("IsSSCMEnabled: %v", config.IsSSCMEnabled))
+	// Authentication Configuration
+	auth := map[string]string{
+		"AuthEnabled":       fmt.Sprintf("%v", config.GetAuthEnabled()),
+		"AuthTokenLifetime": fmt.Sprintf("%d", config.GetAuthTokenLifetime()),
+	}
+	printSection("Authentication Configuration", auth)
+
+	// Logging Configuration
+	logging := map[string]string{
+		"CreateSSUILogFile":   fmt.Sprintf("%v", config.GetCreateSSUILogFile()),
+		"LogLevel":            fmt.Sprintf("%d", config.GetLogLevel()),
+		"LogClutterToConsole": fmt.Sprintf("%v", config.GetLogClutterToConsole()),
+		"SubsystemFilters":    fmt.Sprintf("%v", config.GetSubsystemFilters()),
+		"LogFolder":           config.GetLogFolder(),
+	}
+	printSection("Logging Configuration", logging)
+
+	// Updater Configuration
+	updater := map[string]string{
+		"IsUpdateEnabled":        fmt.Sprintf("%v", config.GetIsUpdateEnabled()),
+		"AllowPrereleaseUpdates": fmt.Sprintf("%v", config.GetAllowPrereleaseUpdates()),
+		"AllowMajorUpdates":      fmt.Sprintf("%v", config.GetAllowMajorUpdates()),
+		"AutoRestartServerTimer": config.GetAutoRestartServerTimer(),
+	}
+	printSection("Updater Configuration", updater)
+
+	// SSCM Configuration
+	sscm := map[string]string{
+		"IsSSCMEnabled": fmt.Sprintf("%v", config.GetIsSSCMEnabled()),
+		"SSCMFilePath":  config.GetSSCMFilePath(),
+		"SSCMPluginDir": config.GetSSCMPluginDir(),
+		"SSCMWebDir":    config.GetSSCMWebDir(),
+	}
+	printSection("SSCM Configuration", sscm)
+
+	// UI Configuration
+	ui := map[string]string{
+		"SSUIIdentifier":       config.GetSSUIIdentifier(),
+		"SSUIWebPort":          config.GetSSUIWebPort(),
+		"UIModFolder":          config.GetUIModFolder(),
+		"MaxSSEConnections":    fmt.Sprintf("%d", config.GetMaxSSEConnections()),
+		"SSEMessageBufferSize": fmt.Sprintf("%d", config.GetSSEMessageBufferSize()),
+	}
+	printSection("UI Configuration", ui)
+
+	// TLS Configuration
+	tls := map[string]string{
+		"TLSCertPath": config.GetTLSCertPath(),
+		"TLSKeyPath":  config.GetTLSKeyPath(),
+	}
+	printSection("TLS Configuration", tls)
+
+	// Custom Detections
+	custom := map[string]string{
+		"CustomDetectionsFilePath": config.GetCustomDetectionsFilePath(),
+	}
+	printSection("Custom Detections Configuration", custom)
+
+	logger.Config.Debug("=======================================")
 }
