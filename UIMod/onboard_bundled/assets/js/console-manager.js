@@ -95,7 +95,12 @@ function handleConsole() {
         "Stabilizing frame rate... lol, just kidding, welcome to 12 FPS city.",
         "Checking for updates... new bug introduced, feature still broken!",
         "Assembling solar tracker... now it's tracking the admin instead.",
-        "Balancing gas mixtures... kaboom imminent, run you fool!"
+        "Balancing gas mixtures... kaboom imminent, run you fool!",
+        "Spoiler: object reference not set to an instance of an object, lol",
+        "Fun fact: SSUI was originally a simple powershell script",
+        "Convincing server that 'out of memory' is just a state of mind.",
+        "Moo, Moo! I'm a cow!",
+        "Welcome home, Sir!"
     ];
 
     const addMessage = (text, color, style = 'normal') => {
