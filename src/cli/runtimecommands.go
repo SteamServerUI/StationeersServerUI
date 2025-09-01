@@ -3,10 +3,15 @@
 package cli
 
 import (
+	"archive/zip"
 	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 	"sync"
@@ -24,6 +29,8 @@ import (
 const (
 	cliPrompt = "\033[32m" + "SSUICLI" + " » " + "\033[0m"
 )
+
+var isSupportMode bool
 
 // CommandFunc defines the signature for command handler functions.
 type CommandFunc func(args []string) error
@@ -150,6 +157,8 @@ func init() {
 	RegisterCommand("stopserver", WrapNoReturn(stopServer), "stop")
 	RegisterCommand("runsteamcmd", WrapNoReturn(runSteamCMD), "steamcmd", "stcmd")
 	RegisterCommand("testlocalization", WrapNoReturn(testLocalization), "tl")
+	RegisterCommand("supportmode", WrapNoReturn(supportMode), "sm")
+	RegisterCommand("supportpackage", WrapNoReturn(supportPackage), "sp")
 }
 
 func startServer() {
@@ -193,5 +202,74 @@ func runSteamCMD() {
 func testLocalization() {
 	currentLanguageSetting := config.GetLanguageSetting()
 	s := localization.GetString("UIText_StartButton")
-	logger.Core.Info(s + " (current language: " + currentLanguageSetting + ")")
+	logger.Core.Info("Start Server Button text (current language: " + currentLanguageSetting + "): " + s)
+}
+
+func supportMode() {
+
+	if isSupportMode {
+		config.SetIsDebugMode(false)
+		config.SetLogLevel(20)
+		config.SetCreateSSUILogFile(false)
+		isSupportMode = false
+		logger.Core.Info("Support mode disabled.")
+		return
+	}
+	config.SetIsDebugMode(true)
+	config.SetLogLevel(10)
+	config.SetCreateSSUILogFile(true)
+	isSupportMode = true
+	loader.ReloadBackend()
+	time.Sleep(1000 * time.Millisecond)
+	logger.Core.Info("Support mode enabled. To generate a support package, type 'supportpackage' or 'sp'.")
+}
+
+func supportPackage() {
+	if !isSupportMode {
+		logger.Core.Error("Support mode is not enabled.")
+		return
+	}
+	zipFileName := fmt.Sprintf("support_package_%s.zip", time.Now().Format("20060102_150405"))
+	zipFile, _ := os.Create(zipFileName)
+	defer zipFile.Close()
+	zw := zip.NewWriter(zipFile)
+	defer zw.Close()
+
+	filepath.Walk("./UIMod/logs", func(p string, i os.FileInfo, err error) error {
+		if err != nil || i.IsDir() {
+			return nil
+		}
+		f, _ := os.Open(p)
+		defer f.Close()
+		w, _ := zw.Create(strings.TrimPrefix(p, "./"))
+		io.Copy(w, f)
+		return nil
+	})
+
+	f, _ := os.Open("./UIMod/config/config.json")
+	defer f.Close()
+	w, _ := zw.Create("UIMod/config/config.json")
+	io.Copy(w, f)
+
+	var osVersion string
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("cmd", "/c", "ver")
+		output, _ := cmd.Output()
+		osVersion = strings.TrimSpace(string(output))
+	} else if runtime.GOOS == "linux" {
+		d, _ := os.ReadFile("/etc/os-release")
+		for _, l := range strings.Split(string(d), "\n") {
+			if strings.HasPrefix(l, "PRETTY_NAME=") {
+				osVersion = strings.TrimPrefix(l, "PRETTY_NAME=")
+				break
+			}
+		}
+	} else {
+		osVersion = "unknown"
+	}
+
+	info := fmt.Sprintf("OS: %s\nVersion: %s\nArch: %s\nBranch: %s\nVersion: %s\nTime: %s",
+		runtime.GOOS, osVersion, runtime.GOARCH, config.GetBranch(), config.GetVersion(), time.Now().Format(time.RFC3339))
+	w, _ = zw.Create("system_info.txt")
+	w.Write([]byte(info))
 }
