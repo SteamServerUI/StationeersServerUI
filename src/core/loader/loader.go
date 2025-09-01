@@ -3,6 +3,7 @@ package loader
 
 import (
 	"embed"
+	"sync"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
@@ -15,12 +16,15 @@ import (
 )
 
 // only call this once at startup
-func InitBackend() {
+func InitBackend(wg *sync.WaitGroup) {
+	wg.Add(1)
+	defer wg.Done()
 	ReloadConfig()
 	ReloadSSCM()
 	ReloadBackupManager()
 	ReloadLocalizer()
 	ReloadDiscordBot()
+	InitDetector()
 }
 
 // use this to reload backend at runtime
