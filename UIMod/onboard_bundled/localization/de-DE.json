@@ -7,7 +7,9 @@
       "UIText_Update_SteamCMD": "Server Updaten",
       "UIText_Console": "Konsole",
       "UIText_Detection_Events": "Ereignisse",
+      "UIText_Backend_Log": "Backend Konsole",
       "UIText_Backup_Manager": "Spielstands-Manager",
+      "UIText_Connected_PlayersHeader": "Verbundene Spieler",
       "UIText_Discord_Info": "Tritt dem Discord bei und hilf uns SSUI besser zu machen oder Support anzufragen!",
       "UIText_API_Info": "API-Endpunktdokumentation",
       "UIText_Copyright": "Urheberrecht",
@@ -284,6 +286,7 @@
       "UIText_Finalize_SubmitButton": "Zurück zum Start",
       "UIText_Finalize_SkipButton": "Authentifizierung Überspringen",
       "UIText_Login_Title": "Stationeers Server UI",
+      "UIText_Login_HeaderTitle": "Login", 
       "UIText_Login_PrimaryLabel": "Benutzername",
       "UIText_Login_SecondaryLabel": "Passwort",
       "UIText_Login_PrimaryPlaceholder": "Benutzername eingeben",
@@ -298,10 +301,10 @@
     }
   },
   "BackendText": {
-    "top1": {},
-    "nest1": {
-      "nestINnest1": {},
-      "nestINnest2": {}
+    "gamemgr": {
+      "BackendText_ServerStarted": "Server gestartet.",
+      "BackendText_ServerNotRunningOrAlreadyStopped": "Server war nicht gestartet oder wurde bereits gestoppt",
+      "BackendText_ServerStopped": "Server gestoppt."
     }
   }
 }

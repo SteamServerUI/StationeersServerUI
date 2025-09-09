@@ -7,7 +7,9 @@
       "UIText_Update_SteamCMD": "Uppdatera server",
       "UIText_Console": "Konsol",
       "UIText_Detection_Events": "Detekteringshändelser",
+      "UIText_Backend_Log": "Backend Konsol",
       "UIText_Backup_Manager": "Backup-hanterare",
+      "UIText_Connected_PlayersHeader": "Konnekterade spelare",
       "UIText_Discord_Info": "Gå med i Discord och hjälp till att förbättra SSUI eller få support!",
       "UIText_API_Info": "API-slutpunktsreferens",
       "UIText_Copyright": "Upphovsrätt",
@@ -284,6 +286,7 @@
       "UIText_Finalize_SubmitButton": "Gå tillbaka till start",
       "UIText_Finalize_SkipButton": "Hoppa över autentisering",
       "UIText_Login_Title": "Stationeers Server UI",
+      "UIText_Login_HeaderTitle": "Logga in",
       "UIText_Login_PrimaryLabel": "Användarnamn",
       "UIText_Login_SecondaryLabel": "Lösenord",
       "UIText_Login_PrimaryPlaceholder": "Ange användarnamn",
@@ -298,10 +301,10 @@
     }
   },
   "BackendText": {
-    "top1": {},
-    "nest1": {
-      "nestINnest1": {},
-      "nestINnest2": {}
+    "gamemgr": {
+      "BackendText_ServerStarted": "Server startad.",
+      "BackendText_ServerNotRunningOrAlreadyStopped": "Servern kördes inte eller var redan stoppad",
+      "BackendText_ServerStopped": "Server stoppad."
     }
   }
 }
