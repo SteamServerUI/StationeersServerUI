@@ -35,6 +35,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         console.warn("If you see errors for sscm.js or sscm.css, you may want to enable SSCM.");
     }
+    // Language flag selection
+    const languageFlags = document.querySelectorAll('#language-flags img');
+    languageFlags.forEach(flag => {
+        flag.addEventListener('click', async () => {
+            const lang = flag.dataset.lang;
+            try {
+                const response = await fetch('/api/v2/saveconfig', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ LanguageSetting: lang })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    console.error(data.error);
+                }
+            } catch (error) {
+                console.error('Language setting error:', error);
+            }
+            
+        });
+    });
 });
 
 // Global references to EventSource objects

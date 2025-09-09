@@ -29,6 +29,22 @@ func registerSlashCommands(s *discordgo.Session) {
 			Description: "Show command help",
 		},
 		{
+			Name:        "update",
+			Description: "Update the gameserver via SteamCMD. Feedback will take a while, please be patient.",
+		},
+		{
+			Name:        "command",
+			Description: "send a console command to the gameserver via SSCM",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "command",
+					Description: "Console Command to send to the gameserver. Has NO command syntax validation!",
+					Required:    true,
+				},
+			},
+		},
+		{
 			Name:        "restore",
 			Description: "Restore a backup at the specified index",
 			Options: []*discordgo.ApplicationCommandOption{

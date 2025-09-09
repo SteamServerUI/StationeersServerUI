@@ -255,4 +255,32 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // Language flag selection
+    const languageFlags = document.querySelectorAll('#language-flags img, #welcome-flags img');
+    languageFlags.forEach(flag => {
+        flag.addEventListener('click', async () => {
+            const lang = flag.dataset.lang;
+            try {
+                showPreloader();
+                const response = await fetch('/api/v2/saveconfig', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ LanguageSetting: lang })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    showNotification(`Language set to ${lang}`, 'success');
+                } else {
+                    showNotification(data.error || 'Failed to set language', 'error');
+                }
+            } catch (error) {
+                console.error('Language setting error:', error);
+                showNotification('Error setting language!', 'error');
+            } finally {
+                hidePreloader();
+            }
+            window.location.reload();
+        });
+    });
 });
