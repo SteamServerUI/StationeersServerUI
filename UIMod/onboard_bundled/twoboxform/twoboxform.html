@@ -6,6 +6,7 @@
     <title>{{.Title}}</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/twoboxform/twoboxform.css">
+    <link rel="stylesheet" href="/static/css/flags.css">
 </head>
 <body>
     <div id="space-background"></div>
@@ -19,7 +20,13 @@
             <p>Preparing {{.Title}}</p>
         </div>
     </div>
-    
+    {{if ne .Step "welcome"}}
+    <div id="language-flags">
+        <img src="/static/flags/en.webp" alt="English" data-lang="en-US" title="English">
+        <img src="/static/flags/de.webp" alt="German" data-lang="de-DE" title="German">
+        <img src="/static/flags/sv.webp" alt="Swedish" data-lang="sv-SE" title="Swedish">
+    </div>
+    {{end}}
     <main class="two-box-form-container">
         <header>
             <h1>{{.Title}}</h1>
@@ -32,7 +39,7 @@
             <p class="step-message">{{.StepMessage}}</p>
             {{end}}
             
-            <!-- Only show on finalize screen -->
+
             {{if eq .Step "finalize"}}
             <div class="config-summary">
                 <div id="config-details">
@@ -88,6 +95,15 @@
                 <input type="hidden" id="config-field" value="{{.ConfigField}}">
                 <input type="hidden" id="next-step" value="{{.NextStep}}">
             </form>
+
+            {{if eq .Step "welcome"}}
+            <div id="welcome-flags">
+                <img src="/static/flags/en.webp" alt="English" data-lang="en-US" title="English">
+                <img src="/static/flags/de.webp" alt="German" data-lang="de-DE" title="German">
+                <img src="/static/flags/sv.webp" alt="Swedish" data-lang="sv-SE" title="Swedish">
+            </div>
+            {{end}}
+
         </div>
 
         <footer>

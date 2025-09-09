@@ -12,13 +12,19 @@
     <link rel="stylesheet" href="/static/css/background.css">
     <link rel="stylesheet" href="/static/css/mobile.css">
     <link rel="stylesheet" href="/static/css/config.css">
+    <link rel="stylesheet" href="/static/css/flags.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
 
 <body>
     <div id="space-background"></div>
     <header>
-        <img src="/static/stationeers.png" alt="Stationeers Banner" id="banner">
+        <img src="/static/stationeers.webp" alt="Stationeers Banner" id="banner">
+        <div id="language-flags">
+            <img src="/static/flags/en.webp" alt="English" data-lang="en-US" title="English">
+            <img src="/static/flags/de.webp" alt="German" data-lang="de-DE" title="German">
+            <img src="/static/flags/sv.webp" alt="Swedish" data-lang="sv-SE" title="Swedish">
+        </div>
     </header>
     <main>
         <h1>{{.UIText_ServerConfig}}</h1>

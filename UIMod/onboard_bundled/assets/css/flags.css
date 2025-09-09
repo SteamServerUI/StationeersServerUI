@@ -1,0 +1,56 @@
+
+#language-flags {
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+#welcome-flags {
+    display: flex;
+    gap: 10px;
+    justify-content: space-evenly;
+    margin-top: 15px
+}
+
+#language-flags img, #welcome-flags img{
+    width: 30px;
+    height: 20px;
+    cursor: pointer;
+    transition: transform 0.5s ease;
+}
+
+#language-flags img {
+    opacity: 0.7;
+}
+
+#language-flags img:hover, #welcome-flags img:hover {
+    scale: 1.1;
+    animation: wave 3s infinite;
+    opacity: 1;
+} 
+
+@keyframes wave {
+    0% {
+        transform: perspective(200px) rotateY(0deg) scaleX(1);
+    }
+    25% {
+        transform: perspective(200px) rotateY(10deg) scaleX(0.95);
+    }
+    50% {
+        transform: perspective(200px) rotateY(0deg) scaleX(1);
+    }
+    75% {
+        transform: perspective(200px) rotateY(-10deg) scaleX(0.95);
+    }
+    100% {
+        transform: perspective(200px) rotateY(0deg) scaleX(1);
+    }
+}
+
+@media (max-width: 767px) {
+    #language-flags, #welcome-flags {
+        display: none;
+    }
+}
