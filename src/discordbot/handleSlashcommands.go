@@ -10,6 +10,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 
@@ -29,6 +30,7 @@ var handlers = map[string]commandHandler{
 	"bansteamid":   handleBan,
 	"unbansteamid": handleUnban,
 	"update":       handleUpdate,
+	"command":      handleCommand,
 }
 
 // Check channel and handle initial validation
@@ -233,4 +235,24 @@ func handleBanUnban(s *discordgo.Session, i *discordgo.InteractionCreate, data E
 	data.Title, data.Description, data.Color = successTitle, fmt.Sprintf("SteamID %s has been %s", steamID, strings.ToLower(successTitle)), color
 	data.Fields = []EmbedField{{Name: "Status", Value: "✅ Completed", Inline: true}}
 	return respond(s, i, data)
+}
+
+func handleCommand(s *discordgo.Session, i *discordgo.InteractionCreate, data EmbedData) error {
+	data.Title, data.Description, data.Color = "Server Control", "Sending a command to the gameserver console...", 0x00FF00
+	data.Fields = []EmbedField{{Name: "Status", Value: "❌ Failed, is the server running and SSCM enabled?", Inline: true}}
+	data.Color = 0xFF0000
+	if gamemgr.InternalIsServerRunning() {
+		data.Color = 0x00FF00
+		err := commandmgr.WriteCommand(i.ApplicationCommandData().Options[0].StringValue())
+		if err != nil {
+			data.Fields = []EmbedField{{Name: "Error", Value: err.Error(), Inline: true}}
+			return respond(s, i, data)
+		}
+		data.Fields = []EmbedField{{Name: "Status", Value: "✅ Gameserver recieved command", Inline: true}}
+	}
+
+	if err := respond(s, i, data); err != nil {
+		return err
+	}
+	return nil
 }
