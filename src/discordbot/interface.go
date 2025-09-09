@@ -30,10 +30,10 @@ func InitializeDiscordBot() {
 	}
 
 	// Set intents
-	config.DiscordSession.Identify.Intents = discordgo.IntentsGuilds | discordgo.IntentsGuildMessages | discordgo.IntentsGuildMessageReactions | discordgo.IntentsMessageContent
+	config.DiscordSession.Identify.Intents = discordgo.IntentsGuildMessageReactions
 
 	logger.Discord.Info("Starting Discord integration...")
-	logger.Discord.Debug("Discord token: " + config.GetDiscordToken())
+	//logger.Discord.Debug("Discord token: " + config.GetDiscordToken())
 	logger.Discord.Debug("ControlChannelID: " + config.GetControlChannelID())
 	logger.Discord.Debug("StatusChannelID: " + config.GetStatusChannelID())
 	logger.Discord.Debug("ConnectionListChannelID: " + config.GetConnectionListChannelID())
@@ -48,13 +48,12 @@ func InitializeDiscordBot() {
 	}
 
 	// Register handlers and commands after session is open
-	config.DiscordSession.AddHandler(listenToDiscordMessages)
 	config.DiscordSession.AddHandler(listenToDiscordReactions)
 	config.DiscordSession.AddHandler(listenToSlashCommands)
 	registerSlashCommands(config.DiscordSession)
 
 	logger.Discord.Info("Bot is now running.")
-	SendMessageToStatusChannel("🤖 Bot Version " + config.GetVersion() + " Branch " + config.GetBranch() + " connected to Discord.")
+	SendMessageToStatusChannel("🤖 SSUI Version " + config.GetVersion() + " connected to Discord.")
 	sendControlPanel() // Send control panel message to Discord
 	UpdateBotStatusWithMessage("StationeersServerUI v" + config.GetVersion())
 	// Start buffer flush ticker
@@ -68,7 +67,7 @@ func InitializeDiscordBot() {
 	select {} // Keep it running
 }
 
-// Updates the bot status with a string message (unused in 4.3)
+// Updates the bot status with a string message
 func UpdateBotStatusWithMessage(message string) {
 	err := config.DiscordSession.UpdateGameStatus(0, message)
 	if err != nil {
