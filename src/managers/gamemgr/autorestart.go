@@ -57,6 +57,12 @@ func startAutoRestart(schedule string, done chan struct{}) {
 			mu.Unlock()
 
 			if config.GetIsSSCMEnabled() {
+				commandmgr.WriteCommand("say Attention, server is restarting in 60 seconds!")
+				time.Sleep(10 * time.Second)
+				commandmgr.WriteCommand("say Attention, server is restarting in 50 seconds!")
+				time.Sleep(10 * time.Second)
+				commandmgr.WriteCommand("say Attention, server is restarting in 40 seconds!")
+				time.Sleep(10 * time.Second)
 				commandmgr.WriteCommand("say Attention, server is restarting in 30 seconds!")
 				time.Sleep(10 * time.Second)
 				commandmgr.WriteCommand("say Attention, server is restarting in 20 seconds!")
