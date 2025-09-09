@@ -11,6 +11,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -27,6 +28,7 @@ var handlers = map[string]commandHandler{
 	"list":         handleList,
 	"bansteamid":   handleBan,
 	"unbansteamid": handleUnban,
+	"update":       handleUpdate,
 }
 
 // Check channel and handle initial validation
@@ -92,6 +94,27 @@ func handleStatus(s *discordgo.Session, i *discordgo.InteractionCreate, data Emb
 	return respond(s, i, data)
 }
 
+func handleUpdate(s *discordgo.Session, i *discordgo.InteractionCreate, data EmbedData) error {
+	data.Title = "🎮 Gameserver Update"
+	data.Description = "Updating the gameserver via SteamCMD..."
+	data.Color = 0xFFA500
+	if gamemgr.InternalIsServerRunning() {
+		SendMessageToControlChannel("❗ Server is running, stopping server first...")
+		gamemgr.InternalStopServer()
+		time.Sleep(10000 * time.Millisecond)
+	}
+
+	_, err := setup.InstallAndRunSteamCMD()
+
+	data.Fields = []EmbedField{
+		{Name: "Update Status:", Value: map[bool]string{true: "🟢 Success", false: "🔴 Failed"}[err == nil], Inline: true},
+	}
+	if err != nil {
+		data.Fields = append(data.Fields, EmbedField{Name: "Error:", Value: err.Error(), Inline: true})
+	}
+	return respond(s, i, data)
+}
+
 func handleHelp(s *discordgo.Session, i *discordgo.InteractionCreate, data EmbedData) error {
 	data.Title, data.Description, data.Color = "Command Help", "Available Commands:", 0x1E90FF
 	data.Fields = []EmbedField{
@@ -102,6 +125,7 @@ func handleHelp(s *discordgo.Session, i *discordgo.InteractionCreate, data Embed
 		{Name: "/help", Value: "Shows this help"},
 		{Name: "/bansteamid <SteamID>", Value: "Bans a player"},
 		{Name: "/unbansteamid <SteamID>", Value: "Unbans a player"},
+		{Name: "/update", Value: "Updates the gameserver via SteamCMD"},
 	}
 	return respond(s, i, data)
 }
