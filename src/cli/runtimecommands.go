@@ -160,6 +160,7 @@ func init() {
 	RegisterCommand("testlocalization", WrapNoReturn(testLocalization), "tl")
 	RegisterCommand("supportmode", WrapNoReturn(supportMode), "sm")
 	RegisterCommand("supportpackage", WrapNoReturn(supportPackage), "sp")
+	RegisterCommand("getbuildid", WrapNoReturn(getBuildID), "gbid")
 }
 
 func startServer() {
@@ -192,6 +193,15 @@ func deleteConfig() {
 
 func runSteamCMD() {
 	steamcmd.InstallAndRunSteamCMD()
+}
+
+func getBuildID() {
+	buildID := config.GetCurrentBranchBuildID()
+	if buildID == "" {
+		logger.Core.Error("Build ID not found, empty string returned")
+		return
+	}
+	logger.Core.Info("Build ID: " + buildID)
 }
 
 func testLocalization() {
