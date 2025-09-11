@@ -14,6 +14,7 @@ import (
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 )
 
@@ -90,6 +91,21 @@ func getAppInfo() error {
 			if config.GetAllowAutoGameServerUpdates() {
 				logger.Install.Info("🔍 Updating gameserver via SteamCMD...")
 				if gamemgr.InternalIsServerRunning() {
+					commandmgr.WriteCommand("say Update found, stopping server in 60 seconds...")
+					logger.Install.Info("❗Stopping server in 60 seconds...")
+					time.Sleep(10 * time.Second)
+					commandmgr.WriteCommand("say Update found, stopping server in 50 seconds...")
+					time.Sleep(10 * time.Second)
+					commandmgr.WriteCommand("say Update found, stopping server in 40 seconds...")
+					time.Sleep(10 * time.Second)
+					commandmgr.WriteCommand("say Update found, stopping server in 30 seconds...")
+					time.Sleep(3 * time.Second)
+					commandmgr.WriteCommand("SAVE")
+					time.Sleep(7 * time.Second)
+					commandmgr.WriteCommand("say Update found, stopping server in 20 seconds. World was Saved. ")
+					time.Sleep(10 * time.Second)
+					commandmgr.WriteCommand("say Update found, stopping server in 10 seconds...")
+					time.Sleep(10 * time.Second)
 					gamemgr.InternalStopServer()
 				}
 				_, err := InstallAndRunSteamCMD()
