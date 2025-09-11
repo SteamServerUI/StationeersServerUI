@@ -11,71 +11,86 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.6.2"
+	Version = "5.6.3"
 	Branch  = "release"
 )
 
 type JsonConfig struct {
-	DiscordToken              string            `json:"discordToken"`
-	ControlChannelID          string            `json:"controlChannelID"`
-	StatusChannelID           string            `json:"statusChannelID"`
-	ConnectionListChannelID   string            `json:"connectionListChannelID"`
-	LogChannelID              string            `json:"logChannelID"`
-	SaveChannelID             string            `json:"saveChannelID"`
-	ControlPanelChannelID     string            `json:"controlPanelChannelID"`
-	DiscordCharBufferSize     int               `json:"DiscordCharBufferSize"`
-	BlackListFilePath         string            `json:"blackListFilePath"`
-	IsDiscordEnabled          *bool             `json:"isDiscordEnabled"`
-	ErrorChannelID            string            `json:"errorChannelID"`
-	BackupKeepLastN           int               `json:"backupKeepLastN"`           // Number of most recent backups to keep (default: 2000)
-	IsCleanupEnabled          *bool             `json:"isCleanupEnabled"`          // Enable automatic cleanup of backups (default: false)
-	BackupKeepDailyFor        int               `json:"backupKeepDailyFor"`        // Retention period in hours for daily backups
-	BackupKeepWeeklyFor       int               `json:"backupKeepWeeklyFor"`       // Retention period in hours for weekly backups
-	BackupKeepMonthlyFor      int               `json:"backupKeepMonthlyFor"`      // Retention period in hours for monthly backups
-	BackupCleanupInterval     int               `json:"backupCleanupInterval"`     // Hours between backup cleanup operations
-	BackupWaitTime            int               `json:"backupWaitTime"`            // Seconds to wait before copying backups
-	IsNewTerrainAndSaveSystem *bool             `json:"IsNewTerrainAndSaveSystem"` // Use new terrain and save system
-	GameBranch                string            `json:"gameBranch"`
-	Difficulty                string            `json:"Difficulty"`
-	StartCondition            string            `json:"StartCondition"`
-	StartLocation             string            `json:"StartLocation"`
-	ServerName                string            `json:"ServerName"`
-	SaveInfo                  string            `json:"SaveInfo"`
-	ServerMaxPlayers          string            `json:"ServerMaxPlayers"`
-	ServerPassword            string            `json:"ServerPassword"`
-	ServerAuthSecret          string            `json:"ServerAuthSecret"`
-	AdminPassword             string            `json:"AdminPassword"`
-	GamePort                  string            `json:"GamePort"`
-	UpdatePort                string            `json:"UpdatePort"`
-	UPNPEnabled               *bool             `json:"UPNPEnabled"`
-	AutoSave                  *bool             `json:"AutoSave"`
-	SaveInterval              string            `json:"SaveInterval"`
-	AutoPauseServer           *bool             `json:"AutoPauseServer"`
-	LocalIpAddress            string            `json:"LocalIpAddress"`
-	StartLocalHost            *bool             `json:"StartLocalHost"`
-	ServerVisible             *bool             `json:"ServerVisible"`
-	UseSteamP2P               *bool             `json:"UseSteamP2P"`
-	ExePath                   string            `json:"ExePath"`
-	AdditionalParams          string            `json:"AdditionalParams"`
-	Users                     map[string]string `json:"users"`       // Map of username to hashed password
-	AuthEnabled               *bool             `json:"authEnabled"` // Toggle for enabling/disabling auth
-	JwtKey                    string            `json:"JwtKey"`
-	AuthTokenLifetime         int               `json:"AuthTokenLifetime"`
-	Debug                     *bool             `json:"Debug"`
-	CreateSSUILogFile         *bool             `json:"CreateSSUILogFile"`
-	LogLevel                  int               `json:"LogLevel"`
-	LogClutterToConsole       *bool             `json:"LogClutterToConsole"`
-	SubsystemFilters          []string          `json:"subsystemFilters"`
-	IsUpdateEnabled           *bool             `json:"IsUpdateEnabled"`
-	IsSSCMEnabled             *bool             `json:"IsSSCMEnabled"`
-	AutoRestartServerTimer    string            `json:"AutoRestartServerTimer"`
-	AllowPrereleaseUpdates    *bool             `json:"AllowPrereleaseUpdates"`
-	AllowMajorUpdates         *bool             `json:"AllowMajorUpdates"`
-	IsConsoleEnabled          *bool             `json:"IsConsoleEnabled"`
-	LanguageSetting           string            `json:"LanguageSetting"`
-	AutoStartServerOnStartup  *bool             `json:"AutoStartServerOnStartup"`
-	SSUIIdentifier            string            `json:"SSUIIdentifier"`
-	SSUIWebPort               string            `json:"SSUIWebPort"`
+	// reordered in 5.6.4 to simplify the order of the config file.
+
+	// Gameserver Settings
+	GameBranch       string `json:"gameBranch"`
+	Difficulty       string `json:"Difficulty"`
+	StartCondition   string `json:"StartCondition"`
+	StartLocation    string `json:"StartLocation"`
+	ServerName       string `json:"ServerName"`
+	SaveInfo         string `json:"SaveInfo"`
+	ServerMaxPlayers string `json:"ServerMaxPlayers"`
+	ServerPassword   string `json:"ServerPassword"`
+	ServerAuthSecret string `json:"ServerAuthSecret"`
+	AdminPassword    string `json:"AdminPassword"`
+	GamePort         string `json:"GamePort"`
+	UpdatePort       string `json:"UpdatePort"`
+	UPNPEnabled      *bool  `json:"UPNPEnabled"`
+	AutoSave         *bool  `json:"AutoSave"`
+	SaveInterval     string `json:"SaveInterval"`
+	AutoPauseServer  *bool  `json:"AutoPauseServer"`
+	LocalIpAddress   string `json:"LocalIpAddress"`
+	StartLocalHost   *bool  `json:"StartLocalHost"`
+	ServerVisible    *bool  `json:"ServerVisible"`
+	UseSteamP2P      *bool  `json:"UseSteamP2P"`
+	AdditionalParams string `json:"AdditionalParams"`
+
+	// Logging and debug settings
+	Debug             *bool    `json:"Debug"`
+	CreateSSUILogFile *bool    `json:"CreateSSUILogFile"`
+	LogLevel          int      `json:"LogLevel"`
+	SubsystemFilters  []string `json:"subsystemFilters"`
+
+	// Authentication Settings
+	Users             map[string]string `json:"users"`       // Map of username to hashed password
+	AuthEnabled       *bool             `json:"authEnabled"` // Toggle for enabling/disabling auth
+	JwtKey            string            `json:"JwtKey"`
+	AuthTokenLifetime int               `json:"AuthTokenLifetime"`
+
+	// SSUI Settings
+	IsNewTerrainAndSaveSystem *bool  `json:"IsNewTerrainAndSaveSystem"` // Use new terrain and save system
+	ExePath                   string `json:"ExePath"`
+	LogClutterToConsole       *bool  `json:"LogClutterToConsole"`
+	IsUpdateEnabled           *bool  `json:"IsUpdateEnabled"`
+	IsSSCMEnabled             *bool  `json:"IsSSCMEnabled"`
+	AutoRestartServerTimer    string `json:"AutoRestartServerTimer"`
+	IsConsoleEnabled          *bool  `json:"IsConsoleEnabled"`
+	LanguageSetting           string `json:"LanguageSetting"`
+	AutoStartServerOnStartup  *bool  `json:"AutoStartServerOnStartup"`
+	SSUIIdentifier            string `json:"SSUIIdentifier"`
+	SSUIWebPort               string `json:"SSUIWebPort"`
+
+	// Update Settings
+	AllowPrereleaseUpdates *bool `json:"AllowPrereleaseUpdates"`
+	AllowMajorUpdates      *bool `json:"AllowMajorUpdates"`
+
+	// Discord Settings
+	DiscordToken            string `json:"discordToken"`
+	ControlChannelID        string `json:"controlChannelID"`
+	StatusChannelID         string `json:"statusChannelID"`
+	ConnectionListChannelID string `json:"connectionListChannelID"`
+	LogChannelID            string `json:"logChannelID"`
+	SaveChannelID           string `json:"saveChannelID"`
+	ControlPanelChannelID   string `json:"controlPanelChannelID"`
+	DiscordCharBufferSize   int    `json:"DiscordCharBufferSize"`
+	BlackListFilePath       string `json:"blackListFilePath"`
+	IsDiscordEnabled        *bool  `json:"isDiscordEnabled"`
+	ErrorChannelID          string `json:"errorChannelID"`
+
+	//Backup Settings
+	BackupKeepLastN       int   `json:"backupKeepLastN"`       // Number of most recent backups to keep (default: 2000)
+	IsCleanupEnabled      *bool `json:"isCleanupEnabled"`      // Enable automatic cleanup of backups (default: false)
+	BackupKeepDailyFor    int   `json:"backupKeepDailyFor"`    // Retention period in hours for daily backups
+	BackupKeepWeeklyFor   int   `json:"backupKeepWeeklyFor"`   // Retention period in hours for weekly backups
+	BackupKeepMonthlyFor  int   `json:"backupKeepMonthlyFor"`  // Retention period in hours for monthly backups
+	BackupCleanupInterval int   `json:"backupCleanupInterval"` // Hours between backup cleanup operations
+	BackupWaitTime        int   `json:"backupWaitTime"`        // Seconds to wait before copying backups
 }
 
 // LoadConfig loads and initializes the configuration
