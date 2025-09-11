@@ -2,6 +2,7 @@ package discordbot
 
 import (
 	"strings"
+	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 
@@ -149,29 +150,6 @@ func sendMessageToErrorChannel(message string) []*discordgo.Message {
 	return sentMessages
 }
 
-func sendControlPanel() {
-	if !config.GetIsDiscordEnabled() {
-		return
-	}
-	messageContent := "Control Panel:\n\nReact with the following to perform actions:\n" +
-		"▶️ Start the server\n\n" +
-		"⏹️ Stop the server\n\n" +
-		"♻️ Restart the server\n\n"
-
-	msg, err := config.DiscordSession.ChannelMessageSend(config.GetControlPanelChannelID(), messageContent)
-	if err != nil {
-		logger.Discord.Error("Error sending control panel: " + err.Error())
-		return
-	}
-
-	// Add reactions (acting as buttons) to the control message
-	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "▶️") // Start
-	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "⏹️") // Stop
-	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "♻️") // Restart
-	ControlMessageID = msg.ID
-	clearMessagesAboveLastN(config.GetControlPanelChannelID(), 1) // Clear all old control panel messages
-}
-
 // This function is used to clear messages above the last N messages in a channel. If you call this with 5, it will clear all messages in the channel besides the most recent 5.
 func clearMessagesAboveLastN(channelID string, keep int) {
 	go func() {
@@ -198,6 +176,25 @@ func clearMessagesAboveLastN(channelID string, keep int) {
 					logger.Discord.Error("Error deleting message " + message.ID + " in channel " + channelID + ": " + err.Error())
 				}
 			}
+		}
+	}()
+}
+
+// sendTemporaryMessage sends a message to the specified channel and deletes it after the given duration.
+func sendTemporaryMessage(s *discordgo.Session, channelID, message string, duration time.Duration) {
+	// Send the message
+	msg, err := s.ChannelMessageSend(channelID, message)
+	if err != nil {
+		logger.Discord.Error("Error sending temporary message: " + err.Error())
+		return
+	}
+
+	// Schedule deletion after the specified duration
+	go func() {
+		time.Sleep(duration)
+		err := s.ChannelMessageDelete(channelID, msg.ID)
+		if err != nil {
+			logger.Discord.Error("Error deleting temporary message: " + err.Error())
 		}
 	}()
 }

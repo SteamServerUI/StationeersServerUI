@@ -33,60 +33,6 @@ func listenToDiscordReactions(s *discordgo.Session, r *discordgo.MessageReaction
 	// Optionally, we could add more message-specific handlers here for other features
 }
 
-func handleControlReactions(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
-	// handleControlReactions - Handles reactions for server control actions
-	var actionMessage string
-
-	switch r.Emoji.Name {
-	case "▶️": // Start action
-		gamemgr.InternalStartServer()
-		actionMessage = "🕛Server is Starting..."
-	case "⏹️": // Stop action
-		gamemgr.InternalStopServer()
-		actionMessage = "🛑Server is Stopping..."
-	case "♻️": // Restart action
-		actionMessage = "♻️Server is restarting..."
-		go func() {
-			// Perform stop operation
-			gamemgr.InternalStopServer()
-
-			// Non-blocking delay using channel and goroutine
-			delayChan := make(chan bool)
-			go func() {
-				time.Sleep(5 * time.Second)
-				delayChan <- true
-			}()
-
-			// Wait for delay to complete
-			<-delayChan
-
-			// Start server after delay
-			gamemgr.InternalStartServer()
-		}()
-
-	default:
-		logger.Discord.Debug("Unknown reaction: " + r.Emoji.Name)
-		return
-	}
-
-	// Get the user who triggered the action
-	user, err := s.User(r.UserID)
-	if err != nil {
-		logger.Discord.Error("Error fetching user details: " + err.Error())
-		return
-	}
-	username := user.Username
-
-	// Send the action message to the control channel
-	SendMessageToStatusChannel(fmt.Sprintf("%s triggered by %s.", actionMessage, username))
-
-	// Remove the reaction after processing
-	err = s.MessageReactionRemove(config.GetControlPanelChannelID(), r.MessageID, r.Emoji.APIName(), r.UserID)
-	if err != nil {
-		logger.Discord.Error("Error removing reaction: " + err.Error())
-	}
-}
-
 // v4 FIXED, Unused in v4.3
 func handleExceptionReactions(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	var actionMessage string
