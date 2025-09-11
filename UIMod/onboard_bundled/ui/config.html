@@ -240,6 +240,15 @@
                                     </select>
                                     <div class="input-info">{{.UIText_AutoStartServerOnStartupInfo}}</div>
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="AllowAutoGameServerUpdates">{{.UIText_AllowAutoGameServerUpdates}}:</label>
+                                    <select id="AllowAutoGameServerUpdates" name="AllowAutoGameServerUpdates" required>
+                                        <option value="true" {{.AllowAutoGameServerUpdatesTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.AllowAutoGameServerUpdatesFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_AllowAutoGameServerUpdatesInfo}}</div>
+                                </div>
                                 
                             </div>
                         </div>

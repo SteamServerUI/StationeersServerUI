@@ -29,10 +29,6 @@ const (
 // InstallAndRunSteamCMD installs and runs SteamCMD based on the platform (Windows/Linux).
 // It returns the exit status of the SteamCMD execution and any error encountered.
 func InstallAndRunSteamCMD() (int, error) {
-	if config.GetBranch() == "indev-no-steamcmd" || config.GetIsDebugMode() {
-		logger.Install.Info("🔍 Detected indev-no-steamcmd branch or debug=true, skipping SteamCMD run")
-		return 0, nil
-	}
 
 	if runtime.GOOS == "windows" {
 		return installSteamCMDWindows()

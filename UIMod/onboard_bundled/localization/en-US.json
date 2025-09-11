@@ -75,7 +75,9 @@
         "UIText_AutoRestartServerTimer": "Scheduled Gameserver Restart",
         "UIText_AutoRestartServerTimerInfo": "<p>Timeframe in <strong>minutes</strong> or <strong>time format (e.g., 15:04 or 03:04PM)</strong> to schedule an automatic gameserver restart. 0 = disabled, 1440 = 24 hours, etc. You will see 'Attention, server is restarting in 30/20/10/5 seconds!' messages <strong>ingame</strong> before the restart.</p>",
         "UIText_GameBranch": "Game Branch",
-        "UIText_GameBranchInfo": "Branch of the game to use. When changed, requires to restart SSUI!"
+        "UIText_GameBranchInfo": "Branch of the game to use. When changed, requires to restart SSUI!",
+        "UIText_AllowAutoGameServerUpdates": "Enable Auto Game Server Updates",
+        "UIText_AllowAutoGameServerUpdatesInfo": "Allow the gameserver to automatically query for and update to the latest version. Attention: Restarts the server when a new version was found and installed."
       },
       "beta": {
         "UIText_BetaOnlySettings": "BETA ONLY: NEW TERRAIN AND SAVE SYSTEM SETTINGS",

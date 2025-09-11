@@ -104,11 +104,12 @@ var (
 	SSUIWebPort       string
 )
 
-// SSUI Updates
+// SSUI Updates and Game Server Updates
 var (
-	IsUpdateEnabled        bool
-	AllowPrereleaseUpdates bool
-	AllowMajorUpdates      bool
+	IsUpdateEnabled            bool
+	AllowPrereleaseUpdates     bool
+	AllowMajorUpdates          bool
+	AllowAutoGameServerUpdates bool
 )
 
 // SSCM (Stationeers Server Command Manager) settings

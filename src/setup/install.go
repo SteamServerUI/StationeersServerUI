@@ -41,7 +41,9 @@ func Install(wg *sync.WaitGroup) {
 	logger.Install.Info("✅Blacklist.txt verified or created.")
 	// Step 3: Install and run SteamCMD
 	logger.Install.Info("🔄Installing and running SteamCMD...")
-	InstallAndRunSteamCMD()
+	if config.GetBranch() != "indev-no-steamcmd" {
+		InstallAndRunSteamCMD()
+	}
 	initAppInfoPoller() // init the steamcmd app info poll check to check for new gameserver updates
 	logger.Install.Info("✅Setup complete!")
 }

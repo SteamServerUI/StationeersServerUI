@@ -638,3 +638,11 @@ func SetIsConsoleEnabled(value bool) error {
 	IsConsoleEnabled = value
 	return safeSaveConfig()
 }
+
+func SetAllowAutoGameServerUpdates(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	AllowAutoGameServerUpdates = value
+	return safeSaveConfig()
+}

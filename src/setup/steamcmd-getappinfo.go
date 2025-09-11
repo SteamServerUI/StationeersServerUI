@@ -87,7 +87,7 @@ func getAppInfo() error {
 	if buildID, ok := branches[currentBranch]; ok {
 		if config.GetCurrentBranchBuildID() != "" && config.GetCurrentBranchBuildID() != buildID {
 			logger.Install.Info("❗New gameserver update detected!")
-			if config.GetIsUpdateEnabled() {
+			if config.GetAllowAutoGameServerUpdates() {
 				logger.Install.Info("🔍 Updating gameserver via SteamCMD...")
 				if gamemgr.InternalIsServerRunning() {
 					gamemgr.InternalStopServer()
