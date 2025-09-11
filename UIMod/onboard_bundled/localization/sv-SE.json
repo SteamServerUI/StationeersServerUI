@@ -57,7 +57,7 @@
         "UIText_LocalIpAddress": "Lokal IP-adress",
         "UIText_LocalIpAddressInfo": "IP-adress att binda till",
         "UIText_StartLocalHost": "Starta lokal värd",
-        "UIText_StartLocalHostInfo": "Sätt till TRUE för att endast lyssna på lokalt nätverk",
+        "UIText_StartLocalHostInfo": "Sätt till TRUE. Detta är nödvändigt för att servern ska fungera.",
         "UIText_ServerVisible": "Server synlig",
         "UIText_ServerVisibleInfo": "Sätt till TRUE för att visa servern offentligt",
         "UIText_UseSteamP2P": "Använd Steam P2P",

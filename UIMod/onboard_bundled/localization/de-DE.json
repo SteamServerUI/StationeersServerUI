@@ -57,7 +57,7 @@
         "UIText_LocalIpAddress": "Lokale IP Adresse",
         "UIText_LocalIpAddressInfo": "IP Adresse zum Binden",
         "UIText_StartLocalHost": "Lokalen Host Starten",
-        "UIText_StartLocalHostInfo": "Auf TRUE setzen um nur im lokalen Netzwerk zu hören",
+        "UIText_StartLocalHostInfo": "Auf TRUE setzen. Dies ist erforderlich für den Server um zu funktionieren.",
         "UIText_ServerVisible": "Server Sichtbar",
         "UIText_ServerVisibleInfo": "Auf TRUE setzen um Server öffentlich zu listen",
         "UIText_UseSteamP2P": "Steam P2P Nutzen",
