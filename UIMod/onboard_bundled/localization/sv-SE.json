@@ -75,7 +75,9 @@
         "UIText_AutoRestartServerTimer": "Schemalagd spelserveromstart",
         "UIText_AutoRestartServerTimerInfo": "Tidsram i <strong>minuter</strong> för att schemalägga en automatisk spelserveromstart. 0 = inaktiverad, 1440 = 24 timmar, osv. Om SSCM är aktiverat visas meddelanden som \"Varning, servern startar om om 30/20/10/5 sekunder!\" <strong>i spelet</strong> före omstart.",
         "UIText_GameBranch": "Spelgren",
-        "UIText_GameBranchInfo": "Spelgren att använda. Vid ändring krävs omstart av SSUI!"
+        "UIText_GameBranchInfo": "Spelgren att använda. Vid ändring krävs omstart av SSUI!",
+        "UIText_AllowAutoGameServerUpdates": "Aktivera automatiska uppdateringar av spelservern",
+        "UIText_AllowAutoGameServerUpdatesInfo": "Tillåt spelservern att automatiskt söka efter och uppdatera till den senaste versionen. Obs! Servern startas om när en ny version har hittats och installerats. Flera varningsmeddelanden skickas till servern med SAY-kommandon 60–10 sekunder före omstarten."
       },
       "beta": {
         "UIText_BetaOnlySettings": "ENDAST BETA: INSTÄLLNINGAR FÖR NYTT TERRÄNG- OCH SPARSYSTEM",

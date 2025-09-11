@@ -77,7 +77,7 @@
         "UIText_GameBranch": "Game Branch",
         "UIText_GameBranchInfo": "Branch of the game to use. When changed, requires to restart SSUI!",
         "UIText_AllowAutoGameServerUpdates": "Enable Auto Game Server Updates",
-        "UIText_AllowAutoGameServerUpdatesInfo": "Allow the gameserver to automatically query for and update to the latest version. Attention: Restarts the server when a new version was found and installed."
+        "UIText_AllowAutoGameServerUpdatesInfo": "Allow the gameserver to automatically query for and update to the latest version. Attention: Restarts the server when a new version was found and installed. Will send multiple warning messages to the sever with SAY commands 60-10 seconds before the restart."
       },
       "beta": {
         "UIText_BetaOnlySettings": "BETA ONLY: NEW TERRAIN AND SAVE SYSTEM SETTINGS",

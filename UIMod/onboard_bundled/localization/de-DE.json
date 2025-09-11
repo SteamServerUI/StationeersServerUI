@@ -89,7 +89,10 @@
         "UIText_StartLocation": "Startort",
         "UIText_StartLocationInfo": "Startort für Welterstellung. Standard DefaultStartLocation wenn leer.",
         "UIText_AutoStartServerOnStartup": "Server Auto-Start beim Hochfahren",
-        "UIText_AutoStartServerOnStartupInfo": "Gameserver automatisch starten wenn SSUI gestartet wird. Standard false."
+        "UIText_AutoStartServerOnStartupInfo": "Gameserver automatisch starten wenn SSUI gestartet wird. Standard false.",
+        "UIText_AllowAutoGameServerUpdates": "Automatische Spielserver-Updates aktivieren",
+        "UIText_AllowAutoGameServerUpdatesInfo": "Erlaubt dem Spielserver, automatisch nach der neuesten Version zu suchen und diese zu installieren. Achtung: Der Server wird neu gestartet, wenn eine neue Version gefunden und installiert wurde. 60 bis 10 Sekunden vor dem Neustart werden mehrere Warnmeldungen mit SAY-Befehlen an den Server gesendet."
+        
       },
       "discord": {
         "UIText_DiscordIntegrationTitle": "Discord Integration Vorteile",
