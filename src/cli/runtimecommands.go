@@ -191,12 +191,6 @@ func deleteConfig() {
 }
 
 func runSteamCMD() {
-	if gamemgr.InternalIsServerRunning() {
-		logger.Core.Warn("Server is running, stopping server first...")
-		gamemgr.InternalStopServer()
-		time.Sleep(10000 * time.Millisecond)
-	}
-	logger.Core.Info("Running SteamCMD")
 	steamcmd.InstallAndRunSteamCMD()
 }
 

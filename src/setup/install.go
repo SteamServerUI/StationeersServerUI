@@ -33,9 +33,9 @@ func Install(wg *sync.WaitGroup) {
 	}
 
 	// Step 1: Check and download the UIMod folder contents
-	logger.Install.Info("🔄Checking UIMod folder...")
+	logger.Install.Debug("🔄Checking UIMod folder...")
 	CheckAndDownloadUIMod()
-	logger.Install.Info("✅UIMod folder setup complete.")
+	logger.Install.Debug("✅UIMod folder setup complete.")
 	// Step 2: Check for Blacklist.txt and create it if it doesn't exist
 	logger.Install.Info("🔄Checking for Blacklist.txt...")
 	checkAndCreateBlacklist()

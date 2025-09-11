@@ -116,11 +116,6 @@ func handleUpdate(s *discordgo.Session, i *discordgo.InteractionCreate, data Emb
 	data.Description = "Gameserver update completed."
 	data.Color = 0x00FF00 // Green for completion (will adjust if error)
 
-	if gamemgr.InternalIsServerRunning() {
-		gamemgr.InternalStopServer()
-		time.Sleep(10 * time.Second) // Wait for server to stop
-	}
-
 	_, err = steamcmd.InstallAndRunSteamCMD()
 
 	data.Fields = []EmbedField{

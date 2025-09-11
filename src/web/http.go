@@ -137,11 +137,6 @@ func HandleRunSteamCMD(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if gamemgr.InternalIsServerRunning() {
-		logger.Core.Warn("Server is running, stopping server first...")
-		gamemgr.InternalStopServer()
-		time.Sleep(10000 * time.Millisecond)
-	}
 	logger.Core.Info("Running SteamCMD")
 	_, err := steamcmd.InstallAndRunSteamCMD()
 
