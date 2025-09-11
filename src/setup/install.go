@@ -42,6 +42,7 @@ func Install(wg *sync.WaitGroup) {
 	// Step 3: Install and run SteamCMD
 	logger.Install.Info("🔄Installing and running SteamCMD...")
 	InstallAndRunSteamCMD()
+	initAppInfoPoller() // init the steamcmd app info poll check to check for new gameserver updates
 	logger.Install.Info("✅Setup complete!")
 }
 

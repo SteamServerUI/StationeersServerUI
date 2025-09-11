@@ -30,6 +30,14 @@ func SetIsSSCMEnabled(value bool) error {
 	return safeSaveConfig()
 }
 
+func SetCurrentBranchBuildID(value string) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	CurrentBranchBuildID = value
+	return nil
+}
+
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT

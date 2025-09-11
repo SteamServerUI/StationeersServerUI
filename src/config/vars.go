@@ -61,6 +61,7 @@ var (
 	LanguageSetting          string
 	AutoStartServerOnStartup bool
 	SSUIIdentifier           string
+	CurrentBranchBuildID     string // ONLY RUNTIME
 )
 
 // Discord integration
