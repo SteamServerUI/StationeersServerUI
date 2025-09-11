@@ -1,4 +1,4 @@
-package setup
+package steamcmd
 
 import (
 	"fmt"
@@ -30,11 +30,12 @@ const (
 // It returns the exit status of the SteamCMD execution and any error encountered.
 func InstallAndRunSteamCMD() (int, error) {
 
-	if runtime.GOOS == "windows" {
+	switch runtime.GOOS {
+	case "windows":
 		return installSteamCMDWindows()
-	} else if runtime.GOOS == "linux" {
+	case "linux":
 		return installSteamCMDLinux()
-	} else {
+	default:
 		err := fmt.Errorf("SteamCMD installation is not supported on this OS")
 		logger.Install.Error("❌ " + err.Error() + "\n")
 		return -1, err
@@ -103,7 +104,7 @@ func installSteamCMDLinux() (int, error) {
 
 // installSteamCMDWindows downloads and installs SteamCMD on Windows.
 func installSteamCMDWindows() (int, error) {
-	return installSteamCMD("Windows", SteamCMDWindowsDir, SteamCMDWindowsURL, unzip)
+	return installSteamCMD("Windows", SteamCMDWindowsDir, SteamCMDWindowsURL, Unzip)
 }
 
 // runSteamCMD runs the SteamCMD command to update the game and returns its exit status and any error.

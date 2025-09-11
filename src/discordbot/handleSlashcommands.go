@@ -12,7 +12,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -121,7 +121,7 @@ func handleUpdate(s *discordgo.Session, i *discordgo.InteractionCreate, data Emb
 		time.Sleep(10 * time.Second) // Wait for server to stop
 	}
 
-	_, err = setup.InstallAndRunSteamCMD()
+	_, err = steamcmd.InstallAndRunSteamCMD()
 
 	data.Fields = []EmbedField{
 		{Name: "Update Status:", Value: map[bool]string{true: "🟢 Success", false: "🔴 Failed"}[err == nil], Inline: true},

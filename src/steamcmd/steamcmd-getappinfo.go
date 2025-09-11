@@ -1,4 +1,4 @@
-package setup
+package steamcmd
 
 import (
 	"bytes"
@@ -22,7 +22,7 @@ var (
 	branchesLock sync.RWMutex // Protects branches map for concurrent access
 )
 
-func initAppInfoPoller() {
+func InitAppInfoPoller() {
 	go func() {
 		for {
 			err := getAppInfo()

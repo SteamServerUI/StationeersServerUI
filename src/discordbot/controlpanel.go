@@ -7,7 +7,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -113,7 +113,7 @@ func handleControlReactions(s *discordgo.Session, r *discordgo.MessageReactionAd
 			// Wait for delay to complete
 			<-delayChan
 
-			_, err := setup.InstallAndRunSteamCMD()
+			_, err := steamcmd.InstallAndRunSteamCMD()
 
 			Value := map[bool]string{true: "🟢 Success", false: "🔴 Failed"}[err == nil]
 			SendMessageToStatusChannel(fmt.Sprintf("SteamCMD Update status: %s", Value))

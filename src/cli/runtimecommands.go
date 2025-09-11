@@ -23,7 +23,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
 
 // ANSI escape codes for green text and reset
@@ -197,7 +197,7 @@ func runSteamCMD() {
 		time.Sleep(10000 * time.Millisecond)
 	}
 	logger.Core.Info("Running SteamCMD")
-	setup.InstallAndRunSteamCMD()
+	steamcmd.InstallAndRunSteamCMD()
 }
 
 func testLocalization() {

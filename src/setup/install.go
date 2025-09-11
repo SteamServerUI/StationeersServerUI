@@ -17,6 +17,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
 
 var downloadBranch string // Holds the branch to download from
@@ -42,9 +43,9 @@ func Install(wg *sync.WaitGroup) {
 	// Step 3: Install and run SteamCMD
 	logger.Install.Info("🔄Installing and running SteamCMD...")
 	if config.GetBranch() != "indev-no-steamcmd" {
-		InstallAndRunSteamCMD()
+		steamcmd.InstallAndRunSteamCMD()
 	}
-	initAppInfoPoller() // init the steamcmd app info poll check to check for new gameserver updates
+	steamcmd.InitAppInfoPoller() // init the steamcmd app info poll check to check for new gameserver updates
 	logger.Install.Info("✅Setup complete!")
 }
 

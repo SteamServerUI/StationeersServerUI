@@ -1,4 +1,4 @@
-package setup
+package steamcmd
 
 import (
 	"archive/tar"
@@ -181,7 +181,7 @@ func untar(dest string, r io.Reader) error {
 }
 
 // unzip extracts a zip archive.
-func unzip(zipReader io.ReaderAt, size int64, dest string) error {
+func Unzip(zipReader io.ReaderAt, size int64, dest string) error {
 	reader, err := zip.NewReader(zipReader, size)
 	if err != nil {
 		return fmt.Errorf("failed to create zip reader: %w", err)
