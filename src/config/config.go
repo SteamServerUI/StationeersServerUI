@@ -11,8 +11,8 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.6.3"
-	Branch  = "indev-no-steamcmd"
+	Version = "5.6.4"
+	Branch  = "release"
 )
 
 /*
