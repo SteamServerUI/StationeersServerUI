@@ -15,6 +15,13 @@ var (
 	Branch  = "indev-no-steamcmd"
 )
 
+/*
+If you read this, you are likely a developer. I sincerly apologize for the way the config works.
+While I would love to refactor the config to not write to file then read the file every time a config value is changed,
+I have not found the time to do so. So, for now, we save to file, then read the file and rely on whatever the file says. Although this is not ideal, it works for now. Deal with it.
+JacksonTheMaster
+*/
+
 type JsonConfig struct {
 	// reordered in 5.6.4 to simplify the order of the config file.
 
