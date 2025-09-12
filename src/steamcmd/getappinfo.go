@@ -64,6 +64,10 @@ func AppInfoPoller() {
 // getAppInfo fetches the branches and their build IDs for the specified app ID using SteamCMD
 // and stores them in the package-level branches map.
 func getAppInfo() error {
+	steamMu.Lock()
+	logger.Core.Debug("🔄 Locking SteamMu...")
+	defer steamMu.Unlock()
+	defer logger.Core.Debug("🔄 Unlocking SteamMu...")
 	steamcmddir := SteamCMDLinuxDir
 	executable := "steamcmd.sh"
 	appid := config.GetGameServerAppID()

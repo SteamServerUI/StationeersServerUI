@@ -8,12 +8,15 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 )
+
+var steamMu sync.Mutex
 
 // ExtractorFunc is a type that represents a function for extracting archives.
 // It takes an io.ReaderAt, the size of the content, and the destination directory.
@@ -54,6 +57,10 @@ func InstallAndRunSteamCMD() (int, error) {
 
 // runSteamCMD runs the SteamCMD command to update the game and returns its exit status and any error.
 func runSteamCMD(steamCMDDir string) (int, error) {
+	steamMu.Lock()
+	logger.Core.Debug("🔄 Locking SteamMu...")
+	defer steamMu.Unlock()
+	defer logger.Core.Debug("🔄 Unlocking SteamMu...")
 	currentDir, err := os.Getwd()
 	if err != nil {
 		logger.Install.Error("❌ Error getting current working directory: " + err.Error() + "\n")
