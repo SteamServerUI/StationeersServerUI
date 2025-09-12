@@ -172,7 +172,7 @@
       "UIText_NewTerrainAndSaveSystem_Title": "IMPORTANT",
       "UIText_NewTerrainAndSaveSystem_HeaderTitle": "Select Terrain System",
       "UIText_NewTerrainAndSaveSystem_StepMessage": "Just switched to Beta? If yes, enable handling of the new terrain and save system here. Enter 'yes' to enable or 'no' to use the old system.",
-      "UIText_NewTerrainAndSaveSystem_PrimaryPlaceholder": "yes/no",
+      "UIText_NewTerrainAndSaveSystem_PrimaryPlaceholder": "no",
       "UIText_NewTerrainAndSaveSystem_PrimaryLabel": "Enable new System",
       "UIText_NewTerrainAndSaveSystem_SubmitButton": "Save & Continue",
       "UIText_NewTerrainAndSaveSystem_SkipButton": "Skip",
