@@ -161,6 +161,7 @@ func init() {
 	RegisterCommand("supportmode", WrapNoReturn(supportMode), "sm")
 	RegisterCommand("supportpackage", WrapNoReturn(supportPackage), "sp")
 	RegisterCommand("getbuildid", WrapNoReturn(getBuildID), "gbid")
+	RegisterCommand("printconfig", WrapNoReturn(printConfig), "pc")
 }
 
 func startServer() {
@@ -193,6 +194,10 @@ func deleteConfig() {
 
 func runSteamCMD() {
 	steamcmd.InstallAndRunSteamCMD()
+}
+
+func printConfig() {
+	loader.PrintConfigDetails("Info")
 }
 
 func getBuildID() {

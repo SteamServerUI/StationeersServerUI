@@ -8,15 +8,25 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
-func PrintConfigDetails() {
+func PrintConfigDetails(logLevel ...string) {
 	logger.Config.Debug("=== Game Server Configuration Details ===")
 
 	// Helper function to print sections
 	printSection := func(title string, fields map[string]string) {
-		logger.Config.Debug(fmt.Sprintf("\n%s", title))
-		logger.Config.Debug(strings.Repeat("-", len(title)))
-		for key, value := range fields {
-			logger.Config.Debug(fmt.Sprintf("%-30s: %s", key, value))
+
+		if logLevel == nil {
+			logger.Config.Debug(fmt.Sprintf("\n%s", title))
+			logger.Config.Debug(strings.Repeat("-", len(title)))
+			for key, value := range fields {
+				logger.Config.Debug(fmt.Sprintf("%-30s: %s", key, value))
+			}
+		}
+		if len(logLevel) > 0 && logLevel[0] == "Info" {
+			logger.Config.Info(fmt.Sprintf("\n%s", title))
+			logger.Config.Info(strings.Repeat("-", len(title)))
+			for key, value := range fields {
+				logger.Config.Info(fmt.Sprintf("%-30s: %s", key, value))
+			}
 		}
 	}
 
@@ -112,6 +122,8 @@ func PrintConfigDetails() {
 		"AllowPrereleaseUpdates": fmt.Sprintf("%v", config.GetAllowPrereleaseUpdates()),
 		"AllowMajorUpdates":      fmt.Sprintf("%v", config.GetAllowMajorUpdates()),
 		"AutoRestartServerTimer": config.GetAutoRestartServerTimer(),
+		"AutoGameServerUpdates":  fmt.Sprintf("%v", config.GetAllowAutoGameServerUpdates()),
+		"CurrentBranchBuildID":   config.GetCurrentBranchBuildID(),
 	}
 	printSection("Updater Configuration", updater)
 
