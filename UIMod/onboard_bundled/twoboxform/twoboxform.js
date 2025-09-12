@@ -135,6 +135,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 body = JSON.stringify({
                     [configField]: booleanToConfig(document.getElementById('primary-field').value)
                 });
+                
+            } else if (configField === "SaveInfo") {
+                const primaryValue = document.getElementById('primary-field').value.trim();
+                const secondaryValue = document.getElementById('secondary-field').value.trim();
+                const joinedValue = `${primaryValue} ${secondaryValue}`;
+                console.log(joinedValue);
+                body = JSON.stringify({
+                    [configField]: joinedValue
+                });
             } else {
                 body = JSON.stringify({
                     [configField]: document.getElementById('primary-field').value
