@@ -46,6 +46,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		NextStep                 string
 		PrimaryPlaceholderText   string
 		SecondaryPlaceholderText string
+		Steps                    []Step
 	}
 
 	twoboxformAssetsFS, err := fs.Sub(config.GetV1UIFS(), "UIMod/onboard_bundled/twoboxform")
@@ -73,7 +74,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		"welcome": {
 			ID:                 "welcome",
 			Title:              localization.GetString("UIText_Welcome_Title"),
-			HeaderTitle:        "",
+			HeaderTitle:        localization.GetString("UIText_Welcome_HeaderTitle"),
 			StepMessage:        "",
 			PrimaryLabel:       "",
 			SecondaryLabel:     "",
@@ -178,119 +179,6 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			ConfigField:            "IsNewTerrainAndSaveSystem",
 			NextStep:               "network_config_choice",
 		},
-		"discord_enabled": {
-			ID:                     "discord_enabled",
-			Title:                  localization.GetString("UIText_DiscordEnabled_Title"),
-			HeaderTitle:            localization.GetString("UIText_DiscordEnabled_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_DiscordEnabled_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_DiscordEnabled_PrimaryPlaceholder"),
-			PrimaryLabel:           localization.GetString("UIText_DiscordEnabled_PrimaryLabel"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_DiscordEnabled_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_DiscordEnabled_SkipButton"),
-			ConfigField:            "isDiscordEnabled", // We'll handle the boolean conversion in JS
-			NextStep:               "discord_token",    // Default next step if enabled
-			// The actual next step will be determined by JS based on the answer
-		},
-		"discord_token": {
-			ID:                     "discord_token",
-			Title:                  localization.GetString("UIText_DiscordToken_Title"),
-			HeaderTitle:            localization.GetString("UIText_DiscordToken_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_DiscordToken_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_DiscordToken_PrimaryPlaceholder"),
-			PrimaryLabel:           localization.GetString("UIText_DiscordToken_PrimaryLabel"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_DiscordToken_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_DiscordToken_SkipButton"),
-			ConfigField:            "discordToken",
-			NextStep:               "control_panel_channel",
-		},
-		"control_panel_channel": {
-			ID:                     "control_panel_channel",
-			Title:                  localization.GetString("UIText_ControlPanelChannel_Title"),
-			HeaderTitle:            localization.GetString("UIText_ControlPanelChannel_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_ControlPanelChannel_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_ControlPanelChannel_PrimaryPlaceholder"),
-			PrimaryLabel:           localization.GetString("UIText_ControlPanelChannel_PrimaryLabel"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_ControlPanelChannel_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_ControlPanelChannel_SkipButton"),
-			ConfigField:            "controlPanelChannelID",
-			NextStep:               "save_channel",
-		},
-		"save_channel": {
-			ID:                     "save_channel",
-			Title:                  localization.GetString("UIText_SaveChannel_Title"),
-			HeaderTitle:            localization.GetString("UIText_SaveChannel_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_SaveChannel_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_SaveChannel_PrimaryPlaceholder"),
-			PrimaryLabel:           localization.GetString("UIText_SaveChannel_PrimaryLabel"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_SaveChannel_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_SaveChannel_SkipButton"),
-			ConfigField:            "saveChannelID",
-			NextStep:               "log_channel",
-		},
-		"log_channel": {
-			ID:                     "log_channel",
-			Title:                  localization.GetString("UIText_LogChannel_Title"),
-			HeaderTitle:            localization.GetString("UIText_LogChannel_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_LogChannel_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_LogChannel_PrimaryPlaceholder"),
-			PrimaryLabel:           localization.GetString("UIText_LogChannel_PrimaryLabel"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_LogChannel_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_LogChannel_SkipButton"),
-			ConfigField:            "logChannelID",
-			NextStep:               "connection_list_channel",
-		},
-		"connection_list_channel": {
-			ID:                     "connection_list_channel",
-			Title:                  localization.GetString("UIText_ConnectionListChannel_Title"),
-			HeaderTitle:            localization.GetString("UIText_ConnectionListChannel_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_ConnectionListChannel_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_ConnectionListChannel_PrimaryPlaceholder"),
-			PrimaryLabel:           localization.GetString("UIText_ConnectionListChannel_PrimaryLabel"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_ConnectionListChannel_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_ConnectionListChannel_SkipButton"),
-			ConfigField:            "connectionListChannelID",
-			NextStep:               "status_channel",
-		},
-		"status_channel": {
-			ID:                     "status_channel",
-			Title:                  localization.GetString("UIText_StatusChannel_Title"),
-			HeaderTitle:            localization.GetString("UIText_StatusChannel_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_StatusChannel_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_StatusChannel_PrimaryPlaceholder"),
-			PrimaryLabel:           localization.GetString("UIText_StatusChannel_PrimaryLabel"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_StatusChannel_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_StatusChannel_SkipButton"),
-			ConfigField:            "statusChannelID",
-			NextStep:               "control_channel",
-		},
-		"control_channel": {
-			ID:                     "control_channel",
-			Title:                  localization.GetString("UIText_ControlChannel_Title"),
-			HeaderTitle:            localization.GetString("UIText_ControlChannel_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_ControlChannel_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_ControlChannel_PrimaryPlaceholder"),
-			PrimaryLabel:           localization.GetString("UIText_ControlChannel_PrimaryLabel"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_ControlChannel_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_ControlChannel_SkipButton"),
-			ConfigField:            "controlChannelID",
-			NextStep:               "network_config_choice",
-		},
 		"network_config_choice": {
 			ID:                     "network_config_choice",
 			Title:                  localization.GetString("UIText_NetworkConfigChoice_Title"),
@@ -378,24 +266,10 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			ConfigField:              "",
 			NextStep:                 "finalize",
 		},
-		"sscm": {
-			ID:                     "sscm",
-			Title:                  localization.GetString("UIText_SSCM_Title"),
-			HeaderTitle:            localization.GetString("UIText_SSCM_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_SSCM_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_SSCM_PrimaryPlaceholder"),
-			PrimaryLabel:           localization.GetString("UIText_SSCM_PrimaryLabel"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_SSCM_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_SSCM_SkipButton"),
-			ConfigField:            "IsSSCMEnabled",
-			NextStep:               "finalize",
-		},
 		"finalize": {
 			ID:               "finalize",
 			Title:            localization.GetString("UIText_Finalize_Title"),
-			HeaderTitle:      "",
+			HeaderTitle:      localization.GetString("UIText_Finalize_HeaderTitle"),
 			StepMessage:      localization.GetString("UIText_Finalize_StepMessage"),
 			PrimaryLabel:     "",
 			SecondaryLabel:   "",
@@ -454,6 +328,21 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			data.NextStep = welcomeStep.NextStep
 			data.Step = "welcome"
 		}
+		stepOrder := []string{
+			"welcome", "pls_read", "server_name", "save_identifier", "max_players",
+			"server_password", "game_branch", "newterrain_and_savesystem",
+			"discord_enabled", "discord_token", "control_panel_channel", "save_channel",
+			"log_channel", "connection_list_channel", "status_channel", "control_channel",
+			"network_config_choice", "game_port", "update_port", "upnp_enabled",
+			"local_ip_address", "admin_account", "sscm", "finalize",
+		}
+		var stepSlice []Step
+		for _, id := range stepOrder {
+			if step, exists := steps[id]; exists {
+				stepSlice = append(stepSlice, step)
+			}
+		}
+		data.Steps = stepSlice
 
 	case path == "/changeuser":
 		data.Title = localization.GetString("UIText_ChangeUser_Title")

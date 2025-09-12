@@ -111,6 +111,18 @@
         </footer>
     </main>
 
+    {{if and (eq .Mode "setup") (ne .Step "welcome")}}
+        <div id="progress-bar-container">
+            <div class="progress-bar">
+                {{range .Steps}}
+            <div class="progress-step {{if eq $.Step .ID}}active{{end}}">
+                <a href="/setup?step={{.ID}}" class="progress-circle"></a>
+                <span class="progress-label">{{.HeaderTitle}}</span>
+            </div>
+            {{end}}
+        </div>
+    {{end}}
+    
     <script src="/twoboxform/twoboxform.js"></script>
 </body>
 </html>

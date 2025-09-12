@@ -67,9 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function booleanToConfig(value) {
         if (typeof value === 'string') {
             value = value.trim().toLowerCase();
-            if (value === 'yes' || value === 'true' || value === '1') {
+            if (value === 'yes' || value === 'true' || value === '1' || value === 'ja') {
                 return true;
-            } else if (value === 'no' || value === 'false' || value === '0') {
+            } else if (value === 'no' || value === 'false' || value === '0' || value === 'nej') {
                 return false;
             }
         }
