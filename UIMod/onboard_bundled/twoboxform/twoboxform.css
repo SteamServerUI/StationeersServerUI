@@ -482,6 +482,17 @@ footer {
     h1 {
         font-size: 1.2rem;
     }
+
+}
+@media (max-width: 800px) {
+    .progress-bar {
+        display: none !important;
+    }
+}
+@media (max-height: 1050px) {
+    .progress-bar {
+        display: none !important;
+    }
 }
 
 .progress-bar {
@@ -549,4 +560,41 @@ footer {
     z-index: 100;
     display: flex;
     justify-content: center;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: var(--primary);
+    border: 2px solid var(--primary-dim);
+    border-radius: 4px;
+    font-family: 'Share Tech Mono', monospace;
+    transition: all 0.3s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='rgb(0,255,171)' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px top 50%;
+}
+
+select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px var(--primary-glow);
+    outline: none;
+    transform: scale(1.02);
+}
+
+option {
+    background-color: var(--bg-panel);
+    color: var(--primary);
+    padding: 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+}
+
+option:hover {
+    background-color: var(--primary-dim);
+    color: var(--text-bright);
 }
