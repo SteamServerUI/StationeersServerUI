@@ -1,5 +1,5 @@
 {
-    "name": "StationeersServerUI (Go+Svelte)",
+    "name": "StationeersServerUI",
     "build": {
         "dockerfile": "Dockerfile",
         "args": { "TZ": "${localEnv:TZ:Europe/Stockholm}" }
