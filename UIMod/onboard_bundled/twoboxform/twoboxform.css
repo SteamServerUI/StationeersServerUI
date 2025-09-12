@@ -489,11 +489,6 @@ footer {
         display: none !important;
     }
 }
-@media (max-height: 1050px) {
-    .progress-bar {
-        display: none !important;
-    }
-}
 
 .progress-bar {
     display: flex;
