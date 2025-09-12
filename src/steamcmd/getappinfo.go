@@ -109,7 +109,7 @@ func getAppInfo() error {
 	branchesLock.Lock()
 	maps.Copy(branches, newBranches)
 	branchesLock.Unlock()
-
+	wasRunning := false
 	currentBranch := config.GetGameBranch()
 	if buildID, ok := branches[currentBranch]; ok {
 		if config.GetCurrentBranchBuildID() != "" && config.GetCurrentBranchBuildID() != buildID {
@@ -133,12 +133,15 @@ func getAppInfo() error {
 					commandmgr.WriteCommand("say Update found, stopping server in 10 seconds...")
 					time.Sleep(10 * time.Second)
 					gamemgr.InternalStopServer()
+					wasRunning = true
 				}
 				_, err := InstallAndRunSteamCMD()
 				if err != nil {
 					logger.Install.Error("❌ Failed to update gameserver: " + err.Error() + "\n")
 				}
-				gamemgr.InternalStartServer()
+				if wasRunning {
+					gamemgr.InternalStartServer()
+				}
 			}
 		}
 		config.SetCurrentBranchBuildID(buildID)

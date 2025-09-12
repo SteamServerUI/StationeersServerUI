@@ -13,6 +13,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
 
 // only call this once at startup
@@ -23,6 +24,7 @@ func InitBackend(wg *sync.WaitGroup) {
 	ReloadSSCM()
 	ReloadBackupManager()
 	ReloadLocalizer()
+	ReloadAppInfoPoller()
 	ReloadDiscordBot()
 	InitDetector()
 }
@@ -35,6 +37,7 @@ func ReloadBackend() {
 	ReloadSSCM()
 	ReloadBackupManager()
 	ReloadLocalizer()
+	ReloadAppInfoPoller()
 	PrintConfigDetails()
 	logger.Core.Info("Backend reload done!")
 }
@@ -85,6 +88,10 @@ func RestartBackend() {
 
 func ReloadLocalizer() {
 	localization.ReloadLocalizer()
+}
+
+func ReloadAppInfoPoller() {
+	steamcmd.AppInfoPoller()
 }
 
 // InitBundler initialized the onboard bundled assets for the web UI

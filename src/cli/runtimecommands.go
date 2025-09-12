@@ -161,6 +161,7 @@ func init() {
 	RegisterCommand("supportmode", WrapNoReturn(supportMode), "sm")
 	RegisterCommand("supportpackage", WrapNoReturn(supportPackage), "sp")
 	RegisterCommand("getbuildid", WrapNoReturn(getBuildID), "gbid")
+	RegisterCommand("setdummybuildid", WrapNoReturn(setDummyBuildID), "sdbid")
 	RegisterCommand("printconfig", WrapNoReturn(printConfig), "pc")
 }
 
@@ -207,6 +208,11 @@ func getBuildID() {
 		return
 	}
 	logger.Core.Info("Build ID: " + buildID)
+}
+
+func setDummyBuildID() {
+	config.SetCurrentBranchBuildID("dummy")
+	logger.Core.Info("Dummy build ID set")
 }
 
 func testLocalization() {
