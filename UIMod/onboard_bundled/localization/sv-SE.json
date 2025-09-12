@@ -32,7 +32,8 @@
         "UIText_ServerName": "Servernamn",
         "UIText_ServerNameInfo": "Namn som visas i serverlistan",
         "UIText_SaveFileName": "Sparfilsnamn",
-        "UIText_SaveFileNameInfo": "Namn på sparmappen. Måste börja med stor bokstav. För att skapa en ny värld, ange världstypen att generera. (MyVulcanMap Vulcan) Världstyper finns på Stationeers Wiki -> Dedicated Server-sidan.",
+        "UIText_SaveFileNameInfo": "Namn på sparmappen. Måste börja med stor bokstav. För att skapa en ny värld, ange världstypen att generera. <strong> Vi rekommenderar att du använder guiden för att konfigurera detta korrekt.</strong>",
+        "UIText_SaveFileNameUseWizzardButtonText": "Öppna guiden",
         "UIText_MaxPlayers": "Max spelare",
         "UIText_MaxPlayersInfo": "Maximalt antal tillåtna spelare",
         "UIText_ServerPassword": "Serverlösenord",
@@ -125,6 +126,7 @@
     },
     "setup": {
       "UIText_FooterText": "Behöver du hjälp? Kolla Stationeers Server UI Github Wiki.",
+      "UIText_FooterTextInfo": "Du kan avsluta guiden när som helst, varje steg sparas individuellt.",
       "UIText_SSCM_FooterText": "Använd SSCM för den mest kraftfulla hanteringen av Stationeers-servrar! Du kan köra kommandon från webbkonsolen utan att störa vanliga funktioner!",
       "UIText_Welcome_Title": "Stationeers Server UI",
       "UIText_Welcome_HeaderTitle": "Välkommen!",

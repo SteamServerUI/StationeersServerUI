@@ -126,6 +126,7 @@
     },
     "setup": {
       "UIText_FooterText": "Need help? Check the Stationeers Server UI Github Wiki.",
+      "UIText_FooterTextInfo": "You may exit the wizard at any time, each step is saved individually.",
       "UIText_SSCM_FooterText": "Use SSCM for the most powerful Stationeers server management! You can run commands from the Web console without disrupting vanilla behaviour!",
       "UIText_Welcome_Title": "Stationeers Server UI",
       "UIText_Welcome_HeaderTitle": "Welcome!",

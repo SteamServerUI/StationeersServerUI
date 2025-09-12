@@ -49,6 +49,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		Mode                     string
 		ShowExtraButtons         bool
 		FooterText               string
+		FooterTextInfo           string
 		Step                     string
 		ConfigField              string
 		NextStep                 string
@@ -325,6 +326,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		Path:             path,
 		Step:             stepID,
 		FooterText:       localization.GetString("UIText_FooterText"),
+		FooterTextInfo:   localization.GetString("UIText_FooterTextInfo"),
 	}
 
 	switch {
