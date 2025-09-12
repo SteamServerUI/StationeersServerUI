@@ -57,10 +57,17 @@ func InstallAndRunSteamCMD() (int, error) {
 
 // runSteamCMD runs the SteamCMD command to update the game and returns its exit status and any error.
 func runSteamCMD(steamCMDDir string) (int, error) {
-	steamMu.Lock()
-	logger.Core.Debug("🔄 Locking SteamMu...")
+	if steamMu.TryLock() {
+		// Successfully acquired the lock; no other func holds it
+		logger.Core.Debug("🔄 Locking SteamMu for SteamCMD execution...")
+	} else {
+		// Another goroutine holds the lock; log and wait.
+		logger.Core.Warn("🔄 SteamMu is currently locked, waiting for it to be unlocked and then continuing...")
+		steamMu.Lock() // Block until steamMu becomes available, then snack it and lock it again
+		logger.Core.Debug("🔄 Locking SteamMu for SteamCMD execution..")
+	}
 	defer steamMu.Unlock()
-	defer logger.Core.Debug("🔄 Unlocking SteamMu...")
+	defer logger.Core.Debug("🔄 Unlocking SteamMu after SteamCMD execution...")
 	currentDir, err := os.Getwd()
 	if err != nil {
 		logger.Install.Error("❌ Error getting current working directory: " + err.Error() + "\n")

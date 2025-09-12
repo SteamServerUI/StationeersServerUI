@@ -64,10 +64,17 @@ func AppInfoPoller() {
 // getAppInfo fetches the branches and their build IDs for the specified app ID using SteamCMD
 // and stores them in the package-level branches map.
 func getAppInfo() error {
-	steamMu.Lock()
-	logger.Core.Debug("🔄 Locking SteamMu...")
+	if steamMu.TryLock() {
+		// Successfully acquired the lock; no other func holds it
+		logger.Core.Debug("🔄 Locking SteamMu for SteamCMD AppInfo...")
+	} else {
+		// Another goroutine holds the lock; log and wait.
+		logger.Core.Warn("🔄 SteamMu is currently locked, waiting for it to be unlocked and then continuing...")
+		steamMu.Lock() // Block until steamMu becomes available, then snack it and lock it again
+		logger.Core.Debug("🔄 Locking SteamMu for SteamCMD AppInfo...")
+	}
 	defer steamMu.Unlock()
-	defer logger.Core.Debug("🔄 Unlocking SteamMu...")
+	defer logger.Core.Debug("🔄 Unlocking SteamMu after SteamCMD AppInfo...")
 	steamcmddir := SteamCMDLinuxDir
 	executable := "steamcmd.sh"
 	appid := config.GetGameServerAppID()
