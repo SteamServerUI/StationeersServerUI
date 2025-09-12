@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
@@ -118,12 +117,9 @@ func HandleIsSSCMEnabled(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-var lastSteamCMDExecution time.Time // last time SteamCMD was executed via API.
-
 // run SteamCMD from API, but only allow once every 5 minutes to "kinda" prevent concurrent executions although that woluldnt hurn.
 // If the user has a 5mbit connection, I cannot help them anyways.
 func HandleRunSteamCMD(w http.ResponseWriter, r *http.Request) {
-	const rateLimitDuration = 30 * time.Second
 
 	// Only allow GET requests
 	if r.Method != http.MethodGet {
@@ -131,17 +127,10 @@ func HandleRunSteamCMD(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check rate limit
-	if time.Since(lastSteamCMDExecution) < rateLimitDuration {
-		json.NewEncoder(w).Encode(map[string]string{"statuscode": "200", "status": "Rejected", "message": "Slow down, you just called SteamCMD.", "advanced": "Use SSUICLI or restart SSUI to run SteamCMD repeatedly without limit."})
-		return
-	}
-
 	logger.Core.Info("Running SteamCMD")
 	_, err := steamcmd.InstallAndRunSteamCMD()
 
 	// Update last execution time
-	lastSteamCMDExecution = time.Now()
 
 	// Success: return 202 Accepted and JSON
 	w.WriteHeader(http.StatusOK)

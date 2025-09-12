@@ -8,12 +8,16 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 )
+
+var steamMu sync.Mutex
+var isUpdatingMu sync.Mutex
 
 // ExtractorFunc is a type that represents a function for extracting archives.
 // It takes an io.ReaderAt, the size of the content, and the destination directory.
@@ -30,6 +34,16 @@ const (
 // InstallAndRunSteamCMD installs and runs SteamCMD based on the platform (Windows/Linux).
 // It returns the exit status of the SteamCMD execution and any error encountered.
 func InstallAndRunSteamCMD() (int, error) {
+	if isUpdatingMu.TryLock() {
+		// Successfully acquired the lock; we are not updating currently
+		logger.Core.Debug("🔄 Locking isUpdatingMu for SteamCMD Update run...")
+	} else {
+		// already updating, return
+		logger.Core.Warn("🔄 isUpdatingMu is currently locked, cannot update server using SteamCMD right now...")
+		return -1, fmt.Errorf("already updating")
+	}
+	defer isUpdatingMu.Unlock()
+	defer logger.Core.Debug("🔄 Unlocking isUpdatingMu after SteamCMD Update run...")
 
 	if gamemgr.InternalIsServerRunning() {
 		logger.Core.Warn("Server is running, stopping server first...")
@@ -54,6 +68,17 @@ func InstallAndRunSteamCMD() (int, error) {
 
 // runSteamCMD runs the SteamCMD command to update the game and returns its exit status and any error.
 func runSteamCMD(steamCMDDir string) (int, error) {
+	if steamMu.TryLock() {
+		// Successfully acquired the lock; no other func holds it
+		logger.Core.Debug("🔄 Locking SteamMu for SteamCMD execution...")
+	} else {
+		// Another goroutine holds the lock; log and wait.
+		logger.Core.Warn("🔄 SteamMu is currently locked, waiting for it to be unlocked and then continuing...")
+		steamMu.Lock() // Block until steamMu becomes available, then snack it and lock it again
+		logger.Core.Debug("🔄 Locking SteamMu for SteamCMD execution..")
+	}
+	defer steamMu.Unlock()
+	defer logger.Core.Debug("🔄 Unlocking SteamMu after SteamCMD execution...")
 	currentDir, err := os.Getwd()
 	if err != nil {
 		logger.Install.Error("❌ Error getting current working directory: " + err.Error() + "\n")
@@ -99,7 +124,7 @@ func runSteamCMD(steamCMDDir string) (int, error) {
 // buildSteamCMDCommand constructs the SteamCMD command based on the OS.
 func buildSteamCMDCommand(steamCMDDir, currentDir string) *exec.Cmd {
 	//print the config.GameBranch and config.GameServerAppID
-	logger.Install.Info("🔍 Game Branch: " + config.GetBranch())
+	logger.Install.Info("🔍 Game Branch: " + config.GetGameBranch())
 	logger.Install.Debug("🔍 Game Server App ID: " + config.GetGameServerAppID())
 
 	if runtime.GOOS == "windows" {

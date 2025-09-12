@@ -64,6 +64,17 @@ func AppInfoPoller() {
 // getAppInfo fetches the branches and their build IDs for the specified app ID using SteamCMD
 // and stores them in the package-level branches map.
 func getAppInfo() error {
+	if steamMu.TryLock() {
+		// Successfully acquired the lock; no other func holds it
+		logger.Core.Debug("🔄 Locking SteamMu for SteamCMD AppInfo...")
+	} else {
+		// Another goroutine holds the lock; log and wait.
+		logger.Core.Warn("🔄 SteamMu is currently locked, waiting for it to be unlocked and then continuing...")
+		steamMu.Lock() // Block until steamMu becomes available, then snack it and lock it again
+		logger.Core.Debug("🔄 Locking SteamMu for SteamCMD AppInfo...")
+	}
+	defer steamMu.Unlock()
+	defer logger.Core.Debug("🔄 Unlocking SteamMu after SteamCMD AppInfo...")
 	steamcmddir := SteamCMDLinuxDir
 	executable := "steamcmd.sh"
 	appid := config.GetGameServerAppID()
@@ -109,7 +120,7 @@ func getAppInfo() error {
 	branchesLock.Lock()
 	maps.Copy(branches, newBranches)
 	branchesLock.Unlock()
-
+	wasRunning := false
 	currentBranch := config.GetGameBranch()
 	if buildID, ok := branches[currentBranch]; ok {
 		if config.GetCurrentBranchBuildID() != "" && config.GetCurrentBranchBuildID() != buildID {
@@ -133,12 +144,15 @@ func getAppInfo() error {
 					commandmgr.WriteCommand("say Update found, stopping server in 10 seconds...")
 					time.Sleep(10 * time.Second)
 					gamemgr.InternalStopServer()
+					wasRunning = true
 				}
 				_, err := InstallAndRunSteamCMD()
 				if err != nil {
 					logger.Install.Error("❌ Failed to update gameserver: " + err.Error() + "\n")
 				}
-				gamemgr.InternalStartServer()
+				if wasRunning {
+					gamemgr.InternalStartServer()
+				}
 			}
 		}
 		config.SetCurrentBranchBuildID(buildID)
