@@ -597,3 +597,32 @@ option:hover {
     background-color: var(--primary-dim);
     color: var(--text-bright);
 }
+
+
+#exit-button-container {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    gap: 10px;
+    cursor: pointer;
+    font-variant-emoji: text;
+    color: #00ffab;
+}
+
+#exit-button-container img{
+    width: 30px;
+    height: 20px;
+    cursor: pointer;
+    transition: transform 0.5s ease;
+}
+
+#exit-button-container img {
+    opacity: 0.7;
+}
+
+#exit-button-container img:hover {
+    scale: 1.1;
+    animation: wave 3s infinite;
+    opacity: 1;
+} 

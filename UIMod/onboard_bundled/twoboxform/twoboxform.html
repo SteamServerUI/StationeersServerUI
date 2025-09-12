@@ -28,6 +28,9 @@
     </div>
     {{end}}
     <main class="two-box-form-container">
+        {{if and (eq .Mode "setup") (ne .Step "welcome")}}
+        <div id="exit-button-container" alt="Exit Setup" title="Exit Setup" onclick="window.location.href = '/'">❌</div>
+        {{end}}
         <header>
             <h1>{{.Title}}</h1>
             <br/>
