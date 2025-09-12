@@ -53,7 +53,7 @@ func AppInfoPoller() {
 				case <-stopPoller:
 					logger.Install.Debug("🛑 App info poller stopped")
 					return
-				case <-time.After(5 * time.Minute):
+				case <-time.After(10 * time.Minute):
 					// Continue to next iteration
 				}
 			}
