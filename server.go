@@ -39,6 +39,7 @@ func main() {
 	logger.ConfigureConsole()
 	logger.Install.Info("Starting setup...")
 	loader.ReloadConfig() // Load the config file before starting the setup process
+	loader.LoadCmdArgs()
 	setup.Install(&wg)
 	wg.Wait()
 	logger.Main.Debug("Initializing resources...")
