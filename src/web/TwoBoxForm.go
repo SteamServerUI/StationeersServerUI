@@ -476,6 +476,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		data.SecondaryLabelType = "password"
 		data.SubmitButtonText = localization.GetString("UIText_Login_SubmitButton")
 		data.Mode = "login"
+		data.Step = ""
 		data.ShowExtraButtons = false
 	}
 

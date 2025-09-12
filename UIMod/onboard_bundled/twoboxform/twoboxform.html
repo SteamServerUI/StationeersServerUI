@@ -20,7 +20,7 @@
             <p>Preparing {{.Title}}</p>
         </div>
     </div>
-    {{if ne .Step "welcome"}}
+    {{if and (eq .Mode "setup") (ne .Step "welcome")}}
     <div id="language-flags">
         <img src="/static/flags/en.webp" alt="English" data-lang="en-US" title="English">
         <img src="/static/flags/de.webp" alt="German" data-lang="de-DE" title="German">
