@@ -67,13 +67,22 @@
                 {{if ne .SecondaryLabel ""}}
                 <div class="form-group">
                     <label for="secondary-field">{{.SecondaryLabel}}</label>
+                    {{if eq .SecondaryLabelType "dropdown"}}
+                    <select id="secondary-field" name="secondary-field" required>
+                        <option value="">{{.SecondaryPlaceholderText}}</option>
+                        {{range .SecondaryOptions}}
+                        <option value="{{.}}">{{.}}</option>
+                        {{end}}
+                    </select>
+                    {{else}}
                     <input 
-                        type="{{.SecondaryLabelType}}" 
-                        id="secondary-field" 
-                        name="secondary-field" 
-                        placeholder="{{.SecondaryPlaceholderText}}"
-                        required
-                    >
+                           type="{{.SecondaryLabelType}}" 
+                           id="secondary-field" 
+                           name="secondary-field" 
+                           placeholder="{{.SecondaryPlaceholderText}}" 
+                           required
+                        >
+                    {{end}}
                 </div>
                 {{end}}
 

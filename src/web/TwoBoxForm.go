@@ -19,6 +19,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		PrimaryLabel             string
 		SecondaryLabel           string
 		SecondaryLabelType       string
+		SecondaryOptions         []string
 		SubmitButtonText         string
 		SkipButtonText           string
 		PrimaryPlaceholderText   string
@@ -36,6 +37,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		PrimaryLabel             string
 		SecondaryLabel           string
 		SecondaryLabelType       string
+		SecondaryOptions         []string
 		SubmitButtonText         string
 		SkipButtonText           string
 		Mode                     string
@@ -117,12 +119,20 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			PrimaryPlaceholderText:   localization.GetString("UIText_SaveIdentifier_PrimaryPlaceholder"),
 			PrimaryLabel:             localization.GetString("UIText_SaveIdentifier_PrimaryLabel"),
 			SecondaryLabel:           localization.GetString("UIText_SaveIdentifier_SecondaryLabel"),
-			SecondaryLabelType:       "text",
+			SecondaryLabelType:       "dropdown",
 			SecondaryPlaceholderText: localization.GetString("UIText_SaveIdentifier_SecondaryPlaceholder"),
-			SubmitButtonText:         localization.GetString("UIText_SaveIdentifier_SubmitButton"),
-			SkipButtonText:           localization.GetString("UIText_SaveIdentifier_SkipButton"),
-			ConfigField:              "SaveInfo",
-			NextStep:                 "max_players",
+			SecondaryOptions: []string{ // NEW: Predefined world types (customize as needed)
+				"Mars",
+				"Europa",
+				"Titan",
+				"Venus",
+				"Asteroid",
+				"Moon",
+			},
+			SubmitButtonText: localization.GetString("UIText_SaveIdentifier_SubmitButton"),
+			SkipButtonText:   localization.GetString("UIText_SaveIdentifier_SkipButton"),
+			ConfigField:      "SaveInfo",
+			NextStep:         "max_players",
 		},
 		"max_players": {
 			ID:                     "max_players",
@@ -311,9 +321,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			data.NextStep = step.NextStep
 			data.PrimaryPlaceholderText = step.PrimaryPlaceholderText
 			data.SecondaryPlaceholderText = step.SecondaryPlaceholderText
-			if stepID == "sscm" {
-				data.FooterText = localization.GetString("UIText_SSCM_FooterText")
-			}
+			data.SecondaryOptions = step.SecondaryOptions
 		} else {
 			// Default to welcome page if step is invalid
 			welcomeStep := steps["welcome"]
