@@ -80,6 +80,7 @@
                                     <input type="text" id="SaveInfo" name="SaveInfo" value="{{.SaveInfo}}"
                                         pattern="^[A-Z].*(\s[A-Z].*)?$" required>
                                     <div class="input-info">{{.UIText_SaveFileNameInfo}}</div>
+                                    <div class="button" style="cursor: pointer;" onclick="window.location.href = '/setup?step=save_identifier'">{{.UIText_SaveFileNameUseWizzardButtonText}}</div>
                                 </div>
                                 
                                 <div class="form-group">
