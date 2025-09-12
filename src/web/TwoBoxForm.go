@@ -12,14 +12,17 @@ import (
 
 func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 	type Step struct {
-		ID                       string
-		Title                    string
-		HeaderTitle              string
-		StepMessage              string
-		PrimaryLabel             string
-		SecondaryLabel           string
-		SecondaryLabelType       string
-		SecondaryOptions         []string
+		ID                 string
+		Title              string
+		HeaderTitle        string
+		StepMessage        string
+		PrimaryLabel       string
+		SecondaryLabel     string
+		SecondaryLabelType string
+		SecondaryOptions   []struct {
+			Display string // Text shown in dropdown
+			Value   string // Value sent on submission
+		}
 		SubmitButtonText         string
 		SkipButtonText           string
 		PrimaryPlaceholderText   string
@@ -29,15 +32,18 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type TemplateData struct {
-		IsFirstTimeSetup         bool
-		Path                     string
-		Title                    string
-		HeaderTitle              string
-		StepMessage              string
-		PrimaryLabel             string
-		SecondaryLabel           string
-		SecondaryLabelType       string
-		SecondaryOptions         []string
+		IsFirstTimeSetup   bool
+		Path               string
+		Title              string
+		HeaderTitle        string
+		StepMessage        string
+		PrimaryLabel       string
+		SecondaryLabel     string
+		SecondaryLabelType string
+		SecondaryOptions   []struct {
+			Display string
+			Value   string
+		}
 		SubmitButtonText         string
 		SkipButtonText           string
 		Mode                     string
@@ -121,13 +127,17 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SecondaryLabel:           localization.GetString("UIText_SaveIdentifier_SecondaryLabel"),
 			SecondaryLabelType:       "dropdown",
 			SecondaryPlaceholderText: localization.GetString("UIText_SaveIdentifier_SecondaryPlaceholder"),
-			SecondaryOptions: []string{ // NEW: Predefined world types (customize as needed)
-				"Mars",
-				"Europa",
-				"Titan",
-				"Venus",
-				"Asteroid",
-				"Moon",
+			SecondaryOptions: []struct{ Display, Value string }{
+				{Display: "Moon", Value: "Moon"},
+				{Display: "Vulcan", Value: "Vulcan"},
+				{Display: "Venus", Value: "Venus"},
+				{Display: "New Terrain Mars", Value: "Mars2"},
+				{Display: "New Terrain Europa", Value: "Europa3"},
+				{Display: "New Terrain Mimas", Value: "MimasHerschel"},
+				{Display: "New Terrain Moon", Value: "Lunar"},
+				{Display: "Old Terrain Mars", Value: "Mars"},
+				{Display: "Old Terrain Europa", Value: "Europa"},
+				{Display: "Old Terrain Mimas", Value: "Mimas"},
 			},
 			SubmitButtonText: localization.GetString("UIText_SaveIdentifier_SubmitButton"),
 			SkipButtonText:   localization.GetString("UIText_SaveIdentifier_SkipButton"),

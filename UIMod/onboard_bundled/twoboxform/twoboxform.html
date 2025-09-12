@@ -71,7 +71,7 @@
                     <select id="secondary-field" name="secondary-field" required>
                         <option value="">{{.SecondaryPlaceholderText}}</option>
                         {{range .SecondaryOptions}}
-                        <option value="{{.}}">{{.}}</option>
+                        <option value="{{.Value}}">{{.Display}}</option>
                         {{end}}
                     </select>
                     {{else}}
