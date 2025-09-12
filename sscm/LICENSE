@@ -76,6 +76,10 @@ Unless permitted by applicable law, the Licensee shall not:
 10.3 Severability: If any provision is unenforceable, the remaining provisions remain in effect.
 10.4 Language: This Agreement is in English.
 
+## Open source licenses
+
+This project uses Discordgo, Copyright (c) 2015 Bruce Marriner, under the BSD 3-Clause License. The copyright notice, conditions, and disclaimer are reproduced in the discordbot package.
+
 ## CONTACT
 
 For inquiries, contact the Licensor at github.com/JacksonTheMaster.

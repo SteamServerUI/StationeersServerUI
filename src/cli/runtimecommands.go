@@ -23,7 +23,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
 
 // ANSI escape codes for green text and reset
@@ -160,6 +160,8 @@ func init() {
 	RegisterCommand("testlocalization", WrapNoReturn(testLocalization), "tl")
 	RegisterCommand("supportmode", WrapNoReturn(supportMode), "sm")
 	RegisterCommand("supportpackage", WrapNoReturn(supportPackage), "sp")
+	RegisterCommand("getbuildid", WrapNoReturn(getBuildID), "gbid")
+	RegisterCommand("printconfig", WrapNoReturn(printConfig), "pc")
 }
 
 func startServer() {
@@ -191,13 +193,20 @@ func deleteConfig() {
 }
 
 func runSteamCMD() {
-	if gamemgr.InternalIsServerRunning() {
-		logger.Core.Warn("Server is running, stopping server first...")
-		gamemgr.InternalStopServer()
-		time.Sleep(10000 * time.Millisecond)
+	steamcmd.InstallAndRunSteamCMD()
+}
+
+func printConfig() {
+	loader.PrintConfigDetails("Info")
+}
+
+func getBuildID() {
+	buildID := config.GetCurrentBranchBuildID()
+	if buildID == "" {
+		logger.Core.Error("Build ID not found, empty string returned")
+		return
 	}
-	logger.Core.Info("Running SteamCMD")
-	setup.InstallAndRunSteamCMD()
+	logger.Core.Info("Build ID: " + buildID)
 }
 
 func testLocalization() {

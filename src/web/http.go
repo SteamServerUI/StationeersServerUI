@@ -15,7 +15,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
 
 // StartServer HTTP handler
@@ -137,13 +137,8 @@ func HandleRunSteamCMD(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if gamemgr.InternalIsServerRunning() {
-		logger.Core.Warn("Server is running, stopping server first...")
-		gamemgr.InternalStopServer()
-		time.Sleep(10000 * time.Millisecond)
-	}
 	logger.Core.Info("Running SteamCMD")
-	_, err := setup.InstallAndRunSteamCMD()
+	_, err := steamcmd.InstallAndRunSteamCMD()
 
 	// Update last execution time
 	lastSteamCMDExecution = time.Now()

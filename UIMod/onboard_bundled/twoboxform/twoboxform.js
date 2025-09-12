@@ -67,9 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function booleanToConfig(value) {
         if (typeof value === 'string') {
             value = value.trim().toLowerCase();
-            if (value === 'yes' || value === 'true' || value === '1') {
+            if (value === 'yes' || value === 'true' || value === '1' || value === 'ja') {
                 return true;
-            } else if (value === 'no' || value === 'false' || value === '0') {
+            } else if (value === 'no' || value === 'false' || value === '0' || value === 'nej') {
                 return false;
             }
         }
@@ -135,6 +135,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 body = JSON.stringify({
                     [configField]: booleanToConfig(document.getElementById('primary-field').value)
                 });
+                
+            } else if (configField === "SaveInfo") {
+                const primaryValue = document.getElementById('primary-field').value.trim();
+                const secondaryValue = document.getElementById('secondary-field').value.trim();
+                if (secondaryValue === '' || secondaryValue === document.getElementById('secondary-field').placeholder) {
+                    showNotification('Please select a world type!', 'error');
+                    hidePreloader();
+                    return; // Prevent submission
+                    }
+                const joinedValue = `${primaryValue} ${secondaryValue}`;
+                body = JSON.stringify({
+                    [configField]: joinedValue
+                });
+            } else if (configField === "gameBranch") {
+                const secondaryValue = document.getElementById('secondary-field').value.trim();
+                if (secondaryValue === '' || secondaryValue === document.getElementById('secondary-field').placeholder) {
+                    showNotification('Please select a world type!', 'error');
+                    hidePreloader();
+                    return; // Prevent submission
+                    }
+                body = JSON.stringify({
+                    [configField]: secondaryValue
+                });
             } else {
                 body = JSON.stringify({
                     [configField]: document.getElementById('primary-field').value
@@ -170,13 +193,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await response.json();
             
-            if (response.ok) {
+            if (response.ok || response.status === 201) {
                 if (configField || step === "admin_account") {
                     hidePreloader();
                     showNotification(step === "admin_account" ? 'Admin account saved!' : 'Config saved!', 'success');
                     // Wait for backend response to complete before redirecting
                     try { await response.json(); } catch (e) {} // Ensure backend response is fully processed
-                    window.location.href = `/setup?step=${nextStep}`;
+                    setTimeout(() => {
+                        window.location.href = `/setup?step=${nextStep}`;
+                    }, 1000);
                 } else if (mode === 'login') {
                     showNotification('Login Successful!', 'success');
                     await preloadNextPage();
@@ -184,7 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = '/';
                 } else { // changeuser
                     hidePreloader();
-                    const data = await response.json(); // Ensure backend response is processed
                     showNotification(data.message || 'User updated!', 'success');
                     form.reset();
                 }

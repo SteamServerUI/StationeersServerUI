@@ -12,7 +12,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -97,24 +97,40 @@ func handleStatus(s *discordgo.Session, i *discordgo.InteractionCreate, data Emb
 }
 
 func handleUpdate(s *discordgo.Session, i *discordgo.InteractionCreate, data EmbedData) error {
-	data.Title = "🎮 Gameserver Update"
-	data.Description = "Updating the gameserver via SteamCMD..."
-	data.Color = 0xFFA500
-	if gamemgr.InternalIsServerRunning() {
-		SendMessageToControlChannel("❗ Server is running, stopping server first...")
-		gamemgr.InternalStopServer()
-		time.Sleep(10000 * time.Millisecond)
+	thinkingData := EmbedData{
+		Title:       "🎮 Gameserver Update",
+		Description: "The Backend is processing the gameserver update via SteamCMD. Please wait, this may take a while...",
+		Color:       0xFFA500, // Orange color for in-progress
 	}
 
-	_, err := setup.InstallAndRunSteamCMD()
+	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{generateEmbed(thinkingData)},
+		},
+	})
+	if err != nil {
+		return err
+	}
+	data.Title = "🎮 Gameserver Update"
+	data.Description = "Gameserver update completed."
+	data.Color = 0x00FF00 // Green for completion (will adjust if error)
+
+	_, err = steamcmd.InstallAndRunSteamCMD()
 
 	data.Fields = []EmbedField{
 		{Name: "Update Status:", Value: map[bool]string{true: "🟢 Success", false: "🔴 Failed"}[err == nil], Inline: true},
 	}
 	if err != nil {
+		data.Color = 0xFF0000 // Red for error
 		data.Fields = append(data.Fields, EmbedField{Name: "Error:", Value: err.Error(), Inline: true})
 	}
-	return respond(s, i, data)
+
+	// Edit the original message with "update completed" embed
+	_, err = s.InteractionResponseEdit(i.Interaction, &discordgo.WebhookEdit{
+		Embeds: &[]*discordgo.MessageEmbed{generateEmbed(data)},
+	})
+	return err
 }
 
 func handleHelp(s *discordgo.Session, i *discordgo.InteractionCreate, data EmbedData) error {
@@ -122,12 +138,14 @@ func handleHelp(s *discordgo.Session, i *discordgo.InteractionCreate, data Embed
 	data.Fields = []EmbedField{
 		{Name: "/start", Value: "Starts the server"},
 		{Name: "/stop", Value: "Stops the server"},
-		{Name: "/restore <index>", Value: "Restores a backup"},
+		{Name: "/status", Value: "Gets the running status of the gameserver process"},
+		{Name: "/update", Value: "Updates the gameserver via SteamCMD"},
 		{Name: "/list [limit]", Value: "Lists recent backups (default: 5)"},
-		{Name: "/help", Value: "Shows this help"},
+		{Name: "/restore <index>", Value: "Restores a backup"},
 		{Name: "/bansteamid <SteamID>", Value: "Bans a player"},
 		{Name: "/unbansteamid <SteamID>", Value: "Unbans a player"},
-		{Name: "/update", Value: "Updates the gameserver via SteamCMD"},
+		{Name: "/command <command>", Value: "Sends a command to the gameserver console"},
+		{Name: "/help", Value: "Shows this help"},
 	}
 	return respond(s, i, data)
 }

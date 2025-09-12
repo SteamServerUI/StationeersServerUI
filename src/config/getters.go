@@ -475,3 +475,15 @@ func GetGameServerAppID() string {
 	defer ConfigMu.RUnlock()
 	return GameServerAppID
 }
+
+func GetCurrentBranchBuildID() string {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return CurrentBranchBuildID
+}
+
+func GetAllowAutoGameServerUpdates() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return AllowAutoGameServerUpdates
+}
