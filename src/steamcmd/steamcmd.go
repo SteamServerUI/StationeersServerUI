@@ -99,7 +99,7 @@ func runSteamCMD(steamCMDDir string) (int, error) {
 // buildSteamCMDCommand constructs the SteamCMD command based on the OS.
 func buildSteamCMDCommand(steamCMDDir, currentDir string) *exec.Cmd {
 	//print the config.GameBranch and config.GameServerAppID
-	logger.Install.Info("🔍 Game Branch: " + config.GetBranch())
+	logger.Install.Info("🔍 Game Branch: " + config.GetGameBranch())
 	logger.Install.Debug("🔍 Game Server App ID: " + config.GetGameServerAppID())
 
 	if runtime.GOOS == "windows" {
