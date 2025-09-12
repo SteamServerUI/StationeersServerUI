@@ -77,6 +77,14 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		stepID = "welcome" // Start with welcome page for first-time setup
 	}
 
+	var gameBranchOptions = []struct{ Display, Value string }{
+		{Display: "Stable branch (default)", Value: "public"},
+		{Display: "Beta branch", Value: "beta"},
+		{Display: "Pre-terrain rework update", Value: "preterrain"},
+		{Display: "Pre-rocket refactor update", Value: "prerocket"},
+		{Display: "Version before the latest update", Value: "previous"},
+	}
+
 	var worldOptions = []struct{ Display, Value string }{
 		{Display: "Moon", Value: "Moon"},
 		{Display: "Vulcan", Value: "Vulcan"},
@@ -127,18 +135,18 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			NextStep:           "game_branch",
 		},
 		"game_branch": {
-			ID:                     "game_branch",
-			Title:                  localization.GetString("UIText_GameBranch_Title"),
-			HeaderTitle:            localization.GetString("UIText_GameBranch_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_GameBranch_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_GameBranch_PrimaryPlaceholder"),
-			PrimaryLabel:           localization.GetString("UIText_GameBranch_PrimaryLabel"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_GameBranch_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_GameBranch_SkipButton"),
-			ConfigField:            "gameBranch",
-			NextStep:               "newterrain_and_savesystem",
+			ID:                       "game_branch",
+			Title:                    localization.GetString("UIText_GameBranch_Title"),
+			HeaderTitle:              localization.GetString("UIText_GameBranch_HeaderTitle"),
+			StepMessage:              localization.GetString("UIText_GameBranch_StepMessage"),
+			SecondaryPlaceholderText: localization.GetString("UIText_GameBranch_SecondaryPlaceholder"),
+			SecondaryLabel:           localization.GetString("UIText_GameBranch_SecondaryLabel"),
+			SecondaryLabelType:       "dropdown",
+			SecondaryOptions:         gameBranchOptions,
+			SubmitButtonText:         localization.GetString("UIText_GameBranch_SubmitButton"),
+			SkipButtonText:           localization.GetString("UIText_GameBranch_SkipButton"),
+			ConfigField:              "gameBranch",
+			NextStep:                 "newterrain_and_savesystem",
 		},
 		"newterrain_and_savesystem": {
 			ID:                     "newterrain_and_savesystem",

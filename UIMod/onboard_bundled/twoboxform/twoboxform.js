@@ -145,9 +145,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     return; // Prevent submission
                     }
                 const joinedValue = `${primaryValue} ${secondaryValue}`;
-                console.log(joinedValue);
                 body = JSON.stringify({
                     [configField]: joinedValue
+                });
+            } else if (configField === "gameBranch") {
+                const secondaryValue = document.getElementById('secondary-field').value.trim();
+                if (secondaryValue === '' || secondaryValue === document.getElementById('secondary-field').placeholder) {
+                    showNotification('Please select a world type!', 'error');
+                    hidePreloader();
+                    return; // Prevent submission
+                    }
+                body = JSON.stringify({
+                    [configField]: secondaryValue
                 });
             } else {
                 body = JSON.stringify({
