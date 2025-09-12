@@ -17,6 +17,7 @@ import (
 )
 
 var steamMu sync.Mutex
+var isUpdatingMu sync.Mutex
 
 // ExtractorFunc is a type that represents a function for extracting archives.
 // It takes an io.ReaderAt, the size of the content, and the destination directory.
@@ -33,6 +34,16 @@ const (
 // InstallAndRunSteamCMD installs and runs SteamCMD based on the platform (Windows/Linux).
 // It returns the exit status of the SteamCMD execution and any error encountered.
 func InstallAndRunSteamCMD() (int, error) {
+	if isUpdatingMu.TryLock() {
+		// Successfully acquired the lock; we are not updating currently
+		logger.Core.Debug("🔄 Locking isUpdatingMu for SteamCMD Update run...")
+	} else {
+		// already updating, return
+		logger.Core.Warn("🔄 isUpdatingMu is currently locked, cannot update server using SteamCMD right now...")
+		return -1, fmt.Errorf("already updating")
+	}
+	defer isUpdatingMu.Unlock()
+	defer logger.Core.Debug("🔄 Unlocking isUpdatingMu after SteamCMD Update run...")
 
 	if gamemgr.InternalIsServerRunning() {
 		logger.Core.Warn("Server is running, stopping server first...")
