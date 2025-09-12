@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
-	"strings"
 	"sync"
 	"time"
 
@@ -20,17 +19,44 @@ import (
 
 var (
 	branches     = make(map[string]string)
-	branchesLock sync.RWMutex // Protects branches map for concurrent access
+	branchesLock sync.RWMutex          // Protects branches map for concurrent access
+	stopPoller   = make(chan struct{}) // Channel to signal poller cancellation
 )
 
-func InitAppInfoPoller() {
+// InitAppInfoPoller starts a goroutine that periodically fetches app info and stops any previous poller.
+func AppInfoPoller() {
+	// Signal previous poller to stop
+	select {
+	case stopPoller <- struct{}{}:
+		// Previous poller was signaled to stop
+	default:
+		// No previous poller running
+	}
+
+	// if AutoGameServerUpdates is disabled, dont start the poller.
+	if !config.GetAllowAutoGameServerUpdates() {
+		return
+	}
+	// Start new poller
 	go func() {
 		for {
-			err := getAppInfo()
-			if err != nil {
-				logger.Install.Error("❌ Failed to get app info: " + err.Error() + "\n")
+			select {
+			case <-stopPoller:
+				logger.Install.Debug("🛑 Previous app info poller stopped")
+				return
+			default:
+				err := getAppInfo()
+				if err != nil {
+					logger.Install.Warn("❌ Failed to get Update info: " + err.Error())
+				}
+				select {
+				case <-stopPoller:
+					logger.Install.Debug("🛑 App info poller stopped")
+					return
+				case <-time.After(5 * time.Minute):
+					// Continue to next iteration
+				}
 			}
-			time.Sleep(5 * time.Minute)
 		}
 	}()
 }
@@ -56,10 +82,10 @@ func getAppInfo() error {
 	cmd.Stderr = &stderr
 
 	// Log the command
-	if config.GetLogLevel() == 10 {
-		cmdString := strings.Join(cmd.Args, " ")
-		logger.Install.Debug("🕑 Running SteamCMD for app info: " + cmdString)
-	}
+	//if config.GetLogLevel() == 10 {
+	//	cmdString := strings.Join(cmd.Args, " ")
+	//	logger.Install.Debug("🕑 Running SteamCMD for app info: " + cmdString)
+	//}
 
 	// Run the command
 	err := cmd.Run()

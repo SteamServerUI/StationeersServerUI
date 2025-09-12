@@ -45,7 +45,6 @@ func Install(wg *sync.WaitGroup) {
 	if config.GetBranch() != "indev-no-steamcmd" {
 		steamcmd.InstallAndRunSteamCMD()
 	}
-	steamcmd.InitAppInfoPoller() // init the steamcmd app info poll check to check for new gameserver updates
 	logger.Install.Info("✅Setup complete!")
 }
 
