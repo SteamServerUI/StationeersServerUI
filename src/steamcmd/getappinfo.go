@@ -73,8 +73,6 @@ func getAppInfo() error {
 		steamMu.Lock() // Block until steamMu becomes available, then snack it and lock it again
 		logger.Core.Debug("🔄 Locking SteamMu for SteamCMD AppInfo...")
 	}
-	defer steamMu.Unlock()
-	defer logger.Core.Debug("🔄 Unlocking SteamMu after SteamCMD AppInfo...")
 	steamcmddir := SteamCMDLinuxDir
 	executable := "steamcmd.sh"
 	appid := config.GetGameServerAppID()
@@ -108,6 +106,9 @@ func getAppInfo() error {
 		logger.Install.Errorf("❌ Error running SteamCMD app info: %s\n", err.Error())
 		return fmt.Errorf("failed to run SteamCMD app info: %w", err)
 	}
+
+	steamMu.Unlock()
+	logger.Core.Debug("🔄 Unlocking SteamMu after SteamCMD AppInfo...")
 
 	// Extract branches and build IDs
 	newBranches, err := extractBranches(stdout.String())
