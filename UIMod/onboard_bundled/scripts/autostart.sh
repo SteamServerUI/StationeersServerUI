@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Check if running as root to prevent installing a service as root
 if [[ $(id -u) = 0 ]]; then
@@ -17,7 +18,7 @@ if [[ -z "$BASEDIR" || ! -d "$BASEDIR" ]]; then
 fi
 
 # Find the last modified SSUI binary if multiple exist
-SSUI_BINARY=$(ls -t $BASEDIR/StationeersServerControlv* 2>/dev/null | head -n 1 | cut -c 1-)
+SSUI_BINARY=$(ls -t $BASEDIR/StationeersServerControlv* 2>/dev/null | head -n 1)
 if [[ -z "$SSUI_BINARY" || ! -x "$SSUI_BINARY" ]]; then
   echo "Error: Could not find executable StationeersServerControl binary in $BASEDIR."
   exit 1
@@ -25,6 +26,7 @@ fi
 
 # If the systemd service file already exists, just exec the SSUI binary
 if [[ -f /etc/systemd/system/ssui.service ]]; then
+  echo "Service already installed. Starting SSUI..."
   exec "$SSUI_BINARY"
 fi
 
@@ -36,7 +38,7 @@ After=network.target
 
 [Service]
 Type=simple
-Restart=on-failure
+Restart=always
 RestartSec=5s
 User=$(whoami)
 WorkingDirectory=$BASEDIR
