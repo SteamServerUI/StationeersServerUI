@@ -7,6 +7,12 @@ if [[ $(id -u) = 0 ]]; then
   exit 1
 fi
 
+# Check if systemd is available
+if ! command -v systemctl &> /dev/null; then
+  echo "Error: systemd is not available on this system."
+  exit 1
+fi
+
 # Determine the full path of this script
 SCRIPT_PATH=$(readlink -f "$0")
 
@@ -18,7 +24,7 @@ if [[ -z "$BASEDIR" || ! -d "$BASEDIR" ]]; then
 fi
 
 # Find the last modified SSUI binary if multiple exist
-SSUI_BINARY=$(ls -t $BASEDIR/StationeersServerControlv* 2>/dev/null | head -n 1)
+SSUI_BINARY=$(ls -t "$BASEDIR"/StationeersServerControlv* 2>/dev/null | head -n 1)
 if [[ -z "$SSUI_BINARY" || ! -x "$SSUI_BINARY" ]]; then
   echo "Error: Could not find executable StationeersServerControl binary in $BASEDIR."
   exit 1
