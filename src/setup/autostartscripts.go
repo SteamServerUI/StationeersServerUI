@@ -40,7 +40,7 @@ func SetupAutostartScripts() {
 		if err != nil {
 			return
 		}
-		err = os.WriteFile("autostart.service", data, 0755)
+		err = os.WriteFile("autostart.sh", data, 0755)
 		if err != nil {
 			return
 		}
