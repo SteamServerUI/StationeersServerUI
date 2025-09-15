@@ -6,7 +6,15 @@ if [[ $(id -u) = 0 ]]; then
 fi
 
 BASEDIR=$(dirname $(readlink -f "$0"))
-BINARY=$(find $BASEDIR/* -maxdepth 0 -name "StationeersServerControlv*" -print -quit)
+if [[ -z "$BASEDIR" || ! -d "$BASEDIR" ]]; then
+  echo "Error: Could not determine base directory."
+  exit 1
+fi
+BINARY=$(find $BASEDIR/* -maxdepth 0 -name "StationeersServerControlv*" -quit)
+if [[ -z "$BINARY" || ! -x "$BINARY" ]]; then
+  echo "Error: Could not find executable StationeersServerControl binary in $BASEDIR."
+  exit 1
+fi
 
 sudo cat <<EOF > /etc/systemd/system/ssui.service
 [Unit]
@@ -29,4 +37,4 @@ sudo systemctl daemon-reload
 sudo systemctl enable ssui.service
 sudo systemctl start ssui.service
 
-echo "Success! Service installed in \`/etc/systemd/system/ssui.service\`"
+echo "Success! Service installed in '/etc/systemd/system/ssui.service'"
