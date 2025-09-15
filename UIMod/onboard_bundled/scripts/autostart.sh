@@ -6,7 +6,7 @@ if [[ $(id -u) = 0 ]]; then
 fi
 
 BASEDIR=$(dirname $(readlink -f "$0"))
-BINARY=$(find $BASEDIR/* -maxdepth 0 -name "StationeersServerControlv*")
+BINARY=$(find $BASEDIR/* -maxdepth 0 -name "StationeersServerControlv*" -print -quit)
 
 sudo cat <<EOF > /etc/systemd/system/ssui.service
 [Unit]
