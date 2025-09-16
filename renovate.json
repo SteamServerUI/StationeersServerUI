@@ -1,0 +1,121 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    
+    ":semanticCommits",
+    ":semanticCommitsAll",
+    ":rebaseStalePrs",
+    ":prConcurrentLimit10",
+    ":prHourlyLimit4",
+    ":labels(renovate)",
+    ":disableRateLimiting"
+  ],
+
+  "timezone": "Etc/UTC",
+  "assignees": [],
+  "reviewers": [],
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dashboard",
+
+  "enabledManagers": [
+    "gomod",
+    "npm",
+    "dockerfile",
+    "docker-compose",
+    "github-actions"
+  ],
+
+  "npm": {
+    "managerFilePatterns": [
+      "/^frontend/package.json$/"
+    ]
+  },
+
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/public/**",
+    "**/.svelte-kit/**",
+    "**/sscm/**",
+    "**/steamcmd/**",
+    "**/Steam/**",
+    "**/steamapps/**",
+    "**/UIMod/**",
+    "**/saves/**"
+  ],
+
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions",
+      "labels": ["ci", "renovate"],
+      "automerge": true,
+      "automergeType": "branch",
+      "platformAutomerge": true
+    },
+    {
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "groupName": "docker base images",
+      "labels": ["docker", "renovate"],
+      "pinDigests": true,
+      "matchUpdateTypes": ["digest"],
+      "automerge": true,
+      "automergeType": "branch",
+      "platformAutomerge": true
+    },
+    {
+      "matchManagers": ["gomod"],
+      "groupName": "go modules (minor/patch)",
+      "labels": ["go", "renovate"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "branch",
+      "platformAutomerge": true
+    },
+    {
+      "matchManagers": ["gomod"],
+      "groupName": "go modules (major)",
+      "labels": ["go", "major"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchFileNames": [
+        "^frontend/"
+      ],
+      "labels": ["frontend", "npm", "renovate"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": "frontend deps (minor/patch)",
+      "automerge": true,
+      "automergeType": "branch",
+      "platformAutomerge": true
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchFileNames": [
+        "^frontend/"
+      ],
+      "labels": ["frontend", "npm", "major"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "frontend deps (major)",
+      "automerge": false
+    },
+    {
+      "matchPackageNames": [
+        "golang.org/x/*",
+        "github.com/golang/*",
+        "github.com/sirupsen/logrus",
+        "github.com/bwmarrin/discordgo"
+      ],
+      "labels": ["go", "important"],
+      "separateMinorPatch": false
+    }
+  ],
+
+  "prCreation": "not-pending",
+  "minimumReleaseAge": "2 days",
+  "commitBodyTable": true
+}
