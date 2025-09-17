@@ -1,10 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
+
 # This script serves two purposes:
 # 1. Installation: Creates and configures a systemd service (ssui.service) to run the StationeersServerControl (StationeersServerUI) application.
 # 2. Runtime: When executed and Service already installed, finds and runs the latest StationeersServerControl binary (matching StationeersServerControlv*).
 # The systemd service uses ExecStart=$SCRIPT_PATH to run this script, which then dynamically selects the latest binary version of SSUI to run.
 # Check if running as root to prevent installing a service as root
+
 if [[ $(id -u) = 0 ]]; then
   echo "For security reasons, it is not recommended to run this service as a root user."
   exit 1
@@ -33,10 +35,20 @@ if [[ -z "$SSUI_BINARY" || ! -x "$SSUI_BINARY" ]]; then
   exit 1
 fi
 
-# If the systemd service file already exists, just exec the SSUI binary
-if [[ -f /etc/systemd/system/ssui.service && "$1" != "--install" ]]; then
-  echo "Service already installed. Starting SSUI..."
-  exec "$SSUI_BINARY"
+# Create a link to the latest binary in /usr/local/bin for easier access
+sudo ln -sf "$SSUI_BINARY" /usr/local/bin/StationeersServerControl
+if ! sudo chmod 0755 /usr/local/bin/StationeersServerControl; then
+  echo "Error: Failed to create symlink or set executable permission."
+  exit 1
+fi
+
+# If the service is already running, stop it before updating
+if systemctl is-active --quiet ssui.service; then
+  echo "Stopping ssui.service for the update..."
+  if ! sudo systemctl stop ssui.service; then
+    echo "Error: Failed to stop ssui.service."
+    exit 1
+  fi
 fi
 
 # Create the systemd service file pointing to this script
@@ -51,7 +63,7 @@ Restart=always
 RestartSec=5s
 User=$(whoami)
 WorkingDirectory=$BASEDIR
-ExecStart=$SCRIPT_PATH
+ExecStart=/usr/local/bin/StationeersServerControl
 
 [Install]
 WantedBy=multi-user.target
@@ -61,9 +73,8 @@ then
   exit 1
 fi
 
-
 # Set service file permissions
-sudo chmod 0600 /etc/systemd/system/ssui.service
+sudo chmod 0644 /etc/systemd/system/ssui.service
 if ! sudo systemctl daemon-reload; then
   echo "Error: Failed to reload systemd daemon."
   exit 1
@@ -72,14 +83,9 @@ if ! sudo systemctl enable ssui.service; then
   echo "Error: Failed to enable ssui.service."
   exit 1
 fi
-if systemctl is-active --quiet ssui.service; then
-  echo "Service ssui.service is already running."
-else
-  if ! sudo systemctl start ssui.service; then
-    echo "Error: Failed to start ssui.service."
-    exit 1
-  fi
+if ! sudo systemctl start ssui.service; then
+  echo "Error: Failed to start ssui.service."
+  exit 1
 fi
-
 
 echo "Success! Service installed in '/etc/systemd/system/ssui.service'"
