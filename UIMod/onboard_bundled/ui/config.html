@@ -56,7 +56,7 @@
                         <button class="section-nav-button" data-section="basic-settings">{{.UIText_BasicSettings}}</button>
                         <button class="section-nav-button" data-section="network-settings">{{.UIText_NetworkSettings}}</button>
                         <button class="section-nav-button" data-section="advanced-settings">{{.UIText_AdvancedSettings}}</button>
-                        <button class="section-nav-button" data-section="beta-settings">{{.UIText_BetaSettings}}</button>
+                        <button class="section-nav-button" data-section="terrain-settings">{{.UIText_TerrainSettings}}</button>
                     </div>
 
                     <form id="server-config-form" action="/saveconfigasjson" method="post">
@@ -254,9 +254,9 @@
                             </div>
                         </div>
 
-                        <div id="beta-settings" class="config-section">
-                            <h3 class="section-title">{{.UIText_BetaOnlySettings}}</h3>
-                            <div class="beta-warning">{{.UIText_BetaWarning}}</div>
+                        <div id="terrain-settings" class="config-section">
+                            <h3 class="section-title">{{.UIText_TerrainSettingsHeader}}</h3>
+                            <div class="beta-warning">{{.UIText_TerrainWarning}}</div>
                             <div class="channel-grid">
                                 <div class="form-group">
                                     <label for="IsNewTerrainAndSaveSystem">{{.UIText_UseNewTerrainAndSave}}:</label>
