@@ -158,7 +158,7 @@ func applyConfig(cfg *JsonConfig) {
 	BackupCleanupInterval = time.Duration(getInt(cfg.BackupCleanupInterval, "BACKUP_CLEANUP_INTERVAL", 730)) * time.Hour
 	BackupWaitTime = time.Duration(getInt(cfg.BackupWaitTime, "BACKUP_WAIT_TIME", 30)) * time.Second
 
-	isNewTerrainAndSaveSystemVal := getBool(cfg.IsNewTerrainAndSaveSystem, "ENABLE_DOT_SAVES", false)
+	isNewTerrainAndSaveSystemVal := getBool(cfg.IsNewTerrainAndSaveSystem, "ENABLE_DOT_SAVES", true)
 	IsNewTerrainAndSaveSystem = isNewTerrainAndSaveSystemVal
 	cfg.IsNewTerrainAndSaveSystem = &isNewTerrainAndSaveSystemVal
 
