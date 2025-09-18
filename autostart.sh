@@ -42,7 +42,7 @@ Restart=always
 RestartSec=5s
 User=$USERNAME
 WorkingDirectory=$BASEDIR
-ExecStart=$BASEDIR/StationeersServerUI
+ExecStart=$BASEDIR/StationeersServerUI.lnk
 
 [Install]
 WantedBy=multi-user.target

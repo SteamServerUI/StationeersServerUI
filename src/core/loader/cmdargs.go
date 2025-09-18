@@ -3,11 +3,15 @@ package loader
 import (
 	"flag"
 	"fmt"
+	"os"
+	"runtime"
 	"strings"
+	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/security"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/autostart"
 )
 
 // LoadCmdArgs parses command-line arguments ONCE at startup (called from func main) and applies them using the config setters.
@@ -21,6 +25,7 @@ func LoadCmdArgs() {
 	var createSSUILogFile bool
 	var recoveryPassword string
 	var devMode bool
+	var autoStartSSUIOnBoot bool
 
 	flag.StringVar(&backendEndpointPort, "BackendEndpointPort", "", "Override the backend endpoint port (e.g., 8080)")
 	flag.StringVar(&backendEndpointPort, "p", "", "(Alias) Override the backend endpoint port (e.g., 8080)")
@@ -35,6 +40,7 @@ func LoadCmdArgs() {
 	flag.BoolVar(&isDebugMode, "debug", false, "(Alias) Enable debug mode")
 	flag.BoolVar(&createSSUILogFile, "CreateSSUILogFile", false, "Create a log file for SSUI")
 	flag.BoolVar(&createSSUILogFile, "lf", false, "(Alias) Create a log file for SSUI")
+	flag.BoolVar(&autoStartSSUIOnBoot, "setupautostart", false, "Setup Auto-start SSUI on boot")
 
 	// Parse command-line flags
 	flag.Parse()
@@ -45,6 +51,20 @@ func LoadCmdArgs() {
 		config.SetUsers(map[string]string{"admin": "$2a$10$7QQhPkNAfT.MXhJhnnodXOyn3KKE/1eu7nYb0y2O1UBoAWc0Y/fda"}) // admin:admin
 		config.SetIsConsoleEnabled(true)
 		logger.Main.Info("Dev mode enabled: Auth enabled, admin user set to admin:admin:superadmin, console enabled")
+	}
+
+	if autoStartSSUIOnBoot {
+		if runtime.GOOS != "linux" {
+			logger.Core.Error("Autostart is only supported on Linux. Exiting in 5 seconds...")
+			time.Sleep(5 * time.Second)
+			os.Exit(0)
+		}
+		err := autostart.Initialize()
+		if err != nil {
+			logger.Core.Error("Failed to initialize autostart: " + err.Error())
+		}
+		time.Sleep(5 * time.Second)
+		os.Exit(0)
 	}
 
 	if backendEndpointPort != "" && backendEndpointPort != "8443" {
