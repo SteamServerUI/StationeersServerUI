@@ -18,7 +18,14 @@ services:
       - "27015:27015/udp"
       - "27015:27015/tcp"
     volumes:
-      - ./saves:/app/saves
+      # Persist app data between container restarts
+      - app-data:/app
+      # Mount saves and config for easy access/editing outside the container
+      - ./saves:/app/saves:rw
       - ./UIMod/config:/app/UIMod/config:rw
+      - ./UIMod/tls:/app/UIMod/tls:rw
     restart: unless-stopped
     command: []
+
+volumes:
+  app-data:

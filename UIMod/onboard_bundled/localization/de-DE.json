@@ -26,7 +26,6 @@
       "UIText_BasicSettings": "Basis",
       "UIText_NetworkSettings": "Netzwerk",
       "UIText_AdvancedSettings": "Erweitert",
-      "UIText_BetaSettings": "Beta",
       "basic": {
         "UIText_BasicServerSettings": "Grundlegende Servereinstellungen",
         "UIText_ServerName": "Servername",
@@ -78,11 +77,7 @@
         "UIText_GameBranch": "Spiel Branch",
         "UIText_GameBranchInfo": "Branch des Spiels. Bei Änderung SSUI Neustart erforderlich!"
       },
-      "beta": {
-        "UIText_BetaOnlySettings": "NUR BETA: NEUE TERRAIN UND SPEICHERSYSTEM EINSTELLUNGEN",
-        "UIText_BetaWarning": "Diese Einstellungen sind nur nützlich bei Stationeers Dedicated Server Beta. Wechsel möglich unter Erweiterte Einstellungen -> Spiel Branch. Alte Speicherstände NICHT kompatibel, aber migrierbar mit JacksonTheMaster's <a href=\"https://sst.jxsn.dev\">Migration Tool</a>. \"How to\" Infos im FAQ gelten auch für Dedicated Server.",
-        "UIText_UseNewTerrainAndSave": "Neues Terrain- und Speichersystem Nutzen",
-        "UIText_UseNewTerrainAndSaveInfo": "Auf TRUE setzen für .save Dateien im Backup Manager und Argument-Parsing. Bei false funktionieren nur Stationeers Versionen vor Terrain-Überarbeitung (≈ Mitte 2025). Standard false bis neues System veröffentlicht.",
+      "terrain": {
         "UIText_Difficulty": "Schwierigkeit",
         "UIText_DifficultyInfo": "Schwierigkeit für Welterstellung. Standard Normal wenn leer.",
         "UIText_StartCondition": "Startbedingung",
@@ -177,7 +172,6 @@
       "UIText_GameBranch_SkipButton": "Release Version nutzen",
       "UIText_NewTerrainAndSaveSystem_Title": "Wichtig",
       "UIText_NewTerrainAndSaveSystem_HeaderTitle": "Terrainsystem wählen",
-      "UIText_NewTerrainAndSaveSystem_StepMessage": "Gerade zu Beta gewechselt? Terrain- und Speichersystem umschalten! 'ja' eingeben zum Aktivieren oder 'nein' zum Deaktivieren.",
       "UIText_NewTerrainAndSaveSystem_PrimaryPlaceholder": "nein",
       "UIText_NewTerrainAndSaveSystem_PrimaryLabel": "Neues System aktivieren",
       "UIText_NewTerrainAndSaveSystem_SubmitButton": "Speichern & Weiter",
