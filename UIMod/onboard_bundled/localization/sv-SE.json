@@ -26,7 +26,6 @@
       "UIText_BasicSettings": "Grund",
       "UIText_NetworkSettings": "Nätverk",
       "UIText_AdvancedSettings": "Avancerad",
-      "UIText_BetaSettings": "Beta",
       "basic": {
         "UIText_BasicServerSettings": "Grundläggande serverinställningar",
         "UIText_ServerName": "Servernamn",
@@ -80,11 +79,8 @@
         "UIText_AllowAutoGameServerUpdates": "Aktivera automatiska uppdateringar av spelservern",
         "UIText_AllowAutoGameServerUpdatesInfo": "Tillåt spelservern att automatiskt söka efter och uppdatera till den senaste versionen. Obs! Servern startas om när en ny version har hittats och installerats. Flera varningsmeddelanden skickas till servern med SAY-kommandon 60–10 sekunder före omstarten."
       },
-      "beta": {
-        "UIText_BetaOnlySettings": "ENDAST BETA: INSTÄLLNINGAR FÖR NYTT TERRÄNG- OCH SPARSYSTEM",
-        "UIText_BetaWarning": "Dessa inställningar är endast användbara om du kör Stationeers Dedicated Server Beta. Byte är möjligt via Avancerade inställningar -> Spelgren. Gamla sparfiler är INTE kompatibla med det nya systemet, men kan migreras med JacksonTheMasters <a href=\"https://sst.jxsn.dev\">Migreringsverktyg</a>. Relaterad \"hur man gör\"-info i FAQ gäller även för Dedicated Server.",
+      "terrain": {
         "UIText_UseNewTerrainAndSave": "Använd nytt system",
-        "UIText_UseNewTerrainAndSaveInfo": "Sätt till TRUE för att aktivera hantering av .save-filer i Backup-hanteraren och argumentparsning. Om satt till false fungerar endast Stationeers-versioner före terrängomarbetningen (≈ mitten av 2025). Standard är false tills nya Stationeers terräng- och sparsystemet släpps.",
         "UIText_Difficulty": "Svårighetsgrad",
         "UIText_DifficultyInfo": "Svårighetsgrad för världsskapande. Standard är Normal om tomt.",
         "UIText_StartCondition": "Startvillkor",
@@ -176,7 +172,6 @@
       "UIText_GameBranch_SkipButton": "Använd standardversion",
       "UIText_NewTerrainAndSaveSystem_Title": "Viktigt",
       "UIText_NewTerrainAndSaveSystem_HeaderTitle": "Välj terrängsystem",
-      "UIText_NewTerrainAndSaveSystem_StepMessage": "Bytt till beta? Aktivera terräng- och sparsystem för att stödja det! Ange 'ja' för att aktivera eller 'nej' för att inaktivera.",
       "UIText_NewTerrainAndSaveSystem_PrimaryPlaceholder": "nej",
       "UIText_NewTerrainAndSaveSystem_PrimaryLabel": "Aktivera nytt system",
       "UIText_NewTerrainAndSaveSystem_SubmitButton": "Spara & fortsätt",

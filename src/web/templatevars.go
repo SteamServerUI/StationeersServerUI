@@ -89,7 +89,7 @@ type ConfigTemplateData struct {
 	UIText_BasicSettings        string
 	UIText_NetworkSettings      string
 	UIText_AdvancedSettings     string
-	UIText_BetaSettings         string
+	UIText_TerrainSettings      string
 	UIText_BasicServerSettings  string
 
 	UIText_ServerName                       string
@@ -136,8 +136,8 @@ type ConfigTemplateData struct {
 	UIText_AutoRestartServerTimerInfo       string
 	UIText_GameBranch                       string
 	UIText_GameBranchInfo                   string
-	UIText_BetaOnlySettings                 string
-	UIText_BetaWarning                      string
+	UIText_TerrainSettingsHeader            string
+	UIText_TerrainWarning                   string
 	UIText_UseNewTerrainAndSave             string
 	UIText_UseNewTerrainAndSaveInfo         string
 	UIText_Difficulty                       string

@@ -26,7 +26,7 @@
       "UIText_BasicSettings": "Basic Settings",
       "UIText_NetworkSettings": "Network Settings",
       "UIText_AdvancedSettings": "Advanced Settings",
-      "UIText_BetaSettings": "Beta Settings",
+      "UIText_TerrainSettings": "New Terrain",
       "basic": {
         "UIText_BasicServerSettings": "Basic Server Settings",
         "UIText_ServerName": "Server Name",
@@ -80,11 +80,11 @@
         "UIText_AllowAutoGameServerUpdates": "Enable Auto Game Server Updates",
         "UIText_AllowAutoGameServerUpdatesInfo": "Allow the gameserver to automatically query for and update to the latest version. Attention: Restarts the server when a new version was found and installed. Will send multiple warning messages to the sever with SAY commands 60-10 seconds before the restart."
       },
-      "beta": {
-        "UIText_BetaOnlySettings": "BETA ONLY: NEW TERRAIN AND SAVE SYSTEM SETTINGS",
-        "UIText_BetaWarning": "These settings are only useful if you are running the Stationeers Dedicated Server Beta. Switching is possible from Advanced Settings -> Game Branch. Old savegames are NOT compatible with the new system, but can be migrated with JacksonTheMaster's <a href=\"https://sst.jxsn.dev\">Migration tool.</a>. Related \"how to\" Information on the FAQ there also applies to the Dedicated Server.",
+      "terrain": {
+        "UIText_TerrainSettingsHeader": "NEW TERRAIN AND SAVE SYSTEM SETTINGS",
+        "UIText_TerrainWarning": "These settings are only useful if you are running a Stationeers build NEWER than September 2025. Old savegames are NOT compatible with the new system, but can be migrated with JacksonTheMaster's <a href=\"https://sst.jxsn.dev\">Migration tool.</a>. Related \"how to\" Information on the FAQ there also applies to the Dedicated Server.",
         "UIText_UseNewTerrainAndSave": "Use New Terrain and Save System",
-        "UIText_UseNewTerrainAndSaveInfo": "Set to TRUE to enable handling of .save files in the Backup manager and argument parsing. If set to false, only Stationeers versions before the terrain rework (≈ mid 2025) will work. Defaults to false until new Stationeers Terrain and Save System is released.",
+        "UIText_UseNewTerrainAndSaveInfo": "Set to TRUE to enable handling of .save files in the Backup manager and argument parsing. If set to false, only Stationeers versions before the terrain rework (≈ mid 2025) will work. Defaults to TRUE!",
         "UIText_Difficulty": "Difficulty",
         "UIText_DifficultyInfo": "Difficulty to create the world with. Defaults to Normal if empty.",
         "UIText_StartCondition": "Start Condition",
@@ -176,8 +176,8 @@
       "UIText_GameBranch_SkipButton": "Use Normal Version",
       "UIText_NewTerrainAndSaveSystem_Title": "IMPORTANT",
       "UIText_NewTerrainAndSaveSystem_HeaderTitle": "Select Terrain System",
-      "UIText_NewTerrainAndSaveSystem_StepMessage": "Just switched to Beta? If yes, enable handling of the new terrain and save system here. Enter 'yes' to enable or 'no' to use the old system.",
-      "UIText_NewTerrainAndSaveSystem_PrimaryPlaceholder": "no",
+      "UIText_NewTerrainAndSaveSystem_StepMessage": "Using an OLD branch, such as preterrain or older without the terrain system changes? If yes, disable handling of the new terrain and save system here. Enter 'yes' or skip to enable (default) or 'no' to use the old save and terrain system. If you are unsure, skip this step.",
+      "UIText_NewTerrainAndSaveSystem_PrimaryPlaceholder": "yes",
       "UIText_NewTerrainAndSaveSystem_PrimaryLabel": "Enable new System",
       "UIText_NewTerrainAndSaveSystem_SubmitButton": "Save & Continue",
       "UIText_NewTerrainAndSaveSystem_SkipButton": "Skip",

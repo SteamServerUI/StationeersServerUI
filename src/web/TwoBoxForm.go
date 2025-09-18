@@ -102,11 +102,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			{Display: "Venus", Value: "Venus"},
 			{Display: "Mars", Value: "Mars2"},
 			{Display: "Europa", Value: "Europa3"},
-			{Display: "Mimas Herschel", Value: "MimasHerschel"},
-			{Display: "Mars", Value: "Mars"},
-			{Display: "Europa", Value: "Europa"},
-			{Display: "Mimas", Value: "Mimas"},
-		}
+			{Display: "Mimas Herschel", Value: "MimasHerschel"}}
 	}
 
 	// Define all steps in a map for easy access and modification
