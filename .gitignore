@@ -36,8 +36,8 @@ modconfig.xml
 UIMod/config/config.json
 C:/custom/file.txt
 UIMod/config/customdetections.json
-autostart.sh
-autostart.ps1
+./autostart.sh
+./autostart.ps1
 winhttp.dll
 __debug_bin*
 frontend/node_modules
