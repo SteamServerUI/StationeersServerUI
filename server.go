@@ -38,6 +38,7 @@ func main() {
 	var wg sync.WaitGroup
 	logger.ConfigureConsole()
 	logger.Install.Info("Starting setup...")
+	loader.SetupWorkingDir()
 	loader.ReloadConfig() // Load the config file before starting the setup process
 	loader.LoadCmdArgs()
 	setup.Install(&wg)
