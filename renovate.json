@@ -15,6 +15,7 @@
   "automerge": false,
   "platformAutomerge": false,
   "assignees": [],
+  "baseBranches": ["nightly"],
   "reviewers": ["JacksonTheMaster", "mitoskalandiel"],
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard",
