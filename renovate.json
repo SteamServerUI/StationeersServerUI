@@ -27,7 +27,7 @@
 
   "npm": {
     "managerFilePatterns": [
-      "/^frontend/package.json$/"
+      "frontend/package.json"
     ]
   },
 
