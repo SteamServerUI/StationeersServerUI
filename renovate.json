@@ -12,8 +12,10 @@
   ],
 
   "timezone": "Etc/UTC",
+  "automerge": false,
+  "platformAutomerge": false,
   "assignees": [],
-  "reviewers": [],
+  "reviewers": ["JacksonTheMaster"],
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard",
 
@@ -50,9 +52,9 @@
       "matchManagers": ["github-actions"],
       "groupName": "github-actions",
       "labels": ["ci", "renovate"],
-      "automerge": true,
+      "automerge": false,
       "automergeType": "branch",
-      "platformAutomerge": true
+      "platformAutomerge": false
     },
     {
       "matchManagers": ["dockerfile", "docker-compose"],
@@ -60,18 +62,18 @@
       "labels": ["docker", "renovate"],
       "pinDigests": true,
       "matchUpdateTypes": ["digest"],
-      "automerge": true,
+      "automerge": false,
       "automergeType": "branch",
-      "platformAutomerge": true
+      "platformAutomerge": false
     },
     {
       "matchManagers": ["gomod"],
       "groupName": "go modules (minor/patch)",
       "labels": ["go", "renovate"],
       "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true,
+      "automerge": false,
       "automergeType": "branch",
-      "platformAutomerge": true
+      "platformAutomerge": false
     },
     {
       "matchManagers": ["gomod"],
@@ -88,9 +90,9 @@
       "labels": ["frontend", "npm", "renovate"],
       "matchUpdateTypes": ["patch", "minor"],
       "groupName": "frontend deps (minor/patch)",
-      "automerge": true,
+      "automerge": false,
       "automergeType": "branch",
-      "platformAutomerge": true
+      "platformAutomerge": false
     },
     {
       "matchManagers": ["npm"],
@@ -106,7 +108,6 @@
       "matchPackageNames": [
         "golang.org/x/*",
         "github.com/golang/*",
-        "github.com/sirupsen/logrus",
         "github.com/bwmarrin/discordgo"
       ],
       "labels": ["go", "important"],
