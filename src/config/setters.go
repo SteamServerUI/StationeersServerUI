@@ -38,6 +38,14 @@ func SetCurrentBranchBuildID(value string) error {
 	return nil
 }
 
+func SetExtractedGameVersion(value string) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	ExtractedGameVersion = value
+	return nil
+}
+
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT

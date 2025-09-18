@@ -62,6 +62,7 @@ var (
 	AutoStartServerOnStartup bool
 	SSUIIdentifier           string
 	CurrentBranchBuildID     string // ONLY RUNTIME
+	ExtractedGameVersion     string // ONLY RUNTIME
 )
 
 // Discord integration

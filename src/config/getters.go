@@ -487,3 +487,9 @@ func GetAllowAutoGameServerUpdates() bool {
 	defer ConfigMu.RUnlock()
 	return AllowAutoGameServerUpdates
 }
+
+func GetExtractedGameVersion() string {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return ExtractedGameVersion
+}

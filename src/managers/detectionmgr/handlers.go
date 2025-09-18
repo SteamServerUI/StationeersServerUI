@@ -66,6 +66,12 @@ func DefaultHandlers() map[EventType]Handler {
 			ssestream.BroadcastDetectionEvent(message)
 			discordbot.SendMessageToStatusChannel(message)
 		},
+		EventVersionExtracted: func(event Event) {
+			message := fmt.Sprintf("🎮 [Gameserver] 📦 Version %s detected", event.Message)
+			logger.Detection.Info(message)
+			ssestream.BroadcastDetectionEvent(message)
+			discordbot.SendMessageToStatusChannel(message)
+		},
 		EventServerRunning: func(event Event) {
 			message := "🎮 [Gameserver] ✅ Server process has started!"
 			logger.Detection.Info(message)

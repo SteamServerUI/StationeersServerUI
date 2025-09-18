@@ -18,6 +18,7 @@ const (
 	EventSettingsChanged  EventType = "SETTINGS_CHANGED"
 	EventServerHosted     EventType = "SERVER_HOSTED"
 	EventNewGameStarted   EventType = "NEW_GAME_STARTED"
+	EventVersionExtracted EventType = "VERSION_EXTRACTED"
 	EventServerRunning    EventType = "SERVER_RUNNING"
 	EventCustomDetection  EventType = "CUSTOM_DETECTION"
 )

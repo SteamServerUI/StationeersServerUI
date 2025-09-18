@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
 )
 
@@ -238,6 +239,19 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 					RawLog:    logMessage,
 					Timestamp: time.Now().Format(time.RFC3339),
 				})
+			},
+		},
+		{
+			pattern: regexp.MustCompile(`Version\s*:\s*(\d+\.\d+\.\d+\.\d+)`),
+			handler: func(matches []string, logMessage string) {
+				version := matches[1]
+				d.triggerEvent(Event{
+					Type:      EventVersionExtracted,
+					Message:   fmt.Sprintf("Version %s detected", version),
+					RawLog:    logMessage,
+					Timestamp: time.Now().Format(time.RFC3339),
+				})
+				config.SetExtractedGameVersion(version)
 			},
 		},
 	}
