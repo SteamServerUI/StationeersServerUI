@@ -49,5 +49,10 @@ func printFirstTimeSetupMessage() {
 	logger.Core.Cleanf("  │ • Support is provided at https://discord.gg/8n3vN92MyJ                                      │")
 	logger.Core.Cleanf("  │ • For more details, check the GitHub Wiki:                                                  │")
 	logger.Core.Cleanf("  │ • https://github.com/JacksonTheMaster/StationeersServerUI/v5/wiki                           │")
+	logger.Core.Cleanf("  │                                                                                             │")
+	if runtime.GOOS == "linux" {
+		logger.Core.Cleanf("  │ • Autostart:                                                                                │")
+		logger.Core.Cleanf("  │ • to run SSUI automatically on boot, run SSUI with the --setupautostart flag once.          │")
+	}
 	logger.Core.Cleanf("  └─────────────────────────────────────────────────────────────────────────────────────────────┘")
 }

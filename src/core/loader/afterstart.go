@@ -26,7 +26,6 @@ func AfterStartComplete(wg *sync.WaitGroup) {
 		logger.Core.Info("AutoStartServerOnStartup is enabled, starting server...")
 		gamemgr.InternalStartServer()
 	}
-	setup.SetupAutostartScripts()
 	discordrpc.StartDiscordRPC()
 
 	go func() {
