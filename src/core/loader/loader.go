@@ -3,6 +3,9 @@ package loader
 
 import (
 	"embed"
+	"os"
+	"path/filepath"
+	"runtime"
 	"sync"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
@@ -15,6 +18,36 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
+
+func SetupWorkingDir() error {
+	if runtime.GOOS == "windows" {
+		// For now Windows doesn't have symlinking issues so we'll just let is use the current working directory
+		return nil
+	}
+	if runtime.GOOS == "linux" {
+		// Get the current executable path from /proc/self/exe
+		exePath, err := os.Readlink("/proc/self/exe")
+		if err != nil {
+			return err
+		}
+		// Get the directory path of the executable
+		dirPath := filepath.Dir(exePath)
+		// Change the working directory to the executable's directory
+		cwd, err := os.Getwd()
+		if err != nil {
+			return err
+		}
+		if cwd != dirPath {
+			logger.Core.Info("Changing working directory to " + dirPath)
+			err = os.Chdir(dirPath)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	return nil
+}
 
 // only call this once at startup
 func InitBackend(wg *sync.WaitGroup) {
