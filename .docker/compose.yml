@@ -21,8 +21,8 @@ services:
       - "27015:27015/tcp"
     volumes:
       - app-data:/app
-      - ${PWD}/saves:/app/saves:rw
-      - ${PWD}/UIMod:/app/UIMod:rw
+      - ./saves:/app/saves:rw
+      - ./UIMod:/app/UIMod:rw
     restart: unless-stopped
 
 volumes:
