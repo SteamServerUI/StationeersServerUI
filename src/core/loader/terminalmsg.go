@@ -31,7 +31,7 @@ func printStartupMessage() {
 	logger.Core.Cleanf("  ╚═══════════════════════════════════════════════════════════════════════════════════════════════════╝")
 
 	// Web UI info
-	logger.Core.Cleanf("\n  🌐 Web UI available at: https://localhost:8443 (default) or https://<server-ip>:" + config.GetSSUIWebPort())
+	logger.Core.Cleanf("\n  🌐 Web UI available at: https://localhost:8443 (default) or https://<server-ip>:%s", config.GetSSUIWebPort())
 	logger.Core.Cleanf("\n  🌐 Support available at: https://discord.gg/8n3vN92MyJ")
 
 	// Quote
@@ -49,5 +49,10 @@ func printFirstTimeSetupMessage() {
 	logger.Core.Cleanf("  │ • Support is provided at https://discord.gg/8n3vN92MyJ                                      │")
 	logger.Core.Cleanf("  │ • For more details, check the GitHub Wiki:                                                  │")
 	logger.Core.Cleanf("  │ • https://github.com/JacksonTheMaster/StationeersServerUI/v5/wiki                           │")
+	logger.Core.Cleanf("  │                                                                                             │")
+	if runtime.GOOS == "linux" {
+		logger.Core.Cleanf("  │ • Autostart:                                                                                │")
+		logger.Core.Cleanf("  │ • to run SSUI automatically on boot, run SSUI with the --setupautostart flag once.          │")
+	}
 	logger.Core.Cleanf("  └─────────────────────────────────────────────────────────────────────────────────────────────┘")
 }
