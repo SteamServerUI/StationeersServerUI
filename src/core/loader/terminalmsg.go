@@ -48,6 +48,6 @@ func printFirstTimeSetupMessage() {
 	logger.Core.Cleanf("  │ • Configure your server by visiting the WebUI!                                              │")
 	logger.Core.Cleanf("  │ • Support is provided at https://discord.gg/8n3vN92MyJ                                      │")
 	logger.Core.Cleanf("  │ • For more details, check the GitHub Wiki:                                                  │")
-	logger.Core.Cleanf("  │ • https://github.com/JacksonTheMaster/StationeersServerUI/v5/wiki                           │")
+	logger.Core.Cleanf("  │ • https://github.com/SteamServerUI/StationeersServerUI/v5/wiki                              │")
 	logger.Core.Cleanf("  └─────────────────────────────────────────────────────────────────────────────────────────────┘")
 }
