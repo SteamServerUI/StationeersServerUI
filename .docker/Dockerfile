@@ -56,7 +56,7 @@ RUN useradd -m -d /app -s /bin/sh app
 # Copy compiled binary and license
 COPY --from=go-builder /out/StationeersServerControl /usr/local/bin/StationeersServerControl
 COPY ./LICENSE /app/LICENSE
-COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY ./.docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/StationeersServerControl /usr/local/bin/docker-entrypoint.sh
 
 RUN chown -R app:app /app
