@@ -1,7 +1,9 @@
 services:
   stationeers-server:
     container_name: stationeers-server
-    build: .
+    build:
+      context: ..
+      dockerfile: ./.docker/Dockerfile
     image: stationeersserverui:test
     stdin_open: true
     tty: true
