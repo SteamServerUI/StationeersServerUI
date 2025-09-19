@@ -19,6 +19,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
 
+// SetupWorkingDir sets the working directory to the directory of the executable to prevent user errors
 func SetupWorkingDir() error {
 	if runtime.GOOS == "windows" {
 		// For now Windows doesn't have symlinking issues so we'll just let is use the current working directory
@@ -38,7 +39,7 @@ func SetupWorkingDir() error {
 			return err
 		}
 		if cwd != dirPath {
-			logger.Core.Info("Changing working directory to " + dirPath)
+			logger.Core.Debug("Changing working directory to " + dirPath)
 			err = os.Chdir(dirPath)
 			if err != nil {
 				return err
