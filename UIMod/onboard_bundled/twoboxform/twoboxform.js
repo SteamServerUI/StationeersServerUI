@@ -138,6 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 
             } else if (configField === "SaveInfo") {
                 const primaryValue = document.getElementById('primary-field').value.trim();
+                // If the world type contains a space, it's invalid 
+                if (primaryValue.includes(' ')) {
+                    showNotification('The world type cannot contain spaces!', 'error');
+                    hidePreloader();
+                    return; // Prevent submission
+                    }
                 const secondaryValue = document.getElementById('secondary-field').value.trim();
                 if (secondaryValue === '' || secondaryValue === document.getElementById('secondary-field').placeholder) {
                     showNotification('Please select a world type!', 'error');
