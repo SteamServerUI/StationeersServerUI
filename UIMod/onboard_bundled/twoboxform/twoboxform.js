@@ -138,9 +138,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 
             } else if (configField === "SaveInfo") {
                 const primaryValue = document.getElementById('primary-field').value.trim();
-                // If the world type contains a space, it's invalid 
+                // If the world name contains a space, it's invalid 
                 if (primaryValue.includes(' ')) {
-                    showNotification('The world type cannot contain spaces!', 'error');
+                    showNotification('The world name cannot contain spaces!', 'error');
                     hidePreloader();
                     return; // Prevent submission
                     }
