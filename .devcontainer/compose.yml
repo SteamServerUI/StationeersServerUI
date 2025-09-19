@@ -1,0 +1,29 @@
+services:
+  stationeers-server:
+    container_name: stationeers-server
+    build: .
+    image: stationeersserverui:test
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 16G
+        reservations:
+          cpus: '4'
+          memory: 8G
+    ports:
+      - "8443:8443"
+      - "27016:27016/udp"
+      - "27016:27016/tcp"
+      - "27015:27015/udp"
+      - "27015:27015/tcp"
+    volumes:
+      - app-data:/app
+      - ${PWD}/saves:/app/saves:rw
+      - ${PWD}/UIMod:/app/UIMod:rw
+    restart: unless-stopped
+
+volumes:
+  app-data:

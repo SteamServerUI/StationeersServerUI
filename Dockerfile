@@ -48,6 +48,7 @@ RUN dpkg --add-architecture i386 \
     locales \
     lib32gcc-s1 \
     file \
+    gosu \
  && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -d /app -s /bin/sh app
@@ -55,12 +56,11 @@ RUN useradd -m -d /app -s /bin/sh app
 # Copy compiled binary and license
 COPY --from=go-builder /out/StationeersServerControl /usr/local/bin/StationeersServerControl
 COPY ./LICENSE /app/LICENSE
-RUN chmod +x /usr/local/bin/StationeersServerControl
+COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/StationeersServerControl /usr/local/bin/docker-entrypoint.sh
 
 RUN chown -R app:app /app
 
-USER app
-
 EXPOSE 8443/tcp 27016/udp 27015/udp
 
-ENTRYPOINT ["/usr/local/bin/StationeersServerControl"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
