@@ -45,8 +45,6 @@ func main() {
 	loader.LoadCmdArgs()
 	setup.Install(&wg)
 	wg.Wait()
-	logger.Main.Debug("Initializing resources...")
-	loader.InitVirtFS(v1uiFS)
 	logger.Main.Debug("Initializing Backend...")
 	loader.InitBackend(&wg)
 	wg.Wait()
