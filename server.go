@@ -37,6 +37,9 @@ var v1uiFS embed.FS
 func main() {
 	var wg sync.WaitGroup
 	logger.ConfigureConsole()
+	logger.Main.Debug("Initializing resources...")
+	loader.SetupWorkingDir()
+	loader.InitVirtFS(v1uiFS)
 	logger.Install.Info("Starting setup...")
 	loader.ReloadConfig() // Load the config file before starting the setup process
 	loader.LoadCmdArgs()
