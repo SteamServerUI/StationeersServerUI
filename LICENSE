@@ -7,7 +7,7 @@
 
 The Licensor encourages community participation through the SSUI GitHub repository. For support, feature requests, or inquiries, contact the Licensor at github.com/JacksonTheMaster.
 
-The Stationeers Server UI (“SSUI”) is a proprietary software suite, including the Stationeers Server Command Manager (SSCM), designed to enhance Stationeers server administration. SSUI is developed as an source-available (https://www.linuxfoundation.org/licensebestpractices#not-os) project on GitHub (github.com/JacksonTheMaster/StationeersServerUI) to encourage community collaboration while maintaining legal control with the repository owner, JacksonTheMaster. This License Agreement governs the use, modification, and contribution to SSUI, balancing open development with controlled commercial use. SSCM is licensed separately under the Stationeers Server Command Manager License Agreement (see LICENSE in the SSCM folder).
+The Stationeers Server UI (“SSUI”) is a proprietary software suite, including the Stationeers Server Command Manager (SSCM), designed to enhance Stationeers server administration. SSUI is developed as an open-source project on GitHub (github.com/JacksonTheMaster/StationeersServerUI) to encourage community collaboration while maintaining legal control with the repository owner, JacksonTheMaster. This License Agreement governs the use, modification, and contribution to SSUI, balancing open development with controlled commercial use. SSCM is licensed separately under the Stationeers Server Command Manager License Agreement (see LICENSE in the SSCM folder).
 
 ## DEFINITIONS
 
@@ -16,7 +16,7 @@ The Stationeers Server UI (“SSUI”) is a proprietary software suite, includin
 - **Licensee**: You, the individual or entity using SSUI.
 - **Licensor**: JacksonTheMaster, the copyright holder and repository owner of SSUI.
 - **Non-Commercial Use**: Use for personal, educational, or open-source development purposes without profit or business revenue.
-- **Commercial Use**: Use in a business, profit-generating, or commercial context. Does not apply to Content creators who create content on a SSUI powererd Server.
+- **Commercial Use**: Use in a business, profit-generating, or commercial context.
 - **RocketWerkz**: RocketWerkz Studios Limited (Level 38, PwC Tower, 15 Customs St. West, 1010 Auckland, NZBN: 9429041553206)
 
 ## GRANT OF LICENSE
