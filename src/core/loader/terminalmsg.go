@@ -31,7 +31,7 @@ func printStartupMessage() {
 	logger.Core.Cleanf("  ╚═══════════════════════════════════════════════════════════════════════════════════════════════════╝")
 
 	// Web UI info
-	logger.Core.Cleanf("\n  🌐 Web UI available at: https://localhost:8443 (default) or https://<server-ip>:" + config.GetSSUIWebPort())
+	logger.Core.Cleanf("\n  🌐 Web UI available at: https://localhost:8443 (default) or https://<server-ip>:%s", config.GetSSUIWebPort())
 	logger.Core.Cleanf("\n  🌐 Support available at: https://discord.gg/8n3vN92MyJ")
 
 	// Quote
