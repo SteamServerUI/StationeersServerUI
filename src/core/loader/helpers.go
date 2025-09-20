@@ -165,45 +165,35 @@ func PrintConfigDetails(logLevel ...string) {
 	logger.Config.Debug("=======================================")
 }
 
-// SetupWorkingDir sets the working directory to the directory of the executable to prevent user errors
-func SetupWorkingDir() error {
-	if runtime.GOOS == "windows" {
-		// For now Windows doesn't have symlinking issues so we'll just let is use the current working directory
-		return nil
-	}
-	if runtime.GOOS == "linux" {
-		// Get the current executable path from /proc/self/exe
-		exePath, err := os.Readlink("/proc/self/exe")
-		if err != nil {
-			return err
-		}
-		// Get the directory path of the executable
-		dirPath := filepath.Dir(exePath)
-		// Change the working directory to the executable's directory
-		cwd, err := os.Getwd()
-		if err != nil {
-			return err
-		}
-		if cwd != dirPath {
-			logger.Core.Debug("Changing working directory to " + dirPath)
-			err = os.Chdir(dirPath)
-			if err != nil {
-				return err
-			}
-		}
-		return nil
-	}
-	return nil
-}
-
 func SanityCheck() error {
 
 	if runtime.GOOS == "windows" {
 		return nil
 	}
+
 	// Check if running as root (UID 0)
 	if os.Geteuid() == 0 {
 		return fmt.Errorf("root: SSUI should not be run as root")
+	}
+
+	// Get the current executable path from /proc/self/exe
+	exePath, err := os.Readlink("/proc/self/exe")
+	if err != nil {
+		return err
+	}
+	// Get the directory path of the executable
+	dirPath := filepath.Dir(exePath)
+	// Change the working directory to the executable's directory
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	if cwd != dirPath && !strings.Contains(dirPath, "/tmp") {
+		err = os.Chdir(dirPath)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Check if current working directory is writable

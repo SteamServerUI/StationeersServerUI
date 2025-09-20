@@ -39,7 +39,6 @@ var v1uiFS embed.FS
 func main() {
 	var wg sync.WaitGroup
 	logger.ConfigureConsole()
-	loader.SetupWorkingDir()
 	if err := loader.SanityCheck(); err != nil {
 		logger.Main.Error("Sanity check failed, exiting in 10 secconds: " + err.Error())
 		time.Sleep(10 * time.Second)
