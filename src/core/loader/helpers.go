@@ -195,3 +195,39 @@ func SetupWorkingDir() error {
 	}
 	return nil
 }
+
+func SanityCheck() error {
+
+	if runtime.GOOS == "windows" {
+		return nil
+	}
+	// Check if running as root (UID 0)
+	if os.Geteuid() == 0 {
+		return fmt.Errorf("root: SSUI should not be run as root")
+	}
+
+	// Check if current working directory is writable
+	workDir, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get working directory: %w", err)
+	}
+
+	// Try to create a temporary file to test write permissions
+	testFile := filepath.Join(workDir, ".write_test")
+	if err := os.WriteFile(testFile, []byte("test"), 0600); err != nil {
+		return fmt.Errorf("cannot write to working directory %s: %w", workDir, err)
+	}
+	// Clean up test file
+	if err := os.Remove(testFile); err != nil {
+		return fmt.Errorf("failed to clean up sanity check writetest file: %w", err)
+	}
+
+	// Check if steamcmd package is installed  (requires further testing, disabled for now)
+	//cmd := exec.Command("dpkg-query", "-W", "-f='${Status}'", "steamcmd")
+	//output, err := cmd.CombinedOutput()
+	//if err == nil && strings.Contains(string(output), "install ok installed") {
+	//	return fmt.Errorf("steamcmd package is installed")
+	//}
+
+	return nil
+}
