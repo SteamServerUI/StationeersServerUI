@@ -21,6 +21,7 @@ func LoadCmdArgs() {
 	var createSSUILogFile bool
 	var recoveryPassword string
 	var devMode bool
+	var skipSteamCMD bool
 
 	flag.StringVar(&backendEndpointPort, "BackendEndpointPort", "", "Override the backend endpoint port (e.g., 8080)")
 	flag.StringVar(&backendEndpointPort, "p", "", "(Alias) Override the backend endpoint port (e.g., 8080)")
@@ -35,6 +36,8 @@ func LoadCmdArgs() {
 	flag.BoolVar(&isDebugMode, "debug", false, "(Alias) Enable debug mode")
 	flag.BoolVar(&createSSUILogFile, "CreateSSUILogFile", false, "Create a log file for SSUI")
 	flag.BoolVar(&createSSUILogFile, "lf", false, "(Alias) Create a log file for SSUI")
+	flag.BoolVar(&skipSteamCMD, "SkipSteamCMD", false, "Skips SteamCMD installation")
+	flag.BoolVar(&skipSteamCMD, "nosteam", false, "(Alias) Skips SteamCMD installation")
 
 	// Parse command-line flags
 	flag.Parse()
@@ -45,6 +48,10 @@ func LoadCmdArgs() {
 		config.SetUsers(map[string]string{"admin": "$2a$10$7QQhPkNAfT.MXhJhnnodXOyn3KKE/1eu7nYb0y2O1UBoAWc0Y/fda"}) // admin:admin
 		config.SetIsConsoleEnabled(true)
 		logger.Main.Info("Dev mode enabled: Auth enabled, admin user set to admin:admin:superadmin, console enabled")
+	}
+
+	if skipSteamCMD {
+		config.SetSkipSteamCMD(true)
 	}
 
 	if backendEndpointPort != "" && backendEndpointPort != "8443" {

@@ -63,6 +63,7 @@ var (
 	SSUIIdentifier           string
 	CurrentBranchBuildID     string // ONLY RUNTIME
 	ExtractedGameVersion     string // ONLY RUNTIME
+	SkipSteamCMD             bool   // ONLY RUNTIME
 )
 
 // Discord integration
