@@ -47,19 +47,13 @@ RUN dpkg --add-architecture i386 \
     ca-certificates \
     locales \
     lib32gcc-s1 \
-    file \
+   file \
  && rm -rf /var/lib/apt/lists/*
-
-RUN useradd -m -d /app -s /bin/sh app
 
 # Copy compiled binary and license
 COPY --from=go-builder /out/StationeersServerControl /usr/local/bin/StationeersServerControl
 COPY ./LICENSE /app/LICENSE
 RUN chmod +x /usr/local/bin/StationeersServerControl
-
-RUN chown -R app:app /app
-
-USER app
 
 EXPOSE 8443/tcp 27016/udp 27015/udp
 
