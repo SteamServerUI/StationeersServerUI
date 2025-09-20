@@ -101,6 +101,25 @@ func runSteamCMD(steamCMDDir string) (int, error) {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
+	if runtime.GOOS == "linux" {
+		env := os.Environ()
+		// Replace or set HOME
+		newEnv := make([]string, 0, len(env)+1)
+		foundHome := false
+		for _, e := range env {
+			if !strings.HasPrefix(e, "HOME=") {
+				newEnv = append(newEnv, e)
+			} else {
+				newEnv = append(newEnv, "HOME="+currentDir)
+				foundHome = true
+			}
+		}
+		if !foundHome {
+			newEnv = append(newEnv, "HOME="+currentDir)
+		}
+		cmd.Env = newEnv
+	}
+
 	// Run the command
 	if config.GetLogLevel() == 10 {
 		cmdString := strings.Join(cmd.Args, " ")

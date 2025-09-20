@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"maps"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -64,6 +66,13 @@ func AppInfoPoller() {
 // getAppInfo fetches the branches and their build IDs for the specified app ID using SteamCMD
 // and stores them in the package-level branches map.
 func getAppInfo() error {
+
+	currentDir, err := os.Getwd()
+	if err != nil {
+		logger.Install.Error("❌ Error getting current working directory: " + err.Error() + "\n")
+		return err
+	}
+
 	if steamMu.TryLock() {
 		// Successfully acquired the lock; no other func holds it
 		logger.Core.Debug("🔄 Locking SteamMu for SteamCMD AppInfo...")
@@ -90,14 +99,32 @@ func getAppInfo() error {
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
+	if runtime.GOOS == "linux" {
+		env := os.Environ()
+		// Replace or set HOME
+		newEnv := make([]string, 0, len(env)+1)
+		foundHome := false
+		for _, e := range env {
+			if !strings.HasPrefix(e, "HOME=") {
+				newEnv = append(newEnv, e)
+			} else {
+				newEnv = append(newEnv, "HOME="+currentDir)
+				foundHome = true
+			}
+		}
+		if !foundHome {
+			newEnv = append(newEnv, "HOME="+currentDir)
+		}
+		cmd.Env = newEnv
+	}
+
 	// Log the command
 	//if config.GetLogLevel() == 10 {
 	//	cmdString := strings.Join(cmd.Args, " ")
 	//	logger.Install.Debug("🕑 Running SteamCMD for app info: " + cmdString)
 	//}
-
 	// Run the command
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			logger.Install.Errorf("❌ SteamCMD app info failed (code %d): %s\n", exitErr.ExitCode(), stderr.String())
