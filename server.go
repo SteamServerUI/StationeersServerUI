@@ -22,9 +22,7 @@ package main
 
 import (
 	"embed"
-	"os"
 	"sync"
-	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/cli"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
@@ -39,11 +37,8 @@ var v1uiFS embed.FS
 func main() {
 	var wg sync.WaitGroup
 	logger.ConfigureConsole()
-	if err := loader.SanityCheck(); err != nil {
-		logger.Main.Error("Sanity check failed, exiting in 10 secconds: " + err.Error())
-		time.Sleep(10 * time.Second)
-		os.Exit(1)
-	}
+	loader.SanityCheck(&wg)
+	wg.Wait()
 	logger.Main.Debug("Initializing resources...")
 	loader.InitVirtFS(v1uiFS)
 	logger.Install.Info("Starting setup...")

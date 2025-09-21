@@ -1,10 +1,9 @@
 package loader
 
 import (
+	"bufio"
 	"fmt"
 	"os"
-	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
@@ -165,59 +164,35 @@ func PrintConfigDetails(logLevel ...string) {
 	logger.Config.Debug("=======================================")
 }
 
-func SanityCheck() error {
-
-	if runtime.GOOS == "windows" {
-		return nil
+func IsInsideContainer() bool {
+	// Check .dockerenv file (Docker-specific)
+	if _, err := os.Stat("/.dockerenv"); err == nil {
+		config.SetIsDockerContainer(true)
+		return true
 	}
+	// Check cgroup (works for Docker and other container runtimes)
+	return isContainerFromCGroup()
+}
 
-	// Check if running as root (UID 0)
-	if os.Geteuid() == 0 {
-		return fmt.Errorf("root: SSUI should not be run as root")
-	}
-
-	// Get the current executable path from /proc/self/exe
-	exePath, err := os.Readlink("/proc/self/exe")
+func isContainerFromCGroup() bool {
+	file, err := os.Open("/proc/1/cgroup")
 	if err != nil {
-		return err
+		return false
 	}
-	// Get the directory path of the executable
-	dirPath := filepath.Dir(exePath)
-	// Change the working directory to the executable's directory
-	cwd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
+	defer file.Close()
 
-	if cwd != dirPath && !strings.Contains(dirPath, "/tmp") {
-		err = os.Chdir(dirPath)
-		if err != nil {
-			return err
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		// Check for various container runtime indicators
+		if strings.Contains(line, "docker") ||
+			strings.Contains(line, "containerd") ||
+			strings.Contains(line, "kubepods") ||
+			strings.Contains(line, "crio") ||
+			strings.Contains(line, "libpod") {
+			config.SetIsDockerContainer(true)
+			return true
 		}
 	}
-
-	// Check if current working directory is writable
-	workDir, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("failed to get working directory: %w", err)
-	}
-
-	// Try to create a temporary file to test write permissions
-	testFile := filepath.Join(workDir, ".write_test")
-	if err := os.WriteFile(testFile, []byte("test"), 0600); err != nil {
-		return fmt.Errorf("cannot write to working directory %s: %w", workDir, err)
-	}
-	// Clean up test file
-	if err := os.Remove(testFile); err != nil {
-		return fmt.Errorf("failed to clean up sanity check writetest file: %w", err)
-	}
-
-	// Check if steamcmd package is installed  (requires further testing, disabled for now)
-	//cmd := exec.Command("dpkg-query", "-W", "-f='${Status}'", "steamcmd")
-	//output, err := cmd.CombinedOutput()
-	//if err == nil && strings.Contains(string(output), "install ok installed") {
-	//	return fmt.Errorf("steamcmd package is installed")
-	//}
-
-	return nil
+	return false
 }

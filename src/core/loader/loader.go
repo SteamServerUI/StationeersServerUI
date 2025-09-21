@@ -3,7 +3,9 @@ package loader
 
 import (
 	"embed"
+	"os"
 	"sync"
+	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
@@ -97,4 +99,14 @@ func ReloadAppInfoPoller() {
 // InitBundler initialized the onboard bundled assets for the web UI
 func InitVirtFS(v1uiFS embed.FS) {
 	config.SetV1UIFS(v1uiFS)
+}
+
+func SanityCheck(wg *sync.WaitGroup) {
+	defer wg.Done()
+	err := runSanityCheck()
+	if err != nil {
+		logger.Main.Error("Sanity check failed, exiting in 10 secconds: " + err.Error())
+		time.Sleep(10 * time.Second)
+		os.Exit(1)
+	}
 }

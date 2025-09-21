@@ -54,6 +54,14 @@ func SetSkipSteamCMD(value bool) error {
 	return nil
 }
 
+func SetIsDockerContainer(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	IsDockerContainer = value
+	return nil
+}
+
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
