@@ -29,7 +29,7 @@ COPY . ./
 COPY --from=frontend-builder /src/UIMod /src/UIMod
 
 # Build the server (embed will include UIMod/* at build time)
-RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /out/StationeersServerControl ./server.go
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /out/StationeersServerUI ./server.go
 
 ############
 # Runtime
@@ -51,10 +51,14 @@ RUN dpkg --add-architecture i386 \
  && rm -rf /var/lib/apt/lists/*
 
 # Copy compiled binary and license
-COPY --from=go-builder /out/StationeersServerControl /usr/local/bin/StationeersServerControl
-COPY ./LICENSE /app/LICENSE
-RUN chmod +x /usr/local/bin/StationeersServerControl
+RUN mkdir -p /opt/SSUIBuildFiles
+COPY --from=go-builder /out/StationeersServerUI /opt/SSUIBuildFiles/StationeersServerUI
+COPY ./LICENSE /opt/SSUIBuildFiles/LICENSE
+COPY ./.docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /opt/SSUIBuildFiles/StationeersServerUI
+RUN chmod +x /entrypoint.sh
+
 
 EXPOSE 8443/tcp 27016/udp 27015/udp
 
-ENTRYPOINT ["/usr/local/bin/StationeersServerControl"]
+ENTRYPOINT ["/entrypoint.sh"]
