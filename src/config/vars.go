@@ -70,6 +70,7 @@ var (
 	ExtractedGameVersion string // ONLY RUNTIME
 	SkipSteamCMD         bool   // ONLY RUNTIME
 	IsDockerContainer    bool   // ONLY RUNTIME
+	NoSanityCheck        bool   // ONLY RUNTIME
 )
 
 // Discord integration

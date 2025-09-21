@@ -352,7 +352,7 @@ func checkAndCreateBlacklist() {
 
 		logger.Install.Info("✅Created Blacklist.txt with dummy steamID64.")
 	} else {
-		logger.Install.Info("♻️Blacklist.txt already exists. Skipping creation.")
+		logger.Install.Debug("♻️Blacklist.txt already exists. Skipping creation.")
 	}
 }
 
