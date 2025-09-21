@@ -102,6 +102,7 @@ func InitVirtFS(v1uiFS embed.FS) {
 }
 
 func SanityCheck(wg *sync.WaitGroup) {
+	wg.Add(1)
 	defer wg.Done()
 	err := runSanityCheck()
 	if err != nil {
