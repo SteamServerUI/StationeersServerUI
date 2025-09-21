@@ -41,7 +41,7 @@ func main() {
 	loader.HandleSanityCheckFlag()
 	loader.SanityCheck(&wg)
 	wg.Wait()
-	logger.Main.Debug("Initializing resources...")
+	logger.Main.Info("Initializing resources...")
 	loader.InitVirtFS(v1uiFS)
 	logger.Install.Info("Starting setup...")
 	loader.ReloadConfig() // Load the config file before starting the setup process
