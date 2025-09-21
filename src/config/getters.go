@@ -493,3 +493,9 @@ func GetExtractedGameVersion() string {
 	defer ConfigMu.RUnlock()
 	return ExtractedGameVersion
 }
+
+func GetSkipSteamCMD() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return SkipSteamCMD
+}

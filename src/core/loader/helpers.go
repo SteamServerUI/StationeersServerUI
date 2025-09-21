@@ -1,10 +1,9 @@
 package loader
 
 import (
+	"bufio"
 	"fmt"
 	"os"
-	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
@@ -165,33 +164,35 @@ func PrintConfigDetails(logLevel ...string) {
 	logger.Config.Debug("=======================================")
 }
 
-// SetupWorkingDir sets the working directory to the directory of the executable to prevent user errors
-func SetupWorkingDir() error {
-	if runtime.GOOS == "windows" {
-		// For now Windows doesn't have symlinking issues so we'll just let is use the current working directory
-		return nil
+func IsInsideContainer() bool {
+	// Check .dockerenv file (Docker-specific)
+	if _, err := os.Stat("/.dockerenv"); err == nil {
+		config.SetIsDockerContainer(true)
+		return true
 	}
-	if runtime.GOOS == "linux" {
-		// Get the current executable path from /proc/self/exe
-		exePath, err := os.Readlink("/proc/self/exe")
-		if err != nil {
-			return err
-		}
-		// Get the directory path of the executable
-		dirPath := filepath.Dir(exePath)
-		// Change the working directory to the executable's directory
-		cwd, err := os.Getwd()
-		if err != nil {
-			return err
-		}
-		if cwd != dirPath {
-			logger.Core.Debug("Changing working directory to " + dirPath)
-			err = os.Chdir(dirPath)
-			if err != nil {
-				return err
-			}
-		}
-		return nil
+	// Check cgroup (works for Docker and other container runtimes)
+	return isContainerFromCGroup()
+}
+
+func isContainerFromCGroup() bool {
+	file, err := os.Open("/proc/1/cgroup")
+	if err != nil {
+		return false
 	}
-	return nil
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		// Check for various container runtime indicators
+		if strings.Contains(line, "docker") ||
+			strings.Contains(line, "containerd") ||
+			strings.Contains(line, "kubepods") ||
+			strings.Contains(line, "crio") ||
+			strings.Contains(line, "libpod") {
+			config.SetIsDockerContainer(true)
+			return true
+		}
+	}
+	return false
 }

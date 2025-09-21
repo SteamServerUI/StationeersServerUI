@@ -46,6 +46,22 @@ func SetExtractedGameVersion(value string) error {
 	return nil
 }
 
+func SetSkipSteamCMD(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	SkipSteamCMD = value
+	return nil
+}
+
+func SetIsDockerContainer(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	IsDockerContainer = value
+	return nil
+}
+
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
