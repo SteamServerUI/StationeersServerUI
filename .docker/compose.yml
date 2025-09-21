@@ -1,8 +1,12 @@
 services:
   stationeers-server:
     container_name: stationeers-server
-    build : .
-    image: stationeers-server-ui:latest
+    build:
+      context: ..
+      dockerfile: ./.docker/Dockerfile
+    image: stationeersserverui:test
+    stdin_open: true
+    tty: true
     deploy:
       resources:
         limits:
@@ -18,14 +22,10 @@ services:
       - "27015:27015/udp"
       - "27015:27015/tcp"
     volumes:
-      # Persist app data between container restarts
       - app-data:/app
-      # Mount saves and config for easy access/editing outside the container
       - ./saves:/app/saves:rw
-      - ./UIMod/config:/app/UIMod/config:rw
-      - ./UIMod/tls:/app/UIMod/tls:rw
+      - ./UIMod:/app/UIMod:rw
     restart: unless-stopped
-    command: []
 
 volumes:
   app-data:
