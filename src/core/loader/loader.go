@@ -107,6 +107,8 @@ func SanityCheck(wg *sync.WaitGroup) {
 	err := runSanityCheck()
 	if err != nil {
 		logger.Main.Error("Sanity check failed, exiting in 10 secconds: " + err.Error())
+		logger.Main.Info("If you want to continue anyway, run SSUI with the --noSanityCheck flag, but be aware there may be Dragons ahead.")
+		logger.Main.Info("This is not recommended nor supported and may cause unexpected behavior, including potential data loss!")
 		time.Sleep(10 * time.Second)
 		os.Exit(1)
 	}

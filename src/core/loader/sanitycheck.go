@@ -3,6 +3,7 @@ package loader
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -59,11 +60,11 @@ func runSanityCheck() error {
 	}
 
 	// Check if steamcmd package is installed  (requires further testing, disabled for now)
-	//cmd := exec.Command("dpkg-query", "-W", "-f='${Status}'", "steamcmd")
-	//output, err := cmd.CombinedOutput()
-	//if err == nil && strings.Contains(string(output), "install ok installed") {
-	//	return fmt.Errorf("steamcmd package is installed")
-	//}
+	cmd := exec.Command("dpkg-query", "-W", "-f='${Status}'", "steamcmd")
+	output, err := cmd.CombinedOutput()
+	if err == nil && strings.Contains(string(output), "install ok installed") {
+		return fmt.Errorf("steamcmd apt package is installed, it is not recommended to run SSUI when the apt steamcmd package is installed. Please uninstall the steamcmd package or have a look at our Docker image and try again")
+	}
 
 	return nil
 }
