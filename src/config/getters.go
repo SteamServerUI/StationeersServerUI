@@ -499,3 +499,9 @@ func GetSkipSteamCMD() bool {
 	defer ConfigMu.RUnlock()
 	return SkipSteamCMD
 }
+
+func GetNoSanityCheck() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return NoSanityCheck
+}

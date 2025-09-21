@@ -28,7 +28,7 @@
             "program": "${workspaceFolder}/server.go",
             "console": "integratedTerminal",
             "showLog": false, // Hides some Go Debugger(Delve) log stuff that is not useful for debugging atm
-            "args": ["--SkipSteamCMD"]
+            "args": ["--NoSteamCMD"]
         }
     ]
 }

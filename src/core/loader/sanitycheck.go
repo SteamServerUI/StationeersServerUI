@@ -7,11 +7,17 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 )
 
 func runSanityCheck() error {
 
 	if runtime.GOOS == "windows" {
+		return nil
+	}
+
+	if config.GetNoSanityCheck() {
 		return nil
 	}
 

@@ -62,6 +62,14 @@ func SetIsDockerContainer(value bool) error {
 	return nil
 }
 
+func SetNoSanityCheck(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	NoSanityCheck = value
+	return nil
+}
+
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
