@@ -17,7 +17,7 @@
   "assignees": [],
   "baseBranches": ["nightly"],
   "reviewers": ["JacksonTheMaster", "mitoskalandiel"],
-  "dependencyDashboard": true,
+  "dependencyDashboard": false,
   "dependencyDashboardTitle": "Renovate Dashboard",
 
   "enabledManagers": [
