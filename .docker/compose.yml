@@ -4,7 +4,7 @@ services:
     build:
       context: ..
       dockerfile: ./.docker/Dockerfile
-    image: stationeersserverui:test
+    image: stationeers-server-ui:latest
     stdin_open: true
     tty: true
     deploy:
