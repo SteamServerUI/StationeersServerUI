@@ -7,9 +7,12 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 )
+
+var containerCheckWG = sync.WaitGroup{}
 
 func runSanityCheck() error {
 
@@ -21,10 +24,13 @@ func runSanityCheck() error {
 		return nil
 	}
 
+	IsInsideContainer(&containerCheckWG)
+	containerCheckWG.Wait()
+
 	// Check if running as root (UID 0)
 	if os.Geteuid() == 0 {
 		// Check if running inside a container
-		if !IsInsideContainer() {
+		if !config.GetIsDockerContainer() {
 			return fmt.Errorf("root: SSUI should not be run as root")
 		}
 	}

@@ -505,3 +505,9 @@ func GetNoSanityCheck() bool {
 	defer ConfigMu.RUnlock()
 	return NoSanityCheck
 }
+
+func GetIsDockerContainer() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return IsDockerContainer
+}
