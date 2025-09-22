@@ -273,6 +273,8 @@ func supportPackage() {
 	delete(configMap, "users")
 	delete(configMap, "JwtKey")
 	delete(configMap, "AdminPassword")
+	delete(configMap, "ServerAuthSecret")
+	delete(configMap, "ServerPassword")
 	sanitizedConfig, err := json.MarshalIndent(configMap, "", "  ")
 	if err != nil {
 		logger.Core.Error("Failed to marshal sanitized config into support package")

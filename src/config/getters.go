@@ -487,3 +487,27 @@ func GetAllowAutoGameServerUpdates() bool {
 	defer ConfigMu.RUnlock()
 	return AllowAutoGameServerUpdates
 }
+
+func GetExtractedGameVersion() string {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return ExtractedGameVersion
+}
+
+func GetSkipSteamCMD() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return SkipSteamCMD
+}
+
+func GetNoSanityCheck() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return NoSanityCheck
+}
+
+func GetIsDockerContainer() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return IsDockerContainer
+}

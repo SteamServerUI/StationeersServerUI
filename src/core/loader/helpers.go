@@ -1,8 +1,11 @@
 package loader
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strings"
+	"sync"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
@@ -160,4 +163,34 @@ func PrintConfigDetails(logLevel ...string) {
 	printSection("Custom Detections Configuration", custom)
 
 	logger.Config.Debug("=======================================")
+}
+
+func IsInsideContainer(wg *sync.WaitGroup) {
+	wg.Add(1)
+	defer wg.Done()
+	// Check .dockerenv file (Docker-specific)
+	if _, err := os.Stat("/.dockerenv"); err == nil {
+		config.SetIsDockerContainer(true)
+		return
+	}
+	// Check cgroup (works for Docker and other container runtimes)
+	file, err := os.Open("/proc/1/cgroup")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		// Check for various container runtime indicators
+		if strings.Contains(line, "docker") ||
+			strings.Contains(line, "containerd") ||
+			strings.Contains(line, "kubepods") ||
+			strings.Contains(line, "crio") ||
+			strings.Contains(line, "libpod") {
+			config.SetIsDockerContainer(true)
+			return
+		}
+	}
 }

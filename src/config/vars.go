@@ -61,7 +61,16 @@ var (
 	LanguageSetting          string
 	AutoStartServerOnStartup bool
 	SSUIIdentifier           string
-	CurrentBranchBuildID     string // ONLY RUNTIME
+)
+
+// Runtime only variables
+
+var (
+	CurrentBranchBuildID string // ONLY RUNTIME
+	ExtractedGameVersion string // ONLY RUNTIME
+	SkipSteamCMD         bool   // ONLY RUNTIME
+	IsDockerContainer    bool   // ONLY RUNTIME
+	NoSanityCheck        bool   // ONLY RUNTIME
 )
 
 // Discord integration

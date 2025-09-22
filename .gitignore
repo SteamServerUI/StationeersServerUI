@@ -24,6 +24,7 @@ UIMod/tls/cert.pem
 UIMod/tls/key.pem
 steamapps/**
 steamcmd/**
+Steam/**
 rocketstation_BurstDebugInformation_DoNotShip/**
 StationeersServerControlv*
 UnityPlayer.so

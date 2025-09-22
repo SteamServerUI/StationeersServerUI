@@ -23,7 +23,7 @@ func printStartupMessage() {
 	logger.Core.Cleanf("  ╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝      ╚══════╝ ╚═════╝ ╚═╝")
 	logger.Core.Cleanf("  ╔═══════════════════════════════════════════════════════════════════════════════════════════════════╗")
 	logger.Core.Cleanf("  ║                      🎮 YOUR ONE-STOP SHOP FOR RUNNING A STATIONEERS SERVER  🎮                   ║")
-	logger.Core.Cleanf("  ║  🚀 Version: %s       📅 %s       💻 Runtime: %.3s/%s                        ║",
+	logger.Core.Cleanf("  ║  🚀 Version: %s       📅 %s       💻 Runtime: %.3s/%s                          ║",
 		config.GetVersion(),
 		time.Now().Format("2006-01-02 15:04"),
 		runtime.GOOS,
@@ -31,7 +31,7 @@ func printStartupMessage() {
 	logger.Core.Cleanf("  ╚═══════════════════════════════════════════════════════════════════════════════════════════════════╝")
 
 	// Web UI info
-	logger.Core.Cleanf("\n  🌐 Web UI available at: https://localhost:8443 (default) or https://<server-ip>:" + config.GetSSUIWebPort())
+	logger.Core.Cleanf("\n  🌐 Web UI available at: https://localhost:8443 (default) or https://<server-ip>:%s", config.GetSSUIWebPort())
 	logger.Core.Cleanf("\n  🌐 Support available at: https://discord.gg/8n3vN92MyJ")
 
 	// Quote
@@ -48,6 +48,6 @@ func printFirstTimeSetupMessage() {
 	logger.Core.Cleanf("  │ • Configure your server by visiting the WebUI!                                              │")
 	logger.Core.Cleanf("  │ • Support is provided at https://discord.gg/8n3vN92MyJ                                      │")
 	logger.Core.Cleanf("  │ • For more details, check the GitHub Wiki:                                                  │")
-	logger.Core.Cleanf("  │ • https://github.com/JacksonTheMaster/StationeersServerUI/v5/wiki                           │")
+	logger.Core.Cleanf("  │ • https://github.com/SteamServerUI/StationeersServerUI/v5/wiki                              │")
 	logger.Core.Cleanf("  └─────────────────────────────────────────────────────────────────────────────────────────────┘")
 }

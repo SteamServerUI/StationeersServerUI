@@ -38,6 +38,38 @@ func SetCurrentBranchBuildID(value string) error {
 	return nil
 }
 
+func SetExtractedGameVersion(value string) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	ExtractedGameVersion = value
+	return nil
+}
+
+func SetSkipSteamCMD(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	SkipSteamCMD = value
+	return nil
+}
+
+func SetIsDockerContainer(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	IsDockerContainer = value
+	return nil
+}
+
+func SetNoSanityCheck(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	NoSanityCheck = value
+	return nil
+}
+
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
