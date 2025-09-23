@@ -14,7 +14,7 @@
             "UIText_API_Info": "API-Endpunktdokumentation",
             "UIText_Copyright": "Urheberrecht",
             "UIText_Copyright1": "Lizenziert unter",
-            "UIText_Copyright2": "Proprietärer Lizenz."
+            "UIText_Copyright2": "Proprietärer Lizenz"
         },
         "config": {
             "UIText_ServerConfig": "Server Konfiguration",
@@ -42,7 +42,7 @@
                 "UIText_AutoSave": "Auto Speichern",
                 "UIText_AutoSaveInfo": "Auf TRUE setzen für automatisches Speichern",
                 "UIText_SaveInterval": "Speicher Intervall",
-                "UIText_SaveIntervalInfo": "Zeit in Sekunden zwischen Speichervorgängen",
+                "UIText_SaveIntervalInfo": "Zeit in Sekunden zwischen Speichervorgängen. Sollte 60 sekunden <strong> nicht </strong>  unterschreiten.",
                 "UIText_AutoPauseServer": "Server Auto Pausieren",
                 "UIText_AutoPauseServerInfo": "Server automatisch pausieren wenn keine Spieler verbunden"
             },
@@ -124,7 +124,7 @@
                 "UIText_DiscordBenefit5": "Echtzeit Fehlerbenachrichtigungen",
                 "UIText_DiscordSetupInstructions": "Für Setup-Anweisungen besuche die"
             },
-            "UIText_TerrainSettings": "Neues Gelaende"
+            "UIText_TerrainSettings": "Neues Gelände"
         },
         "setup": {
             "UIText_FooterText": "Hilfe benötigt? Schaue ins Stationeers Server UI Github Wiki.",
@@ -171,9 +171,9 @@
             "UIText_ServerPassword_SkipButton": "Überspringen",
             "UIText_GameBranch_Title": "Stationeers Server UI",
             "UIText_GameBranch_HeaderTitle": "Spiel Branch",
-            "UIText_GameBranch_StepMessage": "Gib einen Beta-Branch ein oder überspringe für Release-Version. Wenn Sie den Zweig wechseln, klicken Sie nach Abschluss dieses Assistenten unbedingt auf „Server aktualisieren“ im Haupt-Dashboard.",
-            "UIText_GameBranch_SecondaryPlaceholder": "Wähle einen Zweig",
-            "UIText_GameBranch_SecondaryLabel": "Spielzweig",
+            "UIText_GameBranch_StepMessage": "Gib einen Beta-Branch ein oder überspringe für Release-Version. Wenn Sie den Branch wechseln, klicken Sie nach Abschluss dieses Assistenten unbedingt auf „Server aktualisieren“ im Haupt-Dashboard.",
+            "UIText_GameBranch_SecondaryPlaceholder": "Wähle einen Branch",
+            "UIText_GameBranch_SecondaryLabel": "Spiel Branch",
             "UIText_GameBranch_SubmitButton": "Speichern & Weiter",
             "UIText_GameBranch_SkipButton": "Release Version nutzen",
             "UIText_NewTerrainAndSaveSystem_Title": "Wichtig",
@@ -244,7 +244,7 @@
             "UIText_ChangeUser_SecondaryLabel": "Neues Passwort",
             "UIText_ChangeUser_SecondaryPlaceholder": "Passwort",
             "UIText_ChangeUser_SubmitButton": "Benutzer Hinzufügen/Aktualisieren",
-            "UIText_NewTerrainAndSaveSystem_StepMessage": "Verwenden Sie einen ALTEN Zweig, wie z. B. preterrain oder älter, ohne die Änderungen am Geländesystem? Wenn ja, deaktivieren Sie hier die Verarbeitung des neuen Geländes und Speichersystems. Geben Sie „yes” ein oder überspringen Sie diesen Schritt, um die Funktion zu aktivieren (Standard), oder „no”, um das alte Speicher- und Geländesystem zu verwenden. Wenn Sie sich nicht sicher sind, überspringen Sie diesen Schritt."
+            "UIText_NewTerrainAndSaveSystem_StepMessage": "Verwenden Sie einen ALTEN Branch, wie z. B. preterrain oder älter, ohne die Änderungen am Geländesystem? Wenn ja, deaktivieren Sie hier die Verarbeitung des neuen Geländes und Speichersystems. Geben Sie „yes” ein oder überspringen Sie diesen Schritt, um die Funktion zu aktivieren (Standard), oder „no”, um das alte Speicher- und Geländesystem zu verwenden. Wenn Sie sich nicht sicher sind, überspringen Sie diesen Schritt."
         }
     },
     "BackendText": {
