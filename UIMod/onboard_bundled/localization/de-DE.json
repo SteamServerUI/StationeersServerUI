@@ -75,7 +75,9 @@
                 "UIText_AutoRestartServerTimer": "Geplanter Gameserver Neustart",
                 "UIText_AutoRestartServerTimerInfo": "Zeitrahmen in <strong>Minuten</strong> für automatischen Gameserver Neustart. 0 = deaktiviert, 1440 = 24 Stunden, etc. Mit SSCM siehst du \"Achtung, Server startet neu in 30/20/10/5 Sekunden!\" Nachrichten <strong>im Spiel</strong>.",
                 "UIText_GameBranch": "Spiel Branch",
-                "UIText_GameBranchInfo": "Branch des Spiels. Bei Änderung SSUI Neustart erforderlich!"
+                "UIText_GameBranchInfo": "Branch des Spiels. Bei Änderung SSUI Neustart erforderlich!",
+                "UIText_AllowAutoGameServerUpdates": "Automatische Game Server updates einschalten",
+                "UIText_AllowAutoGameServerUpdatesInfo": "Erlaubt dem Spielserver, automatisch nach der neuesten Version zu suchen und diese zu installieren. Achtung: Der Server wird neu gestartet, wenn eine neue Version gefunden und installiert wurde. 60 bis 10 Sekunden vor dem Neustart werden mehrere Warnmeldungen mit SAY-Befehlen an den Server gesendet."
             },
             "terrain": {
                 "UIText_Difficulty": "Schwierigkeit",
@@ -87,7 +89,11 @@
                 "UIText_AutoStartServerOnStartup": "Server Auto-Start beim Hochfahren",
                 "UIText_AutoStartServerOnStartupInfo": "Gameserver automatisch starten wenn SSUI gestartet wird. Standard false.",
                 "UIText_AllowAutoGameServerUpdates": "Automatische Spielserver-Updates aktivieren",
-                "UIText_AllowAutoGameServerUpdatesInfo": "Erlaubt dem Spielserver, automatisch nach der neuesten Version zu suchen und diese zu installieren. Achtung: Der Server wird neu gestartet, wenn eine neue Version gefunden und installiert wurde. 60 bis 10 Sekunden vor dem Neustart werden mehrere Warnmeldungen mit SAY-Befehlen an den Server gesendet."
+                "UIText_AllowAutoGameServerUpdatesInfo": "Erlaubt dem Spielserver, automatisch nach der neuesten Version zu suchen und diese zu installieren. Achtung: Der Server wird neu gestartet, wenn eine neue Version gefunden und installiert wurde. 60 bis 10 Sekunden vor dem Neustart werden mehrere Warnmeldungen mit SAY-Befehlen an den Server gesendet.",
+                "UIText_TerrainSettingsHeader": "Neues Terrain und Speicher System Einstellungen",
+                "UIText_TerrainWarning": "Diese Einstellungen sind nur nützlich, wenn Sie eine Stationeers-Version verwenden, die NEUER als September 2025 ist. Alte Spielstände sind NICHT mit dem neuen System kompatibel, können aber mit JacksonTheMasters <a href=\"https://sst.jxsn.dev\">Migrationstool</a> migriert werden. Die entsprechenden „How-to”-Informationen in den FAQ gelten auch für den dedizierten Server.",
+                "UIText_UseNewTerrainAndSave": "Neues Terrain und Save System verwenden",
+                "UIText_UseNewTerrainAndSaveInfo": "Setzen Sie diesen Wert auf TRUE, um die Verarbeitung von .save-Dateien im Backup-Manager und die Argumentanalyse zu aktivieren. Wenn dieser Wert auf FALSE gesetzt ist, funktionieren nur Stationeers-Versionen vor der Überarbeitung des Terrains (≈ Mitte 2025). Der Standardwert ist TRUE!"
             },
             "discord": {
                 "UIText_DiscordIntegrationTitle": "Discord Integration Vorteile",
@@ -237,7 +243,8 @@
             "UIText_ChangeUser_PrimaryLabel": "Benutzername Hinzufügen/Aktualisieren",
             "UIText_ChangeUser_SecondaryLabel": "Neues Passwort",
             "UIText_ChangeUser_SecondaryPlaceholder": "Passwort",
-            "UIText_ChangeUser_SubmitButton": "Benutzer Hinzufügen/Aktualisieren"
+            "UIText_ChangeUser_SubmitButton": "Benutzer Hinzufügen/Aktualisieren",
+            "UIText_NewTerrainAndSaveSystem_StepMessage": "Verwenden Sie einen ALTEN Zweig, wie z. B. preterrain oder älter, ohne die Änderungen am Geländesystem? Wenn ja, deaktivieren Sie hier die Verarbeitung des neuen Geländes und Speichersystems. Geben Sie „yes” ein oder überspringen Sie diesen Schritt, um die Funktion zu aktivieren (Standard), oder „no”, um das alte Speicher- und Geländesystem zu verwenden. Wenn Sie sich nicht sicher sind, überspringen Sie diesen Schritt."
         }
     },
     "BackendText": {
