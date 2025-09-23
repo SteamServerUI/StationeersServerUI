@@ -30,8 +30,8 @@ func buildCommandArgs() []string {
 			-startlocation (Optional, defaults to "DefaultStartLocation" if not provided.)
 			*/
 			{Flag: "-file", RequiresValue: false},
-			{Flag: "start", Value: config.GetWorldName(), RequiresValue: true},
-			{Flag: config.GetBackupWorldName(), RequiresValue: false},
+			{Flag: "start", Value: config.GetSaveName(), RequiresValue: true},
+			{Flag: config.GetWorldID(), RequiresValue: false},
 			{Flag: config.GetDifficulty(), RequiresValue: false, Condition: func() bool { return config.GetDifficulty() != "" }},
 			{Flag: config.GetStartCondition(), RequiresValue: false, Condition: func() bool { return config.GetStartCondition() != "" }},
 			{Flag: config.GetStartLocation(), RequiresValue: false, Condition: func() bool { return config.GetStartLocation() != "" }},
@@ -58,7 +58,7 @@ func buildCommandArgs() []string {
 		argOrder = []Arg{
 			{Flag: "-nographics", RequiresValue: false},
 			{Flag: "-batchmode", RequiresValue: false},
-			{Flag: "-LOAD", Value: config.GetSaveInfo(), RequiresValue: true, NoQuote: true}, // LOAD has special handling because the gameserver expects 2 parameters
+			{Flag: "-LOAD", Value: config.GetLegacySaveInfo(), RequiresValue: true, NoQuote: true}, // LOAD has special handling because the gameserver expects 2 parameters
 			{Flag: "-logFile", Value: "./debug.log", Condition: func() bool { return runtime.GOOS == "linux" }, RequiresValue: true},
 			{Flag: "-settings", RequiresValue: false},
 			{Flag: "StartLocalHost", Value: strconv.FormatBool(config.GetStartLocalHost()), RequiresValue: true},
@@ -89,8 +89,9 @@ func buildCommandArgs() []string {
 
 		args = append(args, arg.Flag)
 
+		// handling of Legacy SaveInfo: Split on semicolon and add each part as a separate arg. This is a hack to continue to support the old saveinfo format for preterrain servers.
 		if arg.Flag == "-LOAD" && arg.Value != "" {
-			parts := strings.SplitN(arg.Value, " ", 2)
+			parts := strings.SplitN(arg.Value, ";", 2)
 			for _, part := range parts {
 				if part != "" {
 					args = append(args, part)

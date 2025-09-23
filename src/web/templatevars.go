@@ -41,6 +41,8 @@ type ConfigTemplateData struct {
 	StartLocation                           string
 	ServerName                              string
 	SaveInfo                                string
+	SaveName                                string
+	WorldID                                 string
 	ServerMaxPlayers                        string
 	ServerPassword                          string
 	ServerAuthSecret                        string
@@ -97,6 +99,10 @@ type ConfigTemplateData struct {
 	UIText_SaveFileName                     string
 	UIText_SaveFileNameInfo                 string
 	UIText_SaveFileNameUseWizzardButtonText string
+	UIText_SaveName                         string
+	UIText_SaveNameInfo                     string
+	UIText_WorldID                          string
+	UIText_WorldIDInfo                      string
 	UIText_MaxPlayers                       string
 	UIText_MaxPlayersInfo                   string
 	UIText_ServerPassword                   string

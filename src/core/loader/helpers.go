@@ -50,8 +50,8 @@ func PrintConfigDetails(logLevel ...string) {
 	server := map[string]string{
 		"GameBranch":                config.GetGameBranch(),
 		"ServerName":                config.GetServerName(),
-		"WorldName":                 config.GetWorldName(),
-		"BackupWorldName":           config.GetBackupWorldName(),
+		"WorldName":                 config.GetSaveName(),
+		"BackupWorldName":           config.GetWorldID(),
 		"ServerMaxPlayers":          config.GetServerMaxPlayers(),
 		"GamePort":                  config.GetGamePort(),
 		"UpdatePort":                config.GetUpdatePort(),
@@ -69,7 +69,7 @@ func PrintConfigDetails(logLevel ...string) {
 		"Difficulty":                config.GetDifficulty(),
 		"StartCondition":            config.GetStartCondition(),
 		"StartLocation":             config.GetStartLocation(),
-		"SaveInfo":                  config.GetSaveInfo(),
+		"SaveInfo":                  config.GetLegacySaveInfo(),
 		"IsNewTerrainAndSaveSystem": fmt.Sprintf("%v", config.GetIsNewTerrainAndSaveSystem()),
 	}
 	printSection("Server Configuration", server)

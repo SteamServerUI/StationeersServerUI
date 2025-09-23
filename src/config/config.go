@@ -29,7 +29,9 @@ type JsonConfig struct {
 	GameBranch       string `json:"gameBranch"`
 	GamePort         string `json:"GamePort"`
 	ServerName       string `json:"ServerName"`
-	SaveInfo         string `json:"SaveInfo"`
+	SaveInfo         string `json:"SaveInfo"` // deprecated, kept for backwards compatibility
+	SaveName         string `json:"SaveName"` // replaces SaveInfo
+	WorldID          string `json:"WorldID"`  // replaces SaveInfo
 	ServerMaxPlayers string `json:"ServerMaxPlayers"`
 	ServerPassword   string `json:"ServerPassword"`
 	ServerAuthSecret string `json:"ServerAuthSecret"`
@@ -167,7 +169,9 @@ func applyConfig(cfg *JsonConfig) {
 	StartCondition = getString(cfg.StartCondition, "START_CONDITION", "")
 	StartLocation = getString(cfg.StartLocation, "START_LOCATION", "")
 	ServerName = getString(cfg.ServerName, "SERVER_NAME", "Stationeers Server UI")
-	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "Vulcan Vulcan")
+	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "")
+	SaveName = getString(cfg.SaveName, "SAVE_NAME", "MyMapName")
+	WorldID = getString(cfg.WorldID, "WORLD_ID", "Lunar")
 	ServerMaxPlayers = getString(cfg.ServerMaxPlayers, "SERVER_MAX_PLAYERS", "6")
 	ServerPassword = getString(cfg.ServerPassword, "SERVER_PASSWORD", "")
 	ServerAuthSecret = getString(cfg.ServerAuthSecret, "SERVER_AUTH_SECRET", "")
@@ -202,7 +206,7 @@ func applyConfig(cfg *JsonConfig) {
 	ServerVisible = serverVisibleVal
 	cfg.ServerVisible = &serverVisibleVal
 
-	useSteamP2PVal := getBool(cfg.UseSteamP2P, "USE_STEAM_P2P", true)
+	useSteamP2PVal := getBool(cfg.UseSteamP2P, "USE_STEAM_P2P", false)
 	UseSteamP2P = useSteamP2PVal
 	cfg.UseSteamP2P = &useSteamP2PVal
 
@@ -261,31 +265,37 @@ func applyConfig(cfg *JsonConfig) {
 	AutoStartServerOnStartup = autoStartServerOnStartupVal
 	cfg.AutoStartServerOnStartup = &autoStartServerOnStartupVal
 
-	// Process SaveInfo
-	parts := strings.Split(SaveInfo, " ")
-	if len(parts) > 0 {
-		WorldName = parts[0]
-	}
-	if len(parts) > 1 {
-		BackupWorldName = parts[1]
+	// Process SaveInfo to maintain backwards compatibility with pre-5.6.6 SaveInfo field (deprecated)
+	if SaveInfo != "" {
+		parts := strings.Split(SaveInfo, " ")
+		if len(parts) > 0 {
+			SaveName = parts[0]
+			fmt.Println("SaveName: " + SaveName)
+		}
+		if len(parts) > 1 {
+			WorldID = parts[1]
+			fmt.Println("WorldID: " + WorldID)
+		}
 	}
 
 	// Set backup paths for old or new style saves
 	if IsNewTerrainAndSaveSystem {
 		// use new new style autosave folder
-		ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "autosave")
+		ConfiguredBackupDir = filepath.Join("./saves/", SaveName, "autosave")
 	} else {
 		// use old style Backups folder
-		ConfiguredBackupDir = filepath.Join("./saves/", WorldName, "Backup")
+		ConfiguredBackupDir = filepath.Join("./saves/", SaveName, "Backup")
 	}
 	// use Safebackups folder either way.
-	ConfiguredSafeBackupDir = filepath.Join("./saves/", WorldName, "Safebackups")
+	ConfiguredSafeBackupDir = filepath.Join("./saves/", SaveName, "Safebackups")
+
+	safeSaveConfig()
 }
 
 // use safeSaveConfig EXCLUSIVELY though setter functions
 // M U S T be called while holding a lock on ConfigMu!
 func safeSaveConfig() error {
-
+	fmt.Println("safeSaveConfig")
 	cfg := JsonConfig{
 		DiscordToken:               DiscordToken,
 		ControlChannelID:           ControlChannelID,
@@ -312,6 +322,8 @@ func safeSaveConfig() error {
 		StartLocation:              StartLocation,
 		ServerName:                 ServerName,
 		SaveInfo:                   SaveInfo,
+		SaveName:                   SaveName,
+		WorldID:                    WorldID,
 		ServerMaxPlayers:           ServerMaxPlayers,
 		ServerPassword:             ServerPassword,
 		ServerAuthSecret:           ServerAuthSecret,

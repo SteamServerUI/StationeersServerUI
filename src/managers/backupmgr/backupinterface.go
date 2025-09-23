@@ -47,7 +47,7 @@ func RegisterHTTPHandler(handler *HTTPHandler) {
 func GetBackupConfig() BackupConfig {
 
 	return BackupConfig{
-		WorldName:     config.GetWorldName(),
+		WorldName:     config.GetSaveName(),
 		BackupDir:     config.GetConfiguredBackupDir(),
 		SafeBackupDir: config.GetConfiguredSafeBackupDir(),
 		WaitTime:      30 * time.Second, // not sure why we are not using config.BackupWaitTime here, but ill not touch it in this commit (config rework)
