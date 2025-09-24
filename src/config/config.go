@@ -29,9 +29,9 @@ type JsonConfig struct {
 	GameBranch       string `json:"gameBranch"`
 	GamePort         string `json:"GamePort"`
 	ServerName       string `json:"ServerName"`
-	SaveInfo         string `json:"SaveInfo"` // deprecated, kept for backwards compatibility
-	SaveName         string `json:"SaveName"` // replaces SaveInfo
-	WorldID          string `json:"WorldID"`  // replaces SaveInfo
+	SaveInfo         string `json:"SaveInfo,omitempty"` // deprecated, kept for backwards compatibility
+	SaveName         string `json:"SaveName"`           // replaces SaveInfo
+	WorldID          string `json:"WorldID"`            // replaces SaveInfo
 	ServerMaxPlayers string `json:"ServerMaxPlayers"`
 	ServerPassword   string `json:"ServerPassword"`
 	ServerAuthSecret string `json:"ServerAuthSecret"`
@@ -169,7 +169,7 @@ func applyConfig(cfg *JsonConfig) {
 	StartCondition = getString(cfg.StartCondition, "START_CONDITION", "")
 	StartLocation = getString(cfg.StartLocation, "START_LOCATION", "")
 	ServerName = getString(cfg.ServerName, "SERVER_NAME", "Stationeers Server UI")
-	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "")
+	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "") // deprecated, kept for backwards compatibility - if set, this gets migrated to SaveName and WorldID and the field is not written back to config.json
 	SaveName = getString(cfg.SaveName, "SAVE_NAME", "MyMapName")
 	WorldID = getString(cfg.WorldID, "WORLD_ID", "Lunar")
 	ServerMaxPlayers = getString(cfg.ServerMaxPlayers, "SERVER_MAX_PLAYERS", "6")
@@ -266,7 +266,7 @@ func applyConfig(cfg *JsonConfig) {
 	cfg.AutoStartServerOnStartup = &autoStartServerOnStartupVal
 
 	// Process SaveInfo to maintain backwards compatibility with pre-5.6.6 SaveInfo field (deprecated)
-	if SaveInfo != "" {
+	if SaveInfo != "" && SaveName == "" && WorldID == "" {
 		parts := strings.Split(SaveInfo, " ")
 		if len(parts) > 0 {
 			SaveName = parts[0]
@@ -276,6 +276,7 @@ func applyConfig(cfg *JsonConfig) {
 			WorldID = parts[1]
 			fmt.Println("WorldID: " + WorldID)
 		}
+		cfg.SaveInfo = ""
 	}
 
 	// Set backup paths for old or new style saves
@@ -295,7 +296,6 @@ func applyConfig(cfg *JsonConfig) {
 // use safeSaveConfig EXCLUSIVELY though setter functions
 // M U S T be called while holding a lock on ConfigMu!
 func safeSaveConfig() error {
-	fmt.Println("safeSaveConfig")
 	cfg := JsonConfig{
 		DiscordToken:               DiscordToken,
 		ControlChannelID:           ControlChannelID,
@@ -321,7 +321,6 @@ func safeSaveConfig() error {
 		StartCondition:             StartCondition,
 		StartLocation:              StartLocation,
 		ServerName:                 ServerName,
-		SaveInfo:                   SaveInfo,
 		SaveName:                   SaveName,
 		WorldID:                    WorldID,
 		ServerMaxPlayers:           ServerMaxPlayers,
