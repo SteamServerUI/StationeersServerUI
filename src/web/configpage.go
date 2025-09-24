@@ -127,6 +127,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		StartCondition:                          config.GetStartCondition(),
 		StartLocation:                           config.GetStartLocation(),
 		ServerName:                              config.GetServerName(),
+		SaveName:                                config.GetSaveName(),
 		SaveInfo:                                config.GetLegacySaveInfo(),
 		WorldID:                                 config.GetWorldID(),
 		ServerMaxPlayers:                        config.GetServerMaxPlayers(),
