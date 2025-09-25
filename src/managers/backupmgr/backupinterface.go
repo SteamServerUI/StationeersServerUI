@@ -21,6 +21,8 @@ func InitGlobalBackupManager(config BackupConfig) error {
 		GlobalBackupManager.Shutdown()
 	}
 
+	logger.Backup.Debug("Initializing global backup manager")
+
 	GlobalBackupManager = NewBackupManager(config)
 
 	// Update all active HTTP handlers with the new manager
