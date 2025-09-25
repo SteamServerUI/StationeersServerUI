@@ -196,7 +196,7 @@ func applyConfig(cfg *JsonConfig) {
 	AutoPauseServer = autoPauseServerVal
 	cfg.AutoPauseServer = &autoPauseServerVal
 
-	LocalIpAddress = getString(cfg.LocalIpAddress, "LOCAL_IP_ADDRESS", "")
+	LocalIpAddress = getString(cfg.LocalIpAddress, "LOCAL_IP_ADDRESS", "0.0.0.0")
 
 	startLocalHostVal := getBool(cfg.StartLocalHost, "START_LOCAL_HOST", true)
 	StartLocalHost = startLocalHostVal
