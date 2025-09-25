@@ -83,25 +83,43 @@ func (m *BackupManager) RestoreBackup(index int) error {
 		}
 		defer r.Close()
 
+		// --- Safe extraction -------------------------------------------------
 		for _, f := range r.File {
-			path := filepath.Join(tempDir, f.Name)
+			// Sanitize the entry name – strip any leading / or .. components.
+			entryName := filepath.Clean(f.Name)
+
+			// Skip empty names or names that contain '..' after cleaning.
+			if entryName == "." || entryName == ".." || strings.Contains(entryName, "..") {
+				// This entry would escape the target directory; reject it.
+				logger.Backup.Warn(fmt.Sprintf("Skipping potentially unsafe zip entry %q", f.Name))
+				continue
+			}
+
+			destPath := filepath.Join(tempDir, entryName)
+			// Ensure the destination is still inside tempDir.
+			if !strings.HasPrefix(filepath.Clean(destPath), filepath.Clean(tempDir)+string(os.PathSeparator)) {
+				logger.Backup.Warn(fmt.Sprintf("Skipping zip entry that would escape extraction dir: %q", f.Name))
+				continue
+			}
+
 			if f.FileInfo().IsDir() {
-				if err := os.MkdirAll(path, f.Mode()); err != nil {
+				if err := os.MkdirAll(destPath, f.Mode()); err != nil {
 					m.revertRestore(restoredFiles)
-					return fmt.Errorf("failed to create directory %s: %w", path, err)
+					return fmt.Errorf("failed to create directory %s: %w", destPath, err)
 				}
 				continue
 			}
 
-			if err := os.MkdirAll(filepath.Dir(path), os.ModePerm); err != nil {
+			// Create any missing parent directories.
+			if err := os.MkdirAll(filepath.Dir(destPath), os.ModePerm); err != nil {
 				m.revertRestore(restoredFiles)
-				return fmt.Errorf("failed to create parent directory for %s: %w", path, err)
+				return fmt.Errorf("failed to create parent directory for %s: %w", destPath, err)
 			}
 
-			outFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+			outFile, err := os.OpenFile(destPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 			if err != nil {
 				m.revertRestore(restoredFiles)
-				return fmt.Errorf("failed to create file %s: %w", path, err)
+				return fmt.Errorf("failed to create file %s: %w", destPath, err)
 			}
 
 			rc, err := f.Open()
@@ -115,11 +133,12 @@ func (m *BackupManager) RestoreBackup(index int) error {
 				rc.Close()
 				outFile.Close()
 				m.revertRestore(restoredFiles)
-				return fmt.Errorf("failed to extract file %s: %w", path, err)
+				return fmt.Errorf("failed to extract file %s: %w", destPath, err)
 			}
 			rc.Close()
 			outFile.Close()
 		}
+		// --------------------------------------------------------------------
 
 		// Update world_meta.xml DateTime with current Windows file time using regex
 		now := time.Now()
