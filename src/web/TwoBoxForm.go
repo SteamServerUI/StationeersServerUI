@@ -105,12 +105,6 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			{Display: "Mimas Herschel", Value: "MimasHerschel"}}
 	}
 
-	worldIDNextStep := "max_players"
-	if config.GetGameBranch() != "public" && config.GetGameBranch() != "beta" {
-		worldIDNextStep = "newterrain_and_savesystem"
-		config.SetIsNewTerrainAndSaveSystem(false)
-	}
-
 	// Define all steps in a map for easy access and modification
 	steps := map[string]Step{
 		"welcome": {
@@ -191,21 +185,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SubmitButtonText:         localization.GetString("UIText_WorldID_SubmitButton"),
 			SkipButtonText:           localization.GetString("UIText_WorldID_SkipButton"),
 			ConfigField:              "WorldID",
-			NextStep:                 worldIDNextStep,
-		},
-		"newterrain_and_savesystem": {
-			ID:                     "newterrain_and_savesystem",
-			Title:                  localization.GetString("UIText_NewTerrainAndSaveSystem_Title"),
-			HeaderTitle:            localization.GetString("UIText_NewTerrainAndSaveSystem_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_NewTerrainAndSaveSystem_StepMessage"),
-			PrimaryPlaceholderText: "",
-			PrimaryLabel:           "",
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_NewTerrainAndSaveSystem_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_NewTerrainAndSaveSystem_SkipButton"),
-			ConfigField:            "IsNewTerrainAndSaveSystem",
-			NextStep:               "max_players",
+			NextStep:                 "max_players",
 		},
 		"max_players": {
 			ID:                     "max_players",
