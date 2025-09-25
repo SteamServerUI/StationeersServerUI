@@ -50,7 +50,6 @@
                 "UIText_SaveNameInfo": "Name of the save folder, like 'MySave' or 'Europa Brutal' ",
                 "UIText_WorldID": "World ID",
                 "UIText_WorldIDInfo": "World ID used when creating a new world. For a list of world IDs, see the Dedicated Server Wiki or configure it easily from the setup wizard."
-
             },
             "network": {
                 "UIText_NetworkConfiguration": "Network Configuration",
