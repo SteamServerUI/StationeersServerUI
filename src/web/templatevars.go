@@ -40,7 +40,8 @@ type ConfigTemplateData struct {
 	StartCondition                          string
 	StartLocation                           string
 	ServerName                              string
-	SaveInfo                                string
+	SaveName                                string
+	WorldID                                 string
 	ServerMaxPlayers                        string
 	ServerPassword                          string
 	ServerAuthSecret                        string
@@ -92,64 +93,65 @@ type ConfigTemplateData struct {
 	UIText_TerrainSettings      string
 	UIText_BasicServerSettings  string
 
-	UIText_ServerName                       string
-	UIText_ServerNameInfo                   string
-	UIText_SaveFileName                     string
-	UIText_SaveFileNameInfo                 string
-	UIText_SaveFileNameUseWizzardButtonText string
-	UIText_MaxPlayers                       string
-	UIText_MaxPlayersInfo                   string
-	UIText_ServerPassword                   string
-	UIText_ServerPasswordInfo               string
-	UIText_AdminPassword                    string
-	UIText_AdminPasswordInfo                string
-	UIText_AutoSave                         string
-	UIText_AutoSaveInfo                     string
-	UIText_SaveInterval                     string
-	UIText_SaveIntervalInfo                 string
-	UIText_AutoPauseServer                  string
-	UIText_AutoPauseServerInfo              string
-	UIText_NetworkConfiguration             string
-	UIText_GamePort                         string
-	UIText_GamePortInfo                     string
-	UIText_UpdatePort                       string
-	UIText_UpdatePortInfo                   string
-	UIText_UPNPEnabled                      string
-	UIText_UPNPEnabledInfo                  string
-	UIText_LocalIpAddress                   string
-	UIText_LocalIpAddressInfo               string
-	UIText_StartLocalHost                   string
-	UIText_StartLocalHostInfo               string
-	UIText_ServerVisible                    string
-	UIText_ServerVisibleInfo                string
-	UIText_UseSteamP2P                      string
-	UIText_UseSteamP2PInfo                  string
-	UIText_AdvancedConfiguration            string
-	UIText_ServerAuthSecret                 string
-	UIText_ServerAuthSecretInfo             string
-	UIText_ServerExePath                    string
-	UIText_ServerExePathInfo                string
-	UIText_ServerExePathInfo2               string
-	UIText_AdditionalParams                 string
-	UIText_AdditionalParamsInfo             string
-	UIText_AutoRestartServerTimer           string
-	UIText_AutoRestartServerTimerInfo       string
-	UIText_GameBranch                       string
-	UIText_GameBranchInfo                   string
-	UIText_TerrainSettingsHeader            string
-	UIText_TerrainWarning                   string
-	UIText_UseNewTerrainAndSave             string
-	UIText_UseNewTerrainAndSaveInfo         string
-	UIText_Difficulty                       string
-	UIText_DifficultyInfo                   string
-	UIText_StartCondition                   string
-	UIText_StartConditionInfo               string
-	UIText_StartLocation                    string
-	UIText_StartLocationInfo                string
-	UIText_AutoStartServerOnStartup         string
-	UIText_AutoStartServerOnStartupInfo     string
-	UIText_AllowAutoGameServerUpdates       string
-	UIText_AllowAutoGameServerUpdatesInfo   string
+	UIText_ServerName                     string
+	UIText_ServerNameInfo                 string
+	UIText_SaveName                       string
+	UIText_SaveNameInfo                   string
+	UIText_WorldID                        string
+	UIText_WorldIDInfo                    string
+	UIText_MaxPlayers                     string
+	UIText_MaxPlayersInfo                 string
+	UIText_ServerPassword                 string
+	UIText_ServerPasswordInfo             string
+	UIText_AdminPassword                  string
+	UIText_AdminPasswordInfo              string
+	UIText_AutoSave                       string
+	UIText_AutoSaveInfo                   string
+	UIText_SaveInterval                   string
+	UIText_SaveIntervalInfo               string
+	UIText_AutoPauseServer                string
+	UIText_AutoPauseServerInfo            string
+	UIText_NetworkConfiguration           string
+	UIText_GamePort                       string
+	UIText_GamePortInfo                   string
+	UIText_UpdatePort                     string
+	UIText_UpdatePortInfo                 string
+	UIText_UPNPEnabled                    string
+	UIText_UPNPEnabledInfo                string
+	UIText_LocalIpAddress                 string
+	UIText_LocalIpAddressInfo             string
+	UIText_StartLocalHost                 string
+	UIText_StartLocalHostInfo             string
+	UIText_ServerVisible                  string
+	UIText_ServerVisibleInfo              string
+	UIText_UseSteamP2P                    string
+	UIText_UseSteamP2PInfo                string
+	UIText_AdvancedConfiguration          string
+	UIText_ServerAuthSecret               string
+	UIText_ServerAuthSecretInfo           string
+	UIText_ServerExePath                  string
+	UIText_ServerExePathInfo              string
+	UIText_ServerExePathInfo2             string
+	UIText_AdditionalParams               string
+	UIText_AdditionalParamsInfo           string
+	UIText_AutoRestartServerTimer         string
+	UIText_AutoRestartServerTimerInfo     string
+	UIText_GameBranch                     string
+	UIText_GameBranchInfo                 string
+	UIText_TerrainSettingsHeader          string
+	UIText_TerrainWarning                 string
+	UIText_UseNewTerrainAndSave           string
+	UIText_UseNewTerrainAndSaveInfo       string
+	UIText_Difficulty                     string
+	UIText_DifficultyInfo                 string
+	UIText_StartCondition                 string
+	UIText_StartConditionInfo             string
+	UIText_StartLocation                  string
+	UIText_StartLocationInfo              string
+	UIText_AutoStartServerOnStartup       string
+	UIText_AutoStartServerOnStartupInfo   string
+	UIText_AllowAutoGameServerUpdates     string
+	UIText_AllowAutoGameServerUpdatesInfo string
 
 	UIText_DiscordIntegrationTitle    string
 	UIText_DiscordBotToken            string

@@ -32,9 +32,9 @@ var (
 	AdditionalParams string
 	UPNPEnabled      bool
 	StartLocalHost   bool
-	WorldName        string
-	BackupWorldName  string
 	SaveInfo         string
+	SaveName         string
+	WorldID          string
 	SaveInterval     string
 	AutoPauseServer  bool
 	AutoSave         bool

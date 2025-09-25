@@ -136,28 +136,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     [configField]: booleanToConfig(document.getElementById('primary-field').value)
                 });
                 
-            } else if (configField === "SaveInfo") {
-                const primaryValue = document.getElementById('primary-field').value.trim();
-                // If the world name contains a space, it's invalid 
-                if (primaryValue.includes(' ')) {
-                    showNotification('The world name cannot contain spaces!', 'error');
-                    hidePreloader();
-                    return; // Prevent submission
-                    }
+            } else if (configField === "WorldID") {
                 const secondaryValue = document.getElementById('secondary-field').value.trim();
                 if (secondaryValue === '' || secondaryValue === document.getElementById('secondary-field').placeholder) {
                     showNotification('Please select a world type!', 'error');
                     hidePreloader();
                     return; // Prevent submission
                     }
-                const joinedValue = `${primaryValue} ${secondaryValue}`;
                 body = JSON.stringify({
-                    [configField]: joinedValue
+                    [configField]: secondaryValue
                 });
             } else if (configField === "gameBranch") {
                 const secondaryValue = document.getElementById('secondary-field').value.trim();
                 if (secondaryValue === '' || secondaryValue === document.getElementById('secondary-field').placeholder) {
-                    showNotification('Please select a world type!', 'error');
+                    showNotification('Please select a branch!', 'error');
                     hidePreloader();
                     return; // Prevent submission
                     }

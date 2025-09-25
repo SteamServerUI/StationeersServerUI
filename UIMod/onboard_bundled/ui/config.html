@@ -76,11 +76,15 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="SaveInfo">{{.UIText_SaveFileName}}:</label>
-                                    <input type="text" id="SaveInfo" name="SaveInfo" value="{{.SaveInfo}}"
-                                        pattern="^[A-Z].*(\s[A-Z].*)?$" required>
-                                    <div class="input-info">{{.UIText_SaveFileNameInfo}}</div>
-                                    <div class="button" style="cursor: pointer;" onclick="window.location.href = '/setup?step=save_identifier'">{{.UIText_SaveFileNameUseWizzardButtonText}}</div>
+                                    <label for="SaveName">{{.UIText_SaveName}}:</label>
+                                    <input type="text" id="SaveName" name="SaveName" value="{{.SaveName}}">
+                                    <div class="input-info">{{.UIText_SaveNameInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="WorldID">{{.UIText_WorldID}}:</label>
+                                    <input type="text" id="WorldID" name="WorldID" value="{{.WorldID}}">
+                                    <div class="input-info">{{.UIText_WorldIDInfo}}</div>
                                 </div>
                                 
                                 <div class="form-group">
