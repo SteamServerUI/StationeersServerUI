@@ -17,6 +17,7 @@ var activeHTTPHandlers []*HTTPHandler
 // InitGlobalBackupManager initializes the global backup manager instance
 func InitGlobalBackupManager(config BackupConfig) error {
 	if GlobalBackupManager != nil {
+		logger.Backup.Debug("Shutting down global backup manager")
 		GlobalBackupManager.Shutdown()
 	}
 
