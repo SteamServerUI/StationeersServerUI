@@ -143,21 +143,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			SubmitButtonText:         localization.GetString("UIText_GameBranch_SubmitButton"),
 			SkipButtonText:           localization.GetString("UIText_GameBranch_SkipButton"),
 			ConfigField:              "gameBranch",
-			NextStep:                 "newterrain_and_savesystem",
-		},
-		"newterrain_and_savesystem": {
-			ID:                     "newterrain_and_savesystem",
-			Title:                  localization.GetString("UIText_NewTerrainAndSaveSystem_Title"),
-			HeaderTitle:            localization.GetString("UIText_NewTerrainAndSaveSystem_HeaderTitle"),
-			StepMessage:            localization.GetString("UIText_NewTerrainAndSaveSystem_StepMessage"),
-			PrimaryPlaceholderText: localization.GetString("UIText_NewTerrainAndSaveSystem_PrimaryPlaceholder"),
-			PrimaryLabel:           localization.GetString("UIText_NewTerrainAndSaveSystem_PrimaryLabel"),
-			SecondaryLabel:         "",
-			SecondaryLabelType:     "hidden",
-			SubmitButtonText:       localization.GetString("UIText_NewTerrainAndSaveSystem_SubmitButton"),
-			SkipButtonText:         localization.GetString("UIText_NewTerrainAndSaveSystem_SkipButton"),
-			ConfigField:            "IsNewTerrainAndSaveSystem",
-			NextStep:               "server_name",
+			NextStep:                 "server_name",
 		},
 		"server_name": {
 			ID:                     "server_name",
@@ -378,9 +364,8 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 			data.Step = "welcome"
 		}
 		stepOrder := []string{
-			"welcome", "pls_read", "game_branch", "newterrain_and_savesystem", "server_name", "save_name", "world_id", "max_players",
-			"server_password",
-			"discord_enabled", "discord_token", "control_panel_channel", "save_channel",
+			"welcome", "pls_read", "game_branch", "server_name", "save_name", "world_id", "max_players",
+			"server_password", "discord_enabled", "discord_token", "control_panel_channel", "save_channel",
 			"log_channel", "connection_list_channel", "status_channel", "control_channel",
 			"network_config_choice", "game_port", "update_port", "upnp_enabled",
 			"local_ip_address", "admin_account", "finalize",

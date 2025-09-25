@@ -279,6 +279,12 @@ func applyConfig(cfg *JsonConfig) {
 		cfg.SaveInfo = ""
 	}
 
+	if GameBranch != "public" && GameBranch != "beta" {
+		IsNewTerrainAndSaveSystem = false
+	} else {
+		IsNewTerrainAndSaveSystem = true
+	}
+
 	// Set backup paths for old or new style saves
 	if IsNewTerrainAndSaveSystem {
 		// use new new style autosave folder
