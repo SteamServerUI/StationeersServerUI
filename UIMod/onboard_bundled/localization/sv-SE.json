@@ -44,7 +44,11 @@
                 "UIText_SaveInterval": "Sparintervall",
                 "UIText_SaveIntervalInfo": "Tid i sekunder mellan sparanden. Rekommenderas att <strong> inte </strong> recede 60 sekunder.",
                 "UIText_AutoPauseServer": "Autopausa server",
-                "UIText_AutoPauseServerInfo": "Pausa servern automatiskt när inga spelare är anslutna"
+                "UIText_AutoPauseServerInfo": "Pausa servern automatiskt när inga spelare är anslutna",
+                "UIText_SaveName": "Sparfil namn",
+                "UIText_SaveNameInfo": "Namnet på den sparade mappen, till exempel \"MySave\" eller \"Europa Brutal\" ",
+                "UIText_WorldID": "Världs-ID",
+                "UIText_WorldIDInfo": ""
             },
             "network": {
                 "UIText_NetworkConfiguration": "Nätverkskonfiguration",
@@ -242,7 +246,21 @@
             "UIText_ChangeUser_SecondaryLabel": "Nytt lösenord",
             "UIText_ChangeUser_SecondaryPlaceholder": "Lösenord",
             "UIText_ChangeUser_SubmitButton": "Lägg till/uppdatera användare",
-            "UIText_NewTerrainAndSaveSystem_StepMessage": "Använder du en GAMMAL branch, såsom preterrain eller äldre utan förändringar i terrängsystemet? Om ja, inaktivera hanteringen av det nya terräng- och sparningssystemet här. Ange ”ja” eller hoppa över för att aktivera (standard) eller ”nej” för att använda det gamla sparnings- och terrängsystemet. Om du är osäker, hoppa över detta steg."
+            "UIText_NewTerrainAndSaveSystem_StepMessage": "Använder du en GAMMAL branch, såsom preterrain eller äldre utan förändringar i terrängsystemet? Om ja, inaktivera hanteringen av det nya terräng- och sparningssystemet här. Ange ”ja” eller hoppa över för att aktivera (standard) eller ”nej” för att använda det gamla sparnings- och terrängsystemet. Om du är osäker, hoppa över detta steg.",
+            "UIText_SaveName_Title": "",
+            "UIText_SaveName_HeaderTitle": "",
+            "UIText_SaveName_StepMessage": "",
+            "UIText_SaveName_PrimaryLabel": "",
+            "UIText_SaveName_PrimaryPlaceholder": "",
+            "UIText_SaveName_SubmitButton": "",
+            "UIText_SaveName_SkipButton": "",
+            "UIText_WorldID_Title": "",
+            "UIText_WorldID_HeaderTitle": "",
+            "UIText_WorldID_StepMessage": "",
+            "UIText_WorldID_SecondaryLabel": "",
+            "UIText_WorldID_SecondaryPlaceholder": "",
+            "UIText_WorldID_SubmitButton": "",
+            "UIText_WorldID_SkipButton": ""
         }
     },
     "BackendText": {
