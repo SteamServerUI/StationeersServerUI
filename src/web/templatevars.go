@@ -148,6 +148,7 @@ type ConfigTemplateData struct {
 	UIText_StartConditionInfo             string
 	UIText_StartLocation                  string
 	UIText_StartLocationInfo              string
+	UIText_TerrainSettingsFillHint        string
 	UIText_AutoStartServerOnStartup       string
 	UIText_AutoStartServerOnStartupInfo   string
 	UIText_AllowAutoGameServerUpdates     string

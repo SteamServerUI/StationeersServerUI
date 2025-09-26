@@ -54,9 +54,11 @@
                 <div class="config-sections">
                     <div class="section-navigation">
                         <button class="section-nav-button" data-section="basic-settings">{{.UIText_BasicSettings}}</button>
+                        {{if eq .IsNewTerrainAndSaveSystemTrueSelected "selected"}}
+                        <button class="section-nav-button" data-section="terrain-settings">{{.UIText_TerrainSettings}}</button>
+                        {{end}}
                         <button class="section-nav-button" data-section="network-settings">{{.UIText_NetworkSettings}}</button>
                         <button class="section-nav-button" data-section="advanced-settings">{{.UIText_AdvancedSettings}}</button>
-                        <button class="section-nav-button" data-section="terrain-settings">{{.UIText_TerrainSettings}}</button>
                     </div>
 
                     <form id="server-config-form" action="/saveconfigasjson" method="post">
@@ -85,7 +87,6 @@
                                     <label for="WorldID">{{.UIText_WorldID}}:</label>
                                     <input type="text" id="WorldID" name="WorldID" value="{{.WorldID}}">
                                     <div class="input-info">{{.UIText_WorldIDInfo}}</div>
-                                    <div class="valid-options">Valid worlds: Lunar, Mars2, Europa3, MimasHerschel, Vulcan, Venus</div>
                                 </div>
                                 
                                 <div class="form-group">
@@ -262,17 +263,10 @@
                         <div id="terrain-settings" class="config-section">
                             <h3 class="section-title">{{.UIText_TerrainSettingsHeader}}</h3>
                             <div class="beta-warning">{{.UIText_TerrainWarning}}</div>
+                            <br>
                             <div class="channel-grid">
-                                <div class="form-group">
-                                    <label for="IsNewTerrainAndSaveSystem">{{.UIText_UseNewTerrainAndSave}}:</label>
-                                    <select id="IsNewTerrainAndSaveSystem" name="IsNewTerrainAndSaveSystem" required>
-                                        <option value="true" {{.IsNewTerrainAndSaveSystemTrueSelected}}>TRUE</option>
-                                        <option value="false" {{.IsNewTerrainAndSaveSystemFalseSelected}}>FALSE</option>
-                                    </select>
-                                    <div class="input-info">{{.UIText_UseNewTerrainAndSaveInfo}}</div>
-                                </div>
 
-                                <div class="form-group">
+                                <div class="form-group">        
                                     <label for="Difficulty">{{.UIText_Difficulty}}:</label>
                                     <input type="text" id="Difficulty" name="Difficulty"
                                         value="{{.Difficulty}}" pattern="^\S*$" required>
@@ -292,6 +286,9 @@
                                         value="{{.StartLocation}}" pattern="^\S*$" required>
                                     <div class="input-info">{{.UIText_StartLocationInfo}}</div>
                                 </div>
+                            </div>
+                            <div class="fill-hint-wraper" id="fill-hint-wraper" style="display: none; justify-content: center;">
+                                <div class="fill-hint" id="fill-hint">{{.UIText_TerrainSettingsFillHint}}</div>
                             </div>
                         </div>
 
@@ -460,7 +457,7 @@
         });
     </script>
     <script src="/static/js/main.js"></script>
-    <script src="/static/js/config.js"></script>
+    <script src="/static/js/world-gen-config.js"></script>
 </body>
 
 </html>

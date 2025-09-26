@@ -98,7 +98,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 	if config.GetIsNewTerrainAndSaveSystem() {
 		worldOptions = []struct{ Display, Value string }{
 			{Display: "Lunar", Value: "Lunar"},
-			{Display: "Vulcan", Value: "Vulcan"},
+			{Display: "Vulcan", Value: "Vulcan2"},
 			{Display: "Venus", Value: "Venus"},
 			{Display: "Mars", Value: "Mars2"},
 			{Display: "Europa", Value: "Europa3"},

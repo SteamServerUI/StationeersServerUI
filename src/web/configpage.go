@@ -76,12 +76,9 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	isNewTerrainAndSaveSystemTrueSelected := ""
-	isNewTerrainAndSaveSystemFalseSelected := ""
 
 	if config.GetIsNewTerrainAndSaveSystem() {
 		isNewTerrainAndSaveSystemTrueSelected = "selected"
-	} else {
-		isNewTerrainAndSaveSystemFalseSelected = "selected"
 	}
 
 	autoStartServerTrueSelected := ""
@@ -160,7 +157,6 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		AutoRestartServerTimer:                  config.GetAutoRestartServerTimer(),
 		IsNewTerrainAndSaveSystem:               fmt.Sprintf("%v", config.GetIsNewTerrainAndSaveSystem()),
 		IsNewTerrainAndSaveSystemTrueSelected:   isNewTerrainAndSaveSystemTrueSelected,
-		IsNewTerrainAndSaveSystemFalseSelected:  isNewTerrainAndSaveSystemFalseSelected,
 		AutoStartServerOnStartup:                fmt.Sprintf("%v", config.GetAutoStartServerOnStartup()),
 		AutoStartServerOnStartupTrueSelected:    autoStartServerTrueSelected,
 		AutoStartServerOnStartupFalseSelected:   autoStartServerFalseSelected,
@@ -228,14 +224,13 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		UIText_GameBranchInfo:                 localization.GetString("UIText_GameBranchInfo"),
 		UIText_TerrainSettingsHeader:          localization.GetString("UIText_TerrainSettingsHeader"),
 		UIText_TerrainWarning:                 localization.GetString("UIText_TerrainWarning"),
-		UIText_UseNewTerrainAndSave:           localization.GetString("UIText_UseNewTerrainAndSave"),
-		UIText_UseNewTerrainAndSaveInfo:       localization.GetString("UIText_UseNewTerrainAndSaveInfo"),
 		UIText_Difficulty:                     localization.GetString("UIText_Difficulty"),
 		UIText_DifficultyInfo:                 localization.GetString("UIText_DifficultyInfo"),
 		UIText_StartCondition:                 localization.GetString("UIText_StartCondition"),
 		UIText_StartConditionInfo:             localization.GetString("UIText_StartConditionInfo"),
 		UIText_StartLocation:                  localization.GetString("UIText_StartLocation"),
 		UIText_StartLocationInfo:              localization.GetString("UIText_StartLocationInfo"),
+		UIText_TerrainSettingsFillHint:        localization.GetString("UIText_TerrainSettingsFillHint"),
 		UIText_AutoStartServerOnStartup:       localization.GetString("UIText_AutoStartServerOnStartup"),
 		UIText_AutoStartServerOnStartupInfo:   localization.GetString("UIText_AutoStartServerOnStartupInfo"),
 		UIText_AllowAutoGameServerUpdates:     localization.GetString("UIText_AllowAutoGameServerUpdates"),
