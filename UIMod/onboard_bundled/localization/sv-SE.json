@@ -46,9 +46,9 @@
                 "UIText_AutoPauseServer": "Autopausa server",
                 "UIText_AutoPauseServerInfo": "Pausa servern automatiskt när inga spelare är anslutna",
                 "UIText_SaveName": "Sparfil namn",
-                "UIText_SaveNameInfo": "Namnet på den sparade mappen, till exempel \"MySave\" eller \"Europa Brutal\" ",
+                "UIText_SaveNameInfo": "Namnet på den sparade mappen, till exempel 'MySave' eller 'Europa Brutal'",
                 "UIText_WorldID": "Världs-ID",
-                "UIText_WorldIDInfo": ""
+                "UIText_WorldIDInfo": "Världs-ID som används när du skapar en ny värld. För en lista över världs-ID:n, se Dedicated Server Wiki eller konfigurera det enkelt från installationsguiden."
             },
             "network": {
                 "UIText_NetworkConfiguration": "Nätverkskonfiguration",
@@ -81,21 +81,24 @@
                 "UIText_GameBranch": "Spel-Branch",
                 "UIText_GameBranchInfo": "Spel-Branch att använda. Vid ändring krävs omstart av SSUI!",
                 "UIText_AllowAutoGameServerUpdates": "Aktivera automatiska uppdateringar av spelservern",
-                "UIText_AllowAutoGameServerUpdatesInfo": "Tillåt spelservern att automatiskt söka efter och uppdatera till den senaste versionen. Obs! Servern startas om när en ny version har hittats och installerats. Flera varningsmeddelanden skickas till servern med SAY-kommandon 60–10 sekunder före omstarten."
+                "UIText_AllowAutoGameServerUpdatesInfo": "Tillåt spelservern att automatiskt söka efter och uppdatera till den senaste versionen. Obs! Servern startas om när en ny version har hittats och installerats. Flera varningsmeddelanden skickas till servern med SAY-kommandon 60–10 sekunder före omstarten.",
+                "UIText_AutoStartServerOnStartup": "Starta servern automatiskt vid uppstart",
+                "UIText_AutoStartServerOnStartupInfo": "Starta spelservern automatiskt när SSUI startas. Standard är false."
             },
             "terrain": {
                 "UIText_UseNewTerrainAndSave": "Använd nytt system",
                 "UIText_Difficulty": "Svårighetsgrad",
-                "UIText_DifficultyInfo": "Svårighetsgrad för världsskapande. Standard är Normal om tomt.",
+                "UIText_DifficultyInfo": "Svårigheter att skapa världen med.",
                 "UIText_StartCondition": "Startvillkor",
-                "UIText_StartConditionInfo": "Startvillkor för världsskapande. Standard är världstypens standardvillkor om tomt.",
+                "UIText_StartConditionInfo": "Startvillkor för att skapa världen med.",
                 "UIText_StartLocation": "Startplats",
-                "UIText_StartLocationInfo": "Startplats för världsskapande. Standard är DefaultStartLocation om tomt.",
+                "UIText_StartLocationInfo": "Startplats för att skapa världen med.",
                 "UIText_AutoStartServerOnStartup": "Starta servern automatiskt vid uppstart",
                 "UIText_AutoStartServerOnStartupInfo": "Starta spelservern automatiskt när SSUI startas. Standard är false.",
-                "UIText_TerrainSettingsHeader": "NYA TERRÄNG- OCH SPARANDE SYSTEMINSTÄLLNINGAR",
-                "UIText_TerrainWarning": "Dessa inställningar är endast användbara om du kör en version av Stationeers som är NYARE än september 2025. Gamla sparade spel är INTE kompatibla med det nya systemet, men kan migreras med JacksonTheMasters migreringsverktyg <a href=\"https://sst.jxsn.dev\">.</a>. Relaterad information om \"hur man gör\" i FAQ där gäller även för dedikerade servrar.",
-                "UIText_UseNewTerrainAndSaveInfo": "Ställ in på TRUE för att aktivera hantering av .save-filer i Backup Manager och argumentanalys. Om inställningen är false fungerar endast Stationeers-versioner före terrängomarbetningen (≈ mitten av 2025). Standardinställningen är TRUE!"
+                "UIText_TerrainSettingsHeader": "Valfria inställningar för världsgenerering",
+                "UIText_TerrainWarning": "Du kan lämna dessa inställningar tomma för att använda standardinställningarna för den valda världstypen. När en värld har skapats har dessa inställningar ingen effekt längre.",
+                "UIText_UseNewTerrainAndSaveInfo": "Ställ in på TRUE för att aktivera hantering av .save-filer i Backup Manager och argumentanalys. Om inställningen är false fungerar endast Stationeers-versioner före terrängomarbetningen (≈ mitten av 2025). Standardinställningen är TRUE!",
+                "UIText_TerrainSettingsFillHint": "Fyll i fälten före det fält du har fyllt i med ett värde, annars kommer Stationeers att få problem med tolkningen."
             },
             "discord": {
                 "UIText_DiscordIntegrationTitle": "Fördelar med Discord-integration",
@@ -126,7 +129,7 @@
                 "UIText_DiscordBenefit5": "Felnotiser i realtid",
                 "UIText_DiscordSetupInstructions": "För installationsinstruktioner, besök"
             },
-            "UIText_TerrainSettings": "Ny terräng"
+            "UIText_TerrainSettings": "Världsgenerering"
         },
         "setup": {
             "UIText_FooterText": "Behöver du hjälp? Kolla Stationeers Server UI Github Wiki.",
@@ -247,20 +250,20 @@
             "UIText_ChangeUser_SecondaryPlaceholder": "Lösenord",
             "UIText_ChangeUser_SubmitButton": "Lägg till/uppdatera användare",
             "UIText_NewTerrainAndSaveSystem_StepMessage": "Använder du en GAMMAL branch, såsom preterrain eller äldre utan förändringar i terrängsystemet? Om ja, inaktivera hanteringen av det nya terräng- och sparningssystemet här. Ange ”ja” eller hoppa över för att aktivera (standard) eller ”nej” för att använda det gamla sparnings- och terrängsystemet. Om du är osäker, hoppa över detta steg.",
-            "UIText_SaveName_Title": "",
-            "UIText_SaveName_HeaderTitle": "",
-            "UIText_SaveName_StepMessage": "",
-            "UIText_SaveName_PrimaryLabel": "",
-            "UIText_SaveName_PrimaryPlaceholder": "",
-            "UIText_SaveName_SubmitButton": "",
-            "UIText_SaveName_SkipButton": "",
-            "UIText_WorldID_Title": "",
-            "UIText_WorldID_HeaderTitle": "",
-            "UIText_WorldID_StepMessage": "",
-            "UIText_WorldID_SecondaryLabel": "",
-            "UIText_WorldID_SecondaryPlaceholder": "",
-            "UIText_WorldID_SubmitButton": "",
-            "UIText_WorldID_SkipButton": ""
+            "UIText_SaveName_Title": "Stationeers Server UI",
+            "UIText_SaveName_HeaderTitle": "Spara namn",
+            "UIText_SaveName_StepMessage": "Konfigurera namnet på det sparade spelet. Detta är namnet på mappen som kommer att skapas i mappen 'saves'.",
+            "UIText_SaveName_PrimaryLabel": "Spelnamn",
+            "UIText_SaveName_PrimaryPlaceholder": "MittSave",
+            "UIText_SaveName_SubmitButton": "Spara & fortsätt",
+            "UIText_SaveName_SkipButton": "Hoppa över",
+            "UIText_WorldID_Title": "Stationeers Server UI",
+            "UIText_WorldID_HeaderTitle": "Kartnamn",
+            "UIText_WorldID_StepMessage": "Välj den karta du vill spela på.",
+            "UIText_WorldID_SecondaryLabel": "Välj från rullgardinsmenyn nedan",
+            "UIText_WorldID_SecondaryPlaceholder": "Välj en karta",
+            "UIText_WorldID_SubmitButton": "Spara & fortsätt",
+            "UIText_WorldID_SkipButton": "Hoppa över"
         }
     },
     "BackendText": {
