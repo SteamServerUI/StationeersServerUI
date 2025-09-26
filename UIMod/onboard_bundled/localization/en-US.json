@@ -26,7 +26,7 @@
             "UIText_BasicSettings": "Basic Settings",
             "UIText_NetworkSettings": "Network Settings",
             "UIText_AdvancedSettings": "Advanced Settings",
-            "UIText_TerrainSettings": "New Terrain",
+            "UIText_TerrainSettings": "World generation",
             "basic": {
                 "UIText_BasicServerSettings": "Basic Server Settings",
                 "UIText_ServerName": "Server Name",
@@ -82,21 +82,20 @@
                 "UIText_GameBranch": "Game Branch",
                 "UIText_GameBranchInfo": "Branch of the game to use. When changed, requires to restart SSUI!",
                 "UIText_AllowAutoGameServerUpdates": "Enable Auto Game Server Updates",
-                "UIText_AllowAutoGameServerUpdatesInfo": "Allow the gameserver to automatically query for and update to the latest version. Attention: Restarts the server when a new version was found and installed. Will send multiple warning messages to the sever with SAY commands 60-10 seconds before the restart."
-            },
-            "terrain": {
-                "UIText_TerrainSettingsHeader": "NEW TERRAIN AND SAVE SYSTEM SETTINGS",
-                "UIText_TerrainWarning": "These settings are only useful if you are running a Stationeers build NEWER than September 2025. Old savegames are NOT compatible with the new system, but can be migrated with JacksonTheMaster's <a href=\"https://sst.jxsn.dev\">Migration tool.</a>. Related \"how to\" Information on the FAQ there also applies to the Dedicated Server.",
-                "UIText_UseNewTerrainAndSave": "Use New Terrain and Save System",
-                "UIText_UseNewTerrainAndSaveInfo": "Set to TRUE to enable handling of .save files in the Backup manager and argument parsing. If set to false, only Stationeers versions before the terrain rework (≈ mid 2025) will work. Defaults to TRUE!",
-                "UIText_Difficulty": "Difficulty",
-                "UIText_DifficultyInfo": "Difficulty to create the world with. Defaults to Normal if empty.",
-                "UIText_StartCondition": "Start Condition",
-                "UIText_StartConditionInfo": "Start condition to create the world with. Defaults to the default start condition for the world type if empty.",
-                "UIText_StartLocation": "Start Location",
-                "UIText_StartLocationInfo": "Start location to create the world with. Defaults to DefaultStartLocation if empty.",
+                "UIText_AllowAutoGameServerUpdatesInfo": "Allow the gameserver to automatically query for and update to the latest version. Attention: Restarts the server when a new version was found and installed. Will send multiple warning messages to the sever with SAY commands 60-10 seconds before the restart.",
                 "UIText_AutoStartServerOnStartup": "Auto Start Server on Startup",
                 "UIText_AutoStartServerOnStartupInfo": "Automatically start the gameserver when the SSUI is started. Defaults to false."
+            },
+            "terrain": {
+                "UIText_TerrainSettingsHeader": "Optional world generation settings",
+                "UIText_TerrainWarning": "You can leave these settings blank to default to the defaults of the selected world type. Once a World is created, these settings no longer have an effect.",
+                "UIText_Difficulty": "Difficulty",
+                "UIText_DifficultyInfo": "Difficulty to create the world with.",
+                "UIText_StartCondition": "Start Condition",
+                "UIText_StartConditionInfo": "Start condition to create the world with.",
+                "UIText_StartLocation": "Start Location",
+                "UIText_StartLocationInfo": "Start location to create the world with.",
+                "UIText_TerrainSettingsFillHint": "Please fill out the fields before the one you filled with a value, else Stationeers will have parsing issues."
             },
             "discord": {
                 "UIText_DiscordIntegrationTitle": "Discord Integration Benefits",
