@@ -87,27 +87,34 @@ function validateInputs() {
         input.classList.remove('invalid');
         const infoDiv = input.nextElementSibling;
         if (infoDiv && infoDiv.classList.contains('input-info')) {
+            // Restore original text if it exists, otherwise keep current text
             infoDiv.textContent = infoDiv.getAttribute('data-original-text') || infoDiv.textContent;
         }
     });
 
     // Validate difficulty
-    if (!validDifficulties.includes(difficultyInput.value)) {
+    if (!difficultyInput.value || difficultyInput.value.trim() === '') {
+        updateInfoText(difficultyInput, validDifficulties.join(', '));
+    } else if (!validDifficulties.includes(difficultyInput.value)) {
         difficultyInput.classList.add('invalid');
-        updateInfoText(difficultyInput, `${validDifficulties.join(', ')}`);
+        updateInfoText(difficultyInput, `❌${validDifficulties.join(', ')}`);
     }
 
     if (worldConfig) {
         // Validate start condition
-        if (!worldConfig.conditions.includes(startConditionInput.value)) {
-            startConditionInput.classList.add('invalid');
+        if (!startConditionInput.value || startConditionInput.value.trim() === '') {
             updateInfoText(startConditionInput, `${selectedWorld}: ${worldConfig.conditions.join(', ')}`);
+        } else if (!worldConfig.conditions.includes(startConditionInput.value)) {
+            startConditionInput.classList.add('invalid');
+            updateInfoText(startConditionInput, `❌${selectedWorld}: ${worldConfig.conditions.join(', ')}`);
         }
 
         // Validate start location
-        if (!worldConfig.locations.includes(startLocationInput.value)) {
-            startLocationInput.classList.add('invalid');
+        if (!startLocationInput.value || startLocationInput.value.trim() === '') {
             updateInfoText(startLocationInput, `${selectedWorld}: ${worldConfig.locations.join(', ')}`);
+        } else if (!worldConfig.locations.includes(startLocationInput.value)) {
+            startLocationInput.classList.add('invalid');
+            updateInfoText(startLocationInput, `❌${selectedWorld}: ${worldConfig.locations.join(', ')}`);
         }
     }
 
