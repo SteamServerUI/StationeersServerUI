@@ -23,44 +23,55 @@ can coexist but may conflict if configured with overlapping directories.
 
 // Initialize checks for BackupDir and waits until it exists, then ensures SafeBackupDir exists.
 // It returns a channel that signals when initialization is complete or an error occurs.
-func (m *BackupManager) Initialize() <-chan error {
+func (m *BackupManager) Initialize(bmIdentifier string) <-chan error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	result := make(chan error, 1)
 
 	go func() {
+		defer close(result)
 		const timeout = 90 * time.Minute
 		const pollInterval = 2500 * time.Millisecond
 		deadline := time.Now().Add(timeout)
 
 		// Wait for BackupDir to exist
-		for {
-			if _, err := os.Stat(m.config.BackupDir); err == nil {
-				// Directory exists, proceed
-				break
+		for time.Now().Before(deadline) {
+			if stat, err := os.Stat(m.config.BackupDir); err == nil {
+				if stat.IsDir() {
+					// Directory exists, proceed
+					logger.Backup.Debugf("%s found backup directory: %s", bmIdentifier, m.config.BackupDir)
+					break
+				}
+				result <- fmt.Errorf("%s backup path %s is not a directory", bmIdentifier, m.config.BackupDir)
+				return
 			} else if !os.IsNotExist(err) {
 				// An error other than "not exists" occurred
-				result <- fmt.Errorf("error checking backup directory %s: %v", m.config.BackupDir, err)
+				result <- fmt.Errorf("%s error checking backup directory %s: %v", bmIdentifier, m.config.BackupDir, err)
 				return
 			}
 
-			if time.Now().After(deadline) {
-				result <- fmt.Errorf("timeout waiting for backup directory %s to be created", m.config.BackupDir)
+			logger.Backup.Debugf("%s waiting for save folder "+m.config.BackupDir+" to be created by Stationeers...", bmIdentifier)
+			select {
+			case <-m.ctx.Done():
+				result <- fmt.Errorf("%s I have to go, the config was likely changed: %s", bmIdentifier, m.ctx.Err())
 				return
+			case <-time.After(pollInterval):
+				// Continue polling
 			}
-			logger.Backup.Debug("Backup manager waiting for save folder " + m.config.BackupDir + " to be created by Stationeers...")
+		}
 
-			// Wait before checking again
-			time.Sleep(pollInterval)
+		if time.Now().After(deadline) {
+			result <- fmt.Errorf("%s timeout waiting for backup directory %s to be created", bmIdentifier, m.config.BackupDir)
+			return
 		}
 
 		// Ensure SafeBackupDir exists, create it if it doesn't
 		if err := os.MkdirAll(m.config.SafeBackupDir, os.ModePerm); err != nil {
-			result <- fmt.Errorf("error creating safe backup directory %s: %v", m.config.SafeBackupDir, err)
+			result <- fmt.Errorf("%s error creating safe backup directory %s: %v", bmIdentifier, m.config.SafeBackupDir, err)
 			return
 		}
-		logger.Backup.Debug("Backup manager created safebackups dir successfully")
+		logger.Backup.Debugf("%s created safebackups at %s", bmIdentifier, m.config.SafeBackupDir)
 
 		result <- nil
 	}()
@@ -69,22 +80,24 @@ func (m *BackupManager) Initialize() <-chan error {
 }
 
 // Start begins the backup monitoring and cleanup routines
-func (m *BackupManager) Start() error {
+func (m *BackupManager) Start(Identifier string) error {
 	// Wait for initialization to complete
-	logger.Backup.Debug("Backup manager is waiting for save folder initialization...")
-	initResult := <-m.Initialize()
+	bmIdentifier := Identifier
+
+	logger.Backup.Debugf("%s is waiting for save folder initialization...", bmIdentifier)
+	initResult := <-m.Initialize(bmIdentifier)
 	if initResult != nil {
-		return fmt.Errorf("failed to initialize backup manager: %w", initResult)
+		return fmt.Errorf("%s failed to initialize backup manager : %w", bmIdentifier, initResult)
 	}
-	logger.Backup.Info("Backup manager started")
+	logger.Backup.Infof("%s Backup manager instance started", bmIdentifier)
 
 	// Start file watcher
-	watcher, err := newFsWatcher(m.config.BackupDir)
+	watcher, err := newFsWatcher(m.config.BackupDir, bmIdentifier)
 	if err != nil {
 		return fmt.Errorf("failed to create autosave watcher: %w", err)
 	}
 	m.watcher = watcher
-	go m.watchBackups()
+	go m.watchBackups(Identifier)
 
 	if config.GetIsCleanupEnabled() {
 		go m.startCleanupRoutine()
@@ -94,30 +107,31 @@ func (m *BackupManager) Start() error {
 }
 
 // watchBackups monitors the backup directory for new files
-func (m *BackupManager) watchBackups() {
+func (m *BackupManager) watchBackups(Identifier string) {
 	m.wg.Add(1)
 	defer m.wg.Done()
 
-	logger.Backup.Debug("Starting backup file watcher...")
-	defer logger.Backup.Debug("Backup file watcher stopped")
+	logger.Backup.Debugf("%s Starting backup file watcher...", Identifier)
+	defer logger.Backup.Debugf("%s Backup file watcher stopped", Identifier)
 
 	for {
 		select {
 		case <-m.ctx.Done():
+			logger.Backup.Debugf("%s WatchBackups stopped due to context cancellation", Identifier)
 			return
 		case event, ok := <-m.watcher.events:
 			if !ok {
 				return
 			}
 			if event.Op&fsnotify.Create == fsnotify.Create {
-				logger.Backup.Info("New backup file detected: " + event.Name)
+				logger.Backup.Infof("%s New backup file detected: %s", Identifier, event.Name)
 				m.handleNewBackup(event.Name)
 			}
 		case err, ok := <-m.watcher.errors:
 			if !ok {
 				return
 			}
-			logger.Backup.Error("Backup watcher error: " + err.Error())
+			logger.Backup.Errorf("%s Backup watcher error: %s", Identifier, err.Error())
 		}
 	}
 }
@@ -178,6 +192,7 @@ func (m *BackupManager) startCleanupRoutine() {
 	for {
 		select {
 		case <-m.ctx.Done():
+			logger.Backup.Debug("Cleanup routine stopped due to context cancellation")
 			return
 		case <-ticker.C:
 			if err := m.Cleanup(); err != nil {
@@ -212,17 +227,19 @@ func (m *BackupManager) ListBackups(limit int) ([]BackupGroup, error) {
 
 // Shutdown stops all backup operations
 func (m *BackupManager) Shutdown() {
-	logger.Backup.Debug("Shutting down backup manager...")
+	logger.Backup.Debug("Shutting down previous backup manager...")
 
 	m.mu.Lock()
 	if m.cancel != nil {
 		m.cancel()
 		m.cancel = nil
+		logger.Backup.Debug("Context canceled for previous backup manager")
 	}
 
 	if m.watcher != nil {
 		m.watcher.close()
 		m.watcher = nil
+		logger.Backup.Debug("File watcher closed")
 	}
 	m.mu.Unlock()
 

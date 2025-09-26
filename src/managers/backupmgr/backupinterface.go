@@ -1,11 +1,12 @@
-// backupinterface.go
 package backupmgr
 
 import (
+	"sync"
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/google/uuid"
 )
 
 // GlobalBackupManager is the singleton instance of the backup manager
@@ -14,16 +15,25 @@ var GlobalBackupManager *BackupManager
 // Track all HTTP handlers that need updating when manager changes
 var activeHTTPHandlers []*HTTPHandler
 
+// initMutex ensures thread-safe initialization of the global backup manager
+var initMutex sync.Mutex
+
 // InitGlobalBackupManager initializes the global backup manager instance
 func InitGlobalBackupManager(config BackupConfig) error {
+	// Lock to prevent concurrent initialization
+	initMutex.Lock()
+	defer initMutex.Unlock()
+
+	// Shut down existing manager if it exists
 	if GlobalBackupManager != nil {
-		logger.Backup.Debug("Shutting down global backup manager")
+		logger.Backup.Debugf("%s Previous Backup manager found. Shutting it down.", config.Identifier)
 		GlobalBackupManager.Shutdown()
+		GlobalBackupManager = nil // Clear the manager to avoid stale references
 	}
 
-	logger.Backup.Debug("Initializing global backup manager")
-
-	GlobalBackupManager = NewBackupManager(config)
+	logger.Backup.Debugf("%s Creating a global backup manager with ID %s", config.Identifier, config.Identifier)
+	manager := NewBackupManager(config)
+	GlobalBackupManager = manager
 
 	// Update all active HTTP handlers with the new manager
 	for _, handler := range activeHTTPHandlers {
@@ -31,13 +41,13 @@ func InitGlobalBackupManager(config BackupConfig) error {
 	}
 
 	// Start the backup manager in a goroutine to avoid blocking
-	go func() {
-		if err := GlobalBackupManager.Start(); err != nil {
-			logger.Backup.Error("Failed to start global backup manager: " + err.Error())
+	go func(m *BackupManager) {
+		if err := m.Start(config.Identifier); err != nil {
+			logger.Backup.Warnf("%s Exited: "+err.Error(), config.Identifier)
 		}
-	}()
+	}(manager)
 
-	// Return immediately, initialization will complete in the background
+	logger.Backup.Infof("%s Backup manager reloaded successfully", config.Identifier)
 	return nil
 }
 
@@ -49,6 +59,8 @@ func RegisterHTTPHandler(handler *HTTPHandler) {
 // GetBackupConfig returns a properly configured BackupConfig
 func GetBackupConfig() BackupConfig {
 
+	uuid := uuid.New()
+	bmIdentifier := "[BM" + uuid.String()[:6] + "]:"
 	return BackupConfig{
 		WorldName:     config.GetSaveName(),
 		BackupDir:     config.GetConfiguredBackupDir(),
@@ -61,6 +73,7 @@ func GetBackupConfig() BackupConfig {
 			KeepMonthlyFor:  config.GetBackupKeepMonthlyFor(),
 			CleanupInterval: config.GetBackupCleanupInterval(),
 		},
+		Identifier: bmIdentifier,
 	}
 }
 
