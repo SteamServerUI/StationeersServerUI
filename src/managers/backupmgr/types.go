@@ -17,6 +17,7 @@ type BackupConfig struct {
 	SafeBackupDir   string
 	RetentionPolicy RetentionPolicy
 	WaitTime        time.Duration
+	Identifier      string
 }
 
 // RetentionPolicy defines backup retention rules

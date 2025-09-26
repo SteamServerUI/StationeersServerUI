@@ -65,7 +65,6 @@ func ReloadBackupManager() {
 		logger.Backup.Error("Failed to reload backup manager: " + err.Error())
 		return
 	}
-	logger.Backup.Info("Backup manager reloaded successfully")
 }
 
 func ReloadDiscordBot() {

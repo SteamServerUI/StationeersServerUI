@@ -17,7 +17,7 @@ import (
 func (m *BackupManager) RestoreBackup(index int) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	logger.Backup.Info("Restoring backup with index " + fmt.Sprintf("%d", index))
+	logger.Backup.Infof("Restoring backup with index %d", index)
 
 	groups, err := m.getBackupGroups()
 	if err != nil {
