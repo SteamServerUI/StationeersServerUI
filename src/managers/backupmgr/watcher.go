@@ -19,16 +19,16 @@ type fsWatcher struct {
 }
 
 // newFsWatcher creates a new file system watcher
-func newFsWatcher(path string, Identifier string) (*fsWatcher, error) {
+func newFsWatcher(path string, identifier string) (*fsWatcher, error) {
 	// Normalize path
 	normalizedPath := filepath.Clean(path)
-	logger.Backup.Debugf("%s Creating watcher for path: %s ", Identifier, normalizedPath)
+	logger.Backup.Debugf("%s Creating watcher for path: %s", identifier, normalizedPath)
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		return nil, fmt.Errorf("%s failed to create watcher: %w", Identifier, err)
+		return nil, fmt.Errorf("%s failed to create watcher: %w", identifier, err)
 	}
-	logger.Backup.Debugf("%s Watcher created successfully", Identifier)
+	logger.Backup.Debugf("%s Watcher created successfully", identifier)
 
 	// Watch the root save path and all subdirectories
 	err = filepath.WalkDir(normalizedPath, func(subPath string, d os.DirEntry, err error) error {
@@ -37,16 +37,16 @@ func newFsWatcher(path string, Identifier string) (*fsWatcher, error) {
 		}
 		if d.IsDir() {
 			if err := watcher.Add(subPath); err != nil {
-				logger.Backup.Errorf("%s Failed to add subdir %s to watcher: %s ", Identifier, subPath, err.Error())
+				logger.Backup.Errorf("%s Failed to add subdir %s to watcher: %s", identifier, subPath, err.Error())
 			} else {
-				logger.Backup.Debugf("%s Added subdir %s to watcher", Identifier, subPath)
+				logger.Backup.Debugf("%s Added subdir %s to watcher", identifier, subPath)
 			}
 		}
 		return nil
 	})
 	if err != nil {
 		watcher.Close()
-		return nil, fmt.Errorf("%s failed to add subdirectories to watcher: %w", Identifier, err)
+		return nil, fmt.Errorf("%s failed to add subdirectories to watcher: %w", identifier, err)
 	}
 
 	w := &fsWatcher{

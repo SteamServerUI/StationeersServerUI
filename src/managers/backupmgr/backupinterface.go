@@ -59,8 +59,8 @@ func RegisterHTTPHandler(handler *HTTPHandler) {
 // GetBackupConfig returns a properly configured BackupConfig
 func GetBackupConfig() BackupConfig {
 
-	uuid := uuid.New()
-	bmIdentifier := "[BM" + uuid.String()[:6] + "]:"
+	id := uuid.New()
+	bmIdentifier := "[BM" + id.String()[:6] + "]:"
 	return BackupConfig{
 		WorldName:     config.GetSaveName(),
 		BackupDir:     config.GetConfiguredBackupDir(),
