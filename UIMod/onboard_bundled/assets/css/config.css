@@ -4,30 +4,31 @@
 /* Wizard Button */
 .wizard-button-container {
     display: flex;
-    justify-content: center;
-    margin-bottom: 25px;
-}
-
-.wizard-button {
-    display: flex;
-    align-items: center;
-    background-color: rgba(0, 255, 171, 0.15);
-    border: 2px solid var(--primary);
-    border-radius: 12px;
-    padding: 12px 24px;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
+/* Tooltip styles */
+[title] {
     position: relative;
-    overflow: hidden;
-    z-index: 1;
-    box-shadow: 0 0 15px rgba(0, 255, 171, 0.3);
+    cursor: help;
 }
 
-.wizard-button::before {
-    content: '';
+[title]:hover::before {
+    content: attr(title);
     position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: var(--primary);
+    border-radius: 4px;
+    font-size: 0.85em;
+    white-space: pre-line;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0, 255, 171, 0.2);
+    border: 1px solid var(--primary);
+    pointer-events: none;
+    min-width: 200px;
+    text-align: center;
+}
     top: 0;
     left: -100%;
     width: 100%;
@@ -365,4 +366,21 @@ select option {
 .feature-list li:hover {
     transform: translateX(3px);
     background-color: rgba(0, 0, 0, 0.4);
+}
+
+.invalid {
+    border-color: #ff4d4d !important;
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.2);
+}
+
+.invalid:focus {
+    box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
+}
+
+.valid-options {
+    font-size: 0.85rem;
+    color: var(--primary);
+    margin-top: 5px;
+    font-family: 'Share Tech Mono', monospace;
+    opacity: 0.8;
 }
