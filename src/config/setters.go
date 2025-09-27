@@ -70,6 +70,22 @@ func SetNoSanityCheck(value bool) error {
 	return nil
 }
 
+func SetSaveName(value string) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	SaveName = value
+	return nil
+}
+
+func SetWorldID(value string) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	WorldID = value
+	return nil
+}
+
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT

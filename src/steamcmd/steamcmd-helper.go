@@ -20,6 +20,30 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
+// isRelSymlink ensures `link` resolves to a path within `root`.
+// This way we can avoid directory traversal attacks via symlinks.
+// isSymlinkInsideRoot checks that a symlink named `name` with target `link`
+// can be safely created under `root` without escaping it.
+func isSymlinkInsideRoot(name, link, root string) bool {
+	// 1. The symlink file itself must stay inside `root`.
+	targetPath := filepath.Join(root, name)
+	if !strings.HasPrefix(filepath.Clean(targetPath), root) {
+		return false
+	}
+
+	// 2. Resolve the link *relative to the symlink’s directory*.
+	//    Do NOT call EvalSymlinks – we only care about the *path*.
+	linkDir := filepath.Dir(targetPath)                 // dir where the symlink will live
+	abs := filepath.Clean(filepath.Join(linkDir, link)) // e.g. /tmp/extract/../etc/passwd → /etc/passwd
+
+	// 3. Ensure the absolute target is still under `root`.
+	rel, err := filepath.Rel(root, abs)
+	if err != nil {
+		return false
+	}
+	return !strings.HasPrefix(rel, "..") && !strings.HasPrefix(abs, string(os.PathSeparator))
+}
+
 // createSteamCMDDirectory creates the SteamCMD directory.
 func createSteamCMDDirectory(steamCMDDir string) error {
 	if err := os.MkdirAll(steamCMDDir, os.ModePerm); err != nil {
@@ -169,8 +193,16 @@ func untar(dest string, r io.Reader) error {
 				return fmt.Errorf("failed to write file %s: %v", target, err)
 			}
 		case tar.TypeSymlink:
+			// `header.Name` = path to symlink (relative to dest)
+			// `header.Linkname` = symlink target (relative or absolute)
+			if !isSymlinkInsideRoot(header.Name, header.Linkname, dest) {
+				logger.Install.Warn(fmt.Sprintf("Skipping unsafe symlink %s → %s", header.Name, header.Linkname))
+				return fmt.Errorf("symlink %s → %s points outside extraction root", header.Name, header.Linkname)
+			}
+
+			// If we reach here, the symlink is safe
 			if err := os.Symlink(header.Linkname, target); err != nil {
-				return fmt.Errorf("failed to create symlink %s: %v", target, err)
+				return fmt.Errorf("failed to create symlink %s → %s: %w", target, header.Linkname, err)
 			}
 		default:
 			return fmt.Errorf("unknown type: %v in %s", header.Typeflag, header.Name)

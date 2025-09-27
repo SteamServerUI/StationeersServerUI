@@ -160,6 +160,19 @@
     filter: brightness(1.2);
 }
 
+.fill-hint-wraper{
+    background-color: var(--danger);
+    border-radius: 8px;
+}
+
+.fill-hint{
+    font-size: 1rem;
+    color: #ffffff;
+    padding: 2%;
+    font-style: italic;
+    text-align: center;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .section-navigation {

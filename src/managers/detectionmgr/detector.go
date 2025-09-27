@@ -247,7 +247,7 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 				version := matches[1]
 				d.triggerEvent(Event{
 					Type:      EventVersionExtracted,
-					Message:   fmt.Sprintf("Version %s detected", version),
+					Message:   fmt.Sprintf("Version %s", version),
 					RawLog:    logMessage,
 					Timestamp: time.Now().Format(time.RFC3339),
 				})

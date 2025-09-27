@@ -145,22 +145,24 @@ func GetServerName() string {
 	return ServerName
 }
 
-func GetSaveInfo() string {
+// special getter for backwards compatibility with SaveInfo
+func GetLegacySaveInfo() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return SaveInfo
+	saveinfo := SaveName + ";" + WorldID
+	return saveinfo
 }
 
-func GetWorldName() string {
+func GetSaveName() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return WorldName
+	return SaveName
 }
 
-func GetBackupWorldName() string {
+func GetWorldID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return BackupWorldName
+	return WorldID
 }
 
 func GetServerMaxPlayers() string {

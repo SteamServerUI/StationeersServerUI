@@ -1,10 +1,10 @@
 services:
   stationeers-server:
-    container_name: stationeers-server
+    container_name: stationeers-server-ui
     build:
       context: ..
       dockerfile: ./.docker/Dockerfile
-    image: stationeers-server-ui:latest
+    image: stationeersserverui:latest
     stdin_open: true
     tty: true
     deploy:
