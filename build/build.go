@@ -105,7 +105,7 @@ func incrementVersion(configFile string) string {
 		log.Fatalf("Failed to read config.go: %s", err)
 	}
 
-	// Use regex to find and increment the patch version (assuming version format is x.y.z)
+	// Use regex to find and increment the version (assuming version format is x.y.z)
 	versionRegex := regexp.MustCompile(`Version\s*=\s*"(\d+)\.(\d+)\.(\d+)"`)
 	matches := versionRegex.FindStringSubmatch(string(content))
 	if len(matches) != 4 {
@@ -116,9 +116,17 @@ func incrementVersion(configFile string) string {
 	minor, _ := strconv.Atoi(matches[2])
 	patch, _ := strconv.Atoi(matches[3])
 
-	// Increment the patch version
-	patch++
-	newVersion := fmt.Sprintf("%d.%d.%d", major, minor, patch)
+	// Check if patch is 999, if so, increment minor and reset patch
+	var newVersion string
+	if patch == 999 {
+		minor++
+		patch = 0
+		newVersion = fmt.Sprintf("%d.%d.%d", major, minor, patch)
+	} else {
+		// Increment the patch version
+		patch++
+		newVersion = fmt.Sprintf("%d.%d.%d", major, minor, patch)
+	}
 
 	// Replace the old version with the new version
 	newContent := versionRegex.ReplaceAllString(string(content), fmt.Sprintf(`Version = "%s"`, newVersion))
