@@ -18,6 +18,12 @@ func flushLogBufferToDiscord() {
 	if len(LogMessageBuffer) == 0 {
 		return // No messages to send
 	}
+
+	if config.GetLogChannelID() == "" {
+		LogMessageBuffer = ""
+		return // No log channel ID set, skip and set buffer to empty
+	}
+
 	if !config.GetIsDiscordEnabled() || config.DiscordSession == nil {
 		return
 	}

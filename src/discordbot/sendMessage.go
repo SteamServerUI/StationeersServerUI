@@ -17,6 +17,11 @@ func SendMessageToControlChannel(message string) {
 	if !config.GetIsDiscordEnabled() {
 		return
 	}
+
+	if config.GetControlChannelID() == "" {
+		return
+	}
+
 	if config.DiscordSession == nil {
 		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 		return
@@ -32,6 +37,11 @@ func SendMessageToStatusChannel(message string) {
 	if !config.GetIsDiscordEnabled() {
 		return
 	}
+
+	if config.GetStatusChannelID() == "" {
+		return
+	}
+
 	if config.DiscordSession == nil {
 		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 		return
@@ -47,6 +57,11 @@ func SendMessageToSavesChannel(message string) {
 	if !config.GetIsDiscordEnabled() {
 		return
 	}
+
+	if config.GetSaveChannelID() == "" {
+		return
+	}
+
 	if config.DiscordSession == nil {
 		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 		return
@@ -62,6 +77,11 @@ func SendUntrackedMessageToErrorChannel(message string) {
 	if !config.GetIsDiscordEnabled() {
 		return
 	}
+
+	if config.GetErrorChannelID() == "" {
+		return
+	}
+
 	if config.DiscordSession == nil {
 		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 		return
