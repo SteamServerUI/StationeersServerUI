@@ -266,7 +266,7 @@ func applyConfig(cfg *JsonConfig) {
 	cfg.AutoStartServerOnStartup = &autoStartServerOnStartupVal
 
 	// Process SaveInfo to maintain backwards compatibility with pre-5.6.6 SaveInfo field (deprecated)
-	if SaveInfo != "" && SaveName == "" && WorldID == "" {
+	if SaveInfo != "" {
 		parts := strings.Split(SaveInfo, " ")
 		if len(parts) > 0 {
 			SaveName = parts[0]
