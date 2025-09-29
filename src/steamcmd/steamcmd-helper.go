@@ -44,6 +44,15 @@ func isSymlinkInsideRoot(name, link, root string) bool {
 	return !strings.HasPrefix(rel, "..") && !strings.HasPrefix(abs, string(os.PathSeparator))
 }
 
+func isPathInsideRoot(path, root string) bool {
+	cleanPath := filepath.Clean(path)
+	rel, err := filepath.Rel(root, cleanPath)
+	if err != nil {
+		return false
+	}
+	return !strings.HasPrefix(rel, "..") && !strings.HasPrefix(cleanPath, string(os.PathSeparator))
+}
+
 // createSteamCMDDirectory creates the SteamCMD directory.
 func createSteamCMDDirectory(steamCMDDir string) error {
 	if err := os.MkdirAll(steamCMDDir, os.ModePerm); err != nil {
@@ -183,6 +192,9 @@ func untar(dest string, r io.Reader) error {
 				return fmt.Errorf("failed to create directory %s: %v", target, err)
 			}
 		case tar.TypeReg:
+			if !isPathInsideRoot(target, dest) {
+				return fmt.Errorf("invalid file path attempts to write outside root directory: %s", target)
+			}
 			outFile, err := os.OpenFile(target, os.O_CREATE|os.O_WRONLY, os.FileMode(header.Mode))
 			if err != nil {
 				return fmt.Errorf("failed to create file %s: %v", target, err)
@@ -230,6 +242,9 @@ func Unzip(zipReader io.ReaderAt, size int64, dest string) error {
 		fpath := filepath.Join(dest, f.Name)
 
 		// Ensure the file path is within the destination directory
+		if !isPathInsideRoot(fpath, dest) {
+			return fmt.Errorf("invalid file path attempts to write outside root directory: %s", fpath)
+		}
 		relPath, err := filepath.Rel(dest, fpath)
 		if err != nil || strings.HasPrefix(relPath, "..") || strings.HasPrefix(relPath, string(os.PathSeparator)) {
 			return fmt.Errorf("invalid file path: %s", fpath)
