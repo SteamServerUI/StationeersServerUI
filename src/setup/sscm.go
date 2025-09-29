@@ -150,10 +150,12 @@ func downloadAndInstallBepInEx(url string) error {
 		}
 	}
 
-	if runtime.GOOS != "linux" {
-		err = os.Remove("./run_bepinex.sh")
-		if err != nil {
-			logger.Install.Warn(fmt.Sprintf("⚠️Failed to remove obsoleterun_bepinex.sh: %v", err))
+	if runtime.GOOS == "linux" {
+		if _, err := os.Stat("./run_bepinex.sh"); err == nil {
+			err = os.Remove("./run_bepinex.sh")
+			if err != nil {
+				logger.Install.Warn(fmt.Sprintf("⚠️Failed to remove run_bepinex.sh: %v", err))
+			}
 		}
 	}
 
