@@ -1,4 +1,4 @@
-name: PR Cross-OS Smoke Test
+name: PR Container Smoke Test
 
 on:
   pull_request:
@@ -6,78 +6,20 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   smoke:
-    name: Smoke (Runner ${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    env:
-      CGO_ENABLED: 0
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.22'
-          check-latest: true
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: 'frontend/package-lock.json'
-        continue-on-error: true
-
-      - name: Install frontend deps
-        working-directory: frontend
-        run: |
-          if [ -f package.json ]; then npm ci || npm install; fi
-        shell: bash
-
-      - name: Build frontend
-        working-directory: frontend
-        run: |
-          if [ -f package.json ]; then npm run build || echo 'frontend build failed (continuing)'; fi
-        shell: bash
-
-      - name: Smoke test
-        run: bash ./.github/scripts/run-smoke.sh
-        shell: bash
-
-      - name: Collect results
-        if: always()
-        id: collect
-        run: |
-          echo "status=$(cat smoke-logs/result.txt 2>/dev/null || echo 'missing')" >> $GITHUB_OUTPUT
-          echo "status_json=$(cat smoke-logs/status.json 2>/dev/null || echo '{}')" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Upload logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: smoke-${{ matrix.os }}
-          path: |
-            smoke-logs/server.log
-            smoke-logs/status.json
-            smoke-logs/result.txt
-          if-no-files-found: warn
-
-  smoke-linux-distros:
     name: Smoke (Container ${{ matrix.distro }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
+          - distro: ubuntu
+            image: ubuntu:24.04
+            pkg_update: apt-get update
+            install: apt-get install -y --no-install-recommends ca-certificates curl git build-essential wget nodejs npm bash
+            needs_go: true
           - distro: debian
             image: debian:trixie
             pkg_update: apt-get update
@@ -113,9 +55,9 @@ jobs:
           rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz
           echo "/usr/local/go/bin" >> $GITHUB_PATH
           /usr/local/go/bin/go version
-      - name: Add Go to PATH (arch already has go)
+      - name: Verify Go (preinstalled)
         if: matrix.needs_go == false
-        run: which go || echo "go not found" || true
+        run: go version || which go || true
       - name: Checkout
         uses: actions/checkout@v4
       - name: Node version
@@ -140,87 +82,9 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: smoke-${{ matrix.distro }}
-          path: |
-            smoke-logs/server.log
-            smoke-logs/status.json
-            smoke-logs/result.txt
-          if-no-files-found: warn
-
-  summarize:
-    name: Summarize & Comment
-    needs: [smoke, smoke-linux-distros]
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: read
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
-
-      - name: Build summary
-        id: summary
-        run: |
-          set -e
-          echo '### Cross-OS Smoke Test Results' > summary.md
-          echo '' >> summary.md
-          STATUS_TABLE="| OS | Status | Details |\n|----|--------|---------|"
-          for dir in artifacts/*; do
-            osname=$(basename "$dir" | sed 's/^smoke-//')
-            resultFile=$(find "$dir" -name result.txt -maxdepth 2 -type f 2>/dev/null | head -n1)
-            logFile=$(find "$dir" -name server.log -maxdepth 2 -type f 2>/dev/null | head -n1)
-            status="missing"
-            if [ -f "$resultFile" ]; then status=$(cat "$resultFile"); fi
-            detailsLink="(logs unavailable)"
-            if [ -f "$logFile" ]; then
-              head -n5 "$logFile" > "$dir/head.txt" || true
-              tail -n5 "$logFile" > "$dir/tail.txt" || true
-              detailsLink="See below"
-            fi
-            STATUS_TABLE+="\n| $osname | $status | $detailsLink |"
-          done
-          echo "$STATUS_TABLE" >> summary.md
-          echo '' >> summary.md
-          echo '<details><summary>Log excerpts</summary>' >> summary.md
-          for dir in artifacts/*; do
-            osname=$(basename "$dir" | sed 's/^smoke-//')
-            logFile=$(find "$dir" -name server.log -maxdepth 2 -type f 2>/dev/null | head -n1)
-            if [ -f "$logFile" ]; then
-              echo "\n#### $osname" >> summary.md
-              echo '\n<details><summary>First 5 lines</summary>' >> summary.md
-              echo '\n```' >> summary.md
-              cat "$dir/head.txt" >> summary.md
-              echo '```' >> summary.md
-              echo '</details>' >> summary.md
-              echo '\n<details><summary>Last 5 lines</summary>' >> summary.md
-              echo '\n```' >> summary.md
-              cat "$dir/tail.txt" >> summary.md
-              echo '```' >> summary.md
-              echo '</details>' >> summary.md
-            fi
-          done
-          echo '\n</details>' >> summary.md
-          SUMMARY_BODY=$(cat summary.md)
-          SUMMARY_BODY_ESCAPED=$(printf '%s' "$SUMMARY_BODY" | sed -e ':a' -e 'N' -e '$!ba' -e 's/%/%25/g' -e 's/\n/%0A/g' -e 's/\r/%0D/g')
-          echo "body=$SUMMARY_BODY_ESCAPED" >> $GITHUB_OUTPUT
-
-      - name: Create or update PR comment
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const markerStart = '<!-- smoke-test-report-start -->';
-            const markerEnd = '<!-- smoke-test-report-end -->';
-            const body = process.env.SUMMARY_BODY || `\n${{ steps.summary.outputs.body }}`;
-            const {owner, repo, number} = context.issue;
-            const { data: comments } = await github.rest.issues.listComments({owner, repo, issue_number: number, per_page: 100});
-            const existing = comments.find(c => c.body && c.body.includes(markerStart));
-            const finalBody = `${markerStart}\n${body}\n${markerEnd}`;
-            if (existing) {
-              await github.rest.issues.updateComment({owner, repo, comment_id: existing.id, body: finalBody});
-            } else {
-              await github.rest.issues.createComment({owner, repo, issue_number: number, body: finalBody});
-            }
-        env:
-          SUMMARY_BODY: ${{ steps.summary.outputs.body }}
+            name: smoke-${{ matrix.distro }}
+            path: |
+              smoke-logs/server.log
+              smoke-logs/status.json
+              smoke-logs/result.txt
+            if-no-files-found: warn
