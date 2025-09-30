@@ -513,3 +513,9 @@ func GetIsDockerContainer() bool {
 	defer ConfigMu.RUnlock()
 	return IsDockerContainer
 }
+
+func GetRunfilesFolder() string {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+	return RunFilesFolder
+}
