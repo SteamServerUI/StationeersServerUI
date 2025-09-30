@@ -22,13 +22,13 @@ GRACE_KILL_SECONDS=5
   echo "[smoke] launching server..." | tee -a "$LOG_FILE"
   export LOG_LEVEL=20  # INFO
   # Run server
-  go run server.go 2>&1 | tee -a "$LOG_FILE" &
+  nohup go run server.go > "$LOG_FILE" 2>&1 &
   echo $! > "$LOG_DIR/server.pid"
 ) || true
 
 PID=$(cat "$LOG_DIR/server.pid" 2>/dev/null || echo "")
-if [[ -z "$PID" ]]; then
-  echo "{\"status\":\"failed\",\"reason\":\"No PID captured\"}" > "$STATUS_JSON"
+if [[ -z "$PID" ]] || ! kill -0 "$PID" 2>/dev/null; then
+  echo "{\"status\":\"failed\",\"reason\":\"No valid server PID captured\"}" > "$STATUS_JSON"
   exit 0
 fi
 
