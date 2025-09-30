@@ -1,0 +1,74 @@
+name: PR Smoke Test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Smoke (${{ matrix.distro }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - distro: ubuntu
+            image: ubuntu:24.04
+            pkg_update: apt-get update
+            install: apt-get install -y --no-install-recommends ca-certificates curl git build-essential wget nodejs npm bash tar
+          - distro: debian
+            image: debian:trixie
+            pkg_update: apt-get update
+            install: apt-get install -y --no-install-recommends ca-certificates curl git build-essential wget nodejs npm bash tar
+          - distro: arch
+            image: archlinux:base
+            pkg_update: pacman -Sy --noconfirm
+            install: pacman -S --noconfirm ca-certificates curl git wget tar nodejs npm base-devel bash
+    container:
+      image: ${{ matrix.image }}
+    env:
+      CGO_ENABLED: 0
+    steps:
+      - name: Prepare packages
+        run: |
+          set -e
+          ${{ matrix.pkg_update }}
+          ${{ matrix.install }}
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Node version
+        run: node --version && npm --version || true
+      - name: Install frontend deps
+        working-directory: frontend
+        run: |
+          if [ -f package.json ]; then npm ci || npm install; fi
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          if [ -f package.json ]; then npm run build || echo 'frontend build failed (continuing)'; fi
+      - name: Run smoke test
+        run: bash ./.github/scripts/run-smoke.sh
+      - name: Collect results
+        if: always()
+        id: collect
+        run: |
+          echo "status=$(cat smoke-logs/result.txt 2>/dev/null || echo 'missing')" >> $GITHUB_OUTPUT
+          echo "status_json=$(cat smoke-logs/status.json 2>/dev/null || echo '{}')" >> $GITHUB_OUTPUT
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+            name: smoke-${{ matrix.distro }}
+            path: |
+              smoke-logs/server.log
+              smoke-logs/status.json
+              smoke-logs/result.txt
+            if-no-files-found: warn
