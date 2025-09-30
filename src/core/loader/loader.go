@@ -31,7 +31,7 @@ func InitBackend(wg *sync.WaitGroup) {
 	ReloadDiscordBot()
 	InitDetector()
 	if config.GetOverrideAdvertisedIp() != "" {
-		logger.Main.Debug("Starting server advertiser...")
+		logger.Advertiser.Info("Starting server advertiser...")
 		advertiser.StartAdvertiser()
 	}
 }
