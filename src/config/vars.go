@@ -61,6 +61,7 @@ var (
 	LanguageSetting          string
 	AutoStartServerOnStartup bool
 	SSUIIdentifier           string
+	OverrideAdvertisedIp     string
 )
 
 // Runtime only variables
