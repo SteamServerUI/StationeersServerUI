@@ -7,6 +7,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfile"
 )
 
@@ -27,16 +28,18 @@ func InitRunfile(game string) error {
 		return err
 	}
 
-	logger.Runfile.Info("Running SteamCMD, this may take a while...")
-	//steammgr.RunSteamCMD()
-	logger.Runfile.Warn("Steamcmd for runfile not implemented yet")
 	logger.Runfile.Info("Runfile game updated to " + game)
+	logger.Runfile.Info("Running SteamCMD, this may take a while...")
+	steamcmd.InstallAndRunSteamCMD()
 
 	return nil
 }
 
-// used to only reload runfile into memory. Can be triggered from v1 UI -> Runfile Reset terminal
 func ReloadRunfile() error {
+	if !config.GetIsSteamServerUI() {
+		return nil
+	}
+
 	if err := runfile.LoadRunfile(config.GetRunfileIdentifier(), config.GetRunFilesFolder()); err != nil {
 		logger.Runfile.Warn("Failed to reload runfile: " + err.Error())
 		return err
