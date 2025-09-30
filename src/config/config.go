@@ -73,6 +73,7 @@ type JsonConfig struct {
 	AutoStartServerOnStartup  *bool  `json:"AutoStartServerOnStartup"`
 	SSUIIdentifier            string `json:"SSUIIdentifier"`
 	SSUIWebPort               string `json:"SSUIWebPort"`
+	IsSteamServerUI           *bool  `json:"IsSteamServerUI"`
 
 	// Update Settings
 	IsUpdateEnabled            *bool `json:"IsUpdateEnabled"`
@@ -265,6 +266,10 @@ func applyConfig(cfg *JsonConfig) {
 	AutoStartServerOnStartup = autoStartServerOnStartupVal
 	cfg.AutoStartServerOnStartup = &autoStartServerOnStartupVal
 
+	isSteamServerUIVal := getBool(cfg.IsSteamServerUI, "IS_STEAM_SERVER_UI", false)
+	IsSteamServerUI = isSteamServerUIVal
+	cfg.IsSteamServerUI = &isSteamServerUIVal
+
 	// Process SaveInfo to maintain backwards compatibility with pre-5.6.6 SaveInfo field (deprecated)
 	if SaveInfo != "" {
 		parts := strings.Split(SaveInfo, " ")
@@ -365,6 +370,7 @@ func safeSaveConfig() error {
 		AutoStartServerOnStartup:   &AutoStartServerOnStartup,
 		SSUIIdentifier:             SSUIIdentifier,
 		SSUIWebPort:                SSUIWebPort,
+		IsSteamServerUI:            &IsSteamServerUI,
 	}
 
 	file, err := os.Create(ConfigPath)

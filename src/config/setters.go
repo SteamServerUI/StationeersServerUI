@@ -86,6 +86,14 @@ func SetWorldID(value string) error {
 	return nil
 }
 
+func SetIsSteamServerUI(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	IsSteamServerUI = value
+	return safeSaveConfig()
+}
+
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
