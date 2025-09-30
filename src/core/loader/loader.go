@@ -4,7 +4,6 @@ package loader
 import (
 	"embed"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/advertiser"
@@ -20,9 +19,7 @@ import (
 )
 
 // only call this once at startup
-func InitBackend(wg *sync.WaitGroup) {
-	wg.Add(1)
-	defer wg.Done()
+func InitBackend() {
 	ReloadConfig()
 	ReloadSSCM()
 	ReloadBackupManager()
@@ -105,9 +102,7 @@ func InitVirtFS(v1uiFS embed.FS) {
 	config.SetV1UIFS(v1uiFS)
 }
 
-func SanityCheck(wg *sync.WaitGroup) {
-	wg.Add(1)
-	defer wg.Done()
+func SanityCheck() {
 	err := runSanityCheck()
 	if err != nil {
 		logger.Main.Error("Sanity check failed, exiting in 10 secconds: " + err.Error())
