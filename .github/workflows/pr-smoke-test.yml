@@ -18,18 +18,15 @@ jobs:
           - distro: ubuntu
             image: ubuntu:24.04
             pkg_update: apt-get update
-            install: apt-get install -y --no-install-recommends ca-certificates curl git build-essential wget nodejs npm bash
-            needs_go: true
+            install: apt-get install -y --no-install-recommends ca-certificates curl git build-essential wget nodejs npm bash tar
           - distro: debian
             image: debian:trixie
             pkg_update: apt-get update
-            install: apt-get install -y --no-install-recommends ca-certificates curl git build-essential wget nodejs npm bash
-            needs_go: true
+            install: apt-get install -y --no-install-recommends ca-certificates curl git build-essential wget nodejs npm bash tar
           - distro: arch
             image: archlinux:base
             pkg_update: pacman -Sy --noconfirm
-            install: pacman -S --noconfirm ca-certificates curl git wget tar nodejs npm go base-devel bash
-            needs_go: false
+            install: pacman -S --noconfirm ca-certificates curl git wget tar nodejs npm base-devel bash
     container:
       image: ${{ matrix.image }}
     env:
@@ -40,25 +37,13 @@ jobs:
           set -e
           ${{ matrix.pkg_update }}
           ${{ matrix.install }}
-      - name: Install Go (if needed)
-        if: matrix.needs_go == true
-        run: |
-          set -e
-          ARCH=$(uname -m)
-          case "$ARCH" in
-            x86_64) GOARCH=amd64 ;;
-            aarch64) GOARCH=arm64 ;;
-            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
-          esac
-          curl -fsSL https://go.dev/dl/go${GO_VERSION}.linux-${GOARCH}.tar.gz -o /tmp/go.tgz
-          rm -rf /usr/local/go && tar -C /usr/local -xzf /tmp/go.tgz
-          echo "/usr/local/go/bin" >> $GITHUB_PATH
-          /usr/local/go/bin/go version
-      - name: Verify Go (preinstalled)
-        if: matrix.needs_go == false
-        run: go version || which go || true
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
       - name: Node version
         run: node --version && npm --version || true
       - name: Install frontend deps
