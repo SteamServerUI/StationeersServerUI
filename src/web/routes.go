@@ -79,5 +79,15 @@ func SetupRoutes() (*http.ServeMux, *http.ServeMux) {
 	protectedMux.HandleFunc("/api/v2/auth/setup/register", RegisterUserHandler) // user registration
 	protectedMux.HandleFunc("/api/v2/auth/setup/finalize", SetupFinalizeHandler)
 
+	// SteamServerUI
+
+	protectedMux.HandleFunc("/api/v2/runfile/groups", HandleRunfileGroups)
+	protectedMux.HandleFunc("/api/v2/runfile/args", HandleRunfileArgs)
+	protectedMux.HandleFunc("/api/v2/runfile/args/update", HandleRunfileArgUpdate)
+	protectedMux.HandleFunc("/api/v2/runfile", HandleRunfile)
+	protectedMux.HandleFunc("/api/v2/runfile/save", HandleRunfileSave)
+	protectedMux.HandleFunc("/api/v2/runfile/hardreset", HandleSetRunfileGame)
+	protectedMux.HandleFunc("/api/v2/loader/reloadrunfile", HandleReloadRunfile)
+
 	return mux, protectedMux
 }

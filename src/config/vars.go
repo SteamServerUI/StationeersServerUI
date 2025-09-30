@@ -143,6 +143,7 @@ var (
 	SSCMWebDir               = "./UIMod/sscm/"
 	SSCMFilePath             = "./BepInEx/plugins/SSCM/SSCM.socket"
 	SSCMPluginDir            = "./BepInEx/plugins/SSCM/"
+	RunFilesFolder           = "./UIMod/runfiles/"
 )
 
 // Bundled Assets

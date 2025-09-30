@@ -24,6 +24,7 @@ var (
 	SSE          = &Logger{suffix: SYS_SSE}
 	Security     = &Logger{suffix: SYS_SECURITY}
 	Localization = &Logger{suffix: SYS_LOCALIZATION}
+	Runfile      = &Logger{suffix: SYS_RUNFILE}
 )
 
 // Severity Levels
@@ -48,6 +49,7 @@ const (
 	SYS_SSE          = "SSE"
 	SYS_SECURITY     = "SECURITY"
 	SYS_LOCALIZATION = "LOCALIZATION"
+	SYS_RUNFILE      = "RUNFILE"
 )
 
 const (
