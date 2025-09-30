@@ -513,3 +513,9 @@ func GetIsDockerContainer() bool {
 	defer ConfigMu.RUnlock()
 	return IsDockerContainer
 }
+
+func GetOverrideAdvertisedIp() string {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return OverrideAdvertisedIp
+}
