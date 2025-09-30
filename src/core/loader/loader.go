@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/advertiser"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
@@ -29,6 +30,10 @@ func InitBackend(wg *sync.WaitGroup) {
 	ReloadAppInfoPoller()
 	ReloadDiscordBot()
 	InitDetector()
+	if config.GetOverrideAdvertisedIp() != "" {
+		logger.Main.Debug("Starting server advertiser...")
+		advertiser.StartAdvertiser()
+	}
 }
 
 // use this to reload backend at runtime

@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"runtime"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
@@ -32,12 +31,12 @@ type ServerAdResponse struct {
 	Status    string
 }
 
-func StartAdvertiser(wg *sync.WaitGroup) {
+func StartAdvertiser() {
 	if config.GetServerVisible() {
 		logger.Core.Warn("Server advertisement is enabled. Disable it in the config and restart SSUI to use manual advertisement. Skipping for now...")
 		return
 	}
-	wg.Go(func() {
+	go func() {
 		sessionId := -1
 		for {
 			// Only advertise if we are running
@@ -105,5 +104,5 @@ func StartAdvertiser(wg *sync.WaitGroup) {
 			// Sleep for 30 seconds to follow the standard advertisement timer
 			time.Sleep(30 * time.Second)
 		}
-	})
+	}()
 }

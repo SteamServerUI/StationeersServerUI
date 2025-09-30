@@ -24,9 +24,7 @@ import (
 	"embed"
 	"sync"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/advertiser"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/cli"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
@@ -60,9 +58,5 @@ func main() {
 	web.StartWebServer(&wg)
 	logger.Main.Debug("Initializing SSUICLI...")
 	cli.StartConsole(&wg)
-	if config.GetOverrideAdvertisedIp() != "" {
-		logger.Main.Debug("Starting server advertiser...")
-		advertiser.StartAdvertiser(&wg)
-	}
 	wg.Wait()
 }
