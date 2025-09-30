@@ -23,6 +23,7 @@ func InitBackend(wg *sync.WaitGroup) {
 	wg.Add(1)
 	defer wg.Done()
 	ReloadConfig()
+	ReloadRunfile()
 	ReloadSSCM()
 	ReloadBackupManager()
 	ReloadLocalizer()
