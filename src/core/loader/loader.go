@@ -4,9 +4,9 @@ package loader
 import (
 	"embed"
 	"os"
-	"sync"
 	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/advertiser"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
@@ -20,9 +20,7 @@ import (
 )
 
 // only call this once at startup
-func InitBackend(wg *sync.WaitGroup) {
-	wg.Add(1)
-	defer wg.Done()
+func InitBackend() {
 	ReloadConfig()
 	ReloadSSCM()
 	ReloadBackupManager()
@@ -31,6 +29,10 @@ func InitBackend(wg *sync.WaitGroup) {
 	ReloadDiscordBot()
 	InitDetector()
 	StartIsGameServerRunningCheck()
+	if config.GetOverrideAdvertisedIp() != "" {
+		logger.Advertiser.Info("Starting server advertiser...")
+		advertiser.StartAdvertiser()
+	}
 }
 
 // use this to reload backend at runtime
@@ -106,9 +108,7 @@ func InitVirtFS(v1uiFS embed.FS) {
 	config.SetV1UIFS(v1uiFS)
 }
 
-func SanityCheck(wg *sync.WaitGroup) {
-	wg.Add(1)
-	defer wg.Done()
+func SanityCheck() {
 	err := runSanityCheck()
 	if err != nil {
 		logger.Main.Error("Sanity check failed, exiting in 10 secconds: " + err.Error())
