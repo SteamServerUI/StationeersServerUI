@@ -1,409 +1,424 @@
 package config
 
 import (
+	"embed"
 	"time"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 func GetDiscordToken() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return DiscordToken
+	return discordToken
 }
 
 func GetControlChannelID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ControlChannelID
+	return controlChannelID
 }
 
 func GetStatusChannelID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return StatusChannelID
+	return statusChannelID
 }
 
 func GetConnectionListChannelID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ConnectionListChannelID
+	return connectionListChannelID
 }
 
 func GetLogChannelID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return LogChannelID
+	return logChannelID
 }
 
 func GetSaveChannelID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return SaveChannelID
+	return saveChannelID
 }
 
 func GetControlPanelChannelID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ControlPanelChannelID
+	return controlPanelChannelID
 }
 
 func GetDiscordCharBufferSize() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return DiscordCharBufferSize
+	return discordCharBufferSize
+}
+
+func GetExceptionMessageID() string {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return exceptionMessageID
+}
+
+func GetDiscordSession() *discordgo.Session {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return discordSession
 }
 
 func GetBlackListFilePath() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return BlackListFilePath
+	return blackListFilePath
 }
 
 func GetIsDiscordEnabled() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return IsDiscordEnabled
+	return isDiscordEnabled
 }
 
 func GetErrorChannelID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ErrorChannelID
+	return errorChannelID
 }
 
 func GetBackupKeepLastN() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return BackupKeepLastN
+	return backupKeepLastN
 }
 
 func GetIsCleanupEnabled() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return IsCleanupEnabled
+	return isCleanupEnabled
 }
 
 // GetBackupKeepDailyFor returns the retention period for daily backups in hours.
 func GetBackupKeepDailyFor() time.Duration {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return BackupKeepDailyFor
+	return backupKeepDailyFor
 }
 
 func GetBackupKeepWeeklyFor() time.Duration {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return BackupKeepWeeklyFor
+	return backupKeepWeeklyFor
 }
 
 // GetBackupKeepMonthlyFor returns the retention period for monthly backups in hours.
 func GetBackupKeepMonthlyFor() time.Duration {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return BackupKeepMonthlyFor
+	return backupKeepMonthlyFor
 }
 
 // GetBackupCleanupInterval returns the cleanup interval in hours.
 func GetBackupCleanupInterval() time.Duration {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return BackupCleanupInterval
+	return backupCleanupInterval
 }
 
 func GetIsNewTerrainAndSaveSystem() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return IsNewTerrainAndSaveSystem
+	return isNewTerrainAndSaveSystem
 }
 
 func GetGameBranch() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return GameBranch
+	return gameBranch
 }
 
 func GetDifficulty() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return Difficulty
+	return difficulty
 }
 
 func GetStartCondition() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return StartCondition
+	return startCondition
 }
 
 func GetStartLocation() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return StartLocation
+	return startLocation
 }
 
 func GetServerName() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ServerName
+	return serverName
 }
 
 // special getter for backwards compatibility with SaveInfo
 func GetLegacySaveInfo() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	saveinfo := SaveName + ";" + WorldID
+	saveinfo := saveName + ";" + worldID
 	return saveinfo
 }
 
 func GetSaveName() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return SaveName
+	return saveName
 }
 
 func GetWorldID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return WorldID
+	return worldID
 }
 
 func GetServerMaxPlayers() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ServerMaxPlayers
+	return serverMaxPlayers
 }
 
 func GetServerPassword() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ServerPassword
+	return serverPassword
 }
 
 func GetServerAuthSecret() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ServerAuthSecret
+	return serverAuthSecret
 }
 
 func GetAdminPassword() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return AdminPassword
+	return adminPassword
 }
 
 func GetGamePort() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return GamePort
+	return gamePort
 }
 
 func GetUpdatePort() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return UpdatePort
+	return updatePort
 }
 
 func GetUPNPEnabled() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return UPNPEnabled
+	return uPNPEnabled
 }
 
 func GetAutoSave() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return AutoSave
+	return autoSave
 }
 
 func GetSaveInterval() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return SaveInterval
+	return saveInterval
 }
 
 func GetAutoPauseServer() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return AutoPauseServer
+	return autoPauseServer
 }
 
 func GetLocalIpAddress() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return LocalIpAddress
+	return localIpAddress
 }
 
 func GetStartLocalHost() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return StartLocalHost
+	return startLocalHost
 }
 
 func GetServerVisible() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ServerVisible
+	return serverVisible
 }
 
 func GetUseSteamP2P() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return UseSteamP2P
+	return useSteamP2P
 }
 
 func GetExePath() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ExePath
+	return exePath
 }
 
 func GetAdditionalParams() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return AdditionalParams
+	return additionalParams
 }
 
 func GetUsers() map[string]string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return Users
+	return users
 }
 
 func GetAuthEnabled() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return AuthEnabled
+	return authEnabled
 }
 
 func GetJwtKey() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return JwtKey
+	return jwtKey
 }
 
 func GetAuthTokenLifetime() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return AuthTokenLifetime
+	return authTokenLifetime
 }
 
 func GetIsDebugMode() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return IsDebugMode
+	return isDebugMode
 }
 
 func GetCreateSSUILogFile() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return CreateSSUILogFile
+	return createSSUILogFile
 }
 
 func GetLogLevel() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return LogLevel
+	return logLevel
 }
 
 func GetLogClutterToConsole() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return LogClutterToConsole
+	return logClutterToConsole
 }
 
 func GetSubsystemFilters() []string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return SubsystemFilters
+	return subsystemFilters
 }
 
 func GetIsUpdateEnabled() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return IsUpdateEnabled
+	return isUpdateEnabled
 }
 
 func GetIsSSCMEnabled() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return IsSSCMEnabled
+	return isSSCMEnabled
 }
 
 func GetSSCMFilePath() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return SSCMFilePath
+	return sscmFilePath
 }
 
 func GetSSCMPluginDir() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return SSCMPluginDir
+	return sscmPluginDir
 }
 
 func GetSSCMWebDir() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return SSCMWebDir
+	return sscmWebDir
 }
 
 func GetAutoRestartServerTimer() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return AutoRestartServerTimer
+	return autoRestartServerTimer
 }
 
 func GetAllowPrereleaseUpdates() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return AllowPrereleaseUpdates
+	return allowPrereleaseUpdates
 }
 
 func GetAllowMajorUpdates() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return AllowMajorUpdates
+	return allowMajorUpdates
 }
 
 func GetIsConsoleEnabled() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return IsConsoleEnabled
+	return isConsoleEnabled
 }
 
 func GetLanguageSetting() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return LanguageSetting
+	return languageSetting
 }
 
 func GetAutoStartServerOnStartup() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return AutoStartServerOnStartup
+	return autoStartServerOnStartup
 }
 
 func GetSSUIIdentifier() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return SSUIIdentifier
+	return ssuiIdentifier
 }
 
 func GetSSUIWebPort() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return SSUIWebPort
+	return ssuiWebPort
 }
 
 // GetIsFirstTimeSetup returns the IsFirstTimeSetup
 func GetIsFirstTimeSetup() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return IsFirstTimeSetup
+	return isFirstTimeSetup
 }
 
 func GetConfigPath() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ConfigPath
+	return configPath
 }
 
 func GetVersion() string {
@@ -421,101 +436,107 @@ func GetBranch() string {
 func GetTLSCertPath() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return TLSCertPath
+	return tlsCertPath
 }
 
 func GetTLSKeyPath() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return TLSKeyPath
+	return tlsKeyPath
 }
 
 func GetUIModFolder() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return UIModFolder
+	return uiModFolder
 }
 
 func GetMaxSSEConnections() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return MaxSSEConnections
+	return maxSSEConnections
 }
 
 func GetSSEMessageBufferSize() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return SSEMessageBufferSize
+	return sseMessageBufferSize
 }
 
 func GetLogFolder() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return LogFolder
+	return logFolder
 }
 
 func GetConfiguredBackupDir() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ConfiguredBackupDir
+	return configuredBackupDir
 }
 
 func GetConfiguredSafeBackupDir() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ConfiguredSafeBackupDir
+	return configuredSafeBackupDir
 }
 
 func GetCustomDetectionsFilePath() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return CustomDetectionsFilePath
+	return customDetectionsFilePath
 }
 
 func GetGameServerAppID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return GameServerAppID
+	return gameServerAppID
 }
 
 func GetCurrentBranchBuildID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return CurrentBranchBuildID
+	return currentBranchBuildID
 }
 
 func GetAllowAutoGameServerUpdates() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return AllowAutoGameServerUpdates
+	return allowAutoGameServerUpdates
 }
 
 func GetExtractedGameVersion() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ExtractedGameVersion
+	return extractedGameVersion
 }
 
 func GetSkipSteamCMD() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return SkipSteamCMD
+	return skipSteamCMD
 }
 
 func GetNoSanityCheck() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return NoSanityCheck
+	return noSanityCheck
 }
 
 func GetIsDockerContainer() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return IsDockerContainer
+	return isDockerContainer
 }
 
 func GetOverrideAdvertisedIp() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return OverrideAdvertisedIp
+	return overrideAdvertisedIp
+}
+
+func GetV1UIFS() embed.FS {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return v1UIFS
 }
