@@ -714,10 +714,9 @@ func SetOverrideAdvertisedIp(value string) error {
 	return safeSaveConfig()
 }
 
-func SetV1UIFS(value embed.FS) error {
+func SetV1UIFS(value embed.FS) {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
 	v1UIFS = value
-	return safeSaveConfig()
 }
