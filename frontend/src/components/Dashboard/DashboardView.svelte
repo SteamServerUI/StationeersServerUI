@@ -2,10 +2,12 @@
     import QuickActionsCard from './cards/QuickActionsCard.svelte';
     import ConsoleCard from './cards/ConsoleCard.svelte';
     import WarnCard from './cards/WarnCard.svelte';
+    import SystemInfoCard from './cards/SystemInfoCard.svelte';
   </script>
   
   <div class="dashboard-grid">
     <QuickActionsCard />
+    <SystemInfoCard />
     <ConsoleCard />
     <WarnCard />
 
