@@ -519,3 +519,8 @@ func GetIsGameServerRunning() bool {
 	defer ConfigMu.RUnlock()
 	return IsGameServerRunning
 }
+func GetOverrideAdvertisedIp() string {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return OverrideAdvertisedIp
+}
