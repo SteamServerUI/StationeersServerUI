@@ -80,7 +80,7 @@ func SetupRoutes() (*http.ServeMux, *http.ServeMux) {
 	protectedMux.HandleFunc("/api/v2/auth/setup/finalize", SetupFinalizeHandler)
 
 	// Monitoring
-	protectedMux.HandleFunc("/api/v2/monitor/status", HandleMonitorStatus)
+	protectedMux.HandleFunc("/api/v2/monitor/gameserver/status", HandleMonitorStatus)
 
 	return mux, protectedMux
 }
