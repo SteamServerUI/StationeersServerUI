@@ -33,7 +33,7 @@ type ServerAdResponse struct {
 
 func StartAdvertiser() {
 	if config.GetServerVisible() {
-		logger.Core.Warn("Server advertisement is enabled. Disable it in the config and restart SSUI to use manual advertisement. Skipping for now...")
+		logger.Advertiser.Warn("Server advertisement is enabled. Disable it in the config and restart SSUI to use manual advertisement. Skipping for now...")
 		return
 	}
 	go func() {
@@ -44,7 +44,7 @@ func StartAdvertiser() {
 				// Get max players
 				maxplayers, err := strconv.Atoi(config.GetServerMaxPlayers())
 				if err != nil {
-					logger.Core.Errorf("ServerAdvertiser failed to convert max players number to int: %s", config.GetServerMaxPlayers())
+					logger.Advertiser.Errorf("ServerAdvertiser failed to convert max players number to int: %s", config.GetServerMaxPlayers())
 					return
 				}
 				// Get connected players
@@ -71,30 +71,30 @@ func StartAdvertiser() {
 				}
 				body, err := json.Marshal(adMessage)
 				if err != nil {
-					logger.Core.Errorf("ServerAdvertiser failed to Serialize to JSON from native Go struct type: %v", err)
+					logger.Advertiser.Errorf("ServerAdvertiser failed to Serialize to JSON from native Go struct type: %v", err)
 					return
 				}
 				// Send advertisement
 				resp, err := http.Post("http://40.82.200.175:8081/Ping", "application/json", bytes.NewBuffer(body))
 				// Check for errors
 				if err != nil {
-					logger.Core.Errorf("ServerAdvertiser failed to send request: %v", err)
+					logger.Advertiser.Errorf("ServerAdvertiser failed to send request: %v", err)
 					return
 				}
 				defer resp.Body.Close()
 				// Check the status
 				if resp.StatusCode != 200 {
-					logger.Core.Warnf("ServerAdvertiser received non-200 status: %d", resp.StatusCode)
+					logger.Advertiser.Warnf("ServerAdvertiser received non-200 status: %d", resp.StatusCode)
 				}
 				// Read the response and update our sessionId if needed
 				adResponse := ServerAdResponse{}
 				err = json.NewDecoder(resp.Body).Decode(&adResponse)
 				if err != nil {
-					logger.Core.Errorf("Failed to decode response body: %v", err)
+					logger.Advertiser.Errorf("Failed to decode response body: %v", err)
 					return
 				}
 				if adResponse.Status != "Success" {
-					logger.Core.Warnf("ServerAdvertiser received unexpected status: %s", adResponse.Status)
+					logger.Advertiser.Warnf("ServerAdvertiser received unexpected status: %s", adResponse.Status)
 				}
 				sessionId = adResponse.SessionId
 			} else {
