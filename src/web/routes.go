@@ -77,6 +77,7 @@ func SetupRoutes() (*http.ServeMux, *http.ServeMux) {
 	// Setup
 	protectedMux.HandleFunc("/setup", ServeTwoBoxFormTemplate)
 	protectedMux.HandleFunc("/api/v2/auth/setup/register", RegisterUserHandler) // user registration
+	protectedMux.HandleFunc("/api/v2/auth/setup/apikey", RegisterAPIKeyHandler) // API Key registration
 	protectedMux.HandleFunc("/api/v2/auth/setup/finalize", SetupFinalizeHandler)
 
 	// Monitoring
