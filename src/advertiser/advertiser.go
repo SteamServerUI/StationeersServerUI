@@ -64,7 +64,7 @@ func StartAdvertiser(wg *sync.WaitGroup) {
 					Name:       config.GetServerName(),
 					Password:   config.GetServerPassword() != "",
 					Version:    config.GetExtractedGameVersion(),
-					Address:    "127.0.0.1", //TODO - we need to pass this in from the command line
+					Address:    config.GetOverrideAdvertisedIp(),
 					Port:       config.GetGamePort(),
 					Players:    players,
 					MaxPlayers: maxplayers,
