@@ -257,12 +257,40 @@ func RegisterAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// reject requests with non-GET methods
-	if r.Method != http.MethodGet {
+	// Allow only GET or POST methods
+	if r.Method != http.MethodGet && r.Method != http.MethodPost {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Method Not Allowed"})
 		return
+	}
+
+	// Set default duration for GET requests, require duration for POST
+	durationMonths := 1
+	if r.Method == http.MethodPost {
+		var reqBody struct {
+			DurationMonths *int `json:"durationMonths"` // Use pointer to distinguish between 0 and unspecified
+		}
+		err := json.NewDecoder(r.Body).Decode(&reqBody)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - Invalid JSON"})
+			return
+		}
+		if reqBody.DurationMonths == nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - durationMonths is required for POST"})
+			return
+		}
+		if *reqBody.DurationMonths <= 0 {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - Duration must be positive"})
+			return
+		}
+		durationMonths = *reqBody.DurationMonths
 	}
 
 	var creds security.UserCredentials
@@ -289,8 +317,8 @@ func RegisterAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	apikey, err := security.GenerateJWT(creds.Username)
-	expires := time.Now().Add(3 * 365 * 24 * time.Hour)
+	apikey, err := security.GenerateJWT(creds.Username, durationMonths)
+	expires := time.Now().AddDate(0, durationMonths, 0)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -302,4 +330,5 @@ func RegisterAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 		"apikey":  apikey,
 		"expires": expires.Format(time.RFC3339),
 	})
+	logger.Security.Infof("APIKey %s registered successfully. Expires: %s ", creds.Username, expires.Format(time.RFC3339))
 }
