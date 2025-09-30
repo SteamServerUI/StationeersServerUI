@@ -4,6 +4,7 @@ package security
 //repurposed from a Jacksonthemaster private repo
 
 import (
+	"strings"
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
@@ -21,6 +22,10 @@ type UserCredentials struct {
 // GenerateJWT creates a JWT for a given username
 func GenerateJWT(username string) (string, error) {
 	expirationTime := time.Now().Add(time.Duration(config.GetAuthTokenLifetime()) * time.Minute)
+	if strings.HasPrefix(username, "apikey-") {
+		expirationTime = time.Now().Add(3 * 365 * 24 * time.Hour)
+	}
+
 	claims := &jwt.MapClaims{
 		"exp": expirationTime.Unix(),
 		"iss": "StationeersServerUI",
@@ -37,7 +42,6 @@ func GenerateJWT(username string) (string, error) {
 
 // ValidateCredentials checks username and password against stored users
 func ValidateCredentials(creds UserCredentials) (bool, error) {
-	// Placeholder: assumes config.Users is a map[string]string (username -> hashed password)
 	storedHash, exists := config.GetUsers()[creds.Username]
 	if !exists {
 		return false, nil
