@@ -1,4 +1,4 @@
-name: PR Container Smoke Test
+name: PR Smoke Test
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   smoke:
-    name: Smoke (Container ${{ matrix.distro }})
+    name: Smoke ( ${{ matrix.distro }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
