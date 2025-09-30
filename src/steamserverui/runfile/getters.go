@@ -1,4 +1,4 @@
-package runfilemanager
+package runfile
 
 import (
 	"fmt"

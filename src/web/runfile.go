@@ -8,7 +8,7 @@ import (
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfilemanager"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfile"
 )
 
 // APIGameArg is a DTO for GameArg, including RuntimeValue and all fields
@@ -29,7 +29,7 @@ type APIGameArg struct {
 	Disabled      bool   `json:"disabled"`
 }
 
-// APIMeta mirrors runfilemanager.Meta for API responses
+// APIMeta mirrors runfile.Meta for API responses
 type APIMeta struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
@@ -51,8 +51,8 @@ type apiResponse struct {
 	Error string      `json:"error,omitempty"`
 }
 
-// toAPIGameArg converts runfilemanager.GameArg to APIGameArg
-func toAPIGameArg(arg runfilemanager.GameArg) APIGameArg {
+// toAPIGameArg converts runfile.GameArg to APIGameArg
+func toAPIGameArg(arg runfile.GameArg) APIGameArg {
 	return APIGameArg{
 		Flag:          arg.Flag,
 		DefaultValue:  arg.DefaultValue,
@@ -71,8 +71,8 @@ func toAPIGameArg(arg runfilemanager.GameArg) APIGameArg {
 	}
 }
 
-// toAPIRunFile converts runfilemanager.RunFile to APIRunFile
-func toAPIRunFile(rf *runfilemanager.RunFile) APIRunFile {
+// toAPIRunFile converts runfile.RunFile to APIRunFile
+func toAPIRunFile(rf *runfile.RunFile) APIRunFile {
 	apiArgs := make(map[string][]APIGameArg)
 	for category, args := range rf.Args {
 		for _, arg := range args {
@@ -105,13 +105,13 @@ func writeJSONResponse(w http.ResponseWriter, status int, data interface{}, errM
 // HandleRunfileGroups handles GET /api/v2/runfile/groups
 func HandleRunfileGroups(w http.ResponseWriter, r *http.Request) {
 	logger.Runfile.Debug("GET /api/v2/runfile/groups")
-	if runfilemanager.CurrentRunfile == nil {
+	if runfile.CurrentRunfile == nil {
 		logger.Runfile.Error("runfile not loaded")
 		writeJSONResponse(w, http.StatusInternalServerError, nil, "runfile not loaded")
 		return
 	}
 
-	groups := runfilemanager.GetUIGroups()
+	groups := runfile.GetUIGroups()
 	logger.Runfile.Info("fetched UI groups")
 	writeJSONResponse(w, http.StatusOK, groups, "")
 }
@@ -121,16 +121,16 @@ func HandleRunfileArgs(w http.ResponseWriter, r *http.Request) {
 	group := r.URL.Query().Get("group")
 	logger.Runfile.Debug(fmt.Sprintf("GET /api/v2/runfile/args group=%s", group))
 
-	if runfilemanager.CurrentRunfile == nil {
+	if runfile.CurrentRunfile == nil {
 		logger.Runfile.Error("runfile not loaded")
 		writeJSONResponse(w, http.StatusInternalServerError, nil, "runfile not loaded")
 		return
 	}
 
-	var args []runfilemanager.GameArg
+	var args []runfile.GameArg
 	if group != "" {
 		// Validate group
-		validGroups := runfilemanager.GetUIGroups()
+		validGroups := runfile.GetUIGroups()
 		valid := false
 		for _, g := range validGroups {
 			if g == group {
@@ -143,9 +143,9 @@ func HandleRunfileArgs(w http.ResponseWriter, r *http.Request) {
 			writeJSONResponse(w, http.StatusBadRequest, nil, fmt.Sprintf("invalid group: %s", group))
 			return
 		}
-		args = runfilemanager.GetArgsByGroup(group)
+		args = runfile.GetArgsByGroup(group)
 	} else {
-		args = runfilemanager.GetAllArgs()
+		args = runfile.GetAllArgs()
 	}
 
 	// Convert to APIGameArg
@@ -162,7 +162,7 @@ func HandleRunfileArgs(w http.ResponseWriter, r *http.Request) {
 func HandleRunfileArgUpdate(w http.ResponseWriter, r *http.Request) {
 	logger.Runfile.Debug("POST /api/v2/runfile/args")
 
-	if runfilemanager.CurrentRunfile == nil {
+	if runfile.CurrentRunfile == nil {
 		logger.Runfile.Error("runfile not loaded")
 		writeJSONResponse(w, http.StatusInternalServerError, nil, "runfile not loaded")
 		return
@@ -184,7 +184,7 @@ func HandleRunfileArgUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := runfilemanager.SetArgValue(req.Flag, req.Value); err != nil {
+	if err := runfile.SetArgValue(req.Flag, req.Value); err != nil {
 		logger.Runfile.Error(fmt.Sprintf("failed to set arg %s: %v", req.Flag, err))
 		writeJSONResponse(w, http.StatusBadRequest, nil, fmt.Sprintf("failed to set arg: %v", err))
 		return
@@ -198,13 +198,13 @@ func HandleRunfileArgUpdate(w http.ResponseWriter, r *http.Request) {
 func HandleRunfile(w http.ResponseWriter, r *http.Request) {
 	logger.Runfile.Debug("GET /api/v2/runfile")
 
-	if runfilemanager.CurrentRunfile == nil {
+	if runfile.CurrentRunfile == nil {
 		logger.Runfile.Error("runfile not loaded")
 		writeJSONResponse(w, http.StatusInternalServerError, nil, "runfile not loaded")
 		return
 	}
 
-	apiRunfile := toAPIRunFile(runfilemanager.CurrentRunfile)
+	apiRunfile := toAPIRunFile(runfile.CurrentRunfile)
 	logger.Runfile.Info("fetched runfile")
 	writeJSONResponse(w, http.StatusOK, apiRunfile, "")
 }
@@ -213,13 +213,13 @@ func HandleRunfile(w http.ResponseWriter, r *http.Request) {
 func HandleRunfileSave(w http.ResponseWriter, r *http.Request) {
 	logger.Runfile.Debug("POST /api/v2/runfile/save")
 
-	if runfilemanager.CurrentRunfile == nil {
+	if runfile.CurrentRunfile == nil {
 		logger.Runfile.Error("runfile not loaded")
 		writeJSONResponse(w, http.StatusInternalServerError, nil, "runfile not loaded")
 		return
 	}
 
-	if err := runfilemanager.SaveRunfile(); err != nil {
+	if err := runfile.SaveRunfile(); err != nil {
 		logger.Runfile.Error(fmt.Sprintf("failed to save runfile: %v", err))
 		writeJSONResponse(w, http.StatusInternalServerError, nil, fmt.Sprintf("failed to save runfile: %v", err))
 		return

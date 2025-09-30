@@ -1,4 +1,4 @@
-package runfilegallery
+package gallery
 
 import (
 	"encoding/json"

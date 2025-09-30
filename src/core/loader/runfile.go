@@ -7,7 +7,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfilemanager"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfile"
 )
 
 // used via Runfile Gallery
@@ -37,7 +37,7 @@ func InitRunfile(game string) error {
 
 // used to only reload runfile into memory. Can be triggered from v1 UI -> Runfile Reset terminal
 func ReloadRunfile() error {
-	if err := runfilemanager.LoadRunfile(config.GetRunfileGame(), config.GetRunFilesFolder()); err != nil {
+	if err := runfile.LoadRunfile(config.GetRunfileGame(), config.GetRunFilesFolder()); err != nil {
 		logger.Runfile.Warn("Failed to reload runfile: " + err.Error())
 		return err
 	}

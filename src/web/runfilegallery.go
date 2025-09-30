@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfilegallery"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/gallery"
 )
 
 // response wraps API responses
@@ -21,7 +21,7 @@ func galleryHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Runfile.Info("Handling GET /api/v2/gallery request")
 	forceUpdate := strings.ToLower(r.URL.Query().Get("forceUpdate")) == "true"
 
-	runfiles, err := runfilegallery.GetRunfileGallery(forceUpdate)
+	runfiles, err := gallery.GetRunfileGallery(forceUpdate)
 	if err != nil {
 		logger.Runfile.Error("Gallery fetch failed: " + err.Error())
 		sendResponse(w, http.StatusInternalServerError, response{Error: err.Error()})
@@ -51,7 +51,7 @@ func selectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := runfilegallery.SaveRunfileToDisk(req.Identifier); err != nil {
+	if err := gallery.SaveRunfileToDisk(req.Identifier); err != nil {
 		logger.Runfile.Error("Failed to save runfile " + req.Identifier + ": " + err.Error())
 		sendResponse(w, http.StatusInternalServerError, response{Error: err.Error()})
 		return
