@@ -20,10 +20,14 @@ type UserCredentials struct {
 }
 
 // GenerateJWT creates a JWT for a given username
-func GenerateJWT(username string) (string, error) {
+func GenerateJWT(username string, apikeyduration ...int) (string, error) {
 	expirationTime := time.Now().Add(time.Duration(config.GetAuthTokenLifetime()) * time.Minute)
 	if strings.HasPrefix(username, "apikey-") {
-		expirationTime = time.Now().Add(3 * 365 * 24 * time.Hour)
+		durationMonths := 1
+		if len(apikeyduration) > 0 {
+			durationMonths = apikeyduration[0]
+		}
+		expirationTime = time.Now().AddDate(0, durationMonths, 0)
 	}
 
 	claims := &jwt.MapClaims{
