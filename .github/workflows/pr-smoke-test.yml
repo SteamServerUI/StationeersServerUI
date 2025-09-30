@@ -33,7 +33,6 @@ jobs:
     container:
       image: ${{ matrix.image }}
     env:
-      GO_VERSION: '1.22.6'
       CGO_ENABLED: 0
     steps:
       - name: Prepare packages
