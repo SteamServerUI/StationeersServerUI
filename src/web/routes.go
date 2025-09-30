@@ -8,6 +8,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config/configchanger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/settings"
 )
 
 func SetupRoutes() (*http.ServeMux, *http.ServeMux) {
@@ -88,6 +89,8 @@ func SetupRoutes() (*http.ServeMux, *http.ServeMux) {
 	protectedMux.HandleFunc("/api/v2/runfile/save", HandleRunfileSave)
 	protectedMux.HandleFunc("/api/v2/runfile/hardreset", HandleSetRunfileGame)
 	protectedMux.HandleFunc("/api/v2/loader/reloadrunfile", HandleReloadRunfile)
+	protectedMux.HandleFunc("/api/v2/settings/save", settings.SaveSetting)
+	protectedMux.HandleFunc("/api/v2/settings", settings.RetrieveSettings)
 
 	return mux, protectedMux
 }
