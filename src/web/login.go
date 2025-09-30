@@ -172,6 +172,13 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if strings.HasPrefix(creds.Username, "apikey-") {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request - Invalid Username"})
+		return
+	}
+
 	// Hash the password
 	hashedPassword, err := security.HashPassword(creds.Password)
 	if err != nil {
