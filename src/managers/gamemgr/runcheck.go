@@ -3,16 +3,33 @@ package gamemgr
 import (
 	"runtime"
 	"syscall"
+	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
+
+func StartIsGameServerRunningCheck() {
+	go func() {
+		for {
+			if InternalIsServerRunning() {
+				config.SetIsGameServerRunning(true)
+			} else {
+				config.SetIsGameServerRunning(false)
+			}
+			time.Sleep(4 * time.Second)
+		}
+	}()
+}
 
 // InternalIsServerRunning checks if the server process is running.
 // Safe to call standalone as it manages its own locking.
 func InternalIsServerRunning() bool {
 	mu.Lock()
 	defer mu.Unlock()
-	return internalIsServerRunningNoLock()
+	status := internalIsServerRunningNoLock()
+	config.SetIsGameServerRunning(status)
+	return status
 }
 
 // internalIsServerRunningNoLock checks if the server process is running.
