@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   smoke:
-    name: Smoke ( ${{ matrix.distro }})
+    name: Smoke (${{ matrix.distro }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
