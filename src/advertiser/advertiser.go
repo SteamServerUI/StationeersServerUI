@@ -14,6 +14,8 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 )
 
+const StationeersAdvertisementEndpoint = "http://40.82.200.175:8081/Ping"
+
 type ServerAdMessage struct {
 	SessionId  int
 	Name       string
@@ -75,7 +77,7 @@ func StartAdvertiser() {
 					return
 				}
 				// Send advertisement
-				resp, err := http.Post("http://40.82.200.175:8081/Ping", "application/json", bytes.NewBuffer(body))
+				resp, err := http.Post(StationeersAdvertisementEndpoint, "application/json", bytes.NewBuffer(body))
 				// Check for errors
 				if err != nil {
 					logger.Advertiser.Errorf("ServerAdvertiser failed to send request: %v", err)
