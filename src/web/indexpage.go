@@ -11,7 +11,7 @@ import (
 )
 
 func ServeIndex(w http.ResponseWriter, r *http.Request) {
-	htmlFS, err := fs.Sub(config.V1UIFS, "UIMod/onboard_bundled/ui")
+	htmlFS, err := fs.Sub(config.GetV1UIFS(), "UIMod/onboard_bundled/ui")
 	if err != nil {
 		http.Error(w, "Error accessing Virt FS: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -26,7 +26,7 @@ func ServeIndex(w http.ResponseWriter, r *http.Request) {
 
 	var Identifier string
 
-	if config.SSUIIdentifier == "" {
+	if config.GetSSUIIdentifier() == "" {
 		Identifier = " (" + config.GetBranch() + ")"
 	} else {
 		Identifier = ": " + config.GetSSUIIdentifier()

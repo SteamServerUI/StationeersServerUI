@@ -26,7 +26,7 @@ func listenToDiscordReactions(s *discordgo.Session, r *discordgo.MessageReaction
 
 	// Check if the reaction was added to the last sent exception message for attaching restart buttons. Not used in v4.3 as nothing is sending tracked Exception messages to Discord anymore.
 	//  Instead, we now only yoink the exception message to Discord without tracking it, thus there is no onfig.ExceptionMessageID set anymore. Removed as this was a rather unused feature.
-	if r.MessageID == config.ExceptionMessageID {
+	if r.MessageID == config.GetExceptionMessageID() {
 		handleExceptionReactions(s, r)
 		return
 	}

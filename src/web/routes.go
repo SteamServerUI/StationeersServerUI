@@ -34,7 +34,7 @@ func SetupRoutes() (*http.ServeMux, *http.ServeMux) {
 
 	// --- SVELTE UI ---
 	protectedMux.HandleFunc("/v2", ServeSvelteUI)
-	svelteAssetsFS, _ := fs.Sub(config.V1UIFS, "UIMod/onboard_bundled/v2/assets")
+	svelteAssetsFS, _ := fs.Sub(config.GetV1UIFS(), "UIMod/onboard_bundled/v2/assets")
 	protectedMux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.FS(svelteAssetsFS))))
 	protectedMux.HandleFunc("/api/v2/loader/reloadbackend", HandleReloadAll)
 

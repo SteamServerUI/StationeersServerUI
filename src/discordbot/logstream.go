@@ -24,11 +24,11 @@ func flushLogBufferToDiscord() {
 		return // No log channel ID set, skip and set buffer to empty
 	}
 
-	if !config.GetIsDiscordEnabled() || config.DiscordSession == nil {
+	if !config.GetIsDiscordEnabled() || config.GetDiscordSession() == nil {
 		return
 	}
 
-	discordMaxMessageLength := config.DiscordCharBufferSize
+	discordMaxMessageLength := config.GetDiscordCharBufferSize()
 
 	message := LogMessageBuffer
 
@@ -40,7 +40,7 @@ func flushLogBufferToDiscord() {
 		}
 
 		// Send the chunk to Discord
-		_, err := config.DiscordSession.ChannelMessageSend(config.GetLogChannelID(), message[:chunkSize])
+		_, err := config.GetDiscordSession().ChannelMessageSend(config.GetLogChannelID(), message[:chunkSize])
 		if err != nil {
 			logger.Discord.Error("Error sending log to Discord: " + err.Error())
 			break

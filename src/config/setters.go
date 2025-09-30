@@ -1,9 +1,12 @@
 package config
 
 import (
+	"embed"
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 // Although this is a not a real setter, this function can be used to save the config safely
@@ -18,7 +21,7 @@ func SetIsFirstTimeSetup(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	IsFirstTimeSetup = value
+	isFirstTimeSetup = value
 	return safeSaveConfig()
 }
 
@@ -26,7 +29,7 @@ func SetIsSSCMEnabled(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	IsSSCMEnabled = value
+	isSSCMEnabled = value
 	return safeSaveConfig()
 }
 
@@ -34,7 +37,7 @@ func SetCurrentBranchBuildID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	CurrentBranchBuildID = value
+	currentBranchBuildID = value
 	return nil
 }
 
@@ -42,7 +45,7 @@ func SetExtractedGameVersion(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ExtractedGameVersion = value
+	extractedGameVersion = value
 	return nil
 }
 
@@ -50,7 +53,7 @@ func SetSkipSteamCMD(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	SkipSteamCMD = value
+	skipSteamCMD = value
 	return nil
 }
 
@@ -58,7 +61,7 @@ func SetIsDockerContainer(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	IsDockerContainer = value
+	isDockerContainer = value
 	return nil
 }
 
@@ -66,7 +69,7 @@ func SetNoSanityCheck(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	NoSanityCheck = value
+	noSanityCheck = value
 	return nil
 }
 
@@ -74,7 +77,7 @@ func SetSaveName(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	SaveName = value
+	saveName = value
 	return nil
 }
 
@@ -82,7 +85,7 @@ func SetWorldID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	WorldID = value
+	worldID = value
 	return nil
 }
 
@@ -97,7 +100,7 @@ func SetIsDebugMode(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	IsDebugMode = value
+	isDebugMode = value
 	return safeSaveConfig()
 }
 
@@ -106,7 +109,7 @@ func SetCreateSSUILogFile(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	CreateSSUILogFile = value
+	createSSUILogFile = value
 	return safeSaveConfig()
 }
 
@@ -119,7 +122,7 @@ func SetLogLevel(value int) error {
 		return fmt.Errorf("log level cannot be negative")
 	}
 
-	LogLevel = value
+	logLevel = value
 	return safeSaveConfig()
 }
 
@@ -127,7 +130,7 @@ func SetLogClutterToConsole(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	LogClutterToConsole = value
+	logClutterToConsole = value
 	return safeSaveConfig()
 }
 
@@ -141,7 +144,7 @@ func SetSubsystemFilters(value []string) error {
 		}
 	}
 
-	SubsystemFilters = value
+	subsystemFilters = value
 	return safeSaveConfig()
 }
 
@@ -154,7 +157,7 @@ func SetSSEMessageBufferSize(value int) error {
 		return fmt.Errorf("SSE message buffer size must be positive")
 	}
 
-	SSEMessageBufferSize = value
+	sseMessageBufferSize = value
 	return safeSaveConfig()
 }
 
@@ -167,7 +170,7 @@ func SetMaxSSEConnections(value int) error {
 		return fmt.Errorf("max SSE connections must be positive")
 	}
 
-	MaxSSEConnections = value
+	maxSSEConnections = value
 	return safeSaveConfig()
 }
 
@@ -175,7 +178,7 @@ func SetLanguageSetting(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	LanguageSetting = value
+	languageSetting = value
 	return safeSaveConfig()
 }
 
@@ -187,7 +190,7 @@ func SetSSUIWebPort(value string) error {
 		return fmt.Errorf("SSUI web port cannot be empty")
 	}
 
-	SSUIWebPort = value
+	ssuiWebPort = value
 	return safeSaveConfig()
 }
 
@@ -195,7 +198,7 @@ func SetSSUIIdentifier(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	SSUIIdentifier = value
+	ssuiIdentifier = value
 	return safeSaveConfig()
 }
 
@@ -208,7 +211,7 @@ func SetGameBranch(value string) error {
 		return fmt.Errorf("game branch cannot be empty")
 	}
 
-	GameBranch = value
+	gameBranch = value
 	return safeSaveConfig()
 }
 
@@ -216,7 +219,7 @@ func SetDifficulty(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	Difficulty = value
+	difficulty = value
 	return safeSaveConfig()
 }
 
@@ -224,7 +227,7 @@ func SetStartCondition(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	StartCondition = value
+	startCondition = value
 	return safeSaveConfig()
 }
 
@@ -232,7 +235,7 @@ func SetStartLocation(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	StartLocation = value
+	startLocation = value
 	return safeSaveConfig()
 }
 
@@ -240,7 +243,7 @@ func SetIsNewTerrainAndSaveSystem(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	IsNewTerrainAndSaveSystem = value
+	isNewTerrainAndSaveSystem = value
 	return safeSaveConfig()
 }
 
@@ -249,7 +252,7 @@ func SetServerName(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ServerName = value
+	serverName = value
 	return safeSaveConfig()
 }
 
@@ -257,7 +260,7 @@ func SetSaveInfo(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	SaveInfo = value
+	saveInfo = value
 	return safeSaveConfig()
 }
 
@@ -265,7 +268,7 @@ func SetServerMaxPlayers(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ServerMaxPlayers = value
+	serverMaxPlayers = value
 	return safeSaveConfig()
 }
 
@@ -273,7 +276,7 @@ func SetServerPassword(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ServerPassword = value
+	serverPassword = value
 	return safeSaveConfig()
 }
 
@@ -281,7 +284,7 @@ func SetServerAuthSecret(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ServerAuthSecret = value
+	serverAuthSecret = value
 	return safeSaveConfig()
 }
 
@@ -289,7 +292,7 @@ func SetAdminPassword(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	AdminPassword = value
+	adminPassword = value
 	return safeSaveConfig()
 }
 
@@ -297,7 +300,7 @@ func SetGamePort(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	GamePort = value
+	gamePort = value
 	return safeSaveConfig()
 }
 
@@ -305,7 +308,7 @@ func SetUpdatePort(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	UpdatePort = value
+	updatePort = value
 	return safeSaveConfig()
 }
 
@@ -313,7 +316,7 @@ func SetUPNPEnabled(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	UPNPEnabled = value
+	uPNPEnabled = value
 	return safeSaveConfig()
 }
 
@@ -321,7 +324,7 @@ func SetAutoSave(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	AutoSave = value
+	autoSave = value
 	return safeSaveConfig()
 }
 
@@ -329,7 +332,7 @@ func SetSaveInterval(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	SaveInterval = value
+	saveInterval = value
 	return safeSaveConfig()
 }
 
@@ -337,7 +340,7 @@ func SetAutoPauseServer(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	AutoPauseServer = value
+	autoPauseServer = value
 	return safeSaveConfig()
 }
 
@@ -345,7 +348,7 @@ func SetLocalIpAddress(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	LocalIpAddress = value
+	localIpAddress = value
 	return safeSaveConfig()
 }
 
@@ -353,7 +356,7 @@ func SetStartLocalHost(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	StartLocalHost = value
+	startLocalHost = value
 	return safeSaveConfig()
 }
 
@@ -361,7 +364,7 @@ func SetServerVisible(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ServerVisible = value
+	serverVisible = value
 	return safeSaveConfig()
 }
 
@@ -369,7 +372,7 @@ func SetUseSteamP2P(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	UseSteamP2P = value
+	useSteamP2P = value
 	return safeSaveConfig()
 }
 
@@ -377,7 +380,7 @@ func SetExePath(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ExePath = value
+	exePath = value
 	return safeSaveConfig()
 }
 
@@ -385,7 +388,7 @@ func SetAdditionalParams(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	AdditionalParams = value
+	additionalParams = value
 	return safeSaveConfig()
 }
 
@@ -393,7 +396,7 @@ func SetAutoStartServerOnStartup(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	AutoStartServerOnStartup = value
+	autoStartServerOnStartup = value
 	return safeSaveConfig()
 }
 
@@ -401,7 +404,7 @@ func SetAutoRestartServerTimer(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	AutoRestartServerTimer = value
+	autoRestartServerTimer = value
 	return safeSaveConfig()
 }
 
@@ -414,7 +417,7 @@ func SetBackupKeepLastN(value int) error {
 		return fmt.Errorf("backup keep last N cannot be negative")
 	}
 
-	BackupKeepLastN = value
+	backupKeepLastN = value
 	return safeSaveConfig()
 }
 
@@ -422,7 +425,7 @@ func SetIsCleanupEnabled(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	IsCleanupEnabled = value
+	isCleanupEnabled = value
 	return safeSaveConfig()
 }
 
@@ -434,7 +437,7 @@ func SetBackupKeepDailyFor(value int) error {
 		return fmt.Errorf("backup keep daily for cannot be negative")
 	}
 
-	BackupKeepDailyFor = time.Duration(value) * time.Hour
+	backupKeepDailyFor = time.Duration(value) * time.Hour
 	return safeSaveConfig()
 }
 
@@ -446,7 +449,7 @@ func SetBackupKeepWeeklyFor(value int) error {
 		return fmt.Errorf("backup keep weekly for cannot be negative")
 	}
 
-	BackupKeepWeeklyFor = time.Duration(value) * time.Hour
+	backupKeepWeeklyFor = time.Duration(value) * time.Hour
 	return safeSaveConfig()
 }
 
@@ -458,7 +461,7 @@ func SetBackupKeepMonthlyFor(value int) error {
 		return fmt.Errorf("backup keep monthly for cannot be negative")
 	}
 
-	BackupKeepMonthlyFor = time.Duration(value) * time.Hour
+	backupKeepMonthlyFor = time.Duration(value) * time.Hour
 	return safeSaveConfig()
 }
 
@@ -470,7 +473,7 @@ func SetBackupCleanupInterval(value int) error {
 		return fmt.Errorf("backup cleanup interval must be positive")
 	}
 
-	BackupCleanupInterval = time.Duration(value) * time.Hour
+	backupCleanupInterval = time.Duration(value) * time.Hour
 	return safeSaveConfig()
 }
 
@@ -482,7 +485,7 @@ func SetBackupWaitTime(value int) error {
 		return fmt.Errorf("backup wait time cannot be negative")
 	}
 
-	BackupWaitTime = time.Duration(value) * time.Second
+	backupWaitTime = time.Duration(value) * time.Second
 	return safeSaveConfig()
 }
 
@@ -491,7 +494,7 @@ func SetIsDiscordEnabled(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	IsDiscordEnabled = value
+	isDiscordEnabled = value
 	return safeSaveConfig()
 }
 
@@ -499,7 +502,15 @@ func SetDiscordToken(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	DiscordToken = value
+	discordToken = value
+	return safeSaveConfig()
+}
+
+func SetDiscordSession(value *discordgo.Session) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	discordSession = value
 	return safeSaveConfig()
 }
 
@@ -507,7 +518,7 @@ func SetControlChannelID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ControlChannelID = value
+	controlChannelID = value
 	return safeSaveConfig()
 }
 
@@ -516,7 +527,7 @@ func SetStatusChannelID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	StatusChannelID = value
+	statusChannelID = value
 	return safeSaveConfig()
 }
 
@@ -525,7 +536,7 @@ func SetLogChannelID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	LogChannelID = value
+	logChannelID = value
 	return safeSaveConfig()
 }
 
@@ -534,7 +545,7 @@ func SetErrorChannelID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ErrorChannelID = value
+	errorChannelID = value
 	return safeSaveConfig()
 }
 
@@ -543,7 +554,7 @@ func SetConnectionListChannelID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ConnectionListChannelID = value
+	connectionListChannelID = value
 	return safeSaveConfig()
 }
 
@@ -552,7 +563,7 @@ func SetSaveChannelID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	SaveChannelID = value
+	saveChannelID = value
 	return safeSaveConfig()
 }
 
@@ -561,7 +572,7 @@ func SetControlPanelChannelID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ControlPanelChannelID = value
+	controlPanelChannelID = value
 	return safeSaveConfig()
 }
 
@@ -574,7 +585,7 @@ func SetDiscordCharBufferSize(value int) error {
 		return fmt.Errorf("discord char buffer size must be positive")
 	}
 
-	DiscordCharBufferSize = value
+	discordCharBufferSize = value
 	return safeSaveConfig()
 }
 
@@ -582,7 +593,7 @@ func SetExceptionMessageID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ExceptionMessageID = value
+	exceptionMessageID = value
 	return safeSaveConfig()
 }
 
@@ -595,7 +606,7 @@ func SetBlackListFilePath(value string) error {
 		return fmt.Errorf("blacklist file path cannot be empty")
 	}
 
-	BlackListFilePath = value
+	blackListFilePath = value
 	return safeSaveConfig()
 }
 
@@ -603,7 +614,7 @@ func SetAuthEnabled(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	AuthEnabled = value
+	authEnabled = value
 	return safeSaveConfig()
 }
 
@@ -616,7 +627,7 @@ func SetJwtKey(value string) error {
 		return fmt.Errorf("JWT key must be at least 32 bytes")
 	}
 
-	JwtKey = value
+	jwtKey = value
 	return safeSaveConfig()
 }
 
@@ -629,7 +640,7 @@ func SetAuthTokenLifetime(value int) error {
 		return fmt.Errorf("auth token lifetime must be positive")
 	}
 
-	AuthTokenLifetime = value
+	authTokenLifetime = value
 	return safeSaveConfig()
 }
 
@@ -639,8 +650,8 @@ func SetUsers(value map[string]string) error {
 	defer ConfigMu.Unlock()
 
 	// Initialize Users map if it's nil
-	if Users == nil {
-		Users = make(map[string]string)
+	if users == nil {
+		users = make(map[string]string)
 	}
 
 	// Validate and merge each key-value pair
@@ -648,7 +659,7 @@ func SetUsers(value map[string]string) error {
 		if strings.TrimSpace(k) == "" || strings.TrimSpace(v) == "" {
 			return fmt.Errorf("user key or value cannot be empty")
 		}
-		Users[k] = v // Update or add the key-value pair
+		users[k] = v // Update or add the key-value pair
 	}
 
 	return safeSaveConfig()
@@ -659,7 +670,7 @@ func SetIsUpdateEnabled(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	IsUpdateEnabled = value
+	isUpdateEnabled = value
 	return safeSaveConfig()
 }
 
@@ -667,7 +678,7 @@ func SetAllowPrereleaseUpdates(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	AllowPrereleaseUpdates = value
+	allowPrereleaseUpdates = value
 	return safeSaveConfig()
 }
 
@@ -675,7 +686,7 @@ func SetAllowMajorUpdates(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	AllowMajorUpdates = value
+	allowMajorUpdates = value
 	return safeSaveConfig()
 }
 
@@ -683,7 +694,7 @@ func SetIsConsoleEnabled(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	IsConsoleEnabled = value
+	isConsoleEnabled = value
 	return safeSaveConfig()
 }
 
@@ -691,7 +702,7 @@ func SetAllowAutoGameServerUpdates(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	AllowAutoGameServerUpdates = value
+	allowAutoGameServerUpdates = value
 	return safeSaveConfig()
 }
 
@@ -699,6 +710,14 @@ func SetOverrideAdvertisedIp(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	OverrideAdvertisedIp = value
+	overrideAdvertisedIp = value
+	return safeSaveConfig()
+}
+
+func SetV1UIFS(value embed.FS) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	v1UIFS = value
 	return safeSaveConfig()
 }

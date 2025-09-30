@@ -118,7 +118,7 @@ func HandleFlags() {
 // HandleSanityCheckFlag has special handling to allow usage directly at startup before other systems are initialized.
 func HandleSanityCheckFlag() {
 	if sanityCheckFlag {
-		config.NoSanityCheck = true
+		config.SetNoSanityCheck(true)
 		logger.Main.Warn("Sanity check flag enabled, skipping sanity check. Not recommended.")
 		logger.Main.Info("Sleeping for 5 seconds to remind you again to not use this flag in production.")
 		time.Sleep(5 * time.Second)

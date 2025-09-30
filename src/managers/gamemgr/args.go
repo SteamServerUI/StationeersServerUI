@@ -19,7 +19,7 @@ type Arg struct {
 func buildCommandArgs() []string {
 	var argOrder []Arg
 
-	if config.IsNewTerrainAndSaveSystem {
+	if config.GetIsNewTerrainAndSaveSystem() {
 		argOrder = []Arg{
 			{Flag: "-nographics", RequiresValue: false},
 			{Flag: "-batchmode", RequiresValue: false},

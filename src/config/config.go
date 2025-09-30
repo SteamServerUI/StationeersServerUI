@@ -110,7 +110,7 @@ func LoadConfig() (*JsonConfig, error) {
 	defer ConfigMu.Unlock()
 
 	var jsonConfig JsonConfig
-	file, err := os.Open(ConfigPath)
+	file, err := os.Open(configPath)
 	if err == nil {
 		// File exists, proceed to decode it
 		defer file.Close()
@@ -134,170 +134,170 @@ func LoadConfig() (*JsonConfig, error) {
 // applyConfig applies the configuration with JSON -> env -> fallback hierarchy
 func applyConfig(cfg *JsonConfig) {
 	// Apply values with hierarchy
-	DiscordToken = getString(cfg.DiscordToken, "DISCORD_TOKEN", "")
-	ControlChannelID = getString(cfg.ControlChannelID, "CONTROL_CHANNEL_ID", "")
-	StatusChannelID = getString(cfg.StatusChannelID, "STATUS_CHANNEL_ID", "")
-	ConnectionListChannelID = getString(cfg.ConnectionListChannelID, "CONNECTION_LIST_CHANNEL_ID", "")
-	LogChannelID = getString(cfg.LogChannelID, "LOG_CHANNEL_ID", "")
-	SaveChannelID = getString(cfg.SaveChannelID, "SAVE_CHANNEL_ID", "")
-	ControlPanelChannelID = getString(cfg.ControlPanelChannelID, "CONTROL_PANEL_CHANNEL_ID", "")
-	DiscordCharBufferSize = getInt(cfg.DiscordCharBufferSize, "DISCORD_CHAR_BUFFER_SIZE", 1000)
-	BlackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "./Blacklist.txt")
+	discordToken = getString(cfg.DiscordToken, "DISCORD_TOKEN", "")
+	controlChannelID = getString(cfg.ControlChannelID, "CONTROL_CHANNEL_ID", "")
+	statusChannelID = getString(cfg.StatusChannelID, "STATUS_CHANNEL_ID", "")
+	connectionListChannelID = getString(cfg.ConnectionListChannelID, "CONNECTION_LIST_CHANNEL_ID", "")
+	logChannelID = getString(cfg.LogChannelID, "LOG_CHANNEL_ID", "")
+	saveChannelID = getString(cfg.SaveChannelID, "SAVE_CHANNEL_ID", "")
+	controlPanelChannelID = getString(cfg.ControlPanelChannelID, "CONTROL_PANEL_CHANNEL_ID", "")
+	discordCharBufferSize = getInt(cfg.DiscordCharBufferSize, "DISCORD_CHAR_BUFFER_SIZE", 1000)
+	blackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "./Blacklist.txt")
 
 	isDiscordEnabledVal := getBool(cfg.IsDiscordEnabled, "IS_DISCORD_ENABLED", false)
-	IsDiscordEnabled = isDiscordEnabledVal
+	isDiscordEnabled = isDiscordEnabledVal
 	cfg.IsDiscordEnabled = &isDiscordEnabledVal
 
-	ErrorChannelID = getString(cfg.ErrorChannelID, "ERROR_CHANNEL_ID", "")
-	BackupKeepLastN = getInt(cfg.BackupKeepLastN, "BACKUP_KEEP_LAST_N", 2000)
+	errorChannelID = getString(cfg.ErrorChannelID, "ERROR_CHANNEL_ID", "")
+	backupKeepLastN = getInt(cfg.BackupKeepLastN, "BACKUP_KEEP_LAST_N", 2000)
 
 	isCleanupEnabledVal := getBool(cfg.IsCleanupEnabled, "IS_CLEANUP_ENABLED", false)
-	IsCleanupEnabled = isCleanupEnabledVal
+	isCleanupEnabled = isCleanupEnabledVal
 	cfg.IsCleanupEnabled = &isCleanupEnabledVal
 
-	BackupKeepDailyFor = time.Duration(getInt(cfg.BackupKeepDailyFor, "BACKUP_KEEP_DAILY_FOR", 24)) * time.Hour
-	BackupKeepWeeklyFor = time.Duration(getInt(cfg.BackupKeepWeeklyFor, "BACKUP_KEEP_WEEKLY_FOR", 168)) * time.Hour
-	BackupKeepMonthlyFor = time.Duration(getInt(cfg.BackupKeepMonthlyFor, "BACKUP_KEEP_MONTHLY_FOR", 730)) * time.Hour
-	BackupCleanupInterval = time.Duration(getInt(cfg.BackupCleanupInterval, "BACKUP_CLEANUP_INTERVAL", 730)) * time.Hour
-	BackupWaitTime = time.Duration(getInt(cfg.BackupWaitTime, "BACKUP_WAIT_TIME", 30)) * time.Second
+	backupKeepDailyFor = time.Duration(getInt(cfg.BackupKeepDailyFor, "BACKUP_KEEP_DAILY_FOR", 24)) * time.Hour
+	backupKeepWeeklyFor = time.Duration(getInt(cfg.BackupKeepWeeklyFor, "BACKUP_KEEP_WEEKLY_FOR", 168)) * time.Hour
+	backupKeepMonthlyFor = time.Duration(getInt(cfg.BackupKeepMonthlyFor, "BACKUP_KEEP_MONTHLY_FOR", 730)) * time.Hour
+	backupCleanupInterval = time.Duration(getInt(cfg.BackupCleanupInterval, "BACKUP_CLEANUP_INTERVAL", 730)) * time.Hour
+	backupWaitTime = time.Duration(getInt(cfg.BackupWaitTime, "BACKUP_WAIT_TIME", 30)) * time.Second
 
 	isNewTerrainAndSaveSystemVal := getBool(cfg.IsNewTerrainAndSaveSystem, "ENABLE_DOT_SAVES", true)
-	IsNewTerrainAndSaveSystem = isNewTerrainAndSaveSystemVal
+	isNewTerrainAndSaveSystem = isNewTerrainAndSaveSystemVal
 	cfg.IsNewTerrainAndSaveSystem = &isNewTerrainAndSaveSystemVal
 
-	GameBranch = getString(cfg.GameBranch, "GAME_BRANCH", "public")
-	Difficulty = getString(cfg.Difficulty, "DIFFICULTY", "")
-	StartCondition = getString(cfg.StartCondition, "START_CONDITION", "")
-	StartLocation = getString(cfg.StartLocation, "START_LOCATION", "")
-	ServerName = getString(cfg.ServerName, "SERVER_NAME", "Stationeers Server UI")
-	SaveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "") // deprecated, kept for backwards compatibility - if set, this gets migrated to SaveName and WorldID and the field is not written back to config.json
-	SaveName = getString(cfg.SaveName, "SAVE_NAME", "MyMapName")
-	WorldID = getString(cfg.WorldID, "WORLD_ID", "Lunar")
-	ServerMaxPlayers = getString(cfg.ServerMaxPlayers, "SERVER_MAX_PLAYERS", "6")
-	ServerPassword = getString(cfg.ServerPassword, "SERVER_PASSWORD", "")
-	ServerAuthSecret = getString(cfg.ServerAuthSecret, "SERVER_AUTH_SECRET", "")
-	AdminPassword = getString(cfg.AdminPassword, "ADMIN_PASSWORD", "")
-	GamePort = getString(cfg.GamePort, "GAME_PORT", "27016")
-	UpdatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27015")
-	LanguageSetting = getString(cfg.LanguageSetting, "LANGUAGE_SETTING", "en-US")
-	SSUIIdentifier = getString(cfg.SSUIIdentifier, "SSUI_IDENTIFIER", "")
-	SSUIWebPort = getString(cfg.SSUIWebPort, "SSUI_WEB_PORT", "8443")
+	gameBranch = getString(cfg.GameBranch, "GAME_BRANCH", "public")
+	difficulty = getString(cfg.Difficulty, "DIFFICULTY", "")
+	startCondition = getString(cfg.StartCondition, "START_CONDITION", "")
+	startLocation = getString(cfg.StartLocation, "START_LOCATION", "")
+	serverName = getString(cfg.ServerName, "SERVER_NAME", "Stationeers Server UI")
+	saveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "") // deprecated, kept for backwards compatibility - if set, this gets migrated to SaveName and WorldID and the field is not written back to config.json
+	saveName = getString(cfg.SaveName, "SAVE_NAME", "MyMapName")
+	worldID = getString(cfg.WorldID, "WORLD_ID", "Lunar")
+	serverMaxPlayers = getString(cfg.ServerMaxPlayers, "SERVER_MAX_PLAYERS", "6")
+	serverPassword = getString(cfg.ServerPassword, "SERVER_PASSWORD", "")
+	serverAuthSecret = getString(cfg.ServerAuthSecret, "SERVER_AUTH_SECRET", "")
+	adminPassword = getString(cfg.AdminPassword, "ADMIN_PASSWORD", "")
+	gamePort = getString(cfg.GamePort, "GAME_PORT", "27016")
+	updatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27015")
+	languageSetting = getString(cfg.LanguageSetting, "LANGUAGE_SETTING", "en-US")
+	ssuiIdentifier = getString(cfg.SSUIIdentifier, "SSUI_IDENTIFIER", "")
+	ssuiWebPort = getString(cfg.SSUIWebPort, "SSUI_WEB_PORT", "8443")
 
 	upnpEnabledVal := getBool(cfg.UPNPEnabled, "UPNP_ENABLED", false)
-	UPNPEnabled = upnpEnabledVal
+	uPNPEnabled = upnpEnabledVal
 	cfg.UPNPEnabled = &upnpEnabledVal
 
 	autoSaveVal := getBool(cfg.AutoSave, "AUTO_SAVE", true)
-	AutoSave = autoSaveVal
+	autoSave = autoSaveVal
 	cfg.AutoSave = &autoSaveVal
 
-	SaveInterval = getString(cfg.SaveInterval, "SAVE_INTERVAL", "300")
+	saveInterval = getString(cfg.SaveInterval, "SAVE_INTERVAL", "300")
 
 	autoPauseServerVal := getBool(cfg.AutoPauseServer, "AUTO_PAUSE_SERVER", true)
-	AutoPauseServer = autoPauseServerVal
+	autoPauseServer = autoPauseServerVal
 	cfg.AutoPauseServer = &autoPauseServerVal
 
-	LocalIpAddress = getString(cfg.LocalIpAddress, "LOCAL_IP_ADDRESS", "0.0.0.0")
+	localIpAddress = getString(cfg.LocalIpAddress, "LOCAL_IP_ADDRESS", "0.0.0.0")
 
 	startLocalHostVal := getBool(cfg.StartLocalHost, "START_LOCAL_HOST", true)
-	StartLocalHost = startLocalHostVal
+	startLocalHost = startLocalHostVal
 	cfg.StartLocalHost = &startLocalHostVal
 
 	serverVisibleVal := getBool(cfg.ServerVisible, "SERVER_VISIBLE", true)
-	ServerVisible = serverVisibleVal
+	serverVisible = serverVisibleVal
 	cfg.ServerVisible = &serverVisibleVal
 
 	useSteamP2PVal := getBool(cfg.UseSteamP2P, "USE_STEAM_P2P", false)
-	UseSteamP2P = useSteamP2PVal
+	useSteamP2P = useSteamP2PVal
 	cfg.UseSteamP2P = &useSteamP2PVal
 
-	ExePath = getString(cfg.ExePath, "EXE_PATH", getDefaultExePath())
-	AdditionalParams = getString(cfg.AdditionalParams, "ADDITIONAL_PARAMS", "")
-	Users = getUsers(cfg.Users, "SSUI_USERS", map[string]string{})
+	exePath = getString(cfg.ExePath, "EXE_PATH", getDefaultExePath())
+	additionalParams = getString(cfg.AdditionalParams, "ADDITIONAL_PARAMS", "")
+	users = getUsers(cfg.Users, "SSUI_USERS", map[string]string{})
 
 	authEnabledVal := getBool(cfg.AuthEnabled, "SSUI_AUTH_ENABLED", false)
-	AuthEnabled = authEnabledVal
+	authEnabled = authEnabledVal
 	cfg.AuthEnabled = &authEnabledVal
 
-	JwtKey = getString(cfg.JwtKey, "SSUI_JWT_KEY", generateJwtKey())
-	AuthTokenLifetime = getInt(cfg.AuthTokenLifetime, "SSUI_AUTH_TOKEN_LIFETIME", 1440)
+	jwtKey = getString(cfg.JwtKey, "SSUI_JWT_KEY", generateJwtKey())
+	authTokenLifetime = getInt(cfg.AuthTokenLifetime, "SSUI_AUTH_TOKEN_LIFETIME", 1440)
 
 	debugVal := getBool(cfg.Debug, "DEBUG", false)
-	IsDebugMode = debugVal
+	isDebugMode = debugVal
 	cfg.Debug = &debugVal
 
 	createSSUILogFileVal := getBool(cfg.CreateSSUILogFile, "CREATE_SSUI_LOGFILE", false)
-	CreateSSUILogFile = createSSUILogFileVal
+	createSSUILogFile = createSSUILogFileVal
 	cfg.CreateSSUILogFile = &createSSUILogFileVal
 
-	LogLevel = getInt(cfg.LogLevel, "LOG_LEVEL", 20)
+	logLevel = getInt(cfg.LogLevel, "LOG_LEVEL", 20)
 
 	isUpdateEnabledVal := getBool(cfg.IsUpdateEnabled, "IS_UPDATE_ENABLED", true)
-	IsUpdateEnabled = isUpdateEnabledVal
+	isUpdateEnabled = isUpdateEnabledVal
 	cfg.IsUpdateEnabled = &isUpdateEnabledVal
 
 	allowPrereleaseUpdatesVal := getBool(cfg.AllowPrereleaseUpdates, "ALLOW_PRERELEASE_UPDATES", false)
-	AllowPrereleaseUpdates = allowPrereleaseUpdatesVal
+	allowPrereleaseUpdates = allowPrereleaseUpdatesVal
 	cfg.AllowPrereleaseUpdates = &allowPrereleaseUpdatesVal
 
 	allowMajorUpdatesVal := getBool(cfg.AllowMajorUpdates, "ALLOW_MAJOR_UPDATES", false)
-	AllowMajorUpdates = allowMajorUpdatesVal
+	allowMajorUpdates = allowMajorUpdatesVal
 	cfg.AllowMajorUpdates = &allowMajorUpdatesVal
 
 	allowAutoGameServerUpdatesVal := getBool(cfg.AllowAutoGameServerUpdates, "ALLOW_AUTO_GAME_SERVER_UPDATES", false)
-	AllowAutoGameServerUpdates = allowAutoGameServerUpdatesVal
+	allowAutoGameServerUpdates = allowAutoGameServerUpdatesVal
 	cfg.AllowAutoGameServerUpdates = &allowAutoGameServerUpdatesVal
 
-	SubsystemFilters = getStringSlice(cfg.SubsystemFilters, "SUBSYSTEM_FILTERS", []string{})
-	AutoRestartServerTimer = getString(cfg.AutoRestartServerTimer, "AUTO_RESTART_SERVER_TIMER", "0")
+	subsystemFilters = getStringSlice(cfg.SubsystemFilters, "SUBSYSTEM_FILTERS", []string{})
+	autoRestartServerTimer = getString(cfg.AutoRestartServerTimer, "AUTO_RESTART_SERVER_TIMER", "0")
 	isSSCMEnabledVal := getBool(cfg.IsSSCMEnabled, "IS_SSCM_ENABLED", true)
-	IsSSCMEnabled = isSSCMEnabledVal
+	isSSCMEnabled = isSSCMEnabledVal
 	cfg.IsSSCMEnabled = &isSSCMEnabledVal
 
 	isConsoleEnabledVal := getBool(cfg.IsConsoleEnabled, "IS_CONSOLE_ENABLED", true)
-	IsConsoleEnabled = isConsoleEnabledVal
+	isConsoleEnabled = isConsoleEnabledVal
 	cfg.IsConsoleEnabled = &isConsoleEnabledVal
 
 	logClutterToConsoleVal := getBool(cfg.LogClutterToConsole, "LOG_CLUTTER_TO_CONSOLE", false)
-	LogClutterToConsole = logClutterToConsoleVal
+	logClutterToConsole = logClutterToConsoleVal
 	cfg.LogClutterToConsole = &logClutterToConsoleVal
 
 	autoStartServerOnStartupVal := getBool(cfg.AutoStartServerOnStartup, "AUTO_START_SERVER_ON_STARTUP", false)
-	AutoStartServerOnStartup = autoStartServerOnStartupVal
+	autoStartServerOnStartup = autoStartServerOnStartupVal
 	cfg.AutoStartServerOnStartup = &autoStartServerOnStartupVal
 
 	// Process SaveInfo to maintain backwards compatibility with pre-5.6.6 SaveInfo field (deprecated)
-	if SaveInfo != "" {
-		parts := strings.Split(SaveInfo, " ")
+	if saveInfo != "" {
+		parts := strings.Split(saveInfo, " ")
 		if len(parts) > 0 {
-			SaveName = parts[0]
-			fmt.Println("SaveName: " + SaveName)
+			saveName = parts[0]
+			fmt.Println("SaveName: " + saveName)
 		}
 		if len(parts) > 1 {
-			WorldID = parts[1]
-			fmt.Println("WorldID: " + WorldID)
+			worldID = parts[1]
+			fmt.Println("WorldID: " + worldID)
 		}
 		cfg.SaveInfo = ""
 	}
 
-	if GameBranch != "public" && GameBranch != "beta" {
-		IsNewTerrainAndSaveSystem = false
+	if gameBranch != "public" && gameBranch != "beta" {
+		isNewTerrainAndSaveSystem = false
 	} else {
-		IsNewTerrainAndSaveSystem = true
+		isNewTerrainAndSaveSystem = true
 	}
 
 	// Set backup paths for old or new style saves
-	if IsNewTerrainAndSaveSystem {
+	if isNewTerrainAndSaveSystem {
 		// use new new style autosave folder
-		ConfiguredBackupDir = filepath.Join("./saves/", SaveName, "autosave")
+		configuredBackupDir = filepath.Join("./saves/", saveName, "autosave")
 	} else {
 		// use old style Backups folder
-		ConfiguredBackupDir = filepath.Join("./saves/", SaveName, "Backup")
+		configuredBackupDir = filepath.Join("./saves/", saveName, "Backup")
 	}
 	// use Safebackups folder either way.
-	ConfiguredSafeBackupDir = filepath.Join("./saves/", SaveName, "Safebackups")
+	configuredSafeBackupDir = filepath.Join("./saves/", saveName, "Safebackups")
 
-	OverrideAdvertisedIp = getString(cfg.OverrideAdvertisedIp, "OVERRIDE_ADVERTISED_IP", "")
+	overrideAdvertisedIp = getString(cfg.OverrideAdvertisedIp, "OVERRIDE_ADVERTISED_IP", "")
 
 	safeSaveConfig()
 }
@@ -306,72 +306,72 @@ func applyConfig(cfg *JsonConfig) {
 // M U S T be called while holding a lock on ConfigMu!
 func safeSaveConfig() error {
 	cfg := JsonConfig{
-		DiscordToken:               DiscordToken,
-		ControlChannelID:           ControlChannelID,
-		StatusChannelID:            StatusChannelID,
-		ConnectionListChannelID:    ConnectionListChannelID,
-		LogChannelID:               LogChannelID,
-		SaveChannelID:              SaveChannelID,
-		ControlPanelChannelID:      ControlPanelChannelID,
-		DiscordCharBufferSize:      DiscordCharBufferSize,
-		BlackListFilePath:          BlackListFilePath,
-		IsDiscordEnabled:           &IsDiscordEnabled,
-		ErrorChannelID:             ErrorChannelID,
-		BackupKeepLastN:            BackupKeepLastN,
-		IsCleanupEnabled:           &IsCleanupEnabled,
-		BackupKeepDailyFor:         int(BackupKeepDailyFor / time.Hour),    // Convert to hours
-		BackupKeepWeeklyFor:        int(BackupKeepWeeklyFor / time.Hour),   // Convert to hours
-		BackupKeepMonthlyFor:       int(BackupKeepMonthlyFor / time.Hour),  // Convert to hours
-		BackupCleanupInterval:      int(BackupCleanupInterval / time.Hour), // Convert to hours
-		BackupWaitTime:             int(BackupWaitTime / time.Second),      // Convert to seconds
-		IsNewTerrainAndSaveSystem:  &IsNewTerrainAndSaveSystem,
-		GameBranch:                 GameBranch,
-		Difficulty:                 Difficulty,
-		StartCondition:             StartCondition,
-		StartLocation:              StartLocation,
-		ServerName:                 ServerName,
-		SaveName:                   SaveName,
-		WorldID:                    WorldID,
-		ServerMaxPlayers:           ServerMaxPlayers,
-		ServerPassword:             ServerPassword,
-		ServerAuthSecret:           ServerAuthSecret,
-		AdminPassword:              AdminPassword,
-		GamePort:                   GamePort,
-		UpdatePort:                 UpdatePort,
-		UPNPEnabled:                &UPNPEnabled,
-		AutoSave:                   &AutoSave,
-		SaveInterval:               SaveInterval,
-		AutoPauseServer:            &AutoPauseServer,
-		LocalIpAddress:             LocalIpAddress,
-		StartLocalHost:             &StartLocalHost,
-		ServerVisible:              &ServerVisible,
-		UseSteamP2P:                &UseSteamP2P,
-		ExePath:                    ExePath,
-		AdditionalParams:           AdditionalParams,
-		Users:                      Users,
-		AuthEnabled:                &AuthEnabled,
-		JwtKey:                     JwtKey,
-		AuthTokenLifetime:          AuthTokenLifetime,
-		Debug:                      &IsDebugMode,
-		CreateSSUILogFile:          &CreateSSUILogFile,
-		LogLevel:                   LogLevel,
-		LogClutterToConsole:        &LogClutterToConsole,
-		SubsystemFilters:           SubsystemFilters,
-		IsUpdateEnabled:            &IsUpdateEnabled,
-		IsSSCMEnabled:              &IsSSCMEnabled,
-		AutoRestartServerTimer:     AutoRestartServerTimer,
-		AllowPrereleaseUpdates:     &AllowPrereleaseUpdates,
-		AllowMajorUpdates:          &AllowMajorUpdates,
-		AllowAutoGameServerUpdates: &AllowAutoGameServerUpdates,
-		IsConsoleEnabled:           &IsConsoleEnabled,
-		LanguageSetting:            LanguageSetting,
-		AutoStartServerOnStartup:   &AutoStartServerOnStartup,
-		SSUIIdentifier:             SSUIIdentifier,
-		SSUIWebPort:                SSUIWebPort,
-		OverrideAdvertisedIp:       OverrideAdvertisedIp,
+		DiscordToken:               discordToken,
+		ControlChannelID:           controlChannelID,
+		StatusChannelID:            statusChannelID,
+		ConnectionListChannelID:    connectionListChannelID,
+		LogChannelID:               logChannelID,
+		SaveChannelID:              saveChannelID,
+		ControlPanelChannelID:      controlPanelChannelID,
+		DiscordCharBufferSize:      discordCharBufferSize,
+		BlackListFilePath:          blackListFilePath,
+		IsDiscordEnabled:           &isDiscordEnabled,
+		ErrorChannelID:             errorChannelID,
+		BackupKeepLastN:            backupKeepLastN,
+		IsCleanupEnabled:           &isCleanupEnabled,
+		BackupKeepDailyFor:         int(backupKeepDailyFor / time.Hour),    // Convert to hours
+		BackupKeepWeeklyFor:        int(backupKeepWeeklyFor / time.Hour),   // Convert to hours
+		BackupKeepMonthlyFor:       int(backupKeepMonthlyFor / time.Hour),  // Convert to hours
+		BackupCleanupInterval:      int(backupCleanupInterval / time.Hour), // Convert to hours
+		BackupWaitTime:             int(backupWaitTime / time.Second),      // Convert to seconds
+		IsNewTerrainAndSaveSystem:  &isNewTerrainAndSaveSystem,
+		GameBranch:                 gameBranch,
+		Difficulty:                 difficulty,
+		StartCondition:             startCondition,
+		StartLocation:              startLocation,
+		ServerName:                 serverName,
+		SaveName:                   saveName,
+		WorldID:                    worldID,
+		ServerMaxPlayers:           serverMaxPlayers,
+		ServerPassword:             serverPassword,
+		ServerAuthSecret:           serverAuthSecret,
+		AdminPassword:              adminPassword,
+		GamePort:                   gamePort,
+		UpdatePort:                 updatePort,
+		UPNPEnabled:                &uPNPEnabled,
+		AutoSave:                   &autoSave,
+		SaveInterval:               saveInterval,
+		AutoPauseServer:            &autoPauseServer,
+		LocalIpAddress:             localIpAddress,
+		StartLocalHost:             &startLocalHost,
+		ServerVisible:              &serverVisible,
+		UseSteamP2P:                &useSteamP2P,
+		ExePath:                    exePath,
+		AdditionalParams:           additionalParams,
+		Users:                      users,
+		AuthEnabled:                &authEnabled,
+		JwtKey:                     jwtKey,
+		AuthTokenLifetime:          authTokenLifetime,
+		Debug:                      &isDebugMode,
+		CreateSSUILogFile:          &createSSUILogFile,
+		LogLevel:                   logLevel,
+		LogClutterToConsole:        &logClutterToConsole,
+		SubsystemFilters:           subsystemFilters,
+		IsUpdateEnabled:            &isUpdateEnabled,
+		IsSSCMEnabled:              &isSSCMEnabled,
+		AutoRestartServerTimer:     autoRestartServerTimer,
+		AllowPrereleaseUpdates:     &allowPrereleaseUpdates,
+		AllowMajorUpdates:          &allowMajorUpdates,
+		AllowAutoGameServerUpdates: &allowAutoGameServerUpdates,
+		IsConsoleEnabled:           &isConsoleEnabled,
+		LanguageSetting:            languageSetting,
+		AutoStartServerOnStartup:   &autoStartServerOnStartup,
+		SSUIIdentifier:             ssuiIdentifier,
+		SSUIWebPort:                ssuiWebPort,
+		OverrideAdvertisedIp:       overrideAdvertisedIp,
 	}
 
-	file, err := os.Create(ConfigPath)
+	file, err := os.Create(configPath)
 	if err != nil {
 		return fmt.Errorf("error creating config.json: %v", err)
 	}
@@ -394,7 +394,7 @@ func SaveConfigToFile(cfg *JsonConfig) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	file, err := os.Create(ConfigPath)
+	file, err := os.Create(configPath)
 	if err != nil {
 		return fmt.Errorf("error creating config.json: %v", err)
 	}

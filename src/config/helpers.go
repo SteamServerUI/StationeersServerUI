@@ -4,7 +4,6 @@ package config
 
 import (
 	"crypto/rand"
-	"embed"
 	"encoding/base64"
 	"fmt"
 	"os"
@@ -99,8 +98,8 @@ func getDefaultExePath() string {
 func generateJwtKey() string {
 
 	// ensure we return JwtKey if it's set
-	if len(JwtKey) > 0 {
-		return JwtKey
+	if len(jwtKey) > 0 {
+		return jwtKey
 	}
 	key := make([]byte, 32)
 	_, err := rand.Read(key)
@@ -109,12 +108,4 @@ func generateJwtKey() string {
 		return "i-am-a-fallback-32-byte-secret-key!!"
 	}
 	return base64.RawURLEncoding.EncodeToString(key)
-}
-
-func SetV1UIFS(v1uiFS embed.FS) {
-	V1UIFS = v1uiFS
-}
-
-func GetV1UIFS() embed.FS {
-	return V1UIFS
 }
