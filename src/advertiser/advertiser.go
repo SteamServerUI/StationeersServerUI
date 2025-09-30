@@ -45,7 +45,7 @@ func StartAdvertiser(wg *sync.WaitGroup) {
 				// Get max players
 				maxplayers, err := strconv.Atoi(config.GetServerMaxPlayers())
 				if err != nil {
-					logger.Core.Errorf("ServerAdvertiser failed to convert port number to int: %s", config.GetServerMaxPlayers())
+					logger.Core.Errorf("ServerAdvertiser failed to convert max players number to int: %s", config.GetServerMaxPlayers())
 					return
 				}
 				// Get connected players
@@ -95,7 +95,7 @@ func StartAdvertiser(wg *sync.WaitGroup) {
 					return
 				}
 				if adResponse.Status != "Success" {
-					logger.Core.Warnf("ServerAdvertiser received unexpeted status: %s", adResponse.Status)
+					logger.Core.Warnf("ServerAdvertiser received unexpected status: %s", adResponse.Status)
 				}
 				sessionId = adResponse.SessionId
 			} else {
