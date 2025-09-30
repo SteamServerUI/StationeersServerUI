@@ -29,6 +29,17 @@
             "console": "integratedTerminal",
             "showLog": false, // Hides some Go Debugger(Delve) log stuff that is not useful for debugging atm
             "args": ["--NoSteamCMD"]
+        },
+        {
+            "name": "Debug Go Server noSteamCMD BUT svelte",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/server.go",
+            "console": "integratedTerminal",
+            "preLaunchTask": "npm: build",
+            "showLog": false, // Hides some Go Debugger(Delve) log stuff that is not useful for debugging atm
+            "args": ["--NoSteamCMD"]
         }
     ]
 }

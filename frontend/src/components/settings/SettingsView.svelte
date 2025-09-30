@@ -1,7 +1,12 @@
 <script>
+  import { onMount } from 'svelte';
+  import AppSettings from './AppSettings.svelte';
+  import RunfileSettings from './RunfileSettings.svelte';
+  import BackendSettings from './BackendSettings.svelte';
+  import DetectionManager from './DetectionManager.svelte';
   import ConfigManager from './ConfigManager.svelte';
   // State management
-  let activeSidebarTab = $state('Config Manager'); // Default to General tab in sidebar
+  let activeSidebarTab = $state('SSUI Settings'); // Default to General tab in sidebar
   
   // Handle sidebar tab selection
   function selectSidebarTab(tab) {
@@ -12,12 +17,32 @@
 <div class="settings-container">
   <div class="settings-sidebar">
     <button 
-      class="settings-nav {activeSidebarTab === 'Config Manager' ? 'active' : ''}" 
-      onclick={() => selectSidebarTab('Config Manager')}>Config Manager</button>
+      class="settings-nav {activeSidebarTab === 'SSUI Settings' ? 'active' : ''}" 
+      onclick={() => selectSidebarTab('SSUI Settings')}>SSUI Settings</button>
+    <button 
+      class="settings-nav {activeSidebarTab === 'Runfile' ? 'active' : ''}" 
+      onclick={() => selectSidebarTab('Runfile')}>Game Settings</button>
+    <button 
+      class="settings-nav {activeSidebarTab === 'Backends' ? 'active' : ''}" 
+      onclick={() => selectSidebarTab('Backends')}>Backends</button>
+    <button 
+      class="settings-nav {activeSidebarTab === 'Detection Manager' ? 'active' : ''}"
+      onclick={() => selectSidebarTab('Detection Manager')}>Detection Manager</button>
+    <button 
+      class="settings-nav {activeSidebarTab === 'Legacy Config Manager' ? 'active' : ''}" 
+      onclick={() => selectSidebarTab('Legacy Config Manager')}>Legacy Config Manager</button>
   </div>
   
   <div class="settings-content">
-    {#if activeSidebarTab === 'Config Manager'}
+    {#if activeSidebarTab === 'SSUI Settings'}
+      <AppSettings {activeSidebarTab} />
+    {:else if activeSidebarTab === 'Runfile'}
+      <RunfileSettings />
+    {:else if activeSidebarTab === 'Backends'}
+      <BackendSettings />
+    {:else if activeSidebarTab === 'Detection Manager'}
+      <DetectionManager />
+    {:else if activeSidebarTab === 'Legacy Config Manager'}
       <ConfigManager />
     {/if}
   </div>
