@@ -20,8 +20,6 @@ GRACE_KILL_SECONDS=5
 (
   cd "$ROOT_DIR"
   echo "[smoke] launching server..." | tee -a "$LOG_FILE"
-  # Disable long-running / heavy operations if possible via env flags
-  export SKIP_STEAMCMD=true
   export LOG_LEVEL=20  # INFO
   # Run server
   go run server.go 2>&1 | tee -a "$LOG_FILE" &
