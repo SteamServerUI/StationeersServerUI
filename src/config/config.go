@@ -26,29 +26,30 @@ type JsonConfig struct {
 	// reordered in 5.6.4 to simplify the order of the config file.
 
 	// Gameserver Settings
-	GameBranch       string `json:"gameBranch"`
-	GamePort         string `json:"GamePort"`
-	ServerName       string `json:"ServerName"`
-	SaveInfo         string `json:"SaveInfo,omitempty"` // deprecated, kept for backwards compatibility
-	SaveName         string `json:"SaveName"`           // replaces SaveInfo
-	WorldID          string `json:"WorldID"`            // replaces SaveInfo
-	ServerMaxPlayers string `json:"ServerMaxPlayers"`
-	ServerPassword   string `json:"ServerPassword"`
-	ServerAuthSecret string `json:"ServerAuthSecret"`
-	AdminPassword    string `json:"AdminPassword"`
-	UpdatePort       string `json:"UpdatePort"`
-	UPNPEnabled      *bool  `json:"UPNPEnabled"`
-	AutoSave         *bool  `json:"AutoSave"`
-	SaveInterval     string `json:"SaveInterval"`
-	AutoPauseServer  *bool  `json:"AutoPauseServer"`
-	LocalIpAddress   string `json:"LocalIpAddress"`
-	StartLocalHost   *bool  `json:"StartLocalHost"`
-	ServerVisible    *bool  `json:"ServerVisible"`
-	UseSteamP2P      *bool  `json:"UseSteamP2P"`
-	AdditionalParams string `json:"AdditionalParams"`
-	Difficulty       string `json:"Difficulty"`
-	StartCondition   string `json:"StartCondition"`
-	StartLocation    string `json:"StartLocation"`
+	RunfileIdentifier string `json:"RunfileIdentifier"`
+	GameBranch        string `json:"gameBranch"`
+	GamePort          string `json:"GamePort"`
+	ServerName        string `json:"ServerName"`
+	SaveInfo          string `json:"SaveInfo,omitempty"` // deprecated, kept for backwards compatibility
+	SaveName          string `json:"SaveName"`           // replaces SaveInfo
+	WorldID           string `json:"WorldID"`            // replaces SaveInfo
+	ServerMaxPlayers  string `json:"ServerMaxPlayers"`
+	ServerPassword    string `json:"ServerPassword"`
+	ServerAuthSecret  string `json:"ServerAuthSecret"`
+	AdminPassword     string `json:"AdminPassword"`
+	UpdatePort        string `json:"UpdatePort"`
+	UPNPEnabled       *bool  `json:"UPNPEnabled"`
+	AutoSave          *bool  `json:"AutoSave"`
+	SaveInterval      string `json:"SaveInterval"`
+	AutoPauseServer   *bool  `json:"AutoPauseServer"`
+	LocalIpAddress    string `json:"LocalIpAddress"`
+	StartLocalHost    *bool  `json:"StartLocalHost"`
+	ServerVisible     *bool  `json:"ServerVisible"`
+	UseSteamP2P       *bool  `json:"UseSteamP2P"`
+	AdditionalParams  string `json:"AdditionalParams"`
+	Difficulty        string `json:"Difficulty"`
+	StartCondition    string `json:"StartCondition"`
+	StartLocation     string `json:"StartLocation"`
 
 	// Logging and debug settings
 	Debug             *bool    `json:"Debug"`
@@ -143,6 +144,7 @@ func applyConfig(cfg *JsonConfig) {
 	ControlPanelChannelID = getString(cfg.ControlPanelChannelID, "CONTROL_PANEL_CHANNEL_ID", "")
 	DiscordCharBufferSize = getInt(cfg.DiscordCharBufferSize, "DISCORD_CHAR_BUFFER_SIZE", 1000)
 	BlackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "./Blacklist.txt")
+	RunfileIdentifier = getString(cfg.RunfileIdentifier, "RUNFILE_IDENTIFIER", "")
 
 	isDiscordEnabledVal := getBool(cfg.IsDiscordEnabled, "IS_DISCORD_ENABLED", false)
 	IsDiscordEnabled = isDiscordEnabledVal
@@ -371,6 +373,7 @@ func safeSaveConfig() error {
 		SSUIIdentifier:             SSUIIdentifier,
 		SSUIWebPort:                SSUIWebPort,
 		IsSteamServerUI:            &IsSteamServerUI,
+		RunfileIdentifier:          RunfileIdentifier,
 	}
 
 	file, err := os.Create(ConfigPath)

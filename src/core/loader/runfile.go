@@ -21,7 +21,7 @@ func InitRunfile(game string) error {
 	logger.Runfile.Info("Updating runfile game to " + game)
 	logger.Runfile.Info("Stopping server if running")
 	gamemgr.InternalStopServer()
-	config.SetRunfileGame(game)
+	config.SetRunfileIdentifier(game)
 
 	if err := ReloadRunfile(); err != nil {
 		return err
@@ -37,7 +37,7 @@ func InitRunfile(game string) error {
 
 // used to only reload runfile into memory. Can be triggered from v1 UI -> Runfile Reset terminal
 func ReloadRunfile() error {
-	if err := runfile.LoadRunfile(config.GetRunfileGame(), config.GetRunFilesFolder()); err != nil {
+	if err := runfile.LoadRunfile(config.GetRunfileIdentifier(), config.GetRunFilesFolder()); err != nil {
 		logger.Runfile.Warn("Failed to reload runfile: " + err.Error())
 		return err
 	}

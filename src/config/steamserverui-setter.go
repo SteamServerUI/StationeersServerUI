@@ -6,7 +6,7 @@ import (
 )
 
 // SetRunfileGame sets the RunfileGame with validation
-func SetRunfileGame(value string) error {
+func SetRunfileIdentifier(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
@@ -14,7 +14,7 @@ func SetRunfileGame(value string) error {
 		return fmt.Errorf("runfile game cannot be empty")
 	}
 
-	RunfileGame = value
+	RunfileIdentifier = value
 	return nil
 	//return saveConfig()
 }

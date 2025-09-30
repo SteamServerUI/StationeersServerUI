@@ -519,9 +519,3 @@ func GetRunfilesFolder() string {
 	defer ConfigMu.Unlock()
 	return RunFilesFolder
 }
-
-func GetIsSteamServerUI() bool {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-	return IsSteamServerUI
-}

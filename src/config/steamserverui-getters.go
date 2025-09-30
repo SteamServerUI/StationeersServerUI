@@ -1,5 +1,12 @@
 package config
 
+// GetIsSteamServerUI returns if the system is in SteamServerUI mode
+func GetIsSteamServerUI() bool {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+	return IsSteamServerUI
+}
+
 // GetRunFilesFolder returns the RunFilesFolder
 func GetRunFilesFolder() string {
 	ConfigMu.Lock()
@@ -8,8 +15,8 @@ func GetRunFilesFolder() string {
 }
 
 // GetRunfileGame returns the RunfileGame
-func GetRunfileGame() string {
+func GetRunfileIdentifier() string {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
-	return RunfileGame
+	return RunfileIdentifier
 }

@@ -61,7 +61,12 @@ var (
 	LanguageSetting          string
 	AutoStartServerOnStartup bool
 	SSUIIdentifier           string
-	IsSteamServerUI          bool
+)
+
+// SteamServerUI Settings
+var (
+	IsSteamServerUI   bool
+	RunfileIdentifier string
 )
 
 // Runtime only variables
