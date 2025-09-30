@@ -14,6 +14,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/security"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/google/uuid"
 )
 
 var setupReminderCount = 0 // to limit the number of setup reminders shown to the user
@@ -246,4 +247,59 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 		"restart_hint": "You will be redirected to the login page...",
 	})
 	loader.ReloadBackend()
+}
+
+func RegisterAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Handle preflight OPTIONS requests
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// reject requests with non-GET methods
+	if r.Method != http.MethodGet {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Method Not Allowed"})
+		return
+	}
+
+	var creds security.UserCredentials
+
+	// Generate a random UUID as the username
+	creds.Username = "apikey-" + uuid.NewString()
+
+	// Hash a random UUID as the password
+	hashedPassword, err := security.HashPassword(uuid.NewString())
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error"})
+		return
+	}
+
+	// Initialize Users map if nil
+	if config.GetUsers() == nil {
+		config.SetUsers(make(map[string]string))
+	}
+
+	// Add or update the user
+	config.SetUsers(map[string]string{creds.Username: hashedPassword})
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	apikey, err := security.GenerateJWT(creds.Username)
+	expires := time.Now().Add(3 * 365 * 24 * time.Hour)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error"})
+		return
+	}
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "APIKey registered successfully",
+		"apikey":  apikey,
+		"expires": expires.Format(time.RFC3339),
+	})
 }
