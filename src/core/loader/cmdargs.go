@@ -21,6 +21,7 @@ var recoveryPasswordFlag string
 var devModeFlag bool
 var skipSteamCMDFlag bool
 var sanityCheckFlag bool
+var overrideAdvertisedIpFlag string
 
 // ParseFlags parses command-line arguments ONCE at startup (called from func main)
 func ParseFlags() {
@@ -39,6 +40,7 @@ func ParseFlags() {
 	flag.BoolVar(&createSSUILogFileFlag, "lf", false, "(Alias) Create log files for SSUI")
 	flag.BoolVar(&skipSteamCMDFlag, "NoSteamCMD", false, "Skips SteamCMD installation")
 	flag.BoolVar(&sanityCheckFlag, "NoSanityCheck", false, "Skips the sanity check. Not recommended.")
+	flag.StringVar(&overrideAdvertisedIpFlag, "OverrideAdvertisedIp", "", "Override the advertised server IP (to allow server advertisement if you are behind a reverse proxy)")
 
 	// Parse command-line flags
 	flag.Parse()
@@ -98,6 +100,12 @@ func HandleFlags() {
 		config.SetIsDebugMode(true)
 		config.SetLogLevel(10)
 		logger.Main.Info(fmt.Sprintf("Overriding IsDebugMode from command line: Before=%t, Now=true", oldDebug))
+	}
+
+	if overrideAdvertisedIpFlag != "" {
+		oldOverrideAdvertisedIp := config.GetOverrideAdvertisedIp()
+		config.SetOverrideAdvertisedIp(overrideAdvertisedIpFlag)
+		logger.Main.Info(fmt.Sprintf("Overriding Advertised Server IP from command line: Before=%s, Now=%s", oldOverrideAdvertisedIp, overrideAdvertisedIpFlag))
 	}
 
 	if createSSUILogFileFlag {
