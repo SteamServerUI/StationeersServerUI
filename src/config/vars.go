@@ -71,6 +71,7 @@ var (
 	SkipSteamCMD         bool   // ONLY RUNTIME
 	IsDockerContainer    bool   // ONLY RUNTIME
 	NoSanityCheck        bool   // ONLY RUNTIME
+	IsGameServerRunning  bool   // ONLY RUNTIME
 )
 
 // Discord integration

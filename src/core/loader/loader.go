@@ -13,6 +13,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
@@ -29,6 +30,7 @@ func InitBackend(wg *sync.WaitGroup) {
 	ReloadAppInfoPoller()
 	ReloadDiscordBot()
 	InitDetector()
+	StartIsGameServerRunningCheck()
 }
 
 // use this to reload backend at runtime
@@ -89,6 +91,10 @@ func RestartBackend() {
 
 func ReloadLocalizer() {
 	localization.ReloadLocalizer()
+}
+
+func StartIsGameServerRunningCheck() {
+	gamemgr.StartIsGameServerRunningCheck()
 }
 
 func ReloadAppInfoPoller() {
