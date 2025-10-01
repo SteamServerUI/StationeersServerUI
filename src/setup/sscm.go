@@ -17,8 +17,8 @@ import (
 var installMutex sync.Mutex
 
 func CheckAndDownloadSSCM() {
-	SSCMPluginDir := config.GetSSCMPluginDir()
-	sscmDir := config.GetSSCMWebDir()
+	SSCMPluginDir := config.SSCMPluginDir
+	sscmDir := config.SSCMWebDir
 
 	requiredDirs := []string{SSCMPluginDir, sscmDir}
 

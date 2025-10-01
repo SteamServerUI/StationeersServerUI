@@ -8,26 +8,68 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// File paths
+const (
+	TLSCertPath              = "./UIMod/tls/cert.pem"
+	TLSKeyPath               = "./UIMod/tls/key.pem"
+	ConfigPath               = "./UIMod/config/config.json"
+	CustomDetectionsFilePath = "./UIMod/config/customdetections.json"
+	LogFolder                = "./UIMod/logs/"
+	UIModFolder              = "./UIMod/"
+	SSCMWebDir               = "./UIMod/sscm/"
+	SSCMFilePath             = "./BepInEx/plugins/SSCM/SSCM.socket"
+	SSCMPluginDir            = "./BepInEx/plugins/SSCM/"
+)
+
 /*
 config.Version and config.Branch can be found in config.go
 
 ConfigMu protects all config variables. Lock it for writes; reads are safe
 if writes only happen via applyConfig or with ConfigMu locked. Uses getters where possible.
 */
-
 var ConfigMu sync.RWMutex
+
+type ConfigValue[T any] struct {
+	value     T
+	validator func(T) error
+}
+
+func (c *ConfigValue[T]) Get() T {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return c.value
+}
+
+func (c *ConfigValue[T]) Set(newval T) error {
+	if c.validator != nil {
+		err := c.validator(newval)
+		if err != nil {
+			return err
+		}
+	}
+
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	c.value = newval
+	return safeSaveConfig()
+}
+
+// Updated Configurations
+var (
+	ServerName       ConfigValue[string]
+	ServerMaxPlayers ConfigValue[string] // TODO: why is this a string??
+	ServerPassword   ConfigValue[string]
+	ServerAuthSecret ConfigValue[string]
+	AdminPassword    ConfigValue[string]
+	GamePort         ConfigValue[string]
+	UpdatePort       ConfigValue[string]
+	LocalIpAddress   ConfigValue[string]
+	ServerVisible    ConfigValue[bool]
+)
 
 // Game Server configuration
 var (
-	serverName       string
-	serverMaxPlayers string
-	serverPassword   string
-	serverAuthSecret string
-	adminPassword    string
-	gamePort         string
-	updatePort       string
-	localIpAddress   string
-	serverVisible    bool
 	useSteamP2P      bool
 	additionalParams string
 	uPNPEnabled      bool
@@ -126,19 +168,6 @@ var (
 
 var (
 	isSSCMEnabled bool
-)
-
-// File paths
-var (
-	tlsCertPath              = "./UIMod/tls/cert.pem"
-	tlsKeyPath               = "./UIMod/tls/key.pem"
-	configPath               = "./UIMod/config/config.json"
-	customDetectionsFilePath = "./UIMod/config/customdetections.json"
-	logFolder                = "./UIMod/logs/"
-	uiModFolder              = "./UIMod/"
-	sscmWebDir               = "./UIMod/sscm/"
-	sscmFilePath             = "./BepInEx/plugins/SSCM/SSCM.socket"
-	sscmPluginDir            = "./BepInEx/plugins/SSCM/"
 )
 
 // Bundled Assets

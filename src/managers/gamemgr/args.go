@@ -39,19 +39,19 @@ func buildCommandArgs() []string {
 			{Flag: "-logFile", Value: "./debug.log", Condition: func() bool { return runtime.GOOS == "linux" }, RequiresValue: true},
 			{Flag: "-settings", RequiresValue: false},
 			{Flag: "StartLocalHost", Value: strconv.FormatBool(config.GetStartLocalHost()), RequiresValue: true},
-			{Flag: "ServerVisible", Value: strconv.FormatBool(config.GetServerVisible()), RequiresValue: true},
-			{Flag: "GamePort", Value: config.GetGamePort(), RequiresValue: true},
+			{Flag: "ServerVisible", Value: strconv.FormatBool(config.ServerVisible.Get()), RequiresValue: true},
+			{Flag: "GamePort", Value: config.GamePort.Get(), RequiresValue: true},
 			{Flag: "UPNPEnabled", Value: strconv.FormatBool(config.GetUPNPEnabled()), RequiresValue: true},
-			{Flag: "ServerName", Value: config.GetServerName(), RequiresValue: true},
-			{Flag: "ServerPassword", Value: config.GetServerPassword(), Condition: func() bool { return config.GetServerPassword() != "" }, RequiresValue: true},
-			{Flag: "ServerMaxPlayers", Value: config.GetServerMaxPlayers(), RequiresValue: true},
+			{Flag: "ServerName", Value: config.ServerName.Get(), RequiresValue: true},
+			{Flag: "ServerPassword", Value: config.ServerPassword.Get(), Condition: func() bool { return config.ServerPassword.Get() != "" }, RequiresValue: true},
+			{Flag: "ServerMaxPlayers", Value: config.ServerMaxPlayers.Get(), RequiresValue: true},
 			{Flag: "AutoSave", Value: strconv.FormatBool(config.GetAutoSave()), RequiresValue: true},
 			{Flag: "SaveInterval", Value: config.GetSaveInterval(), RequiresValue: true},
-			{Flag: "ServerAuthSecret", Value: config.GetServerAuthSecret(), Condition: func() bool { return config.GetServerAuthSecret() != "" }, RequiresValue: true},
-			{Flag: "UpdatePort", Value: config.GetUpdatePort(), RequiresValue: true},
+			{Flag: "ServerAuthSecret", Value: config.ServerAuthSecret.Get(), Condition: func() bool { return config.ServerAuthSecret.Get() != "" }, RequiresValue: true},
+			{Flag: "UpdatePort", Value: config.UpdatePort.Get(), RequiresValue: true},
 			{Flag: "AutoPauseServer", Value: strconv.FormatBool(config.GetAutoPauseServer()), RequiresValue: true},
 			{Flag: "UseSteamP2P", Value: strconv.FormatBool(config.GetUseSteamP2P()), RequiresValue: true},
-			{Flag: "AdminPassword", Value: config.GetAdminPassword(), Condition: func() bool { return config.GetAdminPassword() != "" }, RequiresValue: true},
+			{Flag: "AdminPassword", Value: config.AdminPassword.Get(), Condition: func() bool { return config.AdminPassword.Get() != "" }, RequiresValue: true},
 		}
 	}
 	if !config.GetIsNewTerrainAndSaveSystem() {
@@ -62,19 +62,19 @@ func buildCommandArgs() []string {
 			{Flag: "-logFile", Value: "./debug.log", Condition: func() bool { return runtime.GOOS == "linux" }, RequiresValue: true},
 			{Flag: "-settings", RequiresValue: false},
 			{Flag: "StartLocalHost", Value: strconv.FormatBool(config.GetStartLocalHost()), RequiresValue: true},
-			{Flag: "ServerVisible", Value: strconv.FormatBool(config.GetServerVisible()), RequiresValue: true},
-			{Flag: "GamePort", Value: config.GetGamePort(), RequiresValue: true},
+			{Flag: "ServerVisible", Value: strconv.FormatBool(config.ServerVisible.Get()), RequiresValue: true},
+			{Flag: "GamePort", Value: config.GamePort.Get(), RequiresValue: true},
 			{Flag: "UPNPEnabled", Value: strconv.FormatBool(config.GetUPNPEnabled()), RequiresValue: true},
-			{Flag: "ServerName", Value: config.GetServerName(), RequiresValue: true},
-			{Flag: "ServerPassword", Value: config.GetServerPassword(), Condition: func() bool { return config.GetServerPassword() != "" }, RequiresValue: true},
-			{Flag: "ServerMaxPlayers", Value: config.GetServerMaxPlayers(), RequiresValue: true},
+			{Flag: "ServerName", Value: config.ServerName.Get(), RequiresValue: true},
+			{Flag: "ServerPassword", Value: config.ServerPassword.Get(), Condition: func() bool { return config.ServerPassword.Get() != "" }, RequiresValue: true},
+			{Flag: "ServerMaxPlayers", Value: config.ServerMaxPlayers.Get(), RequiresValue: true},
 			{Flag: "AutoSave", Value: strconv.FormatBool(config.GetAutoSave()), RequiresValue: true},
 			{Flag: "SaveInterval", Value: config.GetSaveInterval(), RequiresValue: true},
-			{Flag: "ServerAuthSecret", Value: config.GetServerAuthSecret(), Condition: func() bool { return config.GetServerAuthSecret() != "" }, RequiresValue: true},
-			{Flag: "UpdatePort", Value: config.GetUpdatePort(), RequiresValue: true},
+			{Flag: "ServerAuthSecret", Value: config.ServerAuthSecret.Get(), Condition: func() bool { return config.ServerAuthSecret.Get() != "" }, RequiresValue: true},
+			{Flag: "UpdatePort", Value: config.UpdatePort.Get(), RequiresValue: true},
 			{Flag: "AutoPauseServer", Value: strconv.FormatBool(config.GetAutoPauseServer()), RequiresValue: true},
 			{Flag: "UseSteamP2P", Value: strconv.FormatBool(config.GetUseSteamP2P()), RequiresValue: true},
-			{Flag: "AdminPassword", Value: config.GetAdminPassword(), Condition: func() bool { return config.GetAdminPassword() != "" }, RequiresValue: true},
+			{Flag: "AdminPassword", Value: config.AdminPassword.Get(), Condition: func() bool { return config.AdminPassword.Get() != "" }, RequiresValue: true},
 		}
 	}
 
@@ -109,9 +109,9 @@ func buildCommandArgs() []string {
 		args = append(args, strings.Fields(config.GetAdditionalParams())...)
 	}
 
-	if config.GetLocalIpAddress() != "" {
+	if config.LocalIpAddress.Get() != "" {
 		args = append(args, "LocalIpAddress")
-		args = append(args, config.GetLocalIpAddress())
+		args = append(args, config.LocalIpAddress.Get())
 	}
 
 	return args
