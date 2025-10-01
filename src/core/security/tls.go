@@ -21,8 +21,8 @@ import (
 func EnsureTLSCerts() error {
 	logger.Security.Debug("=== Starting TLS certificate check ===")
 
-	certPath := config.GetTLSCertPath()
-	keyPath := config.GetTLSKeyPath()
+	certPath := config.TLSCertPath
+	keyPath := config.TLSKeyPath
 	logger.Security.Debug(fmt.Sprintf("Cert path: %s", certPath))
 	logger.Security.Debug(fmt.Sprintf("Key path: %s", keyPath))
 
@@ -31,7 +31,7 @@ func EnsureTLSCerts() error {
 	keyExists := fileExists(keyPath)
 	logger.Security.Debug(fmt.Sprintf("Cert exists: %t, Key exists: %t", certExists, keyExists))
 
-	tlsDir := config.GetUIModFolder() + "tls/"
+	tlsDir := config.UIModFolder + "tls/"
 
 	if _, err := os.Stat(tlsDir); os.IsNotExist(err) {
 		logger.Security.Debug("TLS directory doesn't exist, creating...")
@@ -103,8 +103,8 @@ func EnsureTLSCerts() error {
 func generateSelfSignedCert() error {
 	logger.Security.Debug("=== Generating new self-signed certificate ===")
 
-	certPath := config.GetTLSCertPath()
-	keyPath := config.GetTLSKeyPath()
+	certPath := config.TLSCertPath
+	keyPath := config.TLSKeyPath
 
 	dir := filepath.Dir(certPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {

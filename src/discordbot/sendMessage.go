@@ -22,12 +22,12 @@ func SendMessageToControlChannel(message string) {
 		return
 	}
 
-	if config.DiscordSession == nil {
+	if config.GetDiscordSession() == nil {
 		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 		return
 	}
 	//clearMessagesAboveLastN(config.ControlChannelID, 20)
-	_, err := config.DiscordSession.ChannelMessageSend(config.GetControlChannelID(), message)
+	_, err := config.GetDiscordSession().ChannelMessageSend(config.GetControlChannelID(), message)
 	if err != nil {
 		logger.Discord.Error("Error sending message to control channel: " + err.Error())
 	}
@@ -42,12 +42,12 @@ func SendMessageToStatusChannel(message string) {
 		return
 	}
 
-	if config.DiscordSession == nil {
+	if config.GetDiscordSession() == nil {
 		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 		return
 	}
 	//clearMessagesAboveLastN(config.StatusChannelID, 10)
-	_, err := config.DiscordSession.ChannelMessageSend(config.GetStatusChannelID(), message)
+	_, err := config.GetDiscordSession().ChannelMessageSend(config.GetStatusChannelID(), message)
 	if err != nil {
 		logger.Discord.Error("Error sending message to status channel: " + err.Error())
 	}
@@ -62,12 +62,12 @@ func SendMessageToSavesChannel(message string) {
 		return
 	}
 
-	if config.DiscordSession == nil {
+	if config.GetDiscordSession() == nil {
 		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 		return
 	}
 	//clearMessagesAboveLastN(config.SaveChannelID, 300)
-	_, err := config.DiscordSession.ChannelMessageSend(config.GetSaveChannelID(), message)
+	_, err := config.GetDiscordSession().ChannelMessageSend(config.GetSaveChannelID(), message)
 	if err != nil {
 		logger.Discord.Error("Error sending message to saves channel: " + err.Error())
 	}
@@ -82,7 +82,7 @@ func SendUntrackedMessageToErrorChannel(message string) {
 		return
 	}
 
-	if config.DiscordSession == nil {
+	if config.GetDiscordSession() == nil {
 		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 		return
 	}
@@ -99,7 +99,7 @@ func SendUntrackedMessageToErrorChannel(message string) {
 			}
 
 			// Send the chunk
-			_, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message[:splitIndex])
+			_, err := config.GetDiscordSession().ChannelMessageSend(config.GetErrorChannelID(), message[:splitIndex])
 			if err != nil {
 				logger.Discord.Error("Error sending message to error channel: " + err.Error())
 				return
@@ -109,7 +109,7 @@ func SendUntrackedMessageToErrorChannel(message string) {
 			message = message[splitIndex:]
 		} else {
 			// Send the remaining part of the message
-			_, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message)
+			_, err := config.GetDiscordSession().ChannelMessageSend(config.GetErrorChannelID(), message)
 			if err != nil {
 				logger.Discord.Error("Error sending message to error channel: " + err.Error())
 				return // Return whatever was sent before the error
@@ -124,7 +124,7 @@ func sendMessageToErrorChannel(message string) []*discordgo.Message {
 	if !config.GetIsDiscordEnabled() {
 		return nil
 	}
-	if config.DiscordSession == nil {
+	if config.GetDiscordSession() == nil {
 		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 		return nil
 	}
@@ -142,7 +142,7 @@ func sendMessageToErrorChannel(message string) []*discordgo.Message {
 			}
 
 			// Send the chunk
-			sentMessage, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message[:splitIndex])
+			sentMessage, err := config.GetDiscordSession().ChannelMessageSend(config.GetErrorChannelID(), message[:splitIndex])
 			if err != nil {
 				logger.Discord.Error("Error sending message to error channel: " + err.Error())
 				return sentMessages // Return whatever was sent before the error
@@ -155,7 +155,7 @@ func sendMessageToErrorChannel(message string) []*discordgo.Message {
 			message = message[splitIndex:]
 		} else {
 			// Send the remaining part of the message
-			sentMessage, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message)
+			sentMessage, err := config.GetDiscordSession().ChannelMessageSend(config.GetErrorChannelID(), message)
 			if err != nil {
 				logger.Discord.Error("Error sending message to error channel: " + err.Error())
 				return sentMessages // Return whatever was sent before the error
@@ -176,13 +176,13 @@ func clearMessagesAboveLastN(channelID string, keep int) {
 		if !config.GetIsDiscordEnabled() {
 			return
 		}
-		if config.DiscordSession == nil {
+		if config.GetDiscordSession() == nil {
 			logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 			return
 		}
 
 		// Retrieve the last 100 messages in the channel (Discord API limit)
-		messages, err := config.DiscordSession.ChannelMessages(channelID, 100, "", "", "")
+		messages, err := config.GetDiscordSession().ChannelMessages(channelID, 100, "", "", "")
 		if err != nil {
 			logger.Discord.Error("Error fetching messages from channel " + channelID + ": " + err.Error())
 			return
@@ -191,7 +191,7 @@ func clearMessagesAboveLastN(channelID string, keep int) {
 		// If there are more than 'keep' messages, delete the excess ones
 		if len(messages) > keep {
 			for _, message := range messages[keep:] {
-				err := config.DiscordSession.ChannelMessageDelete(channelID, message.ID)
+				err := config.GetDiscordSession().ChannelMessageDelete(channelID, message.ID)
 				if err != nil {
 					logger.Discord.Error("Error deleting message " + message.ID + " in channel " + channelID + ": " + err.Error())
 				}

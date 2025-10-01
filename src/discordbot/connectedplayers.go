@@ -16,7 +16,7 @@ var (
 )
 
 func AddToConnectedPlayers(username, steamID string, connectionTime time.Time, players map[string]string) {
-	if !config.GetIsDiscordEnabled() || config.DiscordSession == nil {
+	if !config.GetIsDiscordEnabled() || config.GetDiscordSession() == nil {
 		logger.Discord.Debug("Discord not enabled or session not initialized")
 		return
 	}
@@ -25,7 +25,7 @@ func AddToConnectedPlayers(username, steamID string, connectionTime time.Time, p
 }
 
 func RemoveFromConnectedPlayers(steamID string, players map[string]string) {
-	if !config.GetIsDiscordEnabled() || config.DiscordSession == nil {
+	if !config.GetIsDiscordEnabled() || config.GetDiscordSession() == nil {
 		logger.Discord.Debug("Discord not enabled or session not initialized")
 		return
 	}
@@ -39,7 +39,7 @@ func sendAndEditMessageInConnectedPlayersChannel(channelID, message string) {
 
 	if connectedPlayersMessageID == "" {
 		// Send a new message if there's no existing one
-		msg, err := config.DiscordSession.ChannelMessageSend(channelID, message)
+		msg, err := config.GetDiscordSession().ChannelMessageSend(channelID, message)
 		if err != nil {
 			logger.Discord.Error("Error sending message to channel " + channelID + ": " + err.Error())
 			return
@@ -48,12 +48,12 @@ func sendAndEditMessageInConnectedPlayersChannel(channelID, message string) {
 		logger.Discord.Debug("Sent new message to channel " + channelID)
 	} else {
 		// Edit the existing message
-		_, err := config.DiscordSession.ChannelMessageEdit(channelID, connectedPlayersMessageID, message)
+		_, err := config.GetDiscordSession().ChannelMessageEdit(channelID, connectedPlayersMessageID, message)
 		if err != nil {
 			logger.Discord.Error("Error editing message in channel " + channelID + ": " + err.Error())
 			// If editing fails (e.g., message deleted), reset and try sending a new one
 			connectedPlayersMessageID = ""
-			msg, err := config.DiscordSession.ChannelMessageSend(channelID, message)
+			msg, err := config.GetDiscordSession().ChannelMessageSend(channelID, message)
 			if err != nil {
 				logger.Discord.Error("Error sending fallback message to channel " + channelID + ": " + err.Error())
 			} else {

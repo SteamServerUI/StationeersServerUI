@@ -48,9 +48,9 @@ func Install() {
 }
 
 func CheckAndDownloadUIMod() {
-	uiModDir := config.GetUIModFolder()
-	configDir := config.GetUIModFolder() + "config/"
-	tlsDir := config.GetUIModFolder() + "tls/"
+	uiModDir := config.UIModFolder
+	configDir := config.UIModFolder + "config/"
+	tlsDir := config.UIModFolder + "tls/"
 
 	requiredDirs := []string{uiModDir, configDir}
 

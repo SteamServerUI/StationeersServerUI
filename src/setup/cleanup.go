@@ -12,9 +12,9 @@ import (
 )
 
 func CleanUpOldUIModFolderFiles() error {
-	uiModFolder := config.GetUIModFolder()
+	uiModFolder := config.UIModFolder
 	customdetectionsSourceFile := filepath.Join(uiModFolder, "detectionmanager", "customdetections.json")
-	customdetectionsDestinationFile := config.GetCustomDetectionsFilePath()
+	customdetectionsDestinationFile := config.CustomDetectionsFilePath
 	oldUiFolder := filepath.Join(uiModFolder, "ui") // used to test if we need clean up from a structure before v5.5 (since we now have embedded assets)
 
 	//if uiModFolder doesn't contain a folder called UI, return early as there is nothing to clean up

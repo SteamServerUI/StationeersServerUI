@@ -14,23 +14,24 @@ func InitializeDiscordBot() {
 	var err error
 
 	// Clean up previous session
-	if config.DiscordSession != nil {
+	if config.GetDiscordSession() != nil {
 		logger.Discord.Debug("Previous Discord session found, closing it...")
-		config.DiscordSession.Close()
+		config.GetDiscordSession().Close()
 	}
 	if BufferFlushTicker != nil {
 		BufferFlushTicker.Stop()
 	}
 
 	// Create new session
-	config.DiscordSession, err = discordgo.New("Bot " + config.GetDiscordToken())
+	session, err := discordgo.New("Bot " + config.GetDiscordToken())
 	if err != nil {
 		logger.Discord.Error("Error creating Discord session: " + err.Error())
 		return
 	}
+	config.SetDiscordSession(session)
 
 	// Set intents
-	config.DiscordSession.Identify.Intents = discordgo.IntentsGuildMessageReactions
+	config.GetDiscordSession().Identify.Intents = discordgo.IntentsGuildMessageReactions
 
 	logger.Discord.Info("Starting Discord integration...")
 	//logger.Discord.Debug("Discord token: " + config.GetDiscordToken())
@@ -41,16 +42,16 @@ func InitializeDiscordBot() {
 	logger.Discord.Debug("SaveChannelID: " + config.GetSaveChannelID())
 
 	// Open session first
-	err = config.DiscordSession.Open()
+	err = config.GetDiscordSession().Open()
 	if err != nil {
 		logger.Discord.Error("Error opening Discord connection: " + err.Error())
 		return
 	}
 
 	// Register handlers and commands after session is open
-	config.DiscordSession.AddHandler(listenToDiscordReactions)
-	config.DiscordSession.AddHandler(listenToSlashCommands)
-	registerSlashCommands(config.DiscordSession)
+	config.GetDiscordSession().AddHandler(listenToDiscordReactions)
+	config.GetDiscordSession().AddHandler(listenToSlashCommands)
+	registerSlashCommands(config.GetDiscordSession())
 
 	logger.Discord.Info("Bot is now running.")
 	SendMessageToStatusChannel("🤖 SSUI Version " + config.GetVersion() + " connected to Discord.")
@@ -69,7 +70,7 @@ func InitializeDiscordBot() {
 
 // Updates the bot status with a string message
 func UpdateBotStatusWithMessage(message string) {
-	err := config.DiscordSession.UpdateGameStatus(0, message)
+	err := config.GetDiscordSession().UpdateGameStatus(0, message)
 	if err != nil {
 		logger.Discord.Error("Error updating bot status: " + err.Error())
 	}

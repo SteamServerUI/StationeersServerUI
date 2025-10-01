@@ -47,7 +47,7 @@ func sendControlPanel() {
 	}
 
 	// Send the embed message
-	msg, err := config.DiscordSession.ChannelMessageSendEmbed(config.GetControlPanelChannelID(), embed)
+	msg, err := config.GetDiscordSession().ChannelMessageSendEmbed(config.GetControlPanelChannelID(), embed)
 	if err != nil {
 		logger.Discord.Error("Error sending control panel embed: " + err.Error())
 		return
@@ -56,10 +56,10 @@ func sendControlPanel() {
 	clearMessagesAboveLastN(config.GetControlPanelChannelID(), 1) // Clear all old control panel messages
 
 	// Add reactions (acting as buttons) to the control message
-	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "🟢")  // Start
-	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "🔴")  // Stop
-	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "🔄")  // Restart
-	config.DiscordSession.MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "♻️") // Update
+	config.GetDiscordSession().MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "🟢")  // Start
+	config.GetDiscordSession().MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "🔴")  // Stop
+	config.GetDiscordSession().MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "🔄")  // Restart
+	config.GetDiscordSession().MessageReactionAdd(config.GetControlPanelChannelID(), msg.ID, "♻️") // Update
 	ControlMessageID = msg.ID
 }
 
