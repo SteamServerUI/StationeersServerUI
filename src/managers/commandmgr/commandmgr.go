@@ -29,7 +29,7 @@ func WriteCommand(command string) error {
 	}
 
 	// Validate file path
-	if config.GetSSCMFilePath() == "" {
+	if config.SSCMFilePath == "" {
 		return os.ErrNotExist
 	}
 
@@ -47,13 +47,13 @@ func WriteCommand(command string) error {
 	prefixedCommand := prefix + " " + command
 
 	// Ensure directory exists
-	dir := filepath.Dir(config.GetSSCMFilePath())
+	dir := filepath.Dir(config.SSCMFilePath)
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return err
 	}
 
 	// Write to file
-	err := os.WriteFile(config.GetSSCMFilePath(), []byte(prefixedCommand), 0644)
+	err := os.WriteFile(config.SSCMFilePath, []byte(prefixedCommand), 0644)
 	if err != nil {
 		return err
 	}

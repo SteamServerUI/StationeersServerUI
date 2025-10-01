@@ -154,12 +154,6 @@ func GetStartLocation() string {
 	return startLocation
 }
 
-func GetServerName() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return serverName
-}
-
 // special getter for backwards compatibility with SaveInfo
 func GetLegacySaveInfo() string {
 	ConfigMu.RLock()
@@ -178,42 +172,6 @@ func GetWorldID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return worldID
-}
-
-func GetServerMaxPlayers() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return serverMaxPlayers
-}
-
-func GetServerPassword() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return serverPassword
-}
-
-func GetServerAuthSecret() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return serverAuthSecret
-}
-
-func GetAdminPassword() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return adminPassword
-}
-
-func GetGamePort() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return gamePort
-}
-
-func GetUpdatePort() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return updatePort
 }
 
 func GetUPNPEnabled() bool {
@@ -240,22 +198,10 @@ func GetAutoPauseServer() bool {
 	return autoPauseServer
 }
 
-func GetLocalIpAddress() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return localIpAddress
-}
-
 func GetStartLocalHost() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return startLocalHost
-}
-
-func GetServerVisible() bool {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return serverVisible
 }
 
 func GetUseSteamP2P() bool {
@@ -342,24 +288,6 @@ func GetIsSSCMEnabled() bool {
 	return isSSCMEnabled
 }
 
-func GetSSCMFilePath() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return sscmFilePath
-}
-
-func GetSSCMPluginDir() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return sscmPluginDir
-}
-
-func GetSSCMWebDir() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return sscmWebDir
-}
-
 func GetAutoRestartServerTimer() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
@@ -415,12 +343,6 @@ func GetIsFirstTimeSetup() bool {
 	return isFirstTimeSetup
 }
 
-func GetConfigPath() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return configPath
-}
-
 func GetVersion() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
@@ -431,24 +353,6 @@ func GetBranch() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return Branch
-}
-
-func GetTLSCertPath() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return tlsCertPath
-}
-
-func GetTLSKeyPath() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return tlsKeyPath
-}
-
-func GetUIModFolder() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return uiModFolder
 }
 
 func GetMaxSSEConnections() int {
@@ -463,12 +367,6 @@ func GetSSEMessageBufferSize() int {
 	return sseMessageBufferSize
 }
 
-func GetLogFolder() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return logFolder
-}
-
 func GetConfiguredBackupDir() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
@@ -479,12 +377,6 @@ func GetConfiguredSafeBackupDir() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return configuredSafeBackupDir
-}
-
-func GetCustomDetectionsFilePath() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return customDetectionsFilePath
 }
 
 func GetGameServerAppID() string {

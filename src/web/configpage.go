@@ -69,7 +69,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
 	serverVisibleTrueSelected := ""
 	serverVisibleFalseSelected := ""
-	if config.GetServerVisible() {
+	if config.ServerVisible.Get() {
 		serverVisibleTrueSelected = "selected"
 	} else {
 		serverVisibleFalseSelected = "selected"
@@ -123,15 +123,15 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		Difficulty:                              config.GetDifficulty(),
 		StartCondition:                          config.GetStartCondition(),
 		StartLocation:                           config.GetStartLocation(),
-		ServerName:                              config.GetServerName(),
+		ServerName:                              config.ServerName.Get(),
 		SaveName:                                config.GetSaveName(),
 		WorldID:                                 config.GetWorldID(),
-		ServerMaxPlayers:                        config.GetServerMaxPlayers(),
-		ServerPassword:                          config.GetServerPassword(),
-		ServerAuthSecret:                        config.GetServerAuthSecret(),
-		AdminPassword:                           config.GetAdminPassword(),
-		GamePort:                                config.GetGamePort(),
-		UpdatePort:                              config.GetUpdatePort(),
+		ServerMaxPlayers:                        config.ServerMaxPlayers.Get(),
+		ServerPassword:                          config.ServerPassword.Get(),
+		ServerAuthSecret:                        config.ServerAuthSecret.Get(),
+		AdminPassword:                           config.AdminPassword.Get(),
+		GamePort:                                config.GamePort.Get(),
+		UpdatePort:                              config.UpdatePort.Get(),
 		UPNPEnabled:                             fmt.Sprintf("%v", config.GetUPNPEnabled()),
 		UPNPEnabledTrueSelected:                 upnpTrueSelected,
 		UPNPEnabledFalseSelected:                upnpFalseSelected,
@@ -142,11 +142,11 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		AutoPauseServer:                         fmt.Sprintf("%v", config.GetAutoPauseServer()),
 		AutoPauseServerTrueSelected:             autoPauseTrueSelected,
 		AutoPauseServerFalseSelected:            autoPauseFalseSelected,
-		LocalIpAddress:                          config.GetLocalIpAddress(),
+		LocalIpAddress:                          config.LocalIpAddress.Get(),
 		StartLocalHost:                          fmt.Sprintf("%v", config.GetStartLocalHost()),
 		StartLocalHostTrueSelected:              startLocalTrueSelected,
 		StartLocalHostFalseSelected:             startLocalFalseSelected,
-		ServerVisible:                           fmt.Sprintf("%v", config.GetServerVisible()),
+		ServerVisible:                           fmt.Sprintf("%v", config.ServerVisible.Get()),
 		ServerVisibleTrueSelected:               serverVisibleTrueSelected,
 		ServerVisibleFalseSelected:              serverVisibleFalseSelected,
 		UseSteamP2P:                             fmt.Sprintf("%v", config.GetUseSteamP2P()),

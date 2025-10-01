@@ -186,7 +186,7 @@ func exitfromcli() {
 
 func deleteConfig() {
 	//remove file at config.ConfigPath
-	if err := os.Remove(config.GetConfigPath()); err != nil {
+	if err := os.Remove(config.ConfigPath); err != nil {
 		logger.Core.Error("Error deleting config file: " + err.Error())
 		return
 	}

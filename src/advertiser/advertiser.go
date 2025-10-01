@@ -34,7 +34,7 @@ type ServerAdResponse struct {
 }
 
 func StartAdvertiser() {
-	if config.GetServerVisible() {
+	if config.ServerVisible.Get() {
 		logger.Advertiser.Warn("Server advertisement is enabled. Disable it in the config and restart SSUI to use manual advertisement. Skipping for now...")
 		return
 	}
@@ -44,9 +44,9 @@ func StartAdvertiser() {
 			// Only advertise if we are running
 			if gamemgr.InternalIsServerRunning() {
 				// Get max players
-				maxplayers, err := strconv.Atoi(config.GetServerMaxPlayers())
+				maxplayers, err := strconv.Atoi(config.ServerMaxPlayers.Get())
 				if err != nil {
-					logger.Advertiser.Errorf("ServerAdvertiser failed to convert max players number to int: %s", config.GetServerMaxPlayers())
+					logger.Advertiser.Errorf("ServerAdvertiser failed to convert max players number to int: %s", config.ServerMaxPlayers.Get())
 					return
 				}
 				// Get connected players
@@ -62,11 +62,11 @@ func StartAdvertiser() {
 				}
 				adMessage := ServerAdMessage{
 					SessionId:  sessionId,
-					Name:       config.GetServerName(),
-					Password:   config.GetServerPassword() != "",
+					Name:       config.ServerName.Get(),
+					Password:   config.ServerPassword.Get() != "",
 					Version:    config.GetExtractedGameVersion(),
 					Address:    config.GetOverrideAdvertisedIp(),
-					Port:       config.GetGamePort(),
+					Port:       config.GamePort.Get(),
 					Players:    players,
 					MaxPlayers: maxplayers,
 					Type:       platform,

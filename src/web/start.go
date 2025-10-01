@@ -46,7 +46,7 @@ func StartWebServer(wg *sync.WaitGroup) {
 			ErrorLog: httpLogger,
 		}
 
-		err := server.ListenAndServeTLS(config.GetTLSCertPath(), config.GetTLSKeyPath())
+		err := server.ListenAndServeTLS(config.TLSCertPath, config.TLSKeyPath)
 		if err != nil {
 			logger.Web.Error("Error starting HTTPS server: " + err.Error())
 		}

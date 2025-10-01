@@ -110,7 +110,7 @@ func LoadConfig() (*JsonConfig, error) {
 	defer ConfigMu.Unlock()
 
 	var jsonConfig JsonConfig
-	file, err := os.Open(configPath)
+	file, err := os.Open(ConfigPath)
 	if err == nil {
 		// File exists, proceed to decode it
 		defer file.Close()
@@ -169,16 +169,16 @@ func applyConfig(cfg *JsonConfig) {
 	difficulty = getString(cfg.Difficulty, "DIFFICULTY", "")
 	startCondition = getString(cfg.StartCondition, "START_CONDITION", "")
 	startLocation = getString(cfg.StartLocation, "START_LOCATION", "")
-	serverName = getString(cfg.ServerName, "SERVER_NAME", "Stationeers Server UI")
+	ServerName.value = getString(cfg.ServerName, "SERVER_NAME", "Stationeers Server UI")
 	saveInfo = getString(cfg.SaveInfo, "SAVE_INFO", "") // deprecated, kept for backwards compatibility - if set, this gets migrated to SaveName and WorldID and the field is not written back to config.json
 	saveName = getString(cfg.SaveName, "SAVE_NAME", "MyMapName")
 	worldID = getString(cfg.WorldID, "WORLD_ID", "Lunar")
-	serverMaxPlayers = getString(cfg.ServerMaxPlayers, "SERVER_MAX_PLAYERS", "6")
-	serverPassword = getString(cfg.ServerPassword, "SERVER_PASSWORD", "")
-	serverAuthSecret = getString(cfg.ServerAuthSecret, "SERVER_AUTH_SECRET", "")
-	adminPassword = getString(cfg.AdminPassword, "ADMIN_PASSWORD", "")
-	gamePort = getString(cfg.GamePort, "GAME_PORT", "27016")
-	updatePort = getString(cfg.UpdatePort, "UPDATE_PORT", "27015")
+	ServerMaxPlayers.value = getString(cfg.ServerMaxPlayers, "SERVER_MAX_PLAYERS", "6")
+	ServerPassword.value = getString(cfg.ServerPassword, "SERVER_PASSWORD", "")
+	ServerAuthSecret.value = getString(cfg.ServerAuthSecret, "SERVER_AUTH_SECRET", "")
+	AdminPassword.value = getString(cfg.AdminPassword, "ADMIN_PASSWORD", "")
+	GamePort.value = getString(cfg.GamePort, "GAME_PORT", "27016")
+	UpdatePort.value = getString(cfg.UpdatePort, "UPDATE_PORT", "27015")
 	languageSetting = getString(cfg.LanguageSetting, "LANGUAGE_SETTING", "en-US")
 	ssuiIdentifier = getString(cfg.SSUIIdentifier, "SSUI_IDENTIFIER", "")
 	ssuiWebPort = getString(cfg.SSUIWebPort, "SSUI_WEB_PORT", "8443")
@@ -197,14 +197,14 @@ func applyConfig(cfg *JsonConfig) {
 	autoPauseServer = autoPauseServerVal
 	cfg.AutoPauseServer = &autoPauseServerVal
 
-	localIpAddress = getString(cfg.LocalIpAddress, "LOCAL_IP_ADDRESS", "0.0.0.0")
+	LocalIpAddress.value = getString(cfg.LocalIpAddress, "LOCAL_IP_ADDRESS", "0.0.0.0")
 
 	startLocalHostVal := getBool(cfg.StartLocalHost, "START_LOCAL_HOST", true)
 	startLocalHost = startLocalHostVal
 	cfg.StartLocalHost = &startLocalHostVal
 
 	serverVisibleVal := getBool(cfg.ServerVisible, "SERVER_VISIBLE", true)
-	serverVisible = serverVisibleVal
+	ServerVisible.value = serverVisibleVal
 	cfg.ServerVisible = &serverVisibleVal
 
 	useSteamP2PVal := getBool(cfg.UseSteamP2P, "USE_STEAM_P2P", false)
@@ -329,22 +329,22 @@ func safeSaveConfig() error {
 		Difficulty:                 difficulty,
 		StartCondition:             startCondition,
 		StartLocation:              startLocation,
-		ServerName:                 serverName,
+		ServerName:                 ServerName.value,
 		SaveName:                   saveName,
 		WorldID:                    worldID,
-		ServerMaxPlayers:           serverMaxPlayers,
-		ServerPassword:             serverPassword,
-		ServerAuthSecret:           serverAuthSecret,
-		AdminPassword:              adminPassword,
-		GamePort:                   gamePort,
-		UpdatePort:                 updatePort,
+		ServerMaxPlayers:           ServerMaxPlayers.value,
+		ServerPassword:             ServerPassword.value,
+		ServerAuthSecret:           ServerAuthSecret.value,
+		AdminPassword:              AdminPassword.value,
+		GamePort:                   GamePort.value,
+		UpdatePort:                 UpdatePort.value,
 		UPNPEnabled:                &uPNPEnabled,
 		AutoSave:                   &autoSave,
 		SaveInterval:               saveInterval,
 		AutoPauseServer:            &autoPauseServer,
-		LocalIpAddress:             localIpAddress,
+		LocalIpAddress:             LocalIpAddress.value,
 		StartLocalHost:             &startLocalHost,
-		ServerVisible:              &serverVisible,
+		ServerVisible:              &ServerVisible.value,
 		UseSteamP2P:                &useSteamP2P,
 		ExePath:                    exePath,
 		AdditionalParams:           additionalParams,
@@ -371,7 +371,7 @@ func safeSaveConfig() error {
 		OverrideAdvertisedIp:       overrideAdvertisedIp,
 	}
 
-	file, err := os.Create(configPath)
+	file, err := os.Create(ConfigPath)
 	if err != nil {
 		return fmt.Errorf("error creating config.json: %v", err)
 	}
@@ -394,7 +394,7 @@ func SaveConfigToFile(cfg *JsonConfig) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	file, err := os.Create(configPath)
+	file, err := os.Create(ConfigPath)
 	if err != nil {
 		return fmt.Errorf("error creating config.json: %v", err)
 	}

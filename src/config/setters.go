@@ -247,68 +247,11 @@ func SetIsNewTerrainAndSaveSystem(value bool) error {
 	return safeSaveConfig()
 }
 
-// Server Settings
-func SetServerName(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	serverName = value
-	return safeSaveConfig()
-}
-
 func SetSaveInfo(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
 	saveInfo = value
-	return safeSaveConfig()
-}
-
-func SetServerMaxPlayers(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	serverMaxPlayers = value
-	return safeSaveConfig()
-}
-
-func SetServerPassword(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	serverPassword = value
-	return safeSaveConfig()
-}
-
-func SetServerAuthSecret(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	serverAuthSecret = value
-	return safeSaveConfig()
-}
-
-func SetAdminPassword(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	adminPassword = value
-	return safeSaveConfig()
-}
-
-func SetGamePort(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	gamePort = value
-	return safeSaveConfig()
-}
-
-func SetUpdatePort(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	updatePort = value
 	return safeSaveConfig()
 }
 
@@ -344,27 +287,11 @@ func SetAutoPauseServer(value bool) error {
 	return safeSaveConfig()
 }
 
-func SetLocalIpAddress(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	localIpAddress = value
-	return safeSaveConfig()
-}
-
 func SetStartLocalHost(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
 	startLocalHost = value
-	return safeSaveConfig()
-}
-
-func SetServerVisible(value bool) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	serverVisible = value
 	return safeSaveConfig()
 }
 

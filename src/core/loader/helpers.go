@@ -42,26 +42,26 @@ func PrintConfigDetails(logLevel ...string) {
 		"IsConsoleEnabled":         fmt.Sprintf("%v", config.GetIsConsoleEnabled()),
 		"AutoStartServerOnStartup": fmt.Sprintf("%v", config.GetAutoStartServerOnStartup()),
 		"LanguageSetting":          config.GetLanguageSetting(),
-		"ConfigPath":               config.GetConfigPath(),
+		"ConfigPath":               config.ConfigPath,
 	}
 	printSection("General Configuration", general)
 
 	// Server Configuration
 	server := map[string]string{
 		"GameBranch":                config.GetGameBranch(),
-		"ServerName":                config.GetServerName(),
+		"ServerName":                config.ServerName.Get(),
 		"WorldName":                 config.GetSaveName(),
 		"BackupWorldName":           config.GetWorldID(),
-		"ServerMaxPlayers":          config.GetServerMaxPlayers(),
-		"GamePort":                  config.GetGamePort(),
-		"UpdatePort":                config.GetUpdatePort(),
+		"ServerMaxPlayers":          config.ServerMaxPlayers.Get(),
+		"GamePort":                  config.GamePort.Get(),
+		"UpdatePort":                config.UpdatePort.Get(),
 		"UPNPEnabled":               fmt.Sprintf("%v", config.GetUPNPEnabled()),
 		"AutoSave":                  fmt.Sprintf("%v", config.GetAutoSave()),
 		"SaveInterval":              config.GetSaveInterval(),
 		"AutoPauseServer":           fmt.Sprintf("%v", config.GetAutoPauseServer()),
-		"LocalIpAddress":            config.GetLocalIpAddress(),
+		"LocalIpAddress":            config.LocalIpAddress.Get(),
 		"StartLocalHost":            fmt.Sprintf("%v", config.GetStartLocalHost()),
-		"ServerVisible":             fmt.Sprintf("%v", config.GetServerVisible()),
+		"ServerVisible":             fmt.Sprintf("%v", config.ServerVisible.Get()),
 		"UseSteamP2P":               fmt.Sprintf("%v", config.GetUseSteamP2P()),
 		"ExePath":                   config.GetExePath(),
 		"AdditionalParams":          config.GetAdditionalParams(),
@@ -115,7 +115,7 @@ func PrintConfigDetails(logLevel ...string) {
 		"LogLevel":            fmt.Sprintf("%d", config.GetLogLevel()),
 		"LogClutterToConsole": fmt.Sprintf("%v", config.GetLogClutterToConsole()),
 		"SubsystemFilters":    fmt.Sprintf("%v", config.GetSubsystemFilters()),
-		"LogFolder":           config.GetLogFolder(),
+		"LogFolder":           config.LogFolder,
 	}
 	printSection("Logging Configuration", logging)
 
@@ -133,9 +133,9 @@ func PrintConfigDetails(logLevel ...string) {
 	// SSCM Configuration
 	sscm := map[string]string{
 		"IsSSCMEnabled": fmt.Sprintf("%v", config.GetIsSSCMEnabled()),
-		"SSCMFilePath":  config.GetSSCMFilePath(),
-		"SSCMPluginDir": config.GetSSCMPluginDir(),
-		"SSCMWebDir":    config.GetSSCMWebDir(),
+		"SSCMFilePath":  config.SSCMFilePath,
+		"SSCMPluginDir": config.SSCMPluginDir,
+		"SSCMWebDir":    config.SSCMWebDir,
 	}
 	printSection("SSCM Configuration", sscm)
 
@@ -143,7 +143,7 @@ func PrintConfigDetails(logLevel ...string) {
 	ui := map[string]string{
 		"SSUIIdentifier":       config.GetSSUIIdentifier(),
 		"SSUIWebPort":          config.GetSSUIWebPort(),
-		"UIModFolder":          config.GetUIModFolder(),
+		"UIModFolder":          config.UIModFolder,
 		"MaxSSEConnections":    fmt.Sprintf("%d", config.GetMaxSSEConnections()),
 		"SSEMessageBufferSize": fmt.Sprintf("%d", config.GetSSEMessageBufferSize()),
 	}
@@ -151,14 +151,14 @@ func PrintConfigDetails(logLevel ...string) {
 
 	// TLS Configuration
 	tls := map[string]string{
-		"TLSCertPath": config.GetTLSCertPath(),
-		"TLSKeyPath":  config.GetTLSKeyPath(),
+		"TLSCertPath": config.TLSCertPath,
+		"TLSKeyPath":  config.TLSKeyPath,
 	}
 	printSection("TLS Configuration", tls)
 
 	// Custom Detections
 	custom := map[string]string{
-		"CustomDetectionsFilePath": config.GetCustomDetectionsFilePath(),
+		"CustomDetectionsFilePath": config.CustomDetectionsFilePath,
 	}
 	printSection("Custom Detections Configuration", custom)
 
