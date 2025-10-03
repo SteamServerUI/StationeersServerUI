@@ -86,11 +86,11 @@ func SetWorldID(value string) error {
 	return nil
 }
 
-func SetIsSteamServerUI(value bool) error {
+func SetUseRunfiles(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	IsSteamServerUI = value
+	UseRunfiles = value
 	return safeSaveConfig()
 }
 

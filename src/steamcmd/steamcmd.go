@@ -149,7 +149,7 @@ func runSteamCMD(steamCMDDir string) (int, error) {
 func buildSteamCMDCommand(steamCMDDir, currentDir string) *exec.Cmd {
 	//print the config.GameBranch and config.GameServerAppID
 	steamAppID := config.GetGameServerAppID()
-	if config.GetIsSteamServerUI() {
+	if config.GetUseRunfiles() {
 		logger.Install.Info("🔍 SSUI Runfile Identifier: " + runfile.CurrentRunfile.Meta.Name)
 		logger.Install.Info("🔍 Game Branch: " + config.GetGameBranch())
 		logger.Install.Info("🔍 Game Server App ID: " + runfile.CurrentRunfile.SteamAppID)

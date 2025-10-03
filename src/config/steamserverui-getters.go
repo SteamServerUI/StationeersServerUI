@@ -1,10 +1,10 @@
 package config
 
 // GetIsSteamServerUI returns if the system is in SteamServerUI mode
-func GetIsSteamServerUI() bool {
+func GetUseRunfiles() bool {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
-	return IsSteamServerUI
+	return UseRunfiles
 }
 
 // GetRunFilesFolder returns the RunFilesFolder

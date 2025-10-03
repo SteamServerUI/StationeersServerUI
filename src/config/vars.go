@@ -65,7 +65,7 @@ var (
 
 // SteamServerUI Settings
 var (
-	IsSteamServerUI   bool
+	UseRunfiles       bool
 	RunfileIdentifier string
 )
 
