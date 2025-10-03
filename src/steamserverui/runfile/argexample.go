@@ -49,3 +49,11 @@ func Examples() {
 	}
 	fmt.Println(arg.RuntimeValue) // Access the argument's properties
 }
+
+func TestArgBuilder() {
+	args, err := BuildCommandArgs()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(args)
+}

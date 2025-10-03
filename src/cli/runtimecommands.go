@@ -24,6 +24,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfile"
 )
 
 // ANSI escape codes for green text and reset
@@ -163,6 +164,7 @@ func init() {
 	RegisterCommand("getbuildid", WrapNoReturn(getBuildID), "gbid")
 	RegisterCommand("setdummybuildid", WrapNoReturn(setDummyBuildID), "sdbid")
 	RegisterCommand("printconfig", WrapNoReturn(printConfig), "pc")
+	RegisterCommand("testargbuilder", WrapNoReturn(TestArgBuilder), "targb")
 }
 
 func startServer() {
@@ -310,4 +312,8 @@ func supportPackage() {
 		runtime.GOOS, osVersion, runtime.GOARCH, config.GetBranch(), config.GetVersion(), time.Now().Format(time.RFC3339))
 	w, _ = zw.Create("system_info.txt")
 	w.Write([]byte(info))
+}
+
+func TestArgBuilder() {
+	runfile.TestArgBuilder()
 }
