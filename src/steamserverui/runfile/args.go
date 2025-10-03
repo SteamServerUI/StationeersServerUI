@@ -347,15 +347,11 @@ func BuildCommandArgs() ([]string, error) {
 	})
 
 	for _, arg := range allArgs {
-		if arg.Disabled {
+		if arg.Disabled || (!arg.Required && arg.RequiresValue && arg.RuntimeValue == "") { //Clear text for clarity: skip if disabled OR if it's an optional argument that needs a value but doesn't have one set
 			continue
 		}
-		if !arg.Required && arg.RequiresValue && arg.RuntimeValue == "" {
-			continue
-		}
-		args = append(args, arg.Flag)
 
-		// Special handling
+		// Handle space_delimited: split and append non-empty parts
 		if arg.Special == "space_delimited" {
 			parts := strings.Split(arg.RuntimeValue, " ")
 			for _, part := range parts {
@@ -366,7 +362,12 @@ func BuildCommandArgs() ([]string, error) {
 			continue
 		}
 
-		// Only add value if the argument requires one
+		// Append non-empty flags
+		if arg.Flag != "" && arg.Special != "dont_append_flag_just_value" {
+			args = append(args, arg.Flag)
+		}
+
+		// Append value if required and non-empty
 		if arg.RequiresValue && arg.RuntimeValue != "" {
 			args = append(args, arg.RuntimeValue)
 		}
