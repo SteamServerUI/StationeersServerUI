@@ -197,7 +197,7 @@ func LoadRunfile(gameName, runFilesFolder string) error {
 	for category := range runfile.Args {
 		for i := range runfile.Args[category] {
 			runfile.Args[category][i].RuntimeValue = runfile.Args[category][i].Value
-			logger.Runfile.Debug(fmt.Sprintf("initialized arg: flag=%s, default=%s, runtime=%s",
+			logger.Runfile.Debug(fmt.Sprintf("initialized arg: flag=%s, value=%s, runtime=%s",
 				runfile.Args[category][i].Flag,
 				runfile.Args[category][i].Value,
 				runfile.Args[category][i].RuntimeValue))
