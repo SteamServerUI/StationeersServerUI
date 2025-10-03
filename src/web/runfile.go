@@ -14,7 +14,7 @@ import (
 // APIGameArg is a DTO for GameArg, including RuntimeValue and all fields
 type APIGameArg struct {
 	Flag          string `json:"flag"`
-	DefaultValue  string `json:"default"`
+	Value         string `json:"value"`
 	RuntimeValue  string `json:"runtime_value"`
 	Required      bool   `json:"required"`
 	RequiresValue bool   `json:"requires_value"`
@@ -55,7 +55,7 @@ type apiResponse struct {
 func toAPIGameArg(arg runfile.GameArg) APIGameArg {
 	return APIGameArg{
 		Flag:          arg.Flag,
-		DefaultValue:  arg.DefaultValue,
+		Value:         arg.Value,
 		RuntimeValue:  arg.RuntimeValue,
 		Required:      arg.Required,
 		RequiresValue: arg.RequiresValue,

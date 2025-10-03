@@ -52,7 +52,7 @@ func (e ErrValidation) Error() string {
 
 type GameArg struct {
 	Flag          string `json:"flag"`
-	DefaultValue  string `json:"default"`
+	Value         string `json:"value"`
 	RuntimeValue  string `json:"-"`
 	Required      bool   `json:"required"`
 	RequiresValue bool   `json:"requires_value"`
@@ -196,10 +196,10 @@ func LoadRunfile(gameName, runFilesFolder string) error {
 	// Initialize runtime values *before* validation
 	for category := range runfile.Args {
 		for i := range runfile.Args[category] {
-			runfile.Args[category][i].RuntimeValue = runfile.Args[category][i].DefaultValue
+			runfile.Args[category][i].RuntimeValue = runfile.Args[category][i].Value
 			logger.Runfile.Debug(fmt.Sprintf("initialized arg: flag=%s, default=%s, runtime=%s",
 				runfile.Args[category][i].Flag,
-				runfile.Args[category][i].DefaultValue,
+				runfile.Args[category][i].Value,
 				runfile.Args[category][i].RuntimeValue))
 		}
 	}
@@ -231,10 +231,10 @@ func SaveRunfile() error {
 	filePath := filepath.Join(config.GetRunFilesFolder(), fmt.Sprintf("run%s.ssui", config.GetRunfileIdentifier()))
 	logger.Runfile.Debug(fmt.Sprintf("saving runfile: path=%s", filePath))
 
-	// Update DefaultValue from RuntimeValue
+	// Update Value from RuntimeValue
 	for category := range CurrentRunfile.Args {
 		for i := range CurrentRunfile.Args[category] {
-			CurrentRunfile.Args[category][i].DefaultValue = CurrentRunfile.Args[category][i].RuntimeValue
+			CurrentRunfile.Args[category][i].Value = CurrentRunfile.Args[category][i].RuntimeValue
 		}
 	}
 
