@@ -35,6 +35,10 @@ const (
 // InstallAndRunSteamCMD installs and runs SteamCMD based on the platform (Windows/Linux).
 // It returns the exit status of the SteamCMD execution and any error encountered.
 func InstallAndRunSteamCMD() (int, error) {
+	if config.GetSkipSteamCMD() {
+		logger.Install.Info("✅Skipping SteamCMD installation")
+	}
+
 	if isUpdatingMu.TryLock() {
 		// Successfully acquired the lock; we are not updating currently
 		logger.Core.Debug("🔄 Locking isUpdatingMu for SteamCMD Update run...")

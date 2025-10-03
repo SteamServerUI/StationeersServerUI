@@ -37,6 +37,7 @@ func InitRunfile(game string) error {
 
 func ReloadRunfile() error {
 	if !config.GetIsSteamServerUI() {
+		logger.Runfile.Warn("Runfile reloading is only supported in SteamServerUI mode")
 		return nil
 	}
 
