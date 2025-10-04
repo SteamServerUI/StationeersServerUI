@@ -514,6 +514,11 @@ func GetIsDockerContainer() bool {
 	return IsDockerContainer
 }
 
+func GetIsGameServerRunning() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return IsGameServerRunning
+}
 func GetOverrideAdvertisedIp() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
