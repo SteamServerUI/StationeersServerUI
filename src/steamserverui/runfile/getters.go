@@ -35,6 +35,7 @@ func GetUIGroups() []string {
 	return result
 }
 
+// GetArgsByGroup returns GameArgs from the rf for use in UI context - and skips args that have arg.Special is not "hide_in_ui"
 func GetArgsByGroup(group string) []GameArg {
 	if CurrentRunfile == nil {
 		logger.Runfile.Error("runfile not loaded")
@@ -44,7 +45,9 @@ func GetArgsByGroup(group string) []GameArg {
 	var result []GameArg
 	for _, arg := range CurrentRunfile.getAllArgs() {
 		if arg.UIGroup == group {
-			result = append(result, arg)
+			if arg.Special != "hide_in_ui" {
+				result = append(result, arg)
+			}
 		}
 	}
 	return result
