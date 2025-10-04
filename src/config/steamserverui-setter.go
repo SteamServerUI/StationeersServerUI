@@ -15,6 +15,5 @@ func SetRunfileIdentifier(value string) error {
 	}
 
 	RunfileIdentifier = value
-	return nil
-	//return saveConfig()
+	return safeSaveConfig()
 }
