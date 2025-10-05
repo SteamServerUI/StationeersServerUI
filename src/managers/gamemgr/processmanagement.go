@@ -14,6 +14,7 @@ import (
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfile"
 )
 
 var (
@@ -34,6 +35,10 @@ func InternalStartServer() error {
 	}
 
 	args := buildCommandArgs()
+
+	if config.UseRunfiles {
+		args, err = runfile.BuildCommandArgs()
+	}
 
 	logger.Core.Info("=== GAMESERVER STARTING ===")
 
