@@ -139,10 +139,8 @@ func (rf *RunFile) Validate() error {
 // getAllArgs returns all GameArgs (internal method for validation)
 func (rf *RunFile) getAllArgs() []GameArg {
 	var allArgs []GameArg
-	for _, category := range []string{"basic", "network", "advanced"} {
-		if args, exists := rf.Args[category]; exists {
-			allArgs = append(allArgs, args...)
-		}
+	for _, args := range rf.Args {
+		allArgs = append(allArgs, args...)
 	}
 	return allArgs
 }
@@ -377,13 +375,14 @@ func BuildCommandArgs() ([]string, error) {
 }
 
 // switchCategoryWeight maps UIGroup to a weight for sorting
+// not functioning as intended, order is not consistent
 func switchCategoryWeight(group string) int {
 	switch group {
 	case "Basic":
 		return 0
 	case "Network":
 		return 1
-	case "Advanced":
+	case "Special":
 		return 2
 	default:
 		return 3
