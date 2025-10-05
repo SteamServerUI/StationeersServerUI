@@ -57,6 +57,8 @@ type JsonConfig struct {
 	SubsystemFilters     []string `json:"subsystemFilters"`
 	OverrideAdvertisedIp string   `json:"OverrideAdvertisedIp"`
 
+	LogServerOutputToFile *bool `json:"LogServerOutputToFile"`
+
 	// Authentication Settings
 	Users             map[string]string `json:"users"`       // Map of username to hashed password
 	AuthEnabled       *bool             `json:"authEnabled"` // Toggle for enabling/disabling auth
@@ -232,6 +234,10 @@ func applyConfig(cfg *JsonConfig) {
 
 	LogLevel = getInt(cfg.LogLevel, "LOG_LEVEL", 20)
 
+	LogServerOutputToFileVal := getBool(cfg.LogServerOutputToFile, "LOG_SERVER_OUTPUT_TO_FILE", true)
+	LogServerOutputToFile = LogServerOutputToFileVal
+	cfg.LogServerOutputToFile = &LogServerOutputToFileVal
+
 	isUpdateEnabledVal := getBool(cfg.IsUpdateEnabled, "IS_UPDATE_ENABLED", true)
 	IsUpdateEnabled = isUpdateEnabledVal
 	cfg.IsUpdateEnabled = &isUpdateEnabledVal
@@ -357,6 +363,7 @@ func safeSaveConfig() error {
 		LogLevel:                   LogLevel,
 		LogClutterToConsole:        &LogClutterToConsole,
 		SubsystemFilters:           SubsystemFilters,
+		LogServerOutputToFile:      &LogServerOutputToFile,
 		IsUpdateEnabled:            &IsUpdateEnabled,
 		IsSSCMEnabled:              &IsSSCMEnabled,
 		AutoRestartServerTimer:     AutoRestartServerTimer,
