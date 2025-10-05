@@ -17,6 +17,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfile"
 )
 
 var (
@@ -84,7 +85,12 @@ func getAppInfo() error {
 	}
 	steamcmddir := SteamCMDLinuxDir
 	executable := "steamcmd.sh"
+
 	appid := config.GetGameServerAppID()
+
+	if config.GetUseRunfiles() {
+		appid = runfile.CurrentRunfile.SteamAppID
+	}
 
 	if runtime.GOOS == "windows" {
 		executable = "steamcmd.exe"
