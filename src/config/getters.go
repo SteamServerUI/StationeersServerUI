@@ -519,3 +519,9 @@ func GetRunfilesFolder() string {
 	defer ConfigMu.Unlock()
 	return RunFilesFolder
 }
+
+func GetIsStationeersMode() bool {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+	return IsStationeersMode
+}

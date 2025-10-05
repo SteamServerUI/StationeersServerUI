@@ -75,6 +75,7 @@ type JsonConfig struct {
 	SSUIIdentifier            string `json:"SSUIIdentifier"`
 	SSUIWebPort               string `json:"SSUIWebPort"`
 	UseRunfiles               *bool  `json:"UseRunfiles"`
+	IsStationeersMode         *bool  `json:"StationeersMode"`
 
 	// Update Settings
 	IsUpdateEnabled            *bool `json:"IsUpdateEnabled"`
@@ -271,6 +272,10 @@ func applyConfig(cfg *JsonConfig) {
 	isUseRunfilesVal := getBool(cfg.UseRunfiles, "USE_RUNFILES", true)
 	UseRunfiles = isUseRunfilesVal
 	cfg.UseRunfiles = &isUseRunfilesVal
+
+	isStationeersModeVal := getBool(cfg.IsStationeersMode, "STATIONEERS_MODE", false)
+	IsStationeersMode = isStationeersModeVal
+	cfg.IsStationeersMode = &isStationeersModeVal
 
 	// Process SaveInfo to maintain backwards compatibility with pre-5.6.6 SaveInfo field (deprecated)
 	if SaveInfo != "" {

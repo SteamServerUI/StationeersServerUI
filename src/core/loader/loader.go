@@ -24,8 +24,8 @@ func InitBackend(wg *sync.WaitGroup) {
 	defer wg.Done()
 	ReloadConfig()
 	ReloadRunfile()
-	ReloadSSCM()
-	ReloadBackupManager()
+	ReloadStationeersSSCM()
+	ReloadStationeersBackupManager()
 	ReloadLocalizer()
 	ReloadAppInfoPoller()
 	ReloadDiscordBot()
@@ -37,8 +37,8 @@ func ReloadBackend() {
 
 	logger.Core.Info("Reloading backend...")
 	ReloadConfig()
-	ReloadSSCM()
-	ReloadBackupManager()
+	ReloadStationeersSSCM()
+	ReloadStationeersBackupManager()
 	ReloadLocalizer()
 	ReloadAppInfoPoller()
 	PrintConfigDetails()
@@ -55,16 +55,20 @@ func ReloadConfig() {
 
 }
 
-func ReloadSSCM() {
-	if config.GetIsSSCMEnabled() {
-		setup.InstallSSCM()
+func ReloadStationeersSSCM() {
+	if config.GetIsStationeersMode() {
+		if config.GetIsSSCMEnabled() {
+			setup.InstallSSCM()
+		}
 	}
 }
 
-func ReloadBackupManager() {
-	if err := backupmgr.ReloadBackupManagerFromConfig(); err != nil {
-		logger.Backup.Error("Failed to reload backup manager: " + err.Error())
-		return
+func ReloadStationeersBackupManager() {
+	if config.GetIsStationeersMode() {
+		if err := backupmgr.ReloadBackupManagerFromConfig(); err != nil {
+			logger.Backup.Error("Failed to reload backup manager: " + err.Error())
+			return
+		}
 	}
 }
 

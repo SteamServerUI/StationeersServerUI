@@ -67,6 +67,7 @@ var (
 var (
 	UseRunfiles       bool
 	RunfileIdentifier string
+	IsStationeersMode bool
 )
 
 // Runtime only variables
