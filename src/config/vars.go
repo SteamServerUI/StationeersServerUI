@@ -128,10 +128,11 @@ var (
 	AllowAutoGameServerUpdates bool
 )
 
-// SSCM (Stationeers Server Command Manager) settings
+// BepInEx settings
 
 var (
-	IsSSCMEnabled bool
+	IsSSCMEnabled    bool
+	IsBepInExEnabled bool
 )
 
 // File paths

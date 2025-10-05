@@ -145,17 +145,10 @@ func runSteamCMD(steamCMDDir string) (int, error) {
 // buildSteamCMDCommand constructs the SteamCMD command based on the OS.
 func buildSteamCMDCommand(steamCMDDir, currentDir string) *exec.Cmd {
 	//print the config.GameBranch and config.GameServerAppID
-	steamAppID := config.GetGameServerAppID()
-	if config.GetUseRunfiles() {
-		logger.Install.Info("🔍 SSUI Runfile Identifier: " + runfile.CurrentRunfile.Meta.Name)
-		logger.Install.Info("🔍 Game Branch: " + config.GetGameBranch())
-		logger.Install.Info("🔍 Game Server App ID: " + runfile.CurrentRunfile.SteamAppID)
-		steamAppID = runfile.CurrentRunfile.SteamAppID
-	} else {
-		logger.Install.Info("🔍 Game Branch: " + config.GetGameBranch())
-		logger.Install.Info("🔍 Game Server App ID: " + config.GetGameServerAppID())
-
-	}
+	logger.Install.Info("🔍 SSUI Runfile Identifier: " + runfile.CurrentRunfile.Meta.Name)
+	logger.Install.Info("🔍 Game Branch: " + config.GetGameBranch())
+	logger.Install.Info("🔍 Game Server App ID: " + runfile.CurrentRunfile.SteamAppID)
+	steamAppID := runfile.CurrentRunfile.SteamAppID
 
 	if runtime.GOOS == "windows" {
 		return exec.Command(filepath.Join(steamCMDDir, "steamcmd.exe"), "+force_install_dir", currentDir, "+login", "anonymous", "+app_update", steamAppID, "-beta", config.GetGameBranch(), "validate", "+quit")

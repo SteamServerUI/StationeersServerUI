@@ -30,6 +30,14 @@ func SetIsSSCMEnabled(value bool) error {
 	return safeSaveConfig()
 }
 
+func SetIsBepInExEnabled(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	IsBepInExEnabled = value
+	return safeSaveConfig()
+}
+
 func SetCurrentBranchBuildID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()

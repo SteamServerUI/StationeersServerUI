@@ -7,6 +7,7 @@ import (
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfile"
 )
 
 // BepInEx version: 5.4.23.2 or v5-lts
@@ -15,9 +16,13 @@ import (
 // Returns a map of environment variables and an error if setup fails.
 func SetupBepInExEnvironment() ([]string, error) {
 
-	executablePath := config.GetExePath()
+	executablePath, err := runfile.CurrentRunfile.GetExecutable()
+	if err != nil {
+		logger.Core.Error("Failed to get executable path from runfile for Bepinex setup: " + err.Error())
+		return nil, err
+	}
 
-	if !config.GetIsSSCMEnabled() {
+	if !config.GetIsBepInExEnabled() {
 		logger.Core.Debug("SSCM is disabled, skipping environment setup")
 		return nil, nil
 	}

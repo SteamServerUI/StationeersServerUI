@@ -17,7 +17,6 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
 
 var downloadBranch string // Holds the branch to download from
@@ -40,13 +39,6 @@ func Install(wg *sync.WaitGroup) {
 	logger.Install.Info("🔄Checking for Blacklist.txt...")
 	checkAndCreateBlacklist()
 	logger.Install.Info("✅Blacklist.txt verified or created.")
-	// Step 3: Install and run SteamCMD
-	logger.Install.Info("🔄Installing and running SteamCMD...")
-	if config.GetSkipSteamCMD() || config.GetUseRunfiles() {
-		logger.Install.Info("✅Skipping SteamCMD installation, SkipSteamCMD is true or IsSteamServerUI is true")
-	} else {
-		steamcmd.InstallAndRunSteamCMD()
-	}
 	logger.Install.Info("✅Setup complete!")
 }
 

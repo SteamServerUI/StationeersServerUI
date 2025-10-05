@@ -21,7 +21,6 @@ var (
 	cmd           *exec.Cmd
 	mu            sync.Mutex
 	logDone       chan struct{}
-	err           error
 	processExited chan struct{}
 	// autoRestartDone is defined in autorestart.go
 )
@@ -34,15 +33,22 @@ func InternalStartServer() error {
 		return fmt.Errorf("server is already running")
 	}
 
-	args := buildCommandArgs()
+	args, err := runfile.BuildCommandArgs()
+	if err != nil {
+		logger.Core.Error("Failed to build command args: " + err.Error())
+		return err
+	}
 
-	if config.UseRunfiles {
-		args, err = runfile.BuildCommandArgs()
+	executable, err := runfile.CurrentRunfile.GetExecutable()
+	if err != nil {
+		logger.Core.Error("Failed to get executable path from runfile: " + err.Error())
+		return err
 	}
 
 	logger.Core.Info("=== GAMESERVER STARTING ===")
+	logger.Core.Info("BepInEx/Doorstop enabled: " + strconv.FormatBool(config.GetIsBepInExEnabled()))
 
-	if config.GetIsSSCMEnabled() && runtime.GOOS == "linux" {
+	if config.GetIsBepInExEnabled() && runtime.GOOS == "linux" {
 
 		var envVars []string
 		// Set up SSCM (BepInEx/Doorstop) environment
@@ -51,28 +57,44 @@ func InternalStartServer() error {
 			return fmt.Errorf("failed to set up SSCM environment: %v", err)
 		}
 		// Create command after environment is set
-		cmd = exec.Command(config.GetExePath(), args...)
+		cmd = exec.Command(executable, args...)
 		// Set the environment for the command
 		if envVars != nil {
 			cmd.Env = envVars
 			logger.Core.Info("BepInEx/Doorstop environment configured for server process")
 		}
-		logger.Core.Info("• Executable: " + config.GetExePath() + " (with SSCM)")
-		logger.Core.Info("• Arguments: " + strings.Join(args, " "))
+		logger.Core.Info("• Executable: " + executable)
+		var formattedArgs []string
+		for _, arg := range args {
+			if strings.ContainsAny(arg, " \t\n\"'") {
+				formattedArgs = append(formattedArgs, `"`+strings.ReplaceAll(arg, `"`, `\"`)+`"`)
+			} else {
+				formattedArgs = append(formattedArgs, arg)
+			}
+		}
+		logger.Core.Info("• Arguments: " + strings.Join(formattedArgs, " "))
 	}
 
-	if !config.GetIsSSCMEnabled() && runtime.GOOS == "linux" {
+	if !config.GetIsBepInExEnabled() && runtime.GOOS == "linux" {
 		// Use ExePath directly as the command
-		cmd = exec.Command(config.GetExePath(), args...)
-		logger.Core.Info("• Executable: " + config.GetExePath())
-		logger.Core.Info("• Arguments: " + strings.Join(args, " "))
+		cmd = exec.Command(executable, args...)
+		logger.Core.Info("• Executable: " + executable)
+		var formattedArgs []string
+		for _, arg := range args {
+			if strings.ContainsAny(arg, " \t\n\"'") {
+				formattedArgs = append(formattedArgs, `"`+strings.ReplaceAll(arg, `"`, `\"`)+`"`)
+			} else {
+				formattedArgs = append(formattedArgs, arg)
+			}
+		}
+		logger.Core.Info("• Arguments: " + strings.Join(formattedArgs, " "))
 	}
 
 	if runtime.GOOS == "windows" {
 
 		// On Windows, set the command to use the executable path and arguments
-		cmd = exec.Command(config.GetExePath(), args...)
-		logger.Core.Info("• Executable: " + config.GetExePath())
+		cmd = exec.Command(executable, args...)
+		logger.Core.Info("• Executable: " + executable)
 		logger.Core.Debug("Switching to pipes for logs as we are on Windows!")
 
 		stdout, err := cmd.StdoutPipe()

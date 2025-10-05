@@ -327,6 +327,12 @@ func GetIsSSCMEnabled() bool {
 	return IsSSCMEnabled
 }
 
+func GetIsBepInExEnabled() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return IsBepInExEnabled
+}
+
 func GetSSCMFilePath() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
@@ -524,13 +530,6 @@ func GetIsStationeersMode() bool {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 	return IsStationeersMode
-}
-
-// GetIsSteamServerUI returns if the system is in SteamServerUI mode
-func GetUseRunfiles() bool {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-	return UseRunfiles
 }
 
 // GetRunFilesFolder returns the RunFilesFolder

@@ -161,15 +161,3 @@ func downloadAndInstallBepInEx(url string) error {
 
 	return nil
 }
-
-func InstallSSCM() {
-	logger.Install.Info("🕑Installing SSCM...")
-
-	CheckAndInstallBepInEx()
-	CheckAndDownloadSSCM()
-
-	// Enable SSCM
-	config.SetIsSSCMEnabled(true)
-
-	logger.Install.Info("✅SSCM enabled")
-}

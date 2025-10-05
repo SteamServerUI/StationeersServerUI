@@ -24,7 +24,7 @@ func InitBackend(wg *sync.WaitGroup) {
 	defer wg.Done()
 	ReloadConfig()
 	ReloadRunfile()
-	ReloadStationeersSSCM()
+	ReloadBepInEx()
 	ReloadStationeersBackupManager()
 	ReloadLocalizer()
 	ReloadAppInfoPoller()
@@ -37,7 +37,7 @@ func ReloadBackend() {
 
 	logger.Core.Info("Reloading backend...")
 	ReloadConfig()
-	ReloadStationeersSSCM()
+	ReloadBepInEx()
 	ReloadStationeersBackupManager()
 	ReloadLocalizer()
 	ReloadAppInfoPoller()
@@ -55,10 +55,11 @@ func ReloadConfig() {
 
 }
 
-func ReloadStationeersSSCM() {
-	if config.GetIsStationeersMode() {
+func ReloadBepInEx() {
+	if config.GetIsBepInExEnabled() {
+		setup.CheckAndInstallBepInEx()
 		if config.GetIsSSCMEnabled() {
-			setup.InstallSSCM()
+			setup.CheckAndDownloadSSCM()
 		}
 	}
 }

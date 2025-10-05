@@ -68,6 +68,7 @@ type JsonConfig struct {
 	ExePath                   string `json:"ExePath"`
 	LogClutterToConsole       *bool  `json:"LogClutterToConsole"`
 	IsSSCMEnabled             *bool  `json:"IsSSCMEnabled"`
+	IsBepInExEnabled          *bool  `json:"IsBepInExEnabled"`
 	AutoRestartServerTimer    string `json:"AutoRestartServerTimer"`
 	IsConsoleEnabled          *bool  `json:"IsConsoleEnabled"`
 	LanguageSetting           string `json:"LanguageSetting"`
@@ -253,7 +254,12 @@ func applyConfig(cfg *JsonConfig) {
 
 	SubsystemFilters = getStringSlice(cfg.SubsystemFilters, "SUBSYSTEM_FILTERS", []string{})
 	AutoRestartServerTimer = getString(cfg.AutoRestartServerTimer, "AUTO_RESTART_SERVER_TIMER", "0")
-	isSSCMEnabledVal := getBool(cfg.IsSSCMEnabled, "IS_SSCM_ENABLED", true)
+
+	isBepInExEnabledVal := getBool(cfg.IsBepInExEnabled, "IS_BEPINEX_ENABLED", false)
+	IsBepInExEnabled = isBepInExEnabledVal
+	cfg.IsBepInExEnabled = &isBepInExEnabledVal
+
+	isSSCMEnabledVal := getBool(cfg.IsSSCMEnabled, "IS_SSCM_ENABLED", false)
 	IsSSCMEnabled = isSSCMEnabledVal
 	cfg.IsSSCMEnabled = &isSSCMEnabledVal
 
@@ -368,6 +374,7 @@ func safeSaveConfig() error {
 		SubsystemFilters:           SubsystemFilters,
 		IsUpdateEnabled:            &IsUpdateEnabled,
 		IsSSCMEnabled:              &IsSSCMEnabled,
+		IsBepInExEnabled:           &IsBepInExEnabled,
 		AutoRestartServerTimer:     AutoRestartServerTimer,
 		AllowPrereleaseUpdates:     &AllowPrereleaseUpdates,
 		AllowMajorUpdates:          &AllowMajorUpdates,

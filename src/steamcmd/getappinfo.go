@@ -86,11 +86,7 @@ func getAppInfo() error {
 	steamcmddir := SteamCMDLinuxDir
 	executable := "steamcmd.sh"
 
-	appid := config.GetGameServerAppID()
-
-	if config.GetUseRunfiles() {
-		appid = runfile.CurrentRunfile.SteamAppID
-	}
+	appid := runfile.CurrentRunfile.SteamAppID
 
 	if runtime.GOOS == "windows" {
 		executable = "steamcmd.exe"
