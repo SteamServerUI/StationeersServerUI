@@ -94,11 +94,18 @@ func SetUseRunfiles(value bool) error {
 	return safeSaveConfig()
 }
 
-// ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
-// ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
-// ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
-// ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
-// ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
+// SetRunfileGame sets the RunfileGame with validation
+func SetRunfileIdentifier(value string) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	if strings.TrimSpace(value) == "" {
+		return fmt.Errorf("runfile game cannot be empty")
+	}
+
+	RunfileIdentifier = value
+	return safeSaveConfig()
+}
 
 // Debug and Logging Settings
 func SetIsDebugMode(value bool) error {
