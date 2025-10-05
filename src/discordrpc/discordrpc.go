@@ -12,10 +12,10 @@ import (
 func StartDiscordRPC() (*discordrichpresence.Client, error) {
 	client := discordrichpresence.NewClient("1408848834875887669")
 	activity := discordrichpresence.NewActivity().
-		State("Managing a Stationeers Server").
-		Details("Your one-stop-shop for running a Stationeers server").
+		State("Managing a Gameserver").
+		Details("Your one-stop-shop for running a Gameserver").
 		StartTime(time.Now()).
-		LargeImage("logo", "The easy to use Stationeers Dedicated Server Manager").
+		LargeImage("logo", "The easy to use Dedicated Server Manager").
 		SmallImage("rocket", "Online and Active").
 		Type(0).
 		Build()
