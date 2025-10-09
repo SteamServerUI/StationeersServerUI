@@ -58,6 +58,7 @@ var (
 	AutoRestartServerTimer   string
 	IsConsoleEnabled         bool
 	LogClutterToConsole      bool // surpresses clutter mono logs from the gameserver
+	LogServerOutputToFile    bool
 	LanguageSetting          string
 	AutoStartServerOnStartup bool
 	SSUIIdentifier           string
