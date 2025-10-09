@@ -38,7 +38,8 @@ UIMod/config/config.json
 C:/custom/file.txt
 UIMod/config/customdetections.json
 winhttp.dll
-autostart*
+./autostart.sh
+./autostart.ps1
 __debug_bin*
 frontend/node_modules
 frontend/dist

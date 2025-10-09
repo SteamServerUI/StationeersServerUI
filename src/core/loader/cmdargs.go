@@ -3,12 +3,15 @@ package loader
 import (
 	"flag"
 	"fmt"
+	"os"
+	"runtime"
 	"strings"
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/security"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/autostart"
 )
 
 // Define flags matching the config variable names
@@ -22,6 +25,7 @@ var devModeFlag bool
 var skipSteamCMDFlag bool
 var sanityCheckFlag bool
 var overrideAdvertisedIpFlag string
+var autoStartSSUIOnBoot bool
 
 // ParseFlags parses command-line arguments ONCE at startup (called from func main)
 func ParseFlags() {
@@ -41,6 +45,7 @@ func ParseFlags() {
 	flag.BoolVar(&skipSteamCMDFlag, "NoSteamCMD", false, "Skips SteamCMD installation")
 	flag.BoolVar(&sanityCheckFlag, "NoSanityCheck", false, "Skips the sanity check. Not recommended.")
 	flag.StringVar(&overrideAdvertisedIpFlag, "OverrideAdvertisedIp", "", "Override the advertised server IP (to allow server advertisement if you are behind a reverse proxy)")
+	flag.BoolVar(&autoStartSSUIOnBoot, "setupautostart", false, "Setup Auto-start SSUI on boot")
 
 	// Parse command-line flags
 	flag.Parse()
@@ -60,6 +65,20 @@ func HandleFlags() {
 
 	if skipSteamCMDFlag {
 		config.SetSkipSteamCMD(true)
+	}
+
+	if autoStartSSUIOnBoot {
+		if runtime.GOOS != "linux" {
+			logger.Core.Error("Autostart is only supported on Linux. Exiting in 5 seconds...")
+			time.Sleep(5 * time.Second)
+			os.Exit(0)
+		}
+		err := autostart.Initialize()
+		if err != nil {
+			logger.Core.Error("Failed to initialize autostart: " + err.Error())
+		}
+		time.Sleep(5 * time.Second)
+		os.Exit(0)
 	}
 
 	if backendEndpointPortFlag != "" && backendEndpointPortFlag != "8443" {
