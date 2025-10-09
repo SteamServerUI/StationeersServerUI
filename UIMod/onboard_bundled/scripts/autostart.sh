@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This script serves two purposes:
+# This script serves two purposes: (OUTDATED; INCORRECT; CHANGEME PLEASE)
 # 1. Installation: Creates and configures a systemd service (ssui.service) to run the StationeersServerControl (StationeersServerUI) application.
 # 2. Runtime: When executed and Service already installed, finds and runs the latest StationeersServerControl binary (matching StationeersServerControlv*).
 # The systemd service uses ExecStart=$SCRIPT_PATH to run this script, which then dynamically selects the latest binary version of SSUI to run.
