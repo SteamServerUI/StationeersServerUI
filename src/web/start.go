@@ -12,9 +12,9 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
-type webServerLogger struct{}
+type WebServerLogger struct{}
 
-func (cl *webServerLogger) Write(p []byte) (n int, err error) {
+func (cl *WebServerLogger) Write(p []byte) (n int, err error) {
 	// Redirect HTTP server logs (like TLS handshake errors) to logger.Web.Debug
 	logger.Web.Debug(string(p))
 	return len(p), nil
@@ -28,7 +28,7 @@ func StartWebServer(wg *sync.WaitGroup) {
 	// Apply middleware only to protected routes
 	mux.Handle("/", AuthMiddleware(protectedMux)) // Wrap protected routes under root
 
-	httpLogger := log.New(&webServerLogger{}, "", 0)
+	httpLogger := log.New(&WebServerLogger{}, "", 0)
 	// Start HTTP server
 	wg.Add(1)
 	go func() {

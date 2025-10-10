@@ -29,6 +29,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/web"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/web/socket"
 )
 
 //go:embed UIMod/onboard_bundled
@@ -56,6 +57,8 @@ func main() {
 	wg.Wait()
 	logger.Main.Debug("Starting webserver...")
 	web.StartWebServer(&wg)
+	logger.Main.Debug("Starting socket server...")
+	socket.StartSocketServer(&wg)
 	logger.Main.Debug("Initializing SSUICLI...")
 	cli.StartConsole(&wg)
 	wg.Wait()

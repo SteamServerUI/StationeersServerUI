@@ -11,6 +11,8 @@ github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aN
 github.com/gorilla/websocket v1.5.3/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/jacksonthemaster/discordrichpresence v1.1.0 h1:4UmompqAKyEpspR/Z0LFj6vdSWJf6FZQ/J787KvdxMM=
 github.com/jacksonthemaster/discordrichpresence v1.1.0/go.mod h1:XA0SB8bsEc5oJCQcXjC78BfNBj9FoLFA4ysfevkUjHE=
+github.com/microsoft/go-winio v0.4.12 h1:3vDRRsUnj2dKE7QKoedntu9hbuD8gzaVd2E2UZioqx4=
+github.com/microsoft/go-winio v0.4.12/go.mod h1:kcIxxtKZE55DEncT/EOvFiygPobhUWpSDqDb47poQOU=
 golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b/go.mod h1:T9bdIzuCu7OtxOm1hfPfRQxPLYneinmdGuTeoZ9dtd4=
 golang.org/x/crypto v0.37.0 h1:kJNSjF/Xp7kU0iB2Z+9viTPMW4EqqsrywMXLJOOsXSE=
 golang.org/x/crypto v0.37.0/go.mod h1:vg+k43peMZ0pUMhYmVAWysMK35e6ioLh3wB8ZCAfbVc=
