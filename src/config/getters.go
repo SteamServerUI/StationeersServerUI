@@ -524,3 +524,9 @@ func GetOverrideAdvertisedIp() string {
 	defer ConfigMu.RUnlock()
 	return OverrideAdvertisedIp
 }
+
+func GetStationeersServerPingEndpoint() string {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return StationeersServerPingEndpoint
+}

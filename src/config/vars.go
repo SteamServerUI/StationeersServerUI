@@ -131,20 +131,21 @@ var (
 
 // File paths
 var (
-	TLSCertPath              = "./UIMod/tls/cert.pem"
-	TLSKeyPath               = "./UIMod/tls/key.pem"
-	ConfigPath               = "./UIMod/config/config.json"
-	CustomDetectionsFilePath = "./UIMod/config/customdetections.json"
-	LogFolder                = "./UIMod/logs/"
-	UIModFolder              = "./UIMod/"
-	TwoBoxFormFolder         = "./UIMod/twoboxform/"
-	ConfigHtmlPath           = "./UIMod/ui/config.html"
-	DetectionManagerHtmlPath = "./UIMod/ui/detectionmanager.html"
-	TwoBoxFormHtmlPath       = "./UIMod/twoboxform/twoboxform.html"
-	IndexHtmlPath            = "./UIMod/ui/index.html"
-	SSCMWebDir               = "./UIMod/sscm/"
-	SSCMFilePath             = "./BepInEx/plugins/SSCM/SSCM.socket"
-	SSCMPluginDir            = "./BepInEx/plugins/SSCM/"
+	TLSCertPath                   = "./UIMod/tls/cert.pem"
+	TLSKeyPath                    = "./UIMod/tls/key.pem"
+	ConfigPath                    = "./UIMod/config/config.json"
+	CustomDetectionsFilePath      = "./UIMod/config/customdetections.json"
+	LogFolder                     = "./UIMod/logs/"
+	UIModFolder                   = "./UIMod/"
+	TwoBoxFormFolder              = "./UIMod/twoboxform/"
+	ConfigHtmlPath                = "./UIMod/ui/config.html"
+	DetectionManagerHtmlPath      = "./UIMod/ui/detectionmanager.html"
+	TwoBoxFormHtmlPath            = "./UIMod/twoboxform/twoboxform.html"
+	IndexHtmlPath                 = "./UIMod/ui/index.html"
+	SSCMWebDir                    = "./UIMod/sscm/"
+	SSCMFilePath                  = "./BepInEx/plugins/SSCM/SSCM.socket"
+	SSCMPluginDir                 = "./BepInEx/plugins/SSCM/"
+	StationeersServerPingEndpoint = "http://40.82.200.175:8081/Ping"
 )
 
 // Bundled Assets
