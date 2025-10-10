@@ -15,7 +15,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
-const socketPath = "/tmp/ssui-api.sock"
+const socketPath = "/var/run/ssui.sock"
 
 func StartSocketServer(wg *sync.WaitGroup) {
 	logger.Socket.Info("Starting Unix socket server...")

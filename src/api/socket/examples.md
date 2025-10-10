@@ -5,10 +5,13 @@ This guide explains how to interact with the socket-based `SSUI-API`, which expo
 ## Overview
 
 The socket server reuses the HTTP routes defined in `routes.go` but serves them over:
-- **Linux**: A Unix socket at `/tmp/ssui-api.sock`.
-- **Windows**: A named pipe at `\\.\pipe\ssui-api`.
+- **Linux**: A Unix socket at `/var/run/ssui.sock`.
+- **Windows**: A named pipe at `\\.\pipe\ssui`.
 
 This is similar to how Docker uses `/var/run/docker.sock` for local API access.
+
+## Notes
+- The socket server skips authentication, assuming local access is secure (like Docker’s socket).
 
 ## Prerequisites
 
@@ -24,7 +27,7 @@ This is similar to how Docker uses `/var/run/docker.sock` for local API access.
 Use `curl` with the `--unix-socket` flag to send HTTP requests to the socket. Example for the `/api/v2/settings` endpoint:
 
 ```bash
-curl --unix-socket /tmp/ssui-api.sock http://localhost/api/v2/settings
+curl --unix-socket /var/run/ssui.sock http://localhost/api/v2/settings
 ```
 
 **Expected Output**: JSON response from the `settings.RetrieveSettings` handler, e.g.:
@@ -43,7 +46,7 @@ Use the following PowerShell 7 script to send an HTTP request to the named pipe.
 ```powershell
 # test_namedpipe.ps1
 
-$pipeName = "\\.\pipe\ssui-api"
+$pipeName = "\\.\pipe\ssui"
 $endpoint = "/api/v2/server/status"
 $hostHeader = "localhost"  # Dummy host for HTTP request
 
@@ -93,7 +96,7 @@ Run it:
 
 **Expected Output**: HTTP response with headers and JSON body, e.g.:
 ```
-Response from \\.\pipe\ssui-api/api/v2/server/status:
+Response from \\.\pipe\ssui/api/v2/server/status:
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 123
@@ -107,20 +110,17 @@ All routes from `routes.go` (e.g., `/api/v2/server/start`, `/api/v2/backups`) ar
 
 - **Linux**:
   ```bash
-  curl --unix-socket /tmp/ssui-api.sock http://localhost/api/v2/backups
+  curl --unix-socket /var/run/ssui.sock http://localhost/api/v2/backups
   ```
 - **Windows**: Edit `$endpoint` in `test_namedpipe.ps1`, e.g., `$endpoint = "/api/v2/backups"`.
 
 For POST requests (e.g., `/api/v2/server/start`), add a JSON payload:
 - **Linux**:
   ```bash
-  curl --unix-socket /tmp/ssui-api.sock -X POST -H "Content-Type: application/json" -d '{"action":"start"}' http://localhost/api/v2/server/start
+  curl --unix-socket /var/run/ssui.sock -X POST -H "Content-Type: application/json" -d '{"action":"start"}' http://localhost/api/v2/server/start
   ```
 - **Windows**: Update the PowerShell script’s `$request`:
   ```powershell
   $body = '{"action":"start"}'
   $request = "POST $endpoint HTTP/1.1`r`nHost: $hostHeader`r`nContent-Type: application/json`r`nContent-Length: $($body.Length)`r`n`r`n$body"
   ```
-
-## Notes
-- The socket server skips authentication, assuming local access is secure (like Docker’s socket).

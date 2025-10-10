@@ -14,7 +14,7 @@ import (
 	"github.com/microsoft/go-winio"
 )
 
-const pipePath = `\\.\pipe\ssui-api`
+const pipePath = `\\.\pipe\ssui`
 
 func StartSocketServer(wg *sync.WaitGroup) {
 	logger.Socket.Info("Starting named pipe server...")
