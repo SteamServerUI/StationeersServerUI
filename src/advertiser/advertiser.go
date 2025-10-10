@@ -14,7 +14,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 )
 
-const StationeersAdvertisementEndpoint = "http://40.82.200.175:8081/Ping"
+var StationeersAdvertisementEndpoint = config.GetStationeersServerPingEndpoint()
 
 type ServerAdMessage struct {
 	SessionId  int
