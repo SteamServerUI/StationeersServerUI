@@ -1,5 +1,5 @@
 // handlers.go
-package web
+package api
 
 import (
 	"encoding/json"

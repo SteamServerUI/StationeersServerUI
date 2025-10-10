@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/api"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/web"
 	"github.com/microsoft/go-winio"
 )
 
@@ -20,7 +20,7 @@ func StartSocketServer(wg *sync.WaitGroup) {
 	logger.Socket.Info("Starting named pipe server...")
 
 	// Set up routes
-	mux, protectedMux := web.SetupRoutes()
+	mux, protectedMux := api.SetupRoutes()
 	mux.Handle("/", protectedMux)
 
 	// Create named pipe listener
@@ -33,7 +33,7 @@ func StartSocketServer(wg *sync.WaitGroup) {
 	// Create HTTP server
 	server := &http.Server{
 		Handler:  mux,
-		ErrorLog: log.New(&web.WebServerLogger{}, "", 0),
+		ErrorLog: log.New(&api.APIServerLogger{}, "", 0),
 	}
 
 	// Start server in a goroutine

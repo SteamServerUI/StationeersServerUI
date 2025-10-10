@@ -24,12 +24,12 @@ import (
 	"embed"
 	"sync"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/api"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/api/socket"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/cli"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/web"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/web/socket"
 )
 
 //go:embed UIMod/onboard_bundled
@@ -55,10 +55,10 @@ func main() {
 	logger.Main.Debug("Initializing after start tasks...")
 	loader.AfterStartComplete(&wg)
 	wg.Wait()
-	logger.Main.Debug("Starting webserver...")
-	web.StartWebServer(&wg)
 	logger.Main.Debug("Starting socket server...")
 	socket.StartSocketServer(&wg)
+	logger.Main.Debug("Starting webserver...")
+	api.StartWebServer(&wg)
 	logger.Main.Debug("Initializing SSUICLI...")
 	cli.StartConsole(&wg)
 	wg.Wait()
