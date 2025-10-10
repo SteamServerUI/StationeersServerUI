@@ -104,8 +104,13 @@ func HandleFlags() {
 
 	if overrideAdvertisedIpFlag != "" {
 		oldOverrideAdvertisedIp := config.GetOverrideAdvertisedIp()
+
+		if overrideAdvertisedIpFlag == oldOverrideAdvertisedIp {
+			logger.Advertiser.Info(fmt.Sprintf("Advertised Server IP is already set to %s", overrideAdvertisedIpFlag))
+			return
+		}
 		config.SetOverrideAdvertisedIp(overrideAdvertisedIpFlag)
-		logger.Main.Info(fmt.Sprintf("Overriding Advertised Server IP from command line: Before=%s, Now=%s", oldOverrideAdvertisedIp, overrideAdvertisedIpFlag))
+		logger.Advertiser.Info(fmt.Sprintf("Overriding Advertised Server IP from command line: Before=%s, Now=%s", oldOverrideAdvertisedIp, overrideAdvertisedIpFlag))
 	}
 
 	if createSSUILogFileFlag {
