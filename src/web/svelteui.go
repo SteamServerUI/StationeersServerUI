@@ -38,7 +38,7 @@ func ServeSvelteUI(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleReloadAll(w http.ResponseWriter, r *http.Request) {
-	logger.Web.Debug("Received reloadbackend request from API")
+	logger.API.Debug("Received reloadbackend request from API")
 	reloadMu.Lock()
 	defer reloadMu.Unlock()
 	// accept only GET requests

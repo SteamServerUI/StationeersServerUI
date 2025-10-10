@@ -9,7 +9,7 @@ import (
 )
 
 func HandleGetOsStats(w http.ResponseWriter, r *http.Request) {
-	logger.Web.Debug("Received getOsStats request from API")
+	logger.API.Debug("Received getOsStats request from API")
 	// accept only GET requests
 	if r.Method != http.MethodGet {
 		http.Error(w, "Only GET requests are allowed", http.StatusMethodNotAllowed)
@@ -19,7 +19,7 @@ func HandleGetOsStats(w http.ResponseWriter, r *http.Request) {
 	// Get cached stats or refresh if needed
 	stats, err := systeminfo.RefreshCachedStats()
 	if err != nil {
-		logger.Web.Error("Failed to get OS stats")
+		logger.API.Error("Failed to get OS stats")
 		http.Error(w, "Failed to get OS stats", http.StatusInternalServerError)
 		return
 	}
@@ -28,7 +28,7 @@ func HandleGetOsStats(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(stats); err != nil {
-		logger.Web.Error("Failed to write response")
+		logger.API.Error("Failed to write response")
 		http.Error(w, "Failed to write response", http.StatusInternalServerError)
 		return
 	}

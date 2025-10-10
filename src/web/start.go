@@ -15,8 +15,8 @@ import (
 type WebServerLogger struct{}
 
 func (cl *WebServerLogger) Write(p []byte) (n int, err error) {
-	// Redirect HTTP server logs (like TLS handshake errors) to logger.Web.Debug
-	logger.Web.Debug(string(p))
+	// Redirect HTTP server logs (like TLS handshake errors) to logger.API.Debug
+	logger.API.Debug(string(p))
 	return len(p), nil
 }
 
@@ -54,9 +54,7 @@ func StartWebServer(wg *sync.WaitGroup) {
 
 	// Start the pprof server if debug mode is enabled (HTTP/1.1)
 	if config.GetIsDebugMode() { // if debug mode is enabled, start pprof server
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			pprofMux := http.NewServeMux()
 			// Register pprof handler
 			pprofMux.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
@@ -65,6 +63,6 @@ func StartWebServer(wg *sync.WaitGroup) {
 			if err != nil {
 				logger.Web.Error("Error starting pprof server: " + err.Error())
 			}
-		}()
+		})
 	}
 }

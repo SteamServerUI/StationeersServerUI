@@ -19,32 +19,32 @@ import (
 
 // StartServer HTTP handler
 func StartServer(w http.ResponseWriter, r *http.Request) {
-	logger.Web.Debug("Received start request from API")
+	logger.API.Debug("Received start request from API")
 	if err := gamemgr.InternalStartServer(); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		logger.Web.Error("Error starting server: " + err.Error())
+		logger.API.Error("Error starting server: " + err.Error())
 		return
 	}
 	fmt.Fprint(w, localization.GetString("BackendText_ServerStarted"))
-	logger.Web.Info("Server started.")
+	logger.API.Info("Server started.")
 }
 
 // StopServer HTTP handler
 func StopServer(w http.ResponseWriter, r *http.Request) {
-	logger.Web.Debug("Received stop request from API")
+	logger.API.Debug("Received stop request from API")
 	if err := gamemgr.InternalStopServer(); err != nil {
 		if err.Error() == "server not running" {
 			fmt.Fprint(w, localization.GetString("BackendText_ServerNotRunningOrAlreadyStopped"))
-			logger.Web.Warn("Server not running or was already stopped")
+			logger.API.Warn("Server not running or was already stopped")
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		logger.Web.Error("Error stopping server: " + err.Error())
+		logger.API.Error("Error stopping server: " + err.Error())
 		return
 	}
 	detectionmgr.ClearPlayers(detectionmgr.GetDetector())
 	fmt.Fprint(w, localization.GetString("BackendText_ServerStopped"))
-	logger.Web.Info("Server stopped.")
+	logger.API.Info("Server stopped.")
 }
 
 func GetGameServerRunState(w http.ResponseWriter, r *http.Request) {

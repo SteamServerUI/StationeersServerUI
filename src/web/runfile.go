@@ -286,7 +286,7 @@ func HandleSetRunfileGame(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleReloadRunfile(w http.ResponseWriter, r *http.Request) {
-	logger.Web.Debug("Received reloadrunfile request from API")
+	logger.API.Debug("Received reloadrunfile request from API")
 	reloadMu.Lock()
 	defer reloadMu.Unlock()
 	// accept only GET requests

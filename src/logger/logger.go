@@ -15,6 +15,7 @@ import (
 var (
 	Main         = &Logger{suffix: SYS_MAIN}
 	Web          = &Logger{suffix: SYS_WEB}
+	API          = &Logger{suffix: SYS_API}
 	Discord      = &Logger{suffix: SYS_DISCORD}
 	Backup       = &Logger{suffix: SYS_BACKUP}
 	Detection    = &Logger{suffix: SYS_DETECT}
@@ -41,6 +42,7 @@ const (
 const (
 	SYS_MAIN         = "MAIN"
 	SYS_WEB          = "WEB"
+	SYS_API          = "API"
 	SYS_DISCORD      = "DISCORD"
 	SYS_BACKUP       = "BACKUP"
 	SYS_DETECT       = "DETECT"
@@ -68,6 +70,7 @@ const (
 var subsystemColors = map[string]string{
 	SYS_MAIN:         colorBlue,    // Calm, default system
 	SYS_WEB:          colorCyan,    // Clean, UI-related
+	SYS_API:          colorCyan,    // Matches WEB
 	SYS_DISCORD:      colorMagenta, // Flashy, chatty subsystem
 	SYS_BACKUP:       colorGreen,   // Safe, reliable vibe
 	SYS_DETECT:       colorYellow,  // Attention-grabbing for detection
