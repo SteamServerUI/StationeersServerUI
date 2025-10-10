@@ -29,10 +29,7 @@ func InitBackend() {
 	ReloadDiscordBot()
 	InitDetector()
 	StartIsGameServerRunningCheck()
-	if config.GetOverrideAdvertisedIp() != "" {
-		logger.Advertiser.Info("Starting server advertiser...")
-		advertiser.StartAdvertiser()
-	}
+	LoadAdvertiser()
 }
 
 // use this to reload backend at runtime
@@ -101,6 +98,13 @@ func StartIsGameServerRunningCheck() {
 
 func ReloadAppInfoPoller() {
 	steamcmd.AppInfoPoller()
+}
+
+func LoadAdvertiser() {
+	if config.GetOverrideAdvertisedIp() != "" {
+		logger.Advertiser.Info("Starting server advertiser...")
+		advertiser.StartAdvertiser()
+	}
 }
 
 // InitBundler initialized the onboard bundled assets for the web UI
