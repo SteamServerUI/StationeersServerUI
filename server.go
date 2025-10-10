@@ -45,7 +45,8 @@ func main() {
 	logger.Install.Info("Starting setup...")
 	loader.ReloadConfig() // Load the config file before starting the setup process
 	loader.HandleFlags()
-	setup.Install()
+	setup.Install(&wg)
+	wg.Wait()
 	logger.Main.Debug("Initializing Backend...")
 	loader.InitBackend()
 	logger.Main.Debug("Initializing after start tasks...")
