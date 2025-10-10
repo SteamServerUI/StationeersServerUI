@@ -4,7 +4,7 @@ package detectionmgr
 import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discord/discordbot"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
 
