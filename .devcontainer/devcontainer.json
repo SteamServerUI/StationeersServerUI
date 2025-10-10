@@ -1,8 +1,10 @@
 {
-    "name": "StationeersServerUI",
+    "name": "SteamSererUI",
     "build": {
         "dockerfile": "Dockerfile",
-        "args": { "TZ": "${localEnv:TZ:Europe/Stockholm}" }
+        "args": {
+            "TZ": "${localEnv:TZ:Europe/Stockholm}"
+        }
     },
     "workspaceFolder": "/workspaces/project",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/project,type=bind,consistency=cached",
@@ -11,11 +13,17 @@
             "version": "1.25.0"
         }
     },
-    "forwardPorts": [8443],
-    "runArgs": ["-p=27015:27015/udp", "-p=27016:27016/udp"],
+    "forwardPorts": [
+        8443
+    ],
+    "runArgs": [
+        "-p=27015:27015/udp",
+        "-p=27016:27016/udp"
+    ],
     "portsAttributes": {
-        "8443": { "label": "Go Backend Server" }
-        
+        "8443": {
+            "label": "Go Backend Server"
+        }
     },
     "customizations": {
         "vscode": {
@@ -23,11 +31,27 @@
                 "golang.go",
                 "svelte.svelte-vscode",
                 "supermaven.supermaven",
-                "eamodio.gitlens"
+                "eamodio.gitlens",
+                "pkief.material-icon-theme"
             ],
             "settings": {
                 "go.toolsManagement.autoUpdate": true,
-                "svelte.enable-ts-plugin": true
+                "svelte.enable-ts-plugin": true,
+                "workbench.iconTheme": "material-icon-theme",
+                "workbench.colorTheme": "Solarized Dark",
+                "material-icon-theme.files.customClones": [
+                    {
+                        "name": "ssui",
+                        "base": "rocket",
+                        "color": "blue-500",
+                        "fileExtensions": [
+                            "ssui"
+                        ]
+                    }
+                ],
+                "files.associations": {
+                    "*.ssui": "json"
+                }
             }
         }
     },
