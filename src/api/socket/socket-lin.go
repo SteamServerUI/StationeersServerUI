@@ -15,7 +15,7 @@ import (
 	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 )
 
-const socketPath = "/var/run/ssui.sock"
+const socketPath = "/tmp/ssui.sock"
 
 func StartSocketServer(wg *sync.WaitGroup) {
 	logger.Socket.Info("Starting Unix socket server...")
