@@ -32,7 +32,7 @@ jobs:
       - name: Verify build output
         run: |
           cd build
-          if ls StationeersServerControl*; then
+          if ls SteamServerUI*; then
             echo "Build succeeded: Executable found."
           else
             echo "Build failed: No executable found."
@@ -45,4 +45,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: StationeersServerControl
-          path: ./build/StationeersServerControl*
+          path: ./build/SteamServerUI*

@@ -39,7 +39,7 @@ jobs:
       - name: Verify build output
         run: |
           cd build
-          if ls StationeersServerControl*; then
+          if ls SteamServerUI*; then
             echo "Build succeeded: Executable found."
           else
             echo "Build failed: No executable found."
@@ -108,7 +108,7 @@ jobs:
           prerelease: false
           tag_name: ${{ steps.check_tag.outputs.tag }}
           name: "Release ${{ steps.check_tag.outputs.tag }}"
-          files: ./build/StationeersServerControl*
+          files: ./build/SteamServerUI*
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
