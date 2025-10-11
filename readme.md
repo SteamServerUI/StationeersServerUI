@@ -4,7 +4,7 @@
 
 # Stationeers Server UI
 
-![Go](https://img.shields.io/badge/Go-1.24.2-blue?logo=go&logoColor=white)
+![Go](https://img.shields.io/badge/Go-1.25.0-blue?logo=go&logoColor=white)
 ![Version](https://img.shields.io/github/v/release/jacksonthemaster/StationeersServerUI?logo=github&logoColor=white)
 ![Issues](https://img.shields.io/github/issues/jacksonthemaster/StationeersServerUI?logo=github&logoColor=white)
 ![Stars](https://img.shields.io/github/stars/jacksonthemaster/StationeersServerUI?style=social&logo=github)
@@ -25,14 +25,8 @@
 
 <div align="center">
 
-### 🌟 Live UI Preview 🌟
+### 🌟 This is a WebUi, you don't need a graphical OS to run this 🌟
 
-Explore your fututre Stationeers Server UI in action—no setup required!
-And the "best part?" The Demo current is not on the V5 but V4, so if you are convinced by the Demo, it will only get better when you actually try it out!
-
-### Preview is not available any more, but will be available soon!
-
-[![v4 Live Preview - Stationeers UI](https://img.shields.io/badge/Live%20Preview-Stationeers%20Server%20UI-blueviolet?style=for-the-badge&logo=github)](https://jacksonthemaster.github.io/StationeersServerUI/server.html)
 [![Download latest Version](https://img.shields.io/badge/Download-Stationeers%20Server%20UI-orange?style=for-the-badge)](https://jacksonthemaster.github.io/StationeersServerUI)
 </div>
 

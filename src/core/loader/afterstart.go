@@ -1,8 +1,6 @@
 package loader
 
 import (
-	"sync"
-
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordrpc"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
@@ -10,9 +8,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 )
 
-func AfterStartComplete(wg *sync.WaitGroup) {
-	wg.Add(1)
-	defer wg.Done()
+func AfterStartComplete() {
 	config.SetSaveConfig() // Save config after startup through setters
 	err := setup.CleanUpOldUIModFolderFiles()
 	if err != nil {

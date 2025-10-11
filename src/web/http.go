@@ -48,7 +48,7 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetGameServerRunState(w http.ResponseWriter, r *http.Request) {
-	runState := gamemgr.InternalIsServerRunning()
+	runState := config.GetIsGameServerRunning()
 	response := map[string]interface{}{
 		"isRunning": runState,
 		"uuid":      gamemgr.GameServerUUID.String(),
