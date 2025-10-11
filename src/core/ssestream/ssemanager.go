@@ -106,10 +106,7 @@ func (m *SSEManager) CreateStreamHandler(streamType string) http.HandlerFunc {
 		notify := r.Context().Done()
 
 		// Start streaming messages
-		go m.streamMessages(w, flusher, client, streamType, notify)
-
-		// Wait for client disconnection
-		<-notify
+		m.streamMessages(w, flusher, client, notify)
 	}
 }
 
@@ -118,7 +115,6 @@ func (m *SSEManager) streamMessages(
 	w http.ResponseWriter,
 	flusher http.Flusher,
 	client *Client,
-	streamType string,
 	notify <-chan struct{},
 ) {
 	defer m.removeClient(client)
