@@ -14,8 +14,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 )
 
 // githubRelease represents the structure of a GitHub release response

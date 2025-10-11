@@ -24,12 +24,12 @@ import (
 	"embed"
 	"sync"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/api"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/api/socket"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/cli"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/api"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/api/socket"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/cli"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/core/loader"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/setup"
 )
 
 //go:embed UIMod/onboard_bundled

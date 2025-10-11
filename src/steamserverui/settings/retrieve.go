@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
 )
 
 // package settings handles API communication with the config values in package config via getter /setter functions.

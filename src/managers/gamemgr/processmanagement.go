@@ -12,9 +12,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfile"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/steamserverui/runfile"
 )
 
 var (

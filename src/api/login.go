@@ -9,11 +9,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config/configchanger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/security"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config/configchanger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/core/loader"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/core/security"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 )
 
 var setupReminderCount = 0 // to limit the number of setup reminders shown to the user

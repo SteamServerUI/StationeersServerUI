@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/core/loader"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 )
 
 var reloadMu sync.Mutex

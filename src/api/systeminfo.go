@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/systeminfo"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/steamserverui/systeminfo"
 )
 
 func HandleGetOsStats(w http.ResponseWriter, r *http.Request) {

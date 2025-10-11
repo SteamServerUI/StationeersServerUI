@@ -7,15 +7,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discord/discordbot"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/discord/discordbot"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/localization"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/backupmgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/detectionmgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/setup"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/setup/update"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/steamcmd"
 )
 
 // only call this once at startup

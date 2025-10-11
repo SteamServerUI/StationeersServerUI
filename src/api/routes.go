@@ -4,11 +4,11 @@ import (
 	"io/fs"
 	"net/http"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config/configchanger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/settings"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config/configchanger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/backupmgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/detectionmgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/steamserverui/settings"
 )
 
 func SetupRoutes() (*http.ServeMux, *http.ServeMux) {

@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/core/ssestream"
 )
 
 // handler for the /console endpoint

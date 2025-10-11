@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 )
 
 // GetAllArgs returns all GameArgs from the runfile

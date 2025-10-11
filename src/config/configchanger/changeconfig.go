@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
 )
 
 func SaveConfigForm(w http.ResponseWriter, r *http.Request) {

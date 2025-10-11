@@ -8,13 +8,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/localization"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/commandmgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/detectionmgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/gamemgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/steamcmd"
 )
 
 // StartServer HTTP handler

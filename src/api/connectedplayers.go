@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/detectionmgr"
 )
 
 // PrintConnectedPlayersHandler handles HTTP requests to list connected players.

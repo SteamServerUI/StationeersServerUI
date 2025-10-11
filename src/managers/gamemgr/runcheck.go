@@ -4,7 +4,7 @@ import (
 	"runtime"
 	"syscall"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 )
 
 // InternalIsServerRunning checks if the server process is running.

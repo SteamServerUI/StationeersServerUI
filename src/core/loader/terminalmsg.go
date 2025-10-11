@@ -4,8 +4,8 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 )
 
 // PrintStartupMessage prints a stylish startup message to the terminal

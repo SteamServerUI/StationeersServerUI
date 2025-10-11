@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
 )
 
 func main() {

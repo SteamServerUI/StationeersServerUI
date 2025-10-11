@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/backupmgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/commandmgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/gamemgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/steamcmd"
 
 	"github.com/bwmarrin/discordgo"
 )

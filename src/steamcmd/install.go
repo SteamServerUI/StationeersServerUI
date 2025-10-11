@@ -3,7 +3,7 @@ package steamcmd
 import (
 	"os"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 )
 
 func installSteamCMD(platform string, steamCMDDir string, downloadURL string, extractFunc ExtractorFunc) (int, error) {

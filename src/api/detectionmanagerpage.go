@@ -6,7 +6,7 @@ import (
 	"io/fs"
 	"net/http"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
 )
 
 func ServeDetectionManager(w http.ResponseWriter, r *http.Request) {

@@ -10,8 +10,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 )
 
 // GalleryRunfile represents a runfile in the gallery

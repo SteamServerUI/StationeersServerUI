@@ -11,8 +11,8 @@ import (
 	"os"
 	"sync"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/api"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/api"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 )
 
 const socketPath = "/var/run/ssui.sock"

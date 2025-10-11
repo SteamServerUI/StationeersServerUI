@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfile"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/core/loader"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/steamserverui/runfile"
 )
 
 // APIGameArg is a DTO for GameArg, including RuntimeValue and all fields

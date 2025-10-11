@@ -18,13 +18,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamserverui/runfile"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/core/loader"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/localization"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/gamemgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/steamcmd"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/steamserverui/runfile"
 )
 
 // ANSI escape codes for green text and reset
