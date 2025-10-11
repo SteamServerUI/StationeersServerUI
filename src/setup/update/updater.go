@@ -100,7 +100,7 @@ func UpdateExecutable() error {
 	if runtime.GOOS != "windows" {
 		expectedExt = ".x86_64"
 	}
-	expectedExe := fmt.Sprintf("StationeersServerControl%s%s", latestRelease.TagName, expectedExt)
+	expectedExe := fmt.Sprintf("SteamServerUI%s%s", latestRelease.TagName, expectedExt)
 
 	// Find the asset
 	var downloadURL string
