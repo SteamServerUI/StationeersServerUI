@@ -32,7 +32,7 @@ import (
 	"github.com/SteamServerUI/SteamServerUI/v7/src/setup"
 )
 
-//go:embed UIMod/onboard_bundled
+//go:embed SSUI/onboard_bundled
 var v1uiFS embed.FS
 
 func main() {

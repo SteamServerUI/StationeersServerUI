@@ -436,10 +436,10 @@ func GetTLSKeyPath() string {
 	return TLSKeyPath
 }
 
-func GetUIModFolder() string {
+func GetSSUIFolder() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return UIModFolder
+	return SSUIFolder
 }
 
 func GetMaxSSEConnections() int {

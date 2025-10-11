@@ -31,10 +31,10 @@ func Install(wg *sync.WaitGroup) {
 		logger.Install.Error("❌Update check went sideways: " + err.Error())
 	}
 
-	// Step 1: Check and download the UIMod folder contents
-	logger.Install.Debug("🔄Checking UIMod folder...")
-	CheckAndDownloadUIMod()
-	logger.Install.Debug("✅UIMod folder setup complete.")
+	// Step 1: Check and download the SSUI folder contents
+	logger.Install.Debug("🔄Checking SSUI folder...")
+	CheckAndDownloadSSUI()
+	logger.Install.Debug("✅SSUI folder setup complete.")
 	// Step 2: Check for Blacklist.txt and create it if it doesn't exist
 	logger.Install.Info("🔄Checking for Blacklist.txt...")
 	checkAndCreateBlacklist()
@@ -42,10 +42,10 @@ func Install(wg *sync.WaitGroup) {
 	logger.Install.Info("✅Setup complete!")
 }
 
-func CheckAndDownloadUIMod() {
-	uiModDir := config.GetUIModFolder()
-	configDir := config.GetUIModFolder() + "config/"
-	tlsDir := config.GetUIModFolder() + "tls/"
+func CheckAndDownloadSSUI() {
+	uiModDir := config.GetSSUIFolder()
+	configDir := config.GetSSUIFolder() + "config/"
+	tlsDir := config.GetSSUIFolder() + "tls/"
 
 	requiredDirs := []string{uiModDir, configDir}
 
@@ -62,7 +62,7 @@ func CheckAndDownloadUIMod() {
 		// NOTE: Now empty as files are now embedded in the executable. Kept this structure for future use.
 
 		// UI - commented out since files are embedded, left here for reference in case we need this funcitonality again
-		// "ui/config.html":           "https://raw.githubusercontent.com/SteamServerUI/SteamServerUI/{branch}/UIMod/ui/config.html",
+		// "ui/config.html":           "https://raw.githubusercontent.com/SteamServerUI/SteamServerUI/{branch}/SSUI/ui/config.html",
 	}
 
 	createRequiredDirs(requiredDirs)
@@ -88,7 +88,7 @@ func CheckAndDownloadUIMod() {
 		logger.Install.Debug(fmt.Sprintf("IsUpdateEnabled: %v", config.GetIsUpdateEnabled()))
 		logger.Install.Debug(fmt.Sprintf("IsFirstTimeSetup: %v", config.GetIsFirstTimeSetup()))
 		if config.GetIsUpdateEnabled() {
-			logger.Install.Info("🔍Validating UIMod files for updates...")
+			logger.Install.Info("🔍Validating SSUI files for updates...")
 			if config.GetBranch() == "release" || config.GetBranch() == "Release" {
 				downloadBranch = "main"
 				updateFilesIfDifferent(files)
@@ -97,7 +97,7 @@ func CheckAndDownloadUIMod() {
 				updateFilesIfDifferent(files)
 			}
 		} else {
-			logger.Install.Info("♻️Folder ./UIMod already exists. Updates disabled, skipping validation.")
+			logger.Install.Info("♻️Folder ./SSUI already exists. Updates disabled, skipping validation.")
 		}
 	}
 }
@@ -163,7 +163,7 @@ func checkAndUpdateFile(filepath, url string) {
 		}
 
 		// Extract the necessary parts from URL to build the API call
-		// Example URL: https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/UIMod/index.html
+		// Example URL: https://raw.githubusercontent.com/JacksonTheMaster/StationeersServerUI/main/SSUI/index.html
 		urlParts := strings.Split(url, "/")
 		if len(urlParts) < 7 {
 			logger.Install.Error("❌Invalid URL format: " + url)

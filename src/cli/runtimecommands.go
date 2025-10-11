@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+
 	"strings"
 	"sync"
 	"time"
@@ -253,7 +254,7 @@ func supportPackage() {
 	zw := zip.NewWriter(zipFile)
 	defer zw.Close()
 
-	filepath.Walk("./UIMod/logs", func(p string, i os.FileInfo, err error) error {
+	filepath.Walk("./SSUI/logs", func(p string, i os.FileInfo, err error) error {
 		if err != nil || i.IsDir() {
 			return nil
 		}
@@ -264,7 +265,7 @@ func supportPackage() {
 		return nil
 	})
 
-	configData, _ := os.ReadFile("./UIMod/config/config.json")
+	configData, _ := os.ReadFile("./SSUI/config/config.json")
 
 	var configMap map[string]interface{}
 	if err := json.Unmarshal(configData, &configMap); err != nil {
@@ -284,7 +285,7 @@ func supportPackage() {
 	}
 
 	// Write sanitized config to zip
-	w, _ := zw.Create("UIMod/config/config.json")
+	w, _ := zw.Create("SSUI/config/config.json")
 
 	if _, err := w.Write(sanitizedConfig); err != nil {
 		logger.Core.Error("Failed to write sanitized config to support package")
