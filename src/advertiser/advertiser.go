@@ -48,18 +48,27 @@ func getIpFromAdvertiserOverride(address string) (string, error) {
 		return buf.String(), nil
 	}
 	// If the address is an IP quad, return it as is
-	if ip := net.ParseIP(address); ip != nil && ip.To4() != nil {
-		return address, nil
+	if ip := net.ParseIP(address); ip != nil {
+		if ip.To4() != nil {
+			return address, nil
+		} else if ip.To16() != nil {
+			return "", errors.New("IPv6 addresses are not supported for advertiser override")
+		}
 	}
 	// If the address is a DNS name, resolve it
 	ips, err := net.LookupIP(address)
 	if err != nil {
 		return "", err
 	} else if len(ips) > 0 {
-		return ips[0].String(), nil
+		// Return the first resolved IPv4 address
+		for _, ip := range ips {
+			if ip.To4() != nil {
+				return ip.String(), nil
+			}
+		}
 	}
 	// If the address is invalid, return an error
-	return "", errors.New("invalid address")
+	return "", errors.New("unable to resolve IP from advertiser override")
 }
 
 func StartAdvertiser() {
