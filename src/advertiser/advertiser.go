@@ -3,6 +3,8 @@ package advertiser
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"net"
 	"net/http"
 	"runtime"
 	"strconv"
@@ -33,6 +35,33 @@ type ServerAdResponse struct {
 	Status    string
 }
 
+func getIpFromAddressConfig(address string) (string, error) {
+	// If the address is "auto", we need to check our public IPv4 via ipify
+	if address == "auto" {
+		resp, err := http.Get("https://api4.ipify.org")
+		if err != nil {
+			return "", err
+		}
+		defer resp.Body.Close()
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+		return buf.String(), nil
+	}
+	// If the address is an IP quad, return it as is
+	if net.ParseIP(address) != nil {
+		return address, nil
+	}
+	// If the address is a DNS name, resolve it
+	ips, err := net.LookupIP(address)
+	if err != nil {
+		return "", err
+	} else if len(ips) > 0 {
+		return ips[0].String(), nil
+	}
+	// If the address is invalid, return an error
+	return "", errors.New("invalid address")
+}
+
 func StartAdvertiser() {
 	if config.GetServerVisible() {
 		logger.Advertiser.Warn("Server advertisement is enabled. Disable it in the config and restart SSUI to use manual advertisement. Skipping for now...")
@@ -60,12 +89,18 @@ func StartAdvertiser() {
 				case "linux":
 					platform = 2
 				}
+				// Get IP address
+				ipAddress, err := getIpFromAddressConfig(config.GetOverrideAdvertisedIp())
+				if err != nil {
+					logger.Advertiser.Errorf("ServerAdvertiser failed to get IP address from config value '%s': %v", config.GetOverrideAdvertisedIp(), err)
+					return
+				}
 				adMessage := ServerAdMessage{
 					SessionId:  sessionId,
 					Name:       config.GetServerName(),
 					Password:   config.GetServerPassword() != "",
 					Version:    config.GetExtractedGameVersion(),
-					Address:    config.GetOverrideAdvertisedIp(),
+					Address:    ipAddress,
 					Port:       config.GetGamePort(),
 					Players:    players,
 					MaxPlayers: maxplayers,
