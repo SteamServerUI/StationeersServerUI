@@ -59,12 +59,11 @@ func getIpFromAdvertiserOverride(address string) (string, error) {
 	ips, err := net.LookupIP(address)
 	if err != nil {
 		return "", err
-	} else if len(ips) > 0 {
-		// Return the first resolved IPv4 address
-		for _, ip := range ips {
-			if ip.To4() != nil {
-				return ip.String(), nil
-			}
+	}
+	// Return the first resolved IPv4 address
+	for _, ip := range ips {
+		if ip.To4() != nil {
+			return ip.String(), nil
 		}
 	}
 	// If the address is invalid, return an error

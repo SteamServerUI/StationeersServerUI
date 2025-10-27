@@ -40,7 +40,7 @@ func ParseFlags() {
 	flag.BoolVar(&createSSUILogFileFlag, "lf", false, "(Alias) Create log files for SSUI")
 	flag.BoolVar(&skipSteamCMDFlag, "NoSteamCMD", false, "Skips SteamCMD installation")
 	flag.BoolVar(&sanityCheckFlag, "NoSanityCheck", false, "Skips the sanity check. Not recommended.")
-	flag.StringVar(&advertiserOverrideFlag, "AdvertiserOverride", "", "Override the advertised server IP (to allow server advertisement if you are behind a reverse proxy)")
+	flag.StringVar(&advertiserOverrideFlag, "AdvertiserOverride", "", "Override the advertised server IP. Use \"auto\" for automatic public IP detection, an IPv4 address, or a DNS hostname (to allow server advertisement if you are behind a reverse proxy)")
 
 	// Parse command-line flags
 	flag.Parse()
