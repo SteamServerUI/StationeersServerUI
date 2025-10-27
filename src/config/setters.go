@@ -703,10 +703,10 @@ func SetAllowAutoGameServerUpdates(value bool) error {
 	return safeSaveConfig()
 }
 
-func SetOverrideAdvertisedIp(value string) error {
+func SetAdvertiserOverride(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	OverrideAdvertisedIp = value
+	AdvertiserOverride = value
 	return safeSaveConfig()
 }

@@ -519,10 +519,10 @@ func GetIsGameServerRunning() bool {
 	defer ConfigMu.RUnlock()
 	return IsGameServerRunning
 }
-func GetOverrideAdvertisedIp() string {
+func GetAdvertiserOverride() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return OverrideAdvertisedIp
+	return AdvertiserOverride
 }
 
 func GetStationeersServerPingEndpoint() string {

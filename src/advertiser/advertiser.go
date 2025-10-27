@@ -35,7 +35,7 @@ type ServerAdResponse struct {
 	Status    string
 }
 
-func getIpFromAddressConfig(address string) (string, error) {
+func getIpFromAdvertiserOverride(address string) (string, error) {
 	// If the address is "auto", we need to check our public IPv4 via ipify
 	if address == "auto" {
 		resp, err := http.Get("https://api4.ipify.org")
@@ -90,9 +90,9 @@ func StartAdvertiser() {
 					platform = 2
 				}
 				// Get IP address
-				ipAddress, err := getIpFromAddressConfig(config.GetOverrideAdvertisedIp())
+				ipAddress, err := getIpFromAdvertiserOverride(config.GetAdvertiserOverride())
 				if err != nil {
-					logger.Advertiser.Errorf("ServerAdvertiser failed to get IP address from config value '%s': %v", config.GetOverrideAdvertisedIp(), err)
+					logger.Advertiser.Errorf("ServerAdvertiser failed to get IP address from config value '%s': %v", config.GetAdvertiserOverride(), err)
 					return
 				}
 				adMessage := ServerAdMessage{

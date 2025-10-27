@@ -21,7 +21,7 @@ var recoveryPasswordFlag string
 var devModeFlag bool
 var skipSteamCMDFlag bool
 var sanityCheckFlag bool
-var overrideAdvertisedIpFlag string
+var advertiserOverrideFlag string
 
 // ParseFlags parses command-line arguments ONCE at startup (called from func main)
 func ParseFlags() {
@@ -40,7 +40,7 @@ func ParseFlags() {
 	flag.BoolVar(&createSSUILogFileFlag, "lf", false, "(Alias) Create log files for SSUI")
 	flag.BoolVar(&skipSteamCMDFlag, "NoSteamCMD", false, "Skips SteamCMD installation")
 	flag.BoolVar(&sanityCheckFlag, "NoSanityCheck", false, "Skips the sanity check. Not recommended.")
-	flag.StringVar(&overrideAdvertisedIpFlag, "OverrideAdvertisedIp", "", "Override the advertised server IP (to allow server advertisement if you are behind a reverse proxy)")
+	flag.StringVar(&advertiserOverrideFlag, "AdvertiserOverride", "", "Override the advertised server IP (to allow server advertisement if you are behind a reverse proxy)")
 
 	// Parse command-line flags
 	flag.Parse()
@@ -102,15 +102,15 @@ func HandleFlags() {
 		logger.Main.Info(fmt.Sprintf("Overriding IsDebugMode from command line: Before=%t, Now=true", oldDebug))
 	}
 
-	if overrideAdvertisedIpFlag != "" {
-		oldOverrideAdvertisedIp := config.GetOverrideAdvertisedIp()
+	if advertiserOverrideFlag != "" {
+		oldAdvertiserOverride := config.GetAdvertiserOverride()
 
-		if overrideAdvertisedIpFlag == oldOverrideAdvertisedIp {
-			logger.Advertiser.Info(fmt.Sprintf("Advertised Server IP is already set to %s", overrideAdvertisedIpFlag))
+		if advertiserOverrideFlag == oldAdvertiserOverride {
+			logger.Advertiser.Info(fmt.Sprintf("Advertised Server IP is already set to %s", advertiserOverrideFlag))
 			return
 		}
-		config.SetOverrideAdvertisedIp(overrideAdvertisedIpFlag)
-		logger.Advertiser.Info(fmt.Sprintf("Overriding Advertised Server IP from command line: Before=%s, Now=%s", oldOverrideAdvertisedIp, overrideAdvertisedIpFlag))
+		config.SetAdvertiserOverride(advertiserOverrideFlag)
+		logger.Advertiser.Info(fmt.Sprintf("Overriding Advertised Server IP from command line: Before=%s, Now=%s", oldAdvertiserOverride, advertiserOverrideFlag))
 	}
 
 	if createSSUILogFileFlag {
