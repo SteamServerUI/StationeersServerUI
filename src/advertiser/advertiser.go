@@ -48,7 +48,7 @@ func getIpFromAdvertiserOverride(address string) (string, error) {
 		return buf.String(), nil
 	}
 	// If the address is an IP quad, return it as is
-	if net.ParseIP(address) != nil {
+	if ip := net.ParseIP(address); ip != nil && ip.To4() != nil {
 		return address, nil
 	}
 	// If the address is a DNS name, resolve it
