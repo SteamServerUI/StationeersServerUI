@@ -101,7 +101,7 @@ func ReloadAppInfoPoller() {
 }
 
 func LoadAdvertiser() {
-	if config.GetOverrideAdvertisedIp() != "" {
+	if config.GetAdvertiserOverride() != "" {
 		logger.Advertiser.Info("Starting server advertiser...")
 		advertiser.StartAdvertiser()
 	}
