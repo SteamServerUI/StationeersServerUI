@@ -51,10 +51,11 @@ type JsonConfig struct {
 	StartLocation    string `json:"StartLocation"`
 
 	// Logging and debug settings
-	Debug             *bool    `json:"Debug"`
-	CreateSSUILogFile *bool    `json:"CreateSSUILogFile"`
-	LogLevel          int      `json:"LogLevel"`
-	SubsystemFilters  []string `json:"subsystemFilters"`
+	Debug              *bool    `json:"Debug"`
+	CreateSSUILogFile  *bool    `json:"CreateSSUILogFile"`
+	LogLevel           int      `json:"LogLevel"`
+	SubsystemFilters   []string `json:"subsystemFilters"`
+	AdvertiserOverride string   `json:"AdvertiserOverride"`
 
 	// Authentication Settings
 	Users             map[string]string `json:"users"`       // Map of username to hashed password
@@ -296,6 +297,8 @@ func applyConfig(cfg *JsonConfig) {
 	// use Safebackups folder either way.
 	ConfiguredSafeBackupDir = filepath.Join("./saves/", SaveName, "Safebackups")
 
+	AdvertiserOverride = getString(cfg.AdvertiserOverride, "ADVERTISER_OVERRIDE", "")
+
 	safeSaveConfig()
 }
 
@@ -365,6 +368,7 @@ func safeSaveConfig() error {
 		AutoStartServerOnStartup:   &AutoStartServerOnStartup,
 		SSUIIdentifier:             SSUIIdentifier,
 		SSUIWebPort:                SSUIWebPort,
+		AdvertiserOverride:         AdvertiserOverride,
 	}
 
 	file, err := os.Create(ConfigPath)

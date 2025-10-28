@@ -86,6 +86,14 @@ func SetWorldID(value string) error {
 	return nil
 }
 
+func SetIsGameServerRunning(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	IsGameServerRunning = value
+	return nil
+}
+
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
 // ALL SETTERS BELOW THIS LINE ARE UNUSED AT THE MOMENT
@@ -692,5 +700,13 @@ func SetAllowAutoGameServerUpdates(value bool) error {
 	defer ConfigMu.Unlock()
 
 	AllowAutoGameServerUpdates = value
+	return safeSaveConfig()
+}
+
+func SetAdvertiserOverride(value string) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	AdvertiserOverride = value
 	return safeSaveConfig()
 }

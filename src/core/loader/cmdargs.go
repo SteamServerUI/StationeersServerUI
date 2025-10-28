@@ -21,6 +21,7 @@ var recoveryPasswordFlag string
 var devModeFlag bool
 var skipSteamCMDFlag bool
 var sanityCheckFlag bool
+var advertiserOverrideFlag string
 
 // ParseFlags parses command-line arguments ONCE at startup (called from func main)
 func ParseFlags() {
@@ -39,6 +40,7 @@ func ParseFlags() {
 	flag.BoolVar(&createSSUILogFileFlag, "lf", false, "(Alias) Create log files for SSUI")
 	flag.BoolVar(&skipSteamCMDFlag, "NoSteamCMD", false, "Skips SteamCMD installation")
 	flag.BoolVar(&sanityCheckFlag, "NoSanityCheck", false, "Skips the sanity check. Not recommended.")
+	flag.StringVar(&advertiserOverrideFlag, "AdvertiserOverride", "", "Override the advertised server IP. For this, the ServerVisible setting must be set to false. Use \"auto\" for automatic public IP detection, an IPv4 address, or a DNS hostname (to allow server advertisement if you are behind a reverse proxy)")
 
 	// Parse command-line flags
 	flag.Parse()
@@ -98,6 +100,17 @@ func HandleFlags() {
 		config.SetIsDebugMode(true)
 		config.SetLogLevel(10)
 		logger.Main.Info(fmt.Sprintf("Overriding IsDebugMode from command line: Before=%t, Now=true", oldDebug))
+	}
+
+	if advertiserOverrideFlag != "" {
+		oldAdvertiserOverride := config.GetAdvertiserOverride()
+
+		if advertiserOverrideFlag == oldAdvertiserOverride {
+			logger.Advertiser.Info(fmt.Sprintf("Advertised Server IP is already set to %s", advertiserOverrideFlag))
+			return
+		}
+		config.SetAdvertiserOverride(advertiserOverrideFlag)
+		logger.Advertiser.Info(fmt.Sprintf("Overriding Advertised Server IP from command line: Before=%s, Now=%s", oldAdvertiserOverride, advertiserOverrideFlag))
 	}
 
 	if createSSUILogFileFlag {

@@ -4,24 +4,23 @@ package loader
 import (
 	"embed"
 	"os"
-	"sync"
 	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/advertiser"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
 
 // only call this once at startup
-func InitBackend(wg *sync.WaitGroup) {
-	wg.Add(1)
-	defer wg.Done()
+func InitBackend() {
 	ReloadConfig()
 	ReloadSSCM()
 	ReloadBackupManager()
@@ -29,6 +28,8 @@ func InitBackend(wg *sync.WaitGroup) {
 	ReloadAppInfoPoller()
 	ReloadDiscordBot()
 	InitDetector()
+	StartIsGameServerRunningCheck()
+	LoadAdvertiser()
 }
 
 // use this to reload backend at runtime
@@ -91,8 +92,19 @@ func ReloadLocalizer() {
 	localization.ReloadLocalizer()
 }
 
+func StartIsGameServerRunningCheck() {
+	gamemgr.StartIsGameServerRunningCheck()
+}
+
 func ReloadAppInfoPoller() {
 	steamcmd.AppInfoPoller()
+}
+
+func LoadAdvertiser() {
+	if config.GetAdvertiserOverride() != "" {
+		logger.Advertiser.Info("Starting server advertiser...")
+		advertiser.StartAdvertiser()
+	}
 }
 
 // InitBundler initialized the onboard bundled assets for the web UI
@@ -100,13 +112,11 @@ func InitVirtFS(v1uiFS embed.FS) {
 	config.SetV1UIFS(v1uiFS)
 }
 
-func SanityCheck(wg *sync.WaitGroup) {
-	wg.Add(1)
-	defer wg.Done()
+func SanityCheck() {
 	err := runSanityCheck()
 	if err != nil {
 		logger.Main.Error("Sanity check failed, exiting in 10 secconds: " + err.Error())
-		logger.Main.Info("If you want to continue anyway, run SSUI with the --noSanityCheck flag, but be aware there may be Dragons ahead.")
+		logger.Main.Info("If you want to continue anyway, run SSUI with the --NoSanityCheck flag, but be aware there may be Dragons ahead.")
 		logger.Main.Info("This is not recommended nor supported and may cause unexpected behavior, including potential data loss!")
 		time.Sleep(10 * time.Second)
 		os.Exit(1)

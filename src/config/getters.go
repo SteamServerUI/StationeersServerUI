@@ -513,3 +513,20 @@ func GetIsDockerContainer() bool {
 	defer ConfigMu.RUnlock()
 	return IsDockerContainer
 }
+
+func GetIsGameServerRunning() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return IsGameServerRunning
+}
+func GetAdvertiserOverride() string {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return AdvertiserOverride
+}
+
+func GetStationeersServerPingEndpoint() string {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return StationeersServerPingEndpoint
+}
