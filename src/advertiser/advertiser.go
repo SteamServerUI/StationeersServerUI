@@ -131,6 +131,7 @@ func StartAdvertiser() {
 				// Check if the version or address has changed since last advertisement
 				if (oldVersion != adMessage.Version) || (oldAddress != adMessage.Address) {
 					// Reset sessionId to force a new advertisement
+					logger.Advertiser.Debugf("ServerAdvertiser detected version or address change (old: %s @ %s, new: %s @ %s). Forcing re-advertisement...", oldVersion, oldAddress, adMessage.Version, adMessage.Address)
 					adMessage.SessionId = -1
 				}
 				// Update the saved values
