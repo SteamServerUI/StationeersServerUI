@@ -80,10 +80,6 @@ func (m *BackupManager) Initialize(identifier string) <-chan error {
 
 // Start begins the backup monitoring and cleanup routines
 func (m *BackupManager) Start(identifier string) error {
-	// Do not handle old terrain and save system backups
-	if !config.GetIsNewTerrainAndSaveSystem() {
-		return fmt.Errorf("The old terrain system and save format are no longer supported by backup manager. Please switch to the new system if you wish to continue to use new SSUI features")
-	}
 
 	// Wait for initialization to complete
 	logger.Backup.Debugf("%s is waiting for save folder initialization...", identifier)
