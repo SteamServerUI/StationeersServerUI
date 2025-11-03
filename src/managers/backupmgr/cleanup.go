@@ -196,7 +196,7 @@ func (m *BackupManager) getBackupSaveFiles() ([]BackupSaveFile, error) {
 	})
 	// Add the index to each save
 	for i := range saves {
-		saves[i].Index = uint(i)
+		saves[i].Index = i
 	}
 
 	return saves, nil
