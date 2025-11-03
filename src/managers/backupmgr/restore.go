@@ -226,11 +226,8 @@ func (m *BackupManager) RestoreBackup(index int) error {
 		return fmt.Errorf("failed to restore .save file %s: %w", backupFile, err)
 	}
 	restoredFiles[destFile] = backupFile
-	return nil // restore and mod time shenanigans successful, no need to return an error
-
 	logger.Backup.Debug(fmt.Sprintf("%v", restoredFiles))
-
-	return nil
+	return nil // restore and mod time shenanigans successful, no need to return an error
 }
 
 // revertRestore undoes a failed restore operation
