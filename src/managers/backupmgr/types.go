@@ -30,6 +30,7 @@ type RetentionPolicy struct {
 }
 
 type BackupSaveFile struct {
+	Index    uint
 	SaveFile string
 	SaveTime time.Time
 }

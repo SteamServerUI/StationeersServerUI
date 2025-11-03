@@ -69,13 +69,12 @@ function fetchBackups() {
             }
             
             let animationCount = 0;
-            for (i = 0; i < data.length; i++) {
-                const backup = data[i];
+            data.forEach((backup) => {
                 const li = document.createElement('li');
                 li.className = 'backup-item';
                 
                 const backupType = getBackupType(backup);
-                const fileName = "Backup Index: " + i;
+                const fileName = "Backup Index: " + backup.Index;
                 const formattedDate = "Created: " + new Date(backup.SaveTime).toLocaleString();
                 
                 li.innerHTML = `
@@ -97,7 +96,7 @@ function fetchBackups() {
                     }, animationCount * 50);
                     animationCount++;
                 }
-            }
+            });
         })
         .catch(err => {
             console.error("Failed to fetch backups:", err);

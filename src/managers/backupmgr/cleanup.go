@@ -190,10 +190,18 @@ func (m *BackupManager) getBackupSaveFiles() ([]BackupSaveFile, error) {
 		return nil, fmt.Errorf("failed to handle safe backup dir: %w", err)
 	}
 
-	// Sort saves by save time descending
+	// Sort saves by save time ascending
 	sort.Slice(saves, func(i, j int) bool {
-		return saves[i].SaveTime.After(saves[j].SaveTime)
+		return saves[i].SaveTime.Before(saves[j].SaveTime)
 	})
+	// Add the index to each save
+	for i := range saves {
+		saves[i].Index = uint(i)
+	}
+	// Reverse the saves to have newest first
+	for i, j := 0, len(saves)-1; i < j; i, j = i+1, j-1 {
+		saves[i], saves[j] = saves[j], saves[i]
+	}
 
 	return saves, nil
 }
