@@ -200,7 +200,7 @@ func handleList(s *discordgo.Session, i *discordgo.InteractionCreate, data Embed
 		return respond(s, i, data)
 	}
 
-	sort.Slice(backups, func(i, j int) bool { return backups[i].ModTime.After(backups[j].ModTime) })
+	sort.Slice(backups, func(i, j int) bool { return backups[i].SaveTime.After(backups[j].SaveTime) })
 	batchSize := 20
 	embeds := []*discordgo.MessageEmbed{}
 	for start := 0; start < len(backups); start += batchSize {
@@ -210,7 +210,7 @@ func handleList(s *discordgo.Session, i *discordgo.InteractionCreate, data Embed
 		}
 		fields := make([]EmbedField, end-start)
 		for j, b := range backups[start:end] {
-			fields[j] = EmbedField{Name: fmt.Sprintf("📂 Backup #%d", b.Index), Value: b.ModTime.Format("January 2, 2006, 3:04 PM")}
+			fields[j] = EmbedField{Name: fmt.Sprintf("📂 Backup #%d", j), Value: b.SaveTime.Format("January 2, 2006, 3:04 PM")}
 		}
 		embeds = append(embeds, generateEmbed(EmbedData{
 			Title: "📜 Backup Archives", Description: fmt.Sprintf("Showing %d-%d of %d backups", start+1, end, len(backups)),

@@ -29,13 +29,9 @@ type RetentionPolicy struct {
 	CleanupInterval time.Duration // How often to run cleanup
 }
 
-// BackupGroup represents a set of backup files
-type BackupGroup struct {
-	Index    int
-	BinFile  string
-	XMLFile  string
-	MetaFile string
-	ModTime  time.Time
+type BackupSaveFile struct {
+	SaveFile string
+	SaveTime time.Time
 }
 
 // BackupManager manages backup operations
