@@ -73,7 +73,7 @@ function fetchBackups() {
                 const li = document.createElement('li');
                 li.className = 'backup-item';
                 
-                const backupType = getBackupType(backup);
+                const backupType = "Dotsave"
                 const fileName = "Backup Index: " + backup.Index;
                 const formattedDate = "Created: " + new Date(backup.SaveTime).toLocaleString();
                 
@@ -105,12 +105,7 @@ function fetchBackups() {
 }
 
 function getBackupType(backup) {
-    if (backup.BinFile && backup.XMLFile && backup.MetaFile) {
-        return 'preterrain-trio';
-    } else if (backup.BinFile && !backup.XMLFile && !backup.MetaFile) {
-        return 'Dotsave';
-    }
-    return 'Unknown';
+    return "Dotsave";
 }
 
 function fetchPlayers() {

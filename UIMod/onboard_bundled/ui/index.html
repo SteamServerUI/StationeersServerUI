@@ -71,12 +71,37 @@
 
         <div id="backups">
     <h2>{{.UIText_Backup_Manager}}</h2>
+    <div class="info-notice">
+            <h3>
+                <span class="notice-icon">⚠️</span>
+                Backup Manager Update Info (Click to Expand)
+                <span class="notice-icon">⚠️</span>
+            </h3>
+            <div class="collapsible-content">
+            <span class="notice-icon">📢</span>
+            The Backup manager was optimized & reworked in the latest patch (v5.8.1) to be faster and more reliable with huge numbers of backups.
+            <p>
+                <strong>Please report any anomalies or bugs you encounter either on the <a href="https://github.com/SteamServerUI/StationeersServerUI/issues" target="_blank">GitHub Issues</a> page or on the <a href="https://discord.gg/8n3vN92MyJ" target="_blank">SSUI Discord Server</a>.</strong>
+            </p>
+            <p class="status-bad">
+                With this update, the Backup manager no longer supports the old (pre-terrain update) terrain and save system. Please switch to the new Terrain system if you wish to continue to use new SSUI features. Alternatively, you can continue to use the old system by using an older version of SSUI, disabling auto-updates via the config.json file.
+            </p>
+            <p><i>MensRea</i> - Developer of this Update</p>
+            <p><i>JacksonTheMaster</i> - Project Lead</p>
+            </div>
+    </div>
+    <p> </p>
     <div class="backup-controls">
         <select id="backupLimit" onchange="fetchBackups()">
             <option value="5">Last 5</option>
             <option value="10">Last 10</option>
             <option value="20">Last 20</option>
+            <option value="30">Last 30</option>
             <option value="50">Last 50</option>
+            <option value="100">Last 100</option>
+            <option value="200">Last 200</option>
+            <option value="1000">Last 1000</option>
+            <option value="2000">Last 2000</option>
             <option value="">All backups</option>
         </select>
         <button id="backupRefreshButton" onclick="fetchBackups()">↻</button>
