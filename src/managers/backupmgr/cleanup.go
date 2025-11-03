@@ -198,10 +198,6 @@ func (m *BackupManager) getBackupSaveFiles() ([]BackupSaveFile, error) {
 	for i := range saves {
 		saves[i].Index = uint(i)
 	}
-	// Reverse the saves to have newest first
-	for i, j := 0, len(saves)-1; i < j; i, j = i+1, j-1 {
-		saves[i], saves[j] = saves[j], saves[i]
-	}
 
 	return saves, nil
 }

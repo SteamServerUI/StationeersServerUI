@@ -47,7 +47,7 @@ func (h *HTTPHandler) ListBackupsHandler(w http.ResponseWriter, r *http.Request)
 	if mode == "classic" {
 		// Format the response in the classic format
 		classicResponses := make([]string, 0, len(backups))
-		for i, backup := range backups {
+		for _, backup := range backups {
 			// Format according to classic view: "BackupIndex: X, Created: DD.MM.YYYY HH:MM:SS"
 			classicLine := fmt.Sprintf("BackupIndex: %d, Created: %s",
 				backup.Index,
