@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.8.0"
+	Version = "5.8.1"
 	Branch  = "release"
 )
 
@@ -282,6 +282,21 @@ func applyConfig(cfg *JsonConfig) {
 
 	if GameBranch != "public" && GameBranch != "beta" {
 		IsNewTerrainAndSaveSystem = false
+		fmt.Println("The old terrain system and save format are no longer fully supported by SSUI. Please switch to the new terrain and save system if you wish to continue to use SSUI with all features. Please switch to the new Terrain system if you wish to continue to use new SSUI features. Alternatively, you can continue to use the old system by using an older version of SSUI, disabling auto-updates via the config.json file")
+		fmt.Println("Sleeping for 10 seconds to allow you to read and understand the above message...")
+		time.Sleep(3 * time.Second)
+		fmt.Println("Continuing with the old terrain and save system in 7 seconds...")
+		time.Sleep(2 * time.Second)
+		fmt.Println("Continuing with the old terrain and save system in 5 seconds...")
+		time.Sleep(2 * time.Second)
+		fmt.Println("Continuing with the old terrain and save system in 3 seconds...")
+		time.Sleep(1 * time.Second)
+		fmt.Println("Continuing with the old terrain and save system in 2 seconds...")
+		time.Sleep(1 * time.Second)
+		fmt.Println("Continuing with the old terrain and save system in 1 second...")
+		time.Sleep(1 * time.Second)
+		fmt.Println("Continuing with the old terrain and save system...")
+
 	} else {
 		IsNewTerrainAndSaveSystem = true
 	}

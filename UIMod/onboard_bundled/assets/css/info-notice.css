@@ -87,6 +87,11 @@
     font-weight: 600;
 }
 
+.status-bad {
+    color: #f44336;
+    font-weight: 600;
+}
+
 @media (max-width: 768px) {
     .info-notice {
         margin: 10px 5px;
