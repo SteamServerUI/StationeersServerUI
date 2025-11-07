@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path"
 	"runtime"
 	"strconv"
 	"time"
@@ -15,6 +16,9 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/google/uuid"
 )
+
+const defaultLogFolderMode = 0755
+const defaultLogFileMode = 0644
 
 // readPipe for Windows
 func readPipe(pipe io.ReadCloser) {
@@ -114,11 +118,25 @@ func tailLogFile(logFilePath string) {
 func logToFile(message string) {
 	if config.GetCreateGameServerLogFile() {
 		logFileFolder := config.GetLogFolder()
+		// Check if the log folder exists, if not create it
+		_, err := os.Stat(logFileFolder)
+		if os.IsNotExist(err) {
+			err := os.Mkdir(logFileFolder, defaultLogFolderMode)
+			if err != nil {
+				logger.Core.Error("Error creating log folder: " + err.Error())
+				return
+			}
+		} else if err != nil {
+			logger.Core.Error("Error checking log folder: " + err.Error())
+			return
+		}
+
 		if GameServerUUID != uuid.Nil {
-			logFileFolder += "/" + "serverlog_" + time.Now().Format("200601021504") + "_" + GameServerUUID.String() + ".log"
+			logFileName := fmt.Sprintf("serverlog_%s_%s.log", time.Now().Format("200601021504"), GameServerUUID.String())
+			logFilePath := path.Join(logFileFolder, logFileName)
 
 			// append the log file to the log folder
-			file, err := os.OpenFile(logFileFolder, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			file, err := os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, defaultLogFileMode)
 			if err != nil {
 				logger.Core.Error("Error opening log file: " + err.Error())
 				return
