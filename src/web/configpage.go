@@ -105,6 +105,22 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		autoGameServerUpdatesFalseSelected = "selected"
 	}
 
+	createSSUILogFileTrueSelected := ""
+	createSSUILogFileFalseSelected := ""
+	if config.GetCreateSSUILogFile() {
+		createSSUILogFileTrueSelected = "selected"
+	} else {
+		createSSUILogFileFalseSelected = "selected"
+	}
+
+	createGameServerLogFileTrueSelected := ""
+	createGameServerLogFileFalseSelected := ""
+	if config.GetCreateGameServerLogFile() {
+		createGameServerLogFileTrueSelected = "selected"
+	} else {
+		createGameServerLogFileFalseSelected = "selected"
+	}
+
 	data := ConfigTemplateData{
 		// Config values
 		DiscordToken:                            config.GetDiscordToken(),
@@ -163,6 +179,12 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		AllowAutoGameServerUpdates:              fmt.Sprintf("%v", config.GetAllowAutoGameServerUpdates()),
 		AllowAutoGameServerUpdatesTrueSelected:  autoGameServerUpdatesTrueSelected,
 		AllowAutoGameServerUpdatesFalseSelected: autoGameServerUpdatesFalseSelected,
+		CreateSSUILogFile:                       fmt.Sprintf("%v", config.GetCreateSSUILogFile()),
+		CreateSSUILogFileTrueSelected:           createSSUILogFileTrueSelected,
+		CreateSSUILogFileFalseSelected:          createSSUILogFileFalseSelected,
+		CreateGameServerLogFile:                 fmt.Sprintf("%v", config.GetCreateGameServerLogFile()),
+		CreateGameServerLogFileTrueSelected:     createGameServerLogFileTrueSelected,
+		CreateGameServerLogFileFalseSelected:    createGameServerLogFileFalseSelected,
 
 		// Localized UI text
 		UIText_ServerConfig:         localization.GetString("UIText_ServerConfig"),
@@ -235,6 +257,10 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		UIText_AutoStartServerOnStartupInfo:   localization.GetString("UIText_AutoStartServerOnStartupInfo"),
 		UIText_AllowAutoGameServerUpdates:     localization.GetString("UIText_AllowAutoGameServerUpdates"),
 		UIText_AllowAutoGameServerUpdatesInfo: localization.GetString("UIText_AllowAutoGameServerUpdatesInfo"),
+		UIText_CreateSSUILogFile:              localization.GetString("UIText_CreateSSUILogFile"),
+		UIText_CreateSSUILogFileInfo:          localization.GetString("UIText_CreateSSUILogFileInfo"),
+		UIText_CreateGameServerLogFile:        localization.GetString("UIText_CreateGameServerLogFile"),
+		UIText_CreateGameServerLogFileInfo:    localization.GetString("UIText_CreateGameServerLogFileInfo"),
 
 		UIText_DiscordIntegrationTitle:    localization.GetString("UIText_DiscordIntegrationTitle"),
 		UIText_DiscordBotToken:            localization.GetString("UIText_DiscordBotToken"),

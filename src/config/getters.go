@@ -297,6 +297,12 @@ func GetCreateSSUILogFile() bool {
 	return CreateSSUILogFile
 }
 
+func GetCreateGameServerLogFile() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return CreateGameServerLogFile
+}
+
 func GetLogLevel() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
