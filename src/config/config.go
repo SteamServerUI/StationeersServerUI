@@ -374,6 +374,7 @@ func safeSaveConfig() error {
 		AuthTokenLifetime:          AuthTokenLifetime,
 		Debug:                      &IsDebugMode,
 		CreateSSUILogFile:          &CreateSSUILogFile,
+		CreateGameServerLogFile:    &CreateGameServerLogFile,
 		LogLevel:                   LogLevel,
 		LogClutterToConsole:        &LogClutterToConsole,
 		SubsystemFilters:           SubsystemFilters,
