@@ -10,8 +10,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/google/uuid"
 )
 
 // readPipe for Windows
@@ -21,6 +23,7 @@ func readPipe(pipe io.ReadCloser) {
 	for scanner.Scan() {
 		output := scanner.Text()
 		ssestream.BroadcastConsoleOutput(output)
+		logToFile(output)
 	}
 	if err := scanner.Err(); err != nil {
 		logger.Core.Debug("Pipe error: " + err.Error())
@@ -91,6 +94,7 @@ func tailLogFile(logFilePath string) {
 		for scanner.Scan() {
 			output := scanner.Text()
 			ssestream.BroadcastConsoleOutput(output)
+			logToFile(output)
 		}
 		if err := scanner.Err(); err != nil {
 
@@ -105,4 +109,30 @@ func tailLogFile(logFilePath string) {
 
 	logger.Core.Debug("Received logDone signal, stopping tail -F")
 
+}
+
+func logToFile(message string) {
+	if config.GetCreateGameServerLogFile() {
+		logFileFolder := config.GetLogFolder()
+		if GameServerUUID != uuid.Nil {
+			logFileFolder += "/" + "serverlog_" + time.Now().Format("200601021504") + "_" + GameServerUUID.String() + ".log"
+
+			// append the log file to the log folder
+			file, err := os.OpenFile(logFileFolder, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				logger.Core.Error("Error opening log file: " + err.Error())
+				return
+			}
+			defer file.Close()
+
+			_, err = file.WriteString(message + "\n")
+			if err != nil {
+				logger.Core.Error("Error writing to log file: " + err.Error())
+				return
+			}
+		} else {
+			logger.Core.Error("Game Server UUID not set, cannot log to file")
+			return
+		}
+	}
 }

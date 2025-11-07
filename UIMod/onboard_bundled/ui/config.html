@@ -256,6 +256,24 @@
                                     </select>
                                     <div class="input-info">{{.UIText_AllowAutoGameServerUpdatesInfo}}</div>
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="CreateSSUILogFile">{{.UIText_CreateSSUILogFile}}:</label>
+                                    <select id="CreateSSUILogFile" name="CreateSSUILogFile" required>
+                                        <option value="true" {{.CreateSSUILogFileTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.CreateSSUILogFileFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_CreateSSUILogFileInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="CreateGameServerLogFile">{{.UIText_CreateGameServerLogFile}}:</label>
+                                    <select id="CreateGameServerLogFile" name="CreateGameServerLogFile" required>
+                                        <option value="true" {{.CreateGameServerLogFileTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.CreateGameServerLogFileFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_CreateGameServerLogFileInfo}}</div>
+                                </div>
                                 
                             </div>
                         </div>
