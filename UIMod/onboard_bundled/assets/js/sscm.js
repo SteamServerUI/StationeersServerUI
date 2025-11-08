@@ -132,9 +132,6 @@ function appendToConsole(message) {
         console.log("SSCM failed to insert command box");
         return
     }
-    
-    // Auto-scroll
-    consoleDiv.scrollTop = consoleDiv.scrollHeight;
 }
 
 // Enhanced autocomplete functionality
