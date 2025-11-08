@@ -127,15 +127,14 @@ function appendToConsole(message) {
     
     if (commandContainer) {
         consoleDiv.insertBefore(messageElement, commandContainer); // Insert before input
+        consoleDiv.scrollTop = consoleDiv.scrollHeight;
     } else {
         console.log("SSCM failed to insert command box");
         return
     }
     
-    // Auto-scroll only if at bottom
-    if (consoleDiv.scrollTop + consoleDiv.clientHeight >= consoleDiv.scrollHeight - 10) {
-        consoleDiv.scrollTop = consoleDiv.scrollHeight;
-    }
+    // Auto-scroll
+    consoleDiv.scrollTop = consoleDiv.scrollHeight;
 }
 
 // Enhanced autocomplete functionality
