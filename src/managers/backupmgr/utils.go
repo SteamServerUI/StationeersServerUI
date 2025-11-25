@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
+	"time" // used by buildSaveFileIndexMap
 )
 
 // copyFile copies a file from src to dst
@@ -31,8 +31,44 @@ func copyFile(src, dst string) error {
 	return destination.Sync()
 }
 
-// parseBackupIndex extracts the backup index from a filename or assigns a synthetic index
-func parseBackupIndex(filename string, modTime time.Time, files []os.DirEntry) int {
+// buildSaveFileIndexMap pre-computes indexes for all .save files in O(n) time
+// Returns a map of filename -> index (newest file gets highest index)
+func buildSaveFileIndexMap(files []os.DirEntry) map[string]int {
+	// Collect .save files with their mod times
+	var saveFiles []struct {
+		name    string
+		modTime time.Time
+	}
+	for _, file := range files {
+		if !strings.HasSuffix(file.Name(), ".save") {
+			continue
+		}
+		info, err := file.Info()
+		if err != nil {
+			continue
+		}
+		saveFiles = append(saveFiles, struct {
+			name    string
+			modTime time.Time
+		}{file.Name(), info.ModTime()})
+	}
+
+	// Sort newest first (single sort, not per-file)
+	sort.Slice(saveFiles, func(i, j int) bool {
+		return saveFiles[i].modTime.After(saveFiles[j].modTime)
+	})
+
+	// Build index map: newest gets highest index
+	indexMap := make(map[string]int, len(saveFiles))
+	for i, f := range saveFiles {
+		indexMap[f.name] = len(saveFiles) - i
+	}
+
+	return indexMap
+}
+
+// parseBackupIndex extracts the backup index from a filename or uses pre-computed map for .save files
+func parseBackupIndex(filename string, saveIndexMap map[string]int) int {
 	// Try to extract index from old format (e.g., world(1).xml)
 	re := regexp.MustCompile(`\((\d+)\)`)
 	matches := re.FindStringSubmatch(filename)
@@ -43,38 +79,10 @@ func parseBackupIndex(filename string, modTime time.Time, files []os.DirEntry) i
 		}
 	}
 
-	// For .save files, assign synthetic index based on mod time (newest eq highest)
+	// For .save files, use pre-computed index map
 	if strings.HasSuffix(filename, ".save") {
-		// Sort files by mod time to assign indexes
-		var sortedFiles []struct {
-			name    string
-			modTime time.Time
-		}
-		for _, file := range files {
-			if !strings.HasSuffix(file.Name(), ".save") {
-				continue
-			}
-			info, err := file.Info()
-			if err != nil {
-				continue
-			}
-			sortedFiles = append(sortedFiles, struct {
-				name    string
-				modTime time.Time
-			}{file.Name(), info.ModTime()})
-		}
-
-		// Sort newest first
-		sort.Slice(sortedFiles, func(i, j int) bool {
-			return sortedFiles[i].modTime.After(sortedFiles[j].modTime)
-		})
-
-		// Find the position of the current file
-		for i, f := range sortedFiles {
-			if f.name == filename {
-				// Assign index starting from max possible index downwards
-				return len(sortedFiles) - i
-			}
+		if index, ok := saveIndexMap[filename]; ok {
+			return index
 		}
 	}
 

@@ -142,6 +142,9 @@ func (m *BackupManager) getBackupGroups() ([]BackupGroup, error) {
 		return nil, fmt.Errorf("failed to walk safe backup dir: %w", err)
 	}
 
+	// Pre-compute index map for .save files once (O(n) instead of O(n²))
+	saveIndexMap := buildSaveFileIndexMap(files)
+
 	groups := make(map[int]BackupGroup)
 
 	for _, file := range files {
@@ -156,8 +159,8 @@ func (m *BackupManager) getBackupGroups() ([]BackupGroup, error) {
 			continue
 		}
 
-		// Parse index or assign synthetic index for .save files
-		index := parseBackupIndex(filename, info.ModTime(), files)
+		// Parse index or use pre-computed map for .save files
+		index := parseBackupIndex(filename, saveIndexMap)
 		if index == -1 {
 			continue
 		}

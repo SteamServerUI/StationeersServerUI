@@ -2,6 +2,7 @@ package backupmgr
 
 import (
 	"archive/zip"
+	"compress/flate"
 	"fmt"
 	"io"
 	"os"
@@ -200,6 +201,11 @@ func (m *BackupManager) RestoreBackup(index int) error {
 		w := zip.NewWriter(dest)
 		defer w.Close()
 
+		// Register fastest compression for SharpZipLib compatibility
+		w.RegisterCompressor(zip.Deflate, func(out io.Writer) (io.WriteCloser, error) {
+			return flate.NewWriter(out, flate.BestSpeed)
+		})
+
 		if err := filepath.Walk(tempDir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -214,6 +220,7 @@ func (m *BackupManager) RestoreBackup(index int) error {
 			relPath = filepath.ToSlash(relPath)
 
 			// Create zip entry with current system timestamp
+			// Using Deflate with BestSpeed for SharpZipLib compatibility (Store causes data descriptor errors)
 			fw, err := w.CreateHeader(&zip.FileHeader{
 				Name:     relPath,
 				Method:   zip.Deflate,
