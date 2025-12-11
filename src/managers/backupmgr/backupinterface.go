@@ -43,7 +43,7 @@ func InitGlobalBackupManager(bmconfig BackupConfig) error {
 
 	// Do not handle old terrain and save system backups
 	if !config.GetIsNewTerrainAndSaveSystem() {
-		return fmt.Errorf("the old terrain system and save format are no longer supported by backup manager. Please switch to the new terrain and save system if you wish to continue to use new SSUI features. Please switch to the new Terrain system if you wish to continue to use new SSUI features. Alternatively, you can continue to use the old system by using an older version of SSUI, disabling auto-updates via the config.json file")
+		return fmt.Errorf("the old terrain system and save format are no longer supported by backup manager. Please switch to the new terrain and save system if you wish to continue to use new SSUI features. Alternatively, you can continue to use the old system by using an older version of SSUI (5.8 and below), disabling auto-updates via the config.json file")
 	}
 
 	// Start the backup manager in a goroutine to avoid blocking
