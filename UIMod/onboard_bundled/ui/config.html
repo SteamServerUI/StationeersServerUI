@@ -285,6 +285,12 @@
                             <div class="channel-grid">
 
                                 <div class="form-group">        
+                                    <label for="WorldID">{{.UIText_WorldID}}:</label>
+                                    <input type="text" id="WorldID" name="WorldID" value="{{.WorldID}}">
+                                    <div class="input-info">{{.UIText_WorldIDInfo}}</div>
+                                </div>
+
+                                <div class="form-group">        
                                     <label for="Difficulty">{{.UIText_Difficulty}}:</label>
                                     <input type="text" id="Difficulty" name="Difficulty"
                                         value="{{.Difficulty}}" pattern="^\S*$" required>

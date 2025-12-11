@@ -1,32 +1,28 @@
 // Validation configuration object
 const worldConfigs = {
     Lunar: {
-        conditions: ['DefaultStart', 'Brutal'],
-        locations: ['LunarSpawnCraterVesper', 'LunarSpawnMontesUmbrarum', 'LunarSpawnCraterNox', 'LunarSpawnMonsArcanus']
+        conditions: ['DefaultStart', 'DefaultStartCommunity', 'Brutal', 'BrutalCommunity'],
+        locations: ['LunarSpawnRoundRobin', 'LunarSpawnCraterVesper', 'LunarSpawnMontesUmbrarum', 'LunarSpawnCraterNox', 'LunarSpawnMonsArcanus']
     },
     Mars2: {
-        conditions: ['DefaultStart', 'Brutal'],
-        locations: ['MarsSpawnCanyonOverlook', 'MarsSpawnButchersFlat', 'MarsSpawnFindersCanyon', 'MarsSpawnHellasCrags', 'MarsSpawnDonutFlats']
+        conditions: ['DefaultStart', 'DefaultStartCommunity', 'Brutal', 'BrutalCommunity'],
+        locations: ['MarsSpawnRoundRobin', 'MarsSpawnCanyonOverlook', 'MarsSpawnButchersFlat', 'MarsSpawnFindersCanyon', 'MarsSpawnHellasCrags', 'MarsSpawnDonutFlats']
     },
     Europa3: {
-        conditions: ['EuropaDefault', 'EuropaBrutal'],
-        locations: ['EuropaSpawnIcyBasin', 'EuropaSpawnGlacialChannel', 'EuropaSpawnBalgatanPass', 'EuropaSpawnFrigidHighlands', 'EuropaSpawnTyreValley']
+        conditions: ['EuropaDefault', 'EuropaDefaultCommunity', 'EuropaBrutal', 'EuropaBrutalCommunity'],
+        locations: ['EuropaSpawnRoundRobin','EuropaSpawnIcyBasin', 'EuropaSpawnGlacialChannel', 'EuropaSpawnBalgatanPass', 'EuropaSpawnFrigidHighlands', 'EuropaSpawnTyreValley']
     },
     MimasHerschel: {
-        conditions: ['MimasDefault', 'MimasBrutal'],
-        locations: ['MimasSpawnCentralMesa', 'MimasSpawnHarrietCrater', 'MimasSpawnCraterField', 'MimasSpawnDustBowl']
+        conditions: ['MimasDefault', 'MimasDefaultCommunity', 'MimasBrutal', 'MimasBrutalCommunity'],
+        locations: ['MimasSpawnRoundRobin','MimasSpawnCentralMesa', 'MimasSpawnHarrietCrater', 'MimasSpawnCraterField', 'MimasSpawnDustBowl']
     },
     Vulcan2: {
-        conditions: ['VulcanDefault', 'VulcanBrutal'],
-        locations: ['VulcanSpawnVestaValley', 'VulcanSpawnEtnasFury', 'VulcanSpawnIxionsDemise', 'VulcanSpawnTitusReach']
-    },
-    Vulcan: {
-        conditions: ['VulcanDefault', 'VulcanBrutal'],
-        locations: ['VulcanSpawnVestaValley', 'VulcanSpawnEtnasFury', 'VulcanSpawnIxionsDemise', 'VulcanSpawnTitusReach']
+        conditions: ['VulcanDefault', 'VulcanDefaultCommunity', 'VulcanDefaultCommunity', 'VulcanBrutal', 'VulcanBrutalCommunity'],
+        locations: ['VulcanSpawnRoundRobin', 'VulcanSpawnVestaValley', 'VulcanSpawnEtnasFury', 'VulcanSpawnIxionsDemise', 'VulcanSpawnTitusReach']
     },
     Venus: {
-        conditions: ['VenusDefault', 'VulcanBrutal (yes, VULCAN Brutal!)'],
-        locations: ['VenusSpawnGaiaValley', 'VenusSpawnDaisyValley', 'VenusSpawnFaithValley', 'VenusSpawnDuskValley']
+        conditions: ['VenusDefault', 'VenusDefaultCommunity', 'VulcanBrutal', 'VulcanBrutalCommunity'],
+        locations: ['VenusSpawnRoundRobin', 'VenusSpawnGaiaValley', 'VenusSpawnDaisyValley', 'VenusSpawnFaithValley', 'VenusSpawnDuskValley']
     }
 };
 
