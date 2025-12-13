@@ -16,4 +16,20 @@
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
+
+    /* v5.9+ Variables */
+    --button-bg: #232338;
+    --button-bg-hover: #333350;
+    --button-glow: rgba(0, 255, 171, 0.4);
+    --button-glow-strong: rgba(0, 255, 171, 0.7);
+    --button-glow-soft: rgba(0, 255, 171, 0.1);
+    --button-glow-stronger: rgba(0, 255, 171, 0.5);
+    --input-bg: rgba(0, 0, 0, 0.6);
+    --submit-bg: rgba(0, 255, 171, 0.2);
+    --submit-hover-text: #000;
+    --tab-bg: rgba(0, 0, 0, 0.3);
+    --tab-hover-bg: rgba(0, 255, 171, 0.1);
+    --tab-active-bg: rgba(0, 255, 171, 0.2);
+    --tab-active-glow: rgba(0, 255, 171, 0.5);
+
   }
