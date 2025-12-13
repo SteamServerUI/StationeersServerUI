@@ -179,7 +179,7 @@ header {
   
   .planet {
     transform: translateY(-50%);
-    will-change: transform; /* Improves animation performance */
+    will-change: transform;
   }
   
   #banner {
@@ -188,12 +188,12 @@ header {
     border-radius: 12px;
     position: relative;
     z-index: 1;
-    box-shadow: 0 0 30px rgba(0, 255, 171, 0.4);
+    box-shadow: 0 0 20px var(--button-glow), 0 0 20px var(--button-glow-soft);
     transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-    will-change: transform, box-shadow; /* Optimize performance */
+    will-change: transform, box-shadow;
   }
   
   #banner:hover {
     transform: scale(1.02);
-    box-shadow: 0 0 40px rgba(0, 255, 171, 0.6);
+    box-shadow: 0 0 40px var(--button-glow), 0 0 20px var(--button-glow-soft);
   }
