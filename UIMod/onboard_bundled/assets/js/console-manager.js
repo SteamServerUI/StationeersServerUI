@@ -150,6 +150,7 @@ function handleConsole() {
             
             commandContainer.append(prompt, input, suggestions);
             consoleElement.appendChild(commandContainer);
+            consoleElement.scrollTop = consoleElement.scrollHeight;
         } catch (error) {
             console.error('Error checking SSCM enabled status:', error);
             return; // Exit on error
@@ -176,10 +177,8 @@ function handleConsole() {
             const message = document.createElement('div');
             message.textContent = event.data;
             consoleElement.insertBefore(message, consoleElement.querySelector('.sscm-command-container')); // Insert before input
-            // Auto-scroll only if at bottom
-            if (consoleElement.scrollTop + consoleElement.clientHeight >= consoleElement.scrollHeight - 10) {
-                consoleElement.scrollTop = consoleElement.scrollHeight;
-            }
+            // Auto-scroll
+            consoleElement.scrollTop = consoleElement.scrollHeight;
         };
 
         outputEventSource.onopen = () => {

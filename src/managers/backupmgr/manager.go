@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
@@ -81,8 +80,8 @@ func (m *BackupManager) Initialize(identifier string) <-chan error {
 
 // Start begins the backup monitoring and cleanup routines
 func (m *BackupManager) Start(identifier string) error {
-	// Wait for initialization to complete
 
+	// Wait for initialization to complete
 	logger.Backup.Debugf("%s is waiting for save folder initialization...", identifier)
 	initResult := <-m.Initialize(identifier)
 	if initResult != nil {
@@ -203,25 +202,26 @@ func (m *BackupManager) startCleanupRoutine() {
 
 // ListBackups returns information about available backups
 // limit: number of recent backups to return (0 for all)
-func (m *BackupManager) ListBackups(limit int) ([]BackupGroup, error) {
+func (m *BackupManager) ListBackups(limit int) ([]BackupSaveFile, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	groups, err := m.getBackupGroups()
+	saves, err := m.getBackupSaveFiles()
+
+	// Reverse the saves to have newest first
+	for i, j := 0, len(saves)-1; i < j; i, j = i+1, j-1 {
+		saves[i], saves[j] = saves[j], saves[i]
+	}
+
 	if err != nil {
 		return nil, err
 	}
 
-	// Sort by index (newest first)
-	sort.Slice(groups, func(i, j int) bool {
-		return groups[i].Index > groups[j].Index
-	})
-
-	if limit > 0 && limit < len(groups) {
-		groups = groups[:limit]
+	if limit > 0 && limit < len(saves) {
+		saves = saves[:limit]
 	}
 
-	return groups, nil
+	return saves, nil
 }
 
 // Shutdown stops all backup operations

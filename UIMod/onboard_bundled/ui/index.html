@@ -63,6 +63,24 @@
             </div>
         </div>
 
+        <div class="info-notice" id="dynamic-announcement" style="display: none;">
+            <h3>
+                <span class="notice-icon">📢</span>
+                AnnouncementHeadline
+            </h3>
+            <div class="collapsible-content">
+                AnnouncementShortDescription
+                <p>
+                    AnnouncementBodyHTML
+                </p>
+                <p class="status-bad">
+                    AnnouncementWarningHTML
+                </p>
+                <p></p>
+                <p><i>AnnouncementSignatureAuthor</i> - AnnouncementSignatureAuthorRole</p>
+            </div>
+        </div>
+
         <div id="players">
             <h2>{{.UIText_Connected_PlayersHeader}}</h2>
             <button id="playerListRefreshButton" onclick="fetchPlayers()">↻</button>
@@ -70,42 +88,24 @@
         </div>
 
         <div id="backups">
-    <h2>{{.UIText_Backup_Manager}}</h2>
-    <div class="backup-controls">
-        <select id="backupLimit" onchange="fetchBackups()">
-            <option value="5">Last 5</option>
-            <option value="10">Last 10</option>
-            <option value="20">Last 20</option>
-            <option value="50">Last 50</option>
-            <option value="">All backups</option>
-        </select>
-        <button id="backupRefreshButton" onclick="fetchBackups()">↻</button>
-    </div>
-    <ul id="backupList"></ul>
-</div>
-
-        <div class="update" style="display: none;">
-            <h3>
-                <span class="notice-icon">⚠️</span>
-                Headline
-                <span class="notice-icon">⚠️</span>
-            </h3>
-            <span class="notice-icon">📢</span>
-            This box is left over from v5.4.35, but will be kept here with display none for possible future use.
-            <p>
-                <strong>something strong</strong>
-            </p>
-            <p class="status-good">
-                something good
-            </p>
-            <p>
-                a longer text
-            </p>
-            <strong>something strong</strong> longer text
-            <p>part of longer text</p>
-            <br>
-            <p>signature sentence</p>
-            <p>JacksonTheMaster</p>
+            <h2>{{.UIText_Backup_Manager}}</h2>
+            <p> </p>
+            <div class="backup-controls">
+                <select id="backupLimit" onchange="fetchBackups()">
+                    <option value="5">Last 5</option>
+                    <option value="10">Last 10</option>
+                    <option value="20">Last 20</option>
+                    <option value="30">Last 30</option>
+                    <option value="50">Last 50</option>
+                    <option value="100">Last 100</option>
+                    <option value="200">Last 200</option>
+                    <option value="1000">Last 1000</option>
+                    <option value="2000">Last 2000</option>
+                    <option value="">All backups</option>
+                </select>
+                <button id="backupRefreshButton" onclick="fetchBackups()">↻</button>
+            </div>
+            <ul id="backupList"></ul>
         </div>
         <div class="info-notice" style="display: none;">
             <h3>
@@ -152,7 +152,7 @@
 
     <discord-button>
         <a href="https://discord.gg/8n3vN92MyJ" target="_blank">
-            <img src="https://cdn.discordapp.com/icons/1357524183260729404/c8d565e48353f54b854c8db296c49f7c.png?size=256&quality=lossless"
+            <img src="https://cdn.discordapp.com/icons/1357524183260729404/a_958df6c2347c9fe6af4761acbed4e557.webp"
                 alt="SSUI Discord" width="40" height="40">
         </a>
     </discord-button>
@@ -163,6 +163,10 @@
     <span onclick="navigateTo('/static/apiinfo.html')" style="cursor: pointer; text-decoration: none;"
         onmouseover="this.style.textDecoration='underline'"
         onmouseout="this.style.textDecoration='none'">{{.UIText_API_Info}}</span>
+    <br>
+    <span onclick="navigateTo('/static/credits.html')" style="cursor: pointer; text-decoration: none;"
+        onmouseover="this.style.textDecoration='underline'"
+        onmouseout="this.style.textDecoration='none'">Credits</span>
     <br>
     <footer>
         <div class="copyright">
@@ -178,6 +182,8 @@
     <script src="/static/js/console-manager.js"></script>
     <script src="/static/js/main.js"></script>
     <script src="/static/js/popup.js"></script>
+    <script src="/static/js/xmas.js"></script>
+    <script src="/static/js/dynamic-announcement.js"></script>
 </body>
 
 </html>

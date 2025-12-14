@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StationeersServerUI Credits</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0e27;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .credits-container {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            perspective: 400px;
+        }
+
+        .credits-scroll {
+            position: absolute;
+            width: 80%;
+            max-width: 900px;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%) translateY(100%);
+            animation: scroll-up 90s linear forwards;
+            text-align: center;
+        }
+
+        @keyframes scroll-up {
+            to {
+                transform: translateX(-50%) translateY(-100%);
+            }
+        }
+
+        .title {
+            font-size: 3.5em;
+            font-weight: bold;
+            margin-bottom: 2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .section {
+            margin: 4em 0;
+        }
+
+        .role {
+            font-size: 1.8em;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.5em;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .name {
+            font-size: 2.5em;
+            font-weight: 600;
+            margin: 0.3em 0;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #a0aec0;
+            margin: 0.5em 0;
+            line-height: 1.6;
+        }
+
+        .link {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 1em;
+            transition: color 0.3s;
+        }
+
+        .link:hover {
+            color: #93c5fd;
+        }
+
+        .description {
+            font-size: 1.1em;
+            color: #cbd5e0;
+            line-height: 1.8;
+            margin: 1em auto;
+            max-width: 700px;
+            padding: 0 2em;
+        }
+
+        .special-thanks {
+            font-size: 2em;
+            color: #48bb78;
+            margin: 3em 0 1em 0;
+            text-shadow: 0 0 20px rgba(72, 187, 120, 0.6);
+        }
+
+        .tech-stack {
+            font-size: 1.5em;
+            color: #ed8936;
+            margin-top: 4em;
+        }
+
+        .final-message {
+            font-size: 1.8em;
+            margin: 4em 0;
+            color: #e2e8f0;
+            font-style: italic;
+        }
+
+        .heart {
+            color: #f56565;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .glow {
+            text-shadow: 0 0 10px currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="credits-container">
+        <div class="credits-scroll">
+            <div class="title">StationeersServerUI</div>
+
+            <div class="section">
+                <div class="role">Project Lead & Creator</div>
+                <div class="name">JacksonTheMaster</div>
+                <div class="subtitle">J. Langisch</div>
+                <div class="description">
+                    Inventor, initial and main developer, "sheephearder" - the main Author of StationeersServerUI
+                </div>
+                <a href="https://github.com/JacksonTheMaster" class="link" target="_blank">github.com/JacksonTheMaster</a>
+            </div>
+
+            <div class="section">
+                <div class="role">Executive Coordinator & Co-Author</div>
+                <div class="name">Seb</div>
+                <div class="subtitle">Sebastian Meier zu Biesen</div>
+                <div class="description">
+                    Added oil to the fire - leading to the initial SteamServerUI idea ("if it runs Stationeers, why can't we run other games"), 
+                    made StationeersServerUI run on Linux & added initial Docker implementation. 
+                    Without you, the project wouldn't be where it is today! <span class="heart">❤️</span>
+                </div>
+                <a href="https://github.com/mitoskalandiel" class="link" target="_blank">github.com/mitoskalandiel</a>
+            </div>
+
+            <div class="section">
+                <div class="role">Backend & Security Expert</div>
+                <div class="name">MensRea</div>
+                <div class="description">
+                    Backend improver & the security guy - ask him, get great ideas for optimization and backend design choices back.
+                </div>
+                <a href="https://github.com/akirilov" class="link" target="_blank">github.com/akirilov</a>
+            </div>
+
+            <div class="section">
+                <div class="role">Community Ambassador & Feature Visionary</div>
+                <div class="name">NAM - NonActionMan</div>
+                <div class="description">
+                    Our first SSUI pioneer - a true SSUI poweruser and die-hard fan! Supporter & advertiser of the project.
+                </div>
+                <a href="https://steamcommunity.com/profiles/76561197995322389/" class="link" target="_blank">Steam Profile</a>
+            </div>
+
+            <div class="section">
+                <div class="role">Community Ambassador</div>
+                <div class="name">Fudd79</div>
+                <div class="description">
+                    SSUI pioneer - another true SSUI poweruser!
+                </div>
+                <a href="https://github.com/SnorreSelmer" class="link" target="_blank">github.com/SnorreSelmer</a>
+            </div>
+
+            <div class="section">
+                <div class="role">Docker Integration</div>
+                <div class="name">1Solon</div>
+                <a href="https://github.com/1Solon" class="link" target="_blank">github.com/1Solon</a>
+            </div>
+
+            <div class="section">
+                <div class="role">Localization</div>
+                <div class="name">Locxion</div>
+                <div class="subtitle">Markus Bender</div>
+                <div class="description">
+                    Parts of the German translation
+                </div>
+                <a href="https://github.com/Locxion" class="link" target="_blank">github.com/Locxion</a>
+            </div>
+
+            <div class="section">
+                <div class="special-thanks">Special Thanks</div>
+                <div class="name">semoro</div>
+                <div class="description">
+                    Fixed Race Condition in SSE Handling: Identified and resolved a hard backend crash when SSE connections closed during message formatting.
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="special-thanks">Created for the game "Stationeers" which is made by</div>
+                <div class="name">RocketWerkz, Dean Hall, New Zealand</div>
+                <div class="description">
+                    The best game developers we could ever imagine
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="tech-stack glow">Built With</div>
+                <div class="name">Go</div>
+                <div class="description">
+                    Built with the Go programming language
+                </div>
+            </div>
+
+            <div class="final-message">
+                Thank you for using StationeersServerUI
+            </div>
+
+            <div style="height: 300px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Create stars
+        const starsContainer = document.getElementById('stars');
+        const numStars = 150;
+
+        for (let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 2 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Restart animation when it ends
+        const creditsScroll = document.querySelector('.credits-scroll');
+        creditsScroll.addEventListener('animationend', () => {
+            creditsScroll.style.animation = 'none';
+            setTimeout(() => {
+                creditsScroll.style.animation = 'scroll-up 90s linear forwards';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

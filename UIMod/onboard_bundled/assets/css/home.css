@@ -103,7 +103,7 @@
   color: var(--primary);
   margin-bottom: 30px;
   border-radius: 8px;
-  box-shadow: inset 0 0 10px rgba(0, 255, 171, 0.5);
+  box-shadow: inset 0 0 10px var(--button-glow), 0 0 20px var(--button-glow-soft);
   font-family: 'Share Tech Mono', 'Courier New', monospace;
   position: relative;
   scrollbar-width: thin;

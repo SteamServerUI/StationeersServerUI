@@ -63,9 +63,9 @@ A sleek, retro-themed web UI to manage your Stationeers dedicated server. No mor
 - 🎮 **One-Click Controls** - Start/stop server or restore backups with simple buttons
 - 💾 **Smart Backups** - Automated backup system with easy restore
 - 🤖 **Discord Integration** - Control your server through Discord
-- 🔒 **Secure by Default** - JWT auth, TLS, and randomized JWT key
-- 🛠️ **Command Manager** - Execute server commands directly from the UI (and soon discord!)
-- 🧩 **Beta: Mod Support** - Support for BepInEx mods (currently in beta, be careful!)
+- 🔒 **Secure by Default** - JWT auth & TLS
+- 🛠️ **Command Manager** - Execute server commands directly from the UI or from Discord commands
+- 🧩 **Mod Support** - Support for BepInEx mods
 - 📦 **Docker Support** - Runs in Docker containers
 
 ## Detailed Documentation
@@ -74,7 +74,7 @@ For comprehensive instructions, examples, and more details, visit our [GitHub Wi
 
 | Documentation Section | Description |
 |----------------------|-------------|
-| [Features](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/Features) | Complete list of features and capabilities |
+| [Features](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/Features) | near-complete list of features and capabilities |
 | [Requirements](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/Requirements) | System requirements and prerequisites |
 | [Installation](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/Installation) | Step-by-step installation guide |
 | [First-Time Setup](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup) | Getting your server up and running |

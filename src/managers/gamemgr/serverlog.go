@@ -6,13 +6,19 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path"
 	"runtime"
 	"strconv"
 	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/google/uuid"
 )
+
+const defaultLogFolderMode = 0755
+const defaultLogFileMode = 0644
 
 // readPipe for Windows
 func readPipe(pipe io.ReadCloser) {
@@ -21,6 +27,7 @@ func readPipe(pipe io.ReadCloser) {
 	for scanner.Scan() {
 		output := scanner.Text()
 		ssestream.BroadcastConsoleOutput(output)
+		logToFile(output)
 	}
 	if err := scanner.Err(); err != nil {
 		logger.Core.Debug("Pipe error: " + err.Error())
@@ -91,6 +98,7 @@ func tailLogFile(logFilePath string) {
 		for scanner.Scan() {
 			output := scanner.Text()
 			ssestream.BroadcastConsoleOutput(output)
+			logToFile(output)
 		}
 		if err := scanner.Err(); err != nil {
 
@@ -105,4 +113,44 @@ func tailLogFile(logFilePath string) {
 
 	logger.Core.Debug("Received logDone signal, stopping tail -F")
 
+}
+
+func logToFile(message string) {
+	if config.GetCreateGameServerLogFile() {
+		logFileFolder := config.GetLogFolder()
+		// Check if the log folder exists, if not create it
+		_, err := os.Stat(logFileFolder)
+		if os.IsNotExist(err) {
+			err := os.Mkdir(logFileFolder, defaultLogFolderMode)
+			if err != nil {
+				logger.Core.Error("Error creating log folder: " + err.Error())
+				return
+			}
+		} else if err != nil {
+			logger.Core.Error("Error checking log folder: " + err.Error())
+			return
+		}
+
+		if GameServerUUID != uuid.Nil {
+			logFileName := fmt.Sprintf("serverlog_%s_%s.log", time.Now().Format("200601021504"), GameServerUUID.String())
+			logFilePath := path.Join(logFileFolder, logFileName)
+
+			// append the log file to the log folder
+			file, err := os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, defaultLogFileMode)
+			if err != nil {
+				logger.Core.Error("Error opening log file: " + err.Error())
+				return
+			}
+			defer file.Close()
+
+			_, err = file.WriteString(message + "\n")
+			if err != nil {
+				logger.Core.Error("Error writing to log file: " + err.Error())
+				return
+			}
+		} else {
+			logger.Core.Error("Game Server UUID not set, cannot log to file")
+			return
+		}
+	}
 }

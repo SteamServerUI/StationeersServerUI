@@ -49,7 +49,7 @@
                 "UIText_SaveName": "Save Name",
                 "UIText_SaveNameInfo": "Name of the save folder, like 'MySave' or 'Europa Brutal'",
                 "UIText_WorldID": "World ID",
-                "UIText_WorldIDInfo": "World ID used when creating a new world. For a list of world IDs, see the Dedicated Server Wiki or configure it easily from the setup wizard."
+                "UIText_WorldIDInfo": "World ID used when creating a new world. For a list of world IDs, see the Dedicated Server Wiki or configure them easily from the setup wizard. For more options, see the World generation tab."
             },
             "network": {
                 "UIText_NetworkConfiguration": "Network Configuration",
@@ -60,7 +60,7 @@
                 "UIText_UPNPEnabled": "UPNP Enabled",
                 "UIText_UPNPEnabledInfo": "Enable automatic UPNP port forwarding",
                 "UIText_LocalIpAddress": "Local IP Address",
-                "UIText_LocalIpAddressInfo": "IP address to bind to",
+                "UIText_LocalIpAddressInfo": "IP address to bind to. Recommended to leave at 0.0.0.0 unless you really know what you're doing.",
                 "UIText_StartLocalHost": "Start Local Host",
                 "UIText_StartLocalHostInfo": "Keep this true. This is required for the server to work.",
                 "UIText_ServerVisible": "Server Visible",
@@ -84,7 +84,12 @@
                 "UIText_AllowAutoGameServerUpdates": "Enable Auto Game Server Updates",
                 "UIText_AllowAutoGameServerUpdatesInfo": "Allow the gameserver to automatically query for and update to the latest version. Attention: Restarts the server when a new version was found and installed. Will send multiple warning messages to the sever with SAY commands 60-10 seconds before the restart.",
                 "UIText_AutoStartServerOnStartup": "Auto Start Server on Startup",
-                "UIText_AutoStartServerOnStartupInfo": "Automatically start the gameserver when the SSUI is started. Defaults to false."
+                "UIText_AutoStartServerOnStartupInfo": "Automatically start the gameserver when the SSUI is started. Defaults to false.",
+                "UIText_CreateSSUILogFile": "Create SSUI Log Files",
+                "UIText_CreateSSUILogFileInfo": "Create log files for the SSUI log in UIMod/logs. Defaults to false.",
+                "UIText_CreateGameServerLogFile": "Create Game Server Log File",
+                "UIText_CreateGameServerLogFileInfo": "Create a unique log file per server start for the gameserver in UIMod/logs. Defaults to false."
+
             },
             "terrain": {
                 "UIText_TerrainSettingsHeader": "Optional world generation settings",

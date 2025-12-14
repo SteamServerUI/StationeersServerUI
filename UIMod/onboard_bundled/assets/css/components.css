@@ -1,15 +1,17 @@
 @import '/static/css/variables.css';
 
-button {
+button,
+.save-button,
+.back-button {
   padding: 1rem 2rem;
   font-size: 1rem;
-  background-color: #232338;
+  background-color: var(--button-bg);
   color: var(--primary);
   border: 2px solid var(--primary);
   border-radius: 8px;
   cursor: pointer;
   transition: all var(--transition-normal);
-  box-shadow: 0 0 10px rgba(0, 255, 171, 0.4), 0 0 20px rgba(0, 255, 171, 0.1);
+  box-shadow: 0 0 10px var(--button-glow), 0 0 20px var(--button-glow-soft);
   font-family: 'Press Start 2P', cursive;
   line-height: 1.5;
   letter-spacing: 1px;
@@ -20,41 +22,48 @@ button {
   hyphens: auto;
 }
 
-button::before {
+button::before,
+.save-button::before,
+.back-button::before {
   content: '';
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(0, 255, 171, 0.2), transparent);
+  background: linear-gradient(120deg, transparent, var(--primary-glow), transparent);
   transition: left var(--transition-slow);
 }
 
-button:hover::before {
+button:hover::before,
+.save-button:hover::before,
+.back-button:hover::before {
   left: 100%;
 }
 
-button:hover {
-  background-color: #333350;
+button:hover,
+.save-button:hover,
+.back-button:hover {
+  background-color: var(--button-bg-hover);
   transform: translateY(-3px);
-  box-shadow: 0 0 15px rgba(0, 255, 171, 0.7), 0 0 30px rgba(0, 255, 171, 0.5);
+  box-shadow: 0 0 15px var(--button-glow-strong), 0 0 30px var(--button-glow-stronger);
 }
 
-button:active {
+button:active,
+.save-button:active,
+.back-button:active {
   transform: translateY(1px);
 }
 
 /* Form inputs */
 input[type="text"],
 input[type="password"],
-input[type="submit"],
 select {
     width: 100%;
     padding: 12px;
     margin: 10px 0;
     box-sizing: border-box;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: var(--input-bg);
     color: var(--primary);
     border: 2px solid var(--primary-dim);
     border-radius: 4px;
@@ -74,7 +83,8 @@ select:focus {
 input[type="submit"] {
     width: auto;
     padding: 12px 30px;
-    background-color: rgba(0, 255, 171, 0.2);
+    background-color: var(--submit-bg);
+    color: var(--primary);
     cursor: pointer;
     transition: all var(--transition-normal);
     font-family: 'Press Start 2P', cursive;
@@ -83,27 +93,12 @@ input[type="submit"] {
 
 input[type="submit"]:hover {
     background-color: var(--primary);
-    color: #000;
+    color: var(--submit-hover-text);
     transform: translateY(-3px);
 }
 
 .save-button,
 .back-button {
-    padding: 1rem 2rem;
-    font-size: 1rem;
-    background-color: #232338;
-    color: var(--primary);
-    border: 2px solid var(--primary);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all var(--transition-normal);
-    box-shadow: 0 0 10px rgba(0, 255, 171, 0.4), 0 0 20px rgba(0, 255, 171, 0.1);
-    font-family: 'Press Start 2P', cursive;
-    line-height: 1.5;
-    letter-spacing: 1px;
-    position: relative;
-    overflow: hidden;
-    will-change: transform, box-shadow;
     -webkit-appearance: none;
     appearance: none;
     box-sizing: border-box;

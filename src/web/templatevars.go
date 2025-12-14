@@ -80,6 +80,12 @@ type ConfigTemplateData struct {
 	AllowAutoGameServerUpdates              string
 	AllowAutoGameServerUpdatesTrueSelected  string
 	AllowAutoGameServerUpdatesFalseSelected string
+	CreateSSUILogFile                       string
+	CreateSSUILogFileTrueSelected           string
+	CreateSSUILogFileFalseSelected          string
+	CreateGameServerLogFile                 string
+	CreateGameServerLogFileTrueSelected     string
+	CreateGameServerLogFileFalseSelected    string
 
 	UIText_ServerConfig         string
 	UIText_DiscordIntegration   string
@@ -153,6 +159,10 @@ type ConfigTemplateData struct {
 	UIText_AutoStartServerOnStartupInfo   string
 	UIText_AllowAutoGameServerUpdates     string
 	UIText_AllowAutoGameServerUpdatesInfo string
+	UIText_CreateSSUILogFile              string
+	UIText_CreateSSUILogFileInfo          string
+	UIText_CreateGameServerLogFile        string
+	UIText_CreateGameServerLogFileInfo    string
 
 	UIText_DiscordIntegrationTitle    string
 	UIText_DiscordBotToken            string

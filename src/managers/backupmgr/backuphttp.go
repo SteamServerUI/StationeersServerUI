@@ -51,7 +51,7 @@ func (h *HTTPHandler) ListBackupsHandler(w http.ResponseWriter, r *http.Request)
 			// Format according to classic view: "BackupIndex: X, Created: DD.MM.YYYY HH:MM:SS"
 			classicLine := fmt.Sprintf("BackupIndex: %d, Created: %s",
 				backup.Index,
-				backup.ModTime.Format("02.01.2006 15:04:05"))
+				backup.SaveTime.Format("02.01.2006 15:04:05"))
 			classicResponses = append(classicResponses, classicLine)
 		}
 

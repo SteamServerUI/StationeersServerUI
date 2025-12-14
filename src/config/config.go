@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.8.0"
+	Version = "5.9.0"
 	Branch  = "release"
 )
 
@@ -51,11 +51,12 @@ type JsonConfig struct {
 	StartLocation    string `json:"StartLocation"`
 
 	// Logging and debug settings
-	Debug              *bool    `json:"Debug"`
-	CreateSSUILogFile  *bool    `json:"CreateSSUILogFile"`
-	LogLevel           int      `json:"LogLevel"`
-	SubsystemFilters   []string `json:"subsystemFilters"`
-	AdvertiserOverride string   `json:"AdvertiserOverride"`
+	Debug                   *bool    `json:"Debug"`
+	CreateSSUILogFile       *bool    `json:"CreateSSUILogFile"`
+	CreateGameServerLogFile *bool    `json:"CreateGameServerLogFile"`
+	LogLevel                int      `json:"LogLevel"`
+	SubsystemFilters        []string `json:"subsystemFilters"`
+	AdvertiserOverride      string   `json:"AdvertiserOverride"`
 
 	// Authentication Settings
 	Users             map[string]string `json:"users"`       // Map of username to hashed password
@@ -230,6 +231,10 @@ func applyConfig(cfg *JsonConfig) {
 	CreateSSUILogFile = createSSUILogFileVal
 	cfg.CreateSSUILogFile = &createSSUILogFileVal
 
+	createGameServerLogFileVal := getBool(cfg.CreateGameServerLogFile, "CREATE_GAMESERVER_LOGFILE", false)
+	CreateGameServerLogFile = createGameServerLogFileVal
+	cfg.CreateGameServerLogFile = &createGameServerLogFileVal
+
 	LogLevel = getInt(cfg.LogLevel, "LOG_LEVEL", 20)
 
 	isUpdateEnabledVal := getBool(cfg.IsUpdateEnabled, "IS_UPDATE_ENABLED", true)
@@ -282,6 +287,21 @@ func applyConfig(cfg *JsonConfig) {
 
 	if GameBranch != "public" && GameBranch != "beta" {
 		IsNewTerrainAndSaveSystem = false
+		fmt.Println("The old terrain system and save format are no longer fully supported by SSUI. Please switch to the new terrain and save system if you wish to continue to use SSUI with all features. Please switch to the new Terrain system if you wish to continue to use new SSUI features. Alternatively, you can continue to use the old system by using an older version of SSUI, disabling auto-updates via the config.json file")
+		fmt.Println("Sleeping for 10 seconds to allow you to read and understand the above message...")
+		time.Sleep(3 * time.Second)
+		fmt.Println("Continuing with the old terrain and save system in 7 seconds...")
+		time.Sleep(2 * time.Second)
+		fmt.Println("Continuing with the old terrain and save system in 5 seconds...")
+		time.Sleep(2 * time.Second)
+		fmt.Println("Continuing with the old terrain and save system in 3 seconds...")
+		time.Sleep(1 * time.Second)
+		fmt.Println("Continuing with the old terrain and save system in 2 seconds...")
+		time.Sleep(1 * time.Second)
+		fmt.Println("Continuing with the old terrain and save system in 1 second...")
+		time.Sleep(1 * time.Second)
+		fmt.Println("Continuing with the old terrain and save system...")
+
 	} else {
 		IsNewTerrainAndSaveSystem = true
 	}
@@ -354,6 +374,7 @@ func safeSaveConfig() error {
 		AuthTokenLifetime:          AuthTokenLifetime,
 		Debug:                      &IsDebugMode,
 		CreateSSUILogFile:          &CreateSSUILogFile,
+		CreateGameServerLogFile:    &CreateGameServerLogFile,
 		LogLevel:                   LogLevel,
 		LogClutterToConsole:        &LogClutterToConsole,
 		SubsystemFilters:           SubsystemFilters,

@@ -1,19 +1,59 @@
 :root {
     /* Colors */
-    --primary: #00FFAB;
+    --primary:
+        #00FFAB;
     --primary-dim: rgba(0, 255, 171, 0.7);
     --primary-glow: rgba(0, 255, 171, 0.3);
-    --bg-dark: #0a0a14;
+    --bg-dark:
+        #0a0a14;
     --bg-panel: #1b1b2f8f;
-    --accent: #0084ff;
-    --text-bright: #e0ffe9;
-    --text-header: #ffffff;
-    --danger: #ff3860;
-    --success: #48c774;
-    --warning: #ffdd57;
-  
+    --accent:
+        #0084ff;
+    --text-bright:
+        #e0ffe9;
+    --text-header:
+        #ffffff;
+    --danger:
+        #ff3860;
+    --success:
+        #48c774;
+    --warning:
+        #ffdd57;
+
     /* Transitions */
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
-  }
+    /* v5.9+ Variables */
+    --button-bg:
+        #232338;
+    --button-bg-hover:
+        #333350;
+    --button-glow: rgba(0, 255, 171, 0.4);
+    --button-glow-strong: rgba(0, 255, 171, 0.7);
+    --button-glow-soft: rgba(0, 255, 171, 0.1);
+    --button-glow-stronger: rgba(0, 255, 171, 0.5);
+    --input-bg: rgba(0, 0, 0, 0.6);
+    --submit-bg: rgba(0, 255, 171, 0.2);
+    --submit-hover-text: #000;
+    --tab-bg: rgba(0, 0, 0, 0.3);
+    --tab-hover-bg: rgba(0, 255, 171, 0.1);
+    --tab-active-bg: rgba(0, 255, 171, 0.2);
+    --tab-active-glow: rgba(0, 255, 171, 0.5);
+    /* v5.9+ Variables config page*/
+    --wizard-bg: rgba(0, 255, 171, 0.15);
+    --wizard-glow: rgba(0, 255, 171, 0.3);
+    --wizard-glow-strong: rgba(0, 255, 171, 0.6);
+    --nav-bg: rgba(0, 0, 0, 0.4);
+    --nav-bg-hover: rgba(0, 0, 0, 0.6);
+    --nav-border: rgba(0, 255, 171, 0.5);
+    --form-bg: rgba(0, 0, 0, 0.2);
+    --discord-accent: #7289da;
+    /* Discord brand colour */
+    --discord-bg: rgba(114, 137, 218, 0.1);
+    /* rgba version of Discord blue */
+    --discord-border: rgba(114, 137, 218, 0.5);
+    --discord-glow: rgba(114, 137, 218, 0.3);
+    --select-bg-hover: rgba(0, 0, 0, 0.8);
+    --option-bg: #1b1b2f;
+}

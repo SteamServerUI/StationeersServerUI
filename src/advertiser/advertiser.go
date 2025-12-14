@@ -80,6 +80,8 @@ func StartAdvertiser() {
 	}
 	go func() {
 		sessionId := -1
+		oldVersion := ""
+		oldAddress := ""
 		// Track accumulated transient errors and kill the advertiser if we exceed a threshold
 		transientErrors := 0
 		for {
@@ -126,6 +128,15 @@ func StartAdvertiser() {
 					MaxPlayers: maxplayers,
 					Type:       platform,
 				}
+				// Check if the version or address has changed since last advertisement
+				if (oldVersion != adMessage.Version) || (oldAddress != adMessage.Address) {
+					// Reset sessionId to force a new advertisement
+					logger.Advertiser.Debugf("ServerAdvertiser detected version or address change (old: %s @ %s, new: %s @ %s). Forcing re-advertisement...", oldVersion, oldAddress, adMessage.Version, adMessage.Address)
+					adMessage.SessionId = -1
+				}
+				// Update the saved values
+				oldVersion = adMessage.Version
+				oldAddress = adMessage.Address
 				body, err := json.Marshal(adMessage)
 				if err != nil {
 					logger.Advertiser.Warnf("ServerAdvertiser failed to Serialize to JSON from native Go struct type: %v", err)
