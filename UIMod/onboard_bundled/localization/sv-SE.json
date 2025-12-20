@@ -263,7 +263,8 @@
             "UIText_WorldID_SecondaryLabel": "Välj från rullgardinsmenyn nedan",
             "UIText_WorldID_SecondaryPlaceholder": "Välj en karta",
             "UIText_WorldID_SubmitButton": "Spara & fortsätt",
-            "UIText_WorldID_SkipButton": "Hoppa över"
+            "UIText_WorldID_SkipButton": "Hoppa över",
+            "UIText_FinalizeSubmitButtonText": "Slutför konfiguration"
         }
     },
     "BackendText": {

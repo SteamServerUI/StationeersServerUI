@@ -265,7 +265,8 @@
             "UIText_WorldID_SecondaryLabel": "Wähle aus dem Dropdown-Menü unten aus",
             "UIText_WorldID_SecondaryPlaceholder": "Wähle eine Karte aus",
             "UIText_WorldID_SubmitButton": "Speichern & Weiter",
-            "UIText_WorldID_SkipButton": "Überspringen"
+            "UIText_WorldID_SkipButton": "Überspringen",
+            "UIText_FinalizeSubmitButtonText": "Setup abschließen"
         }
     },
     "BackendText": {

@@ -50,6 +50,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		ShowExtraButtons         bool
 		FooterText               string
 		FooterTextInfo           string
+		FinalizeSubmitButtonText string
 		Step                     string
 		ConfigField              string
 		NextStep                 string
@@ -316,11 +317,12 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := TemplateData{
-		IsFirstTimeSetup: config.GetIsFirstTimeSetup(),
-		Path:             path,
-		Step:             stepID,
-		FooterText:       localization.GetString("UIText_FooterText"),
-		FooterTextInfo:   localization.GetString("UIText_FooterTextInfo"),
+		IsFirstTimeSetup:         config.GetIsFirstTimeSetup(),
+		Path:                     path,
+		Step:                     stepID,
+		FooterText:               localization.GetString("UIText_FooterText"),
+		FooterTextInfo:           localization.GetString("UIText_FooterTextInfo"),
+		FinalizeSubmitButtonText: localization.GetString("UIText_FinalizeSubmitButtonText"),
 	}
 
 	switch {

@@ -257,7 +257,8 @@
             "UIText_ChangeUser_PrimaryLabel": "Username to Add/Update",
             "UIText_ChangeUser_SecondaryLabel": "New Password",
             "UIText_ChangeUser_SecondaryPlaceholder": "Password",
-            "UIText_ChangeUser_SubmitButton": "Add/Update User"
+            "UIText_ChangeUser_SubmitButton": "Add/Update User",
+            "UIText_FinalizeSubmitButtonText": "Finalize Setup"
         }
     },
     "BackendText": {
