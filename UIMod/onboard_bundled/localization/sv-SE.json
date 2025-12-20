@@ -217,7 +217,7 @@
             "UIText_UPnPEnabled_SkipButton": "Hoppa över",
             "UIText_LocalIPAddress_Title": "Stationeers Server UI",
             "UIText_LocalIPAddress_HeaderTitle": "Nätverk (4/4)",
-            "UIText_LocalIPAddress_StepMessage": "Ange serverns lokala IP-adress i formatet 0.0.0.0 (ingen CIDR-notation)",
+            "UIText_LocalIPAddress_StepMessage": "Ange den IP-adress som servern ska lyssna på -  I de flesta fall kan du lämna värdet på 0.0.0.0.",
             "UIText_LocalIPAddress_PrimaryPlaceholder": "0.0.0.0",
             "UIText_LocalIPAddress_PrimaryLabel": "Lokal IP-adress",
             "UIText_LocalIPAddress_SubmitButton": "Spara & fortsätt",

@@ -219,7 +219,7 @@
             "UIText_UPnPEnabled_SkipButton": "Überspringen",
             "UIText_LocalIPAddress_Title": "Stationeers Server UI",
             "UIText_LocalIPAddress_HeaderTitle": "Netzwerk (4/4)",
-            "UIText_LocalIPAddress_StepMessage": "Lokale IP-Adresse des Servers im Format 0.0.0.0 eingeben (keine CIDR Notation)",
+            "UIText_LocalIPAddress_StepMessage": "Gib die IP-Adresse ein, auf der der Server auf eine Verbindung hören soll -  In den meisten fällen kann man den Wert auf 0.0.0.0 belassen",
             "UIText_LocalIPAddress_PrimaryPlaceholder": "0.0.0.0",
             "UIText_LocalIPAddress_PrimaryLabel": "Lokale IP-Adresse",
             "UIText_LocalIPAddress_SubmitButton": "Speichern & Weiter",

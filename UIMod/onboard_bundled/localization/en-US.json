@@ -226,7 +226,7 @@
             "UIText_UPnPEnabled_SkipButton": "Skip",
             "UIText_LocalIPAddress_Title": "Stationeers Server UI",
             "UIText_LocalIPAddress_HeaderTitle": "Network (4/4)",
-            "UIText_LocalIPAddress_StepMessage": "Enter server's local IP address in format 0.0.0.0 (no CIDR notation)",
+            "UIText_LocalIPAddress_StepMessage": "Enter the IP address to bind to. Recommended to leave at 0.0.0.0 unless you really know what you're doing.",
             "UIText_LocalIPAddress_PrimaryPlaceholder": "0.0.0.0",
             "UIText_LocalIPAddress_PrimaryLabel": "Local IP Address",
             "UIText_LocalIPAddress_SubmitButton": "Save & Continue",
