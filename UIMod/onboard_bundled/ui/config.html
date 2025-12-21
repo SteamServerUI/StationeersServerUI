@@ -30,15 +30,22 @@
         <h1>{{.UIText_ServerConfig}}</h1>
 
         <div class="tab-container">
-            <div class="tab-buttons">
+            <div class="config-tabs">
                 <button class="tab-button active" onclick="showTab('server-config-tab')">
-                    <span class="icon server-icon"></span>{{.UIText_ServerConfig}}
+                    <span class="icon server-icon"></span>
+                    <span class="text">{{.UIText_ServerConfig}}</span>
                 </button>
                 <button class="tab-button" onclick="showTab('discord-config-tab')">
-                    <span class="icon discord-icon"></span>{{.UIText_DiscordIntegration}}
+                    <span class="icon discord-icon"></span>
+                    <span class="text">{{.UIText_DiscordIntegration}}</span>
+                </button>
+                <button class="tab-button" onclick="showTab('slp-config-tab')">
+                    <span class="icon slp-icon"></span>
+                    <span class="text">{{.UIText_ServerConfig}}</span>
                 </button>
                 <button class="tab-button" onclick="window.location.href = '/detectionmanager'">
-                    <span class="icon detection-icon"></span>{{.UIText_DetectionManager}}
+                    <span class="icon detection-icon"></span>
+                    <span class="text">{{.UIText_DetectionManager}}</span>
                 </button>
             </div>
         </div>
@@ -417,6 +424,8 @@
                 <p>{{.UIText_DiscordSetupInstructions}} <a href="https://github.com/jacksonthemaster/StationeersServerUI"
                         target="_blank">GitHub repository</a></p>
             </div>
+        </div>
+        <div id="slp-config-tab" class="tab-content">
         </div>
     </main>
     <footer>
