@@ -16,7 +16,6 @@ import (
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
 
@@ -28,9 +27,9 @@ func Install(wg *sync.WaitGroup) {
 	defer wg.Done() // Signal that installation is complete
 
 	// Step 0: Check for updates
-	if err, _ := update.Update(true); err != nil {
-		logger.Install.Error("❌Update check went sideways: " + err.Error())
-	}
+	//if err, _ := update.Update(true); err != nil {
+	//	logger.Install.Error("❌Update check went sideways: " + err.Error())
+	//}
 
 	// Step 1: Check and download the UIMod folder contents
 	logger.Install.Debug("🔄Checking UIMod folder...")
