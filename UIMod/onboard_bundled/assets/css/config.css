@@ -322,9 +322,26 @@ select option {
     background-color: rgba(0, 0, 0, 0.4);
 }
 
-/* Responsive & Animation unchanged */
 @media (max-width: 768px) {
-    /* ... unchanged ... */
+    .section-navigation {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .section-nav-button {
+        padding: 8px 12px;
+        font-size: 0.85em;
+    }
+
+    .wizard-button {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 15px;
+    }
+
+    .section-title {
+        font-size: 0.9rem;
+    }
 }
 
 @keyframes fadeIn {
