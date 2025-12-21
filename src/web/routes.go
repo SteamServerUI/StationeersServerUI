@@ -80,6 +80,10 @@ func SetupRoutes() (*http.ServeMux, *http.ServeMux) {
 	protectedMux.HandleFunc("/api/v2/auth/setup/apikey", RegisterAPIKeyHandler) // API Key registration
 	protectedMux.HandleFunc("/api/v2/auth/setup/finalize", SetupFinalizeHandler)
 
+	// Update
+	protectedMux.HandleFunc("/api/v2/update/trigger", TriggerUpdateHandler)
+	protectedMux.HandleFunc("/api/v2/update/check", CheckUpdateHandler)
+
 	// Monitoring
 	protectedMux.HandleFunc("/api/v2/monitor/gameserver/status", HandleMonitorStatus)
 

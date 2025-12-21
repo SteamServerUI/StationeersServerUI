@@ -60,7 +60,7 @@ func Update(isInUpdateableState bool) (err error, newVersion string) {
 		return fmt.Errorf("❌ Failed to parse latest version %s: %v", latestRelease.TagName, err), ""
 	}
 
-	logger.Install.Info(fmt.Sprintf("Current version: %s, Latest version: %s", config.GetVersion(), latestRelease.TagName))
+	logger.Install.Debug(fmt.Sprintf("Current version: %s, Latest version: %s", config.GetVersion(), latestRelease.TagName))
 
 	// Check if we should update
 	updateReason, shouldUpdate := shouldUpdate(currentVer, latestVer, isInUpdateableState)
