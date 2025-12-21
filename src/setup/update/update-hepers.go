@@ -27,7 +27,7 @@ func parseVersion(v string) (Version, error) {
 }
 
 // shouldUpdate determines if an update should proceed, returning reason if not
-func shouldUpdate(current, latest Version) (string, bool) {
+func shouldUpdate(current, latest Version, isInUpdateableState bool) (string, bool) {
 	// Check if already up-to-date or older
 	if latest.Major < current.Major ||
 		(latest.Major == current.Major && latest.Minor < current.Minor) ||
@@ -38,6 +38,10 @@ func shouldUpdate(current, latest Version) (string, bool) {
 	// Check if it’s a major update and not allowed
 	if current.Major != latest.Major && !config.GetAllowMajorUpdates() {
 		return "major-update", false
+	}
+
+	if !isInUpdateableState {
+		return "not-in-updateable-state", false
 	}
 
 	return "", true

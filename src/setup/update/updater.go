@@ -30,7 +30,7 @@ type Version struct {
 }
 
 // CheckForUpdates checks for the latest release from GitHub
-func CheckForUpdates() error {
+func Update(isInUpdateableState bool) (err error, newVersion string) {
 	if !config.GetIsUpdateEnabled() {
 		logger.Install.Warn("⚠️ Update check is disabled. Skipping update check. Change 'IsUpdateEnabled' in config.json to true to re-enable update checks.")
 		time.Sleep(1000 * time.Millisecond)
@@ -40,12 +40,12 @@ func CheckForUpdates() error {
 		time.Sleep(1000 * time.Millisecond)
 		logger.Install.Info("⚠️ Continuing in 1 seconds...")
 		time.Sleep(1000 * time.Millisecond)
-		return nil
+		return nil, ""
 	}
 
 	if config.GetBranch() != "release" {
 		logger.Install.Warn("⚠️ You are running a development build. Skipping update check.")
-		return nil
+		return nil, ""
 	}
 
 	if config.GetAllowPrereleaseUpdates() {
@@ -55,23 +55,23 @@ func CheckForUpdates() error {
 	}
 	latestRelease, err := getLatestRelease()
 	if err != nil {
-		return fmt.Errorf("❌ Failed to fetch latest release: %v", err)
+		return fmt.Errorf("❌ Failed to fetch latest release: %v", err), ""
 	}
 
 	// Parse current and latest versions
 	currentVer, err := parseVersion(config.GetVersion())
 	if err != nil {
-		return fmt.Errorf("❌ Failed to parse current version %s: %v", config.GetVersion(), err)
+		return fmt.Errorf("❌ Failed to parse current version %s: %v", config.GetVersion(), err), ""
 	}
 	latestVer, err := parseVersion(latestRelease.TagName)
 	if err != nil {
-		return fmt.Errorf("❌ Failed to parse latest version %s: %v", latestRelease.TagName, err)
+		return fmt.Errorf("❌ Failed to parse latest version %s: %v", latestRelease.TagName, err), ""
 	}
 
 	logger.Install.Info(fmt.Sprintf("Current version: %s, Latest version: %s", config.GetVersion(), latestRelease.TagName))
 
 	// Check if we should update
-	updateReason, shouldUpdate := shouldUpdate(currentVer, latestVer)
+	updateReason, shouldUpdate := shouldUpdate(currentVer, latestVer, isInUpdateableState)
 	if !shouldUpdate {
 		switch updateReason {
 		case "up-to-date":
@@ -85,8 +85,11 @@ func CheckForUpdates() error {
 			time.Sleep(1000 * time.Millisecond)
 			logger.Install.Info("⚠️ Continuing in 1 seconds...")
 			time.Sleep(1000 * time.Millisecond)
+		case "not-in-updateable-state":
+			logger.Install.Debug("⚠️ Update found but SSUI is not in an updatable state.")
+			return nil, latestRelease.TagName
 		}
-		return nil
+		return nil, ""
 	}
 
 	// Proceed with update
@@ -105,21 +108,21 @@ func CheckForUpdates() error {
 		}
 	}
 	if downloadURL == "" {
-		return fmt.Errorf("❌ No matching asset found for %s", expectedExe)
+		return fmt.Errorf("❌ No matching asset found for %s", expectedExe), latestRelease.TagName
 	}
 
 	// Download and replace
 	logger.Install.Info(fmt.Sprintf("📡 Updating from %s to %s...", config.GetVersion(), latestRelease.TagName))
 	if err := downloadNewExecutable(expectedExe, downloadURL); err != nil {
 		logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: %v. Keeping version %s.", err, config.GetVersion()))
-		return err
+		return err, ""
 	}
 
 	// Set executable permissions on Linux
 	if runtime.GOOS != "windows" {
 		if err := os.Chmod(expectedExe, 0755); err != nil {
 			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t make %s executable: %v. Keeping version %s.", expectedExe, err, config.GetVersion()))
-			return err
+			return err, ""
 		}
 	}
 
@@ -128,17 +131,17 @@ func CheckForUpdates() error {
 	if runtime.GOOS == "windows" {
 		if err := runAndExit(expectedExe); err != nil {
 			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t launch %s: %v. Keeping version %s.", expectedExe, err, config.GetVersion()))
-			return err
+			return err, ""
 		}
 	}
 	if runtime.GOOS == "linux" {
 		if err := runAndExitLinux(expectedExe); err != nil {
 			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t launch %s: %v. Keeping version %s.", expectedExe, err, config.GetVersion()))
-			return err
+			return err, ""
 		}
 	}
 
-	return nil
+	return nil, ""
 }
 
 // downloadNewExecutable downloads the new executable with a progress bar

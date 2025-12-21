@@ -23,6 +23,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
 
@@ -163,6 +164,8 @@ func init() {
 	RegisterCommand("getbuildid", WrapNoReturn(getBuildID), "gbid")
 	RegisterCommand("setdummybuildid", WrapNoReturn(setDummyBuildID), "sdbid")
 	RegisterCommand("printconfig", WrapNoReturn(printConfig), "pc")
+	RegisterCommand("update", WrapNoReturn(triggerUpdateCheck), "u")
+	RegisterCommand("applyupdate", WrapNoReturn(applyUpdate), "au")
 }
 
 func startServer() {
@@ -219,6 +222,25 @@ func testLocalization() {
 	currentLanguageSetting := config.GetLanguageSetting()
 	s := localization.GetString("UIText_StartButton")
 	logger.Core.Info("Start Server Button text (current language: " + currentLanguageSetting + "): " + s)
+}
+
+func triggerUpdateCheck() {
+	err, newVersion := update.Update(false)
+	if err != nil {
+		logger.Install.Warn("⚠️ Update check failed: " + err.Error())
+		return
+	}
+	if newVersion != "" {
+		logger.Install.Infof("✅ Update to %s available, Trigger update from WebUI or with applyupdate command", newVersion)
+	}
+}
+
+func applyUpdate() {
+	err, _ := update.Update(true)
+	if err != nil {
+		logger.Install.Warn("⚠️ Update failed: " + err.Error())
+		return
+	}
 }
 
 func supportMode() {
