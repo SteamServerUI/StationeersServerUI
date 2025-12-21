@@ -28,15 +28,43 @@
             <button onclick="closePopup()">Close</button>
         </div>
     </div>
+    
+
+    <!-- Update Modal -->
+    <div id="update-modal">
+        <div class="update-modal-content">
+            
+            <div class="update-modal-icon">⭳</div>
+
+            <p>A new version of SSUI is ready to install and will be installed the next time you restart the application.</p>
+            <div class="update-version" id="modal-version-text">v1.2.3</div>
+            
+            <div class="update-modal-buttons">
+                <button id="update-later-btn" onclick="closeUpdateModal()">Later</button>
+                <button id="update-now-btn" onclick="startUpdate()">Update Now</button>
+            </div>
+
+            <!-- Status Messages -->
+            <div id="update-status-running" class="update-status-message">
+                ⏳ Installing update, please wait...
+            </div>
+            <div id="update-status-failed" class="update-status-message">
+                ✗ Update failed. Please try again later.
+            </div>
+        </div>
+    </div>
+
     <header>
         <img src="/static/stationeers.webp" alt="Stationeers Banner" id="banner">
         <button onclick="window.location.href = '/auth/logout';" class="logout-icon" title="Logout"></button>
         <button onclick="toggleGPUSaver()" class="gpusaver-icon"
-            title="Save GPU Power by disabling background Animations. Persistent until toggled off. Options: Focus (Default), Always, Disabled. If unsure, check developer tools -> Application -> Local Storage -> animationState"></button>
+            title="Save GPU Power by disabling background Animations. Persistent until toggled off. Options: Focus (Default), Always, Disabled. If unsure, check developer tools -> Application -> Local Storage -> animationState">
+        </button>
     </header>
     <main>
 
         <div id="status-indicator" class="status-indicator offline" title="Server status unknown"></div>
+        <button onclick="openUpdateModal()" id="update-button" class="update-icon" title="Update available">⭳</button>
         <h1>Stationeers Server UI v{{.Version}}{{.SSUIIdentifier}}</h1>
         <div id="controls">
             <button onclick="startServer()">{{.UIText_StartButton}}</button>
@@ -170,6 +198,7 @@
     <script src="/static/js/popup.js"></script>
     <script src="/static/js/xmas.js"></script>
     <script src="/static/js/dynamic-announcement.js"></script>
+    <script src="/static/js/update-ssui.js"></script>
 </body>
 
 </html>
