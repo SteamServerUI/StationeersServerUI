@@ -36,20 +36,20 @@
             
             <div class="update-modal-icon">⭳</div>
 
-            <p>A new version of SSUI is ready to install and will be installed the next time you restart the application.</p>
+            <p>{{.UIText_UpdateAvailable}}</p>
             <div class="update-version" id="modal-version-text">v1.2.3</div>
             
             <div class="update-modal-buttons">
-                <button id="update-later-btn" onclick="closeUpdateModal()">Later</button>
-                <button id="update-now-btn" onclick="startUpdate()">Update Now</button>
+                <button id="update-later-btn" onclick="closeUpdateModal()">{{.UIText_UpdateLater}}</button>
+                <button id="update-now-btn" onclick="startUpdate()">{{.UIText_UpdateNow}}</button>
             </div>
 
             <!-- Status Messages -->
             <div id="update-status-running" class="update-status-message">
-                ⏳ Installing update, please wait...
+                ⏳ {{.UIText_UpdateInstalling}}
             </div>
             <div id="update-status-failed" class="update-status-message">
-                ✗ Update failed. Please try again later.
+                ✗ {{.UIText_UpdateFailed}}
             </div>
         </div>
     </div>

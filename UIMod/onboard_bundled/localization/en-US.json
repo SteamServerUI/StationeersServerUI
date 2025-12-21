@@ -14,7 +14,12 @@
             "UIText_API_Info": "API Endpoint Reference",
             "UIText_Copyright": "Copyright",
             "UIText_Copyright1": "Licensed under",
-            "UIText_Copyright2": "Proprietary License"
+            "UIText_Copyright2": "Proprietary License",
+            "UIText_UpdateAvailable": "A new version of SSUI is ready to install and will be installed the next time you restart the application.",
+            "UIText_UpdateLater": "Later",
+            "UIText_UpdateNow": "Update Now",
+            "UIText_UpdateInstalling": "Installing update, please wait...",
+            "UIText_UpdateFailed": "Update failed. Please try again later."
         },
         "config": {
             "UIText_ServerConfig": "Server Configuration",

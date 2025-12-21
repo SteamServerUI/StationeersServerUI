@@ -14,7 +14,12 @@
             "UIText_API_Info": "API-slutpunktsreferens",
             "UIText_Copyright": "Upphovsrätt",
             "UIText_Copyright1": "Licensierad under",
-            "UIText_Copyright2": "Proprietär licens"
+            "UIText_Copyright2": "Proprietär licens",
+            "UIText_UpdateAvailable": "En ny version av SSUI är redo att installera och kommer att installeras nästa gång du startar applikationen.",
+            "UIText_UpdateLater": "Senare",
+            "UIText_UpdateNow": "Uppdatera nu",
+            "UIText_UpdateInstalling": "Uppdatering installeras, vänligen vänta...",
+            "UIText_UpdateFailed": "Uppdateringen installeras, vänligen vänta..."
         },
         "config": {
             "UIText_ServerConfig": "Konfiguration",
