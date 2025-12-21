@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
@@ -99,13 +98,6 @@ func getLatestRelease() (*githubRelease, error) {
 	// Log warning if the latest release is a prerelease
 	if latestRelease.Prerelease && !config.GetAllowPrereleaseUpdates() {
 		logger.Install.Warn(fmt.Sprintf("⚠️ Pre-release Update found: Latest version %s is a pre-release. Enable 'AllowPrereleaseUpdates' in config.json to update to it.", latestRelease.TagName))
-		time.Sleep(1000 * time.Millisecond)
-		logger.Install.Info("⚠️ Continuing in 3 seconds...")
-		time.Sleep(1000 * time.Millisecond)
-		logger.Install.Info("⚠️ Continuing in 2 seconds...")
-		time.Sleep(1000 * time.Millisecond)
-		logger.Install.Info("⚠️ Continuing in 1 seconds...")
-		time.Sleep(1000 * time.Millisecond)
 	}
 
 	// If prerelease and AllowPrereleaseUpdates is false, find the latest stable release

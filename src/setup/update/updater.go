@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
@@ -33,13 +32,6 @@ type Version struct {
 func Update(isInUpdateableState bool) (err error, newVersion string) {
 	if !config.GetIsUpdateEnabled() {
 		logger.Install.Warn("⚠️ Update check is disabled. Skipping update check. Change 'IsUpdateEnabled' in config.json to true to re-enable update checks.")
-		time.Sleep(1000 * time.Millisecond)
-		logger.Install.Info("⚠️ Continuing in 3 seconds...")
-		time.Sleep(1000 * time.Millisecond)
-		logger.Install.Info("⚠️ Continuing in 2 seconds...")
-		time.Sleep(1000 * time.Millisecond)
-		logger.Install.Info("⚠️ Continuing in 1 seconds...")
-		time.Sleep(1000 * time.Millisecond)
 		return nil, ""
 	}
 
@@ -78,13 +70,7 @@ func Update(isInUpdateableState bool) (err error, newVersion string) {
 			logger.Install.Info("🎉 No update needed: you’re already on the latest version.")
 		case "major-update":
 			logger.Install.Warn(fmt.Sprintf("⚠️ Update found: Latest version %s is a major update from %s. Major Updates include Breaking changes in this project. Read the release notes and backup your Server folder before updating. Enable 'AllowMajorUpdates' in config to proceed.", latestRelease.TagName, config.Version))
-			time.Sleep(1000 * time.Millisecond)
-			logger.Install.Info("⚠️ Continuing in 3 seconds...")
-			time.Sleep(1000 * time.Millisecond)
-			logger.Install.Info("⚠️ Continuing in 2 seconds...")
-			time.Sleep(1000 * time.Millisecond)
-			logger.Install.Info("⚠️ Continuing in 1 seconds...")
-			time.Sleep(1000 * time.Millisecond)
+			return nil, latestRelease.TagName
 		case "not-in-updateable-state":
 			logger.Install.Debug("⚠️ Update found but SSUI is not in an updatable state.")
 			return nil, latestRelease.TagName
