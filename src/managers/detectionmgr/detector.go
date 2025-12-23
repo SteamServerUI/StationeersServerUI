@@ -171,19 +171,14 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 			},
 		},
 		{
-			// World saved pattern
-			pattern: regexp.MustCompile(`World Saved:\s.*,\sBackupIndex:\s(\d+)`),
+			// World saved pattern (simpy detects "Saving - file created and zipped in" since preterrain detection using "World Saved:\s.*,\sBackupIndex:\s(\d+)" is no longer possible)
+			pattern: regexp.MustCompile(`Saving\s*-\s*file created and zipped in`),
 			handler: func(matches []string, logMessage string) {
-				backupIndex := matches[1]
-
 				d.triggerEvent(Event{
 					Type:      EventWorldSaved,
 					Message:   "World saved",
 					RawLog:    logMessage,
-					Timestamp: time.Now().Format(time.RFC3339),
-					BackupInfo: &BackupInfo{
-						BackupIndex: backupIndex,
-					},
+					Timestamp: time.Now().Format("Jan 02 15:04"),
 				})
 			},
 		},

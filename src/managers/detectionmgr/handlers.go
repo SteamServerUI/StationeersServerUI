@@ -19,6 +19,8 @@ Event Handler Subsystem
   - SSE stream for web UI
 */
 
+var lastWorldSavedTime time.Time // zero value means never saved
+
 // DefaultHandlers returns a map of event types to default handlers
 func DefaultHandlers() map[EventType]Handler {
 	return map[EventType]Handler{
@@ -106,14 +108,23 @@ func DefaultHandlers() map[EventType]Handler {
 			}
 		},
 		EventWorldSaved: func(event Event) {
-			if event.BackupInfo != nil {
-				timeStr := time.Now().UTC().Format(time.RFC3339)
-				message := fmt.Sprintf("🎮 [Gameserver] 💾 World Saved: BackupIndex: %s UTC Time: %s",
-					event.BackupInfo.BackupIndex, timeStr)
-				logger.Detection.Info(message)
-				ssestream.BroadcastDetectionEvent(message)
-				discordbot.SendMessageToSavesChannel(message)
+			const debounceDuration = 15 * time.Second // since SSCM triggers a HEAD save after an autosave is detected by the Backup Manager, we debounce save messages here to prevent spamming and user confusion.
+
+			now := time.Now()
+
+			// Check if we handled a world save recently
+			if now.Sub(lastWorldSavedTime) < debounceDuration {
+				return
 			}
+
+			lastWorldSavedTime = now
+
+			timeStr := event.Timestamp
+			message := fmt.Sprintf("🎮 [Gameserver] 💾 World Saved: ServerTime: %s", timeStr)
+
+			logger.Detection.Info(message)
+			ssestream.BroadcastDetectionEvent(message)
+			discordbot.SendMessageToSavesChannel(message)
 		},
 		EventException: func(event Event) {
 			// Initial alert message
