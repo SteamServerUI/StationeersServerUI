@@ -1,6 +1,6 @@
 @import '/static/css/variables.css';
 
-#detection-list-tab {
+#detection-list-container {
     background: rgba(114, 137, 218, 0.1);
 }
 
@@ -188,6 +188,10 @@ input:checked+.slider:before {
 
 .form-actions {
     margin-top: 10px;
+}
+
+#add-detection-container {
+    margin-top: 2rem;
 }
 
 /* Responsive design */
