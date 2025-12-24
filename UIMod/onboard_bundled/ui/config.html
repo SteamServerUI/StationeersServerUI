@@ -188,6 +188,7 @@
                                     <div class="input-info">{{.UIText_LocalIpAddressInfo}}</div>
                                 </div>
 
+                                <!--
                                 <div class="form-group">
                                     <label for="StartLocalHost">{{.UIText_StartLocalHost}}:</label>
                                     <select id="StartLocalHost" name="StartLocalHost" required>
@@ -196,6 +197,7 @@
                                     </select>
                                     <div class="input-info">{{.UIText_StartLocalHostInfo}}</div>
                                 </div>
+                                -->
 
                                 <div class="form-group">
                                     <label for="ServerVisible">{{.UIText_ServerVisible}}:</label>
@@ -221,38 +223,11 @@
                             <h3 class="section-title">{{.UIText_AdvancedConfiguration}}</h3>
                             <div class="channel-grid">
 
-                                <div class="form-group password-field">
-                                    <label for="AdminPassword">{{.UIText_AdminPassword}}:</label>
-                                    <input type="text" id="AdminPassword" name="AdminPassword"
-                                        value="{{.AdminPassword}}" pattern="^\S*$">
-                                    <div class="input-info">{{.UIText_AdminPasswordInfo}}</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="ExePath">{{.UIText_ServerExePath}}:</label>
-                                    <input type="text" id="ExePath" name="ExePath" value="{{.ExePath}}" readonly>
-                                    <div class="input-info">{{.UIText_ServerExePathInfo}}</div>
-                                    <div class="input-info">{{.UIText_ServerExePathInfo2}}</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="AdditionalParams">{{.UIText_AdditionalParams}}:</label>
-                                    <input type="text" id="AdditionalParams" name="AdditionalParams"
-                                        value="{{.AdditionalParams}}">
-                                    <div class="input-info">{{.UIText_AdditionalParamsInfo}}</div>
-                                </div>
-
                                 <div class="form-group">
                                     <label for="AutoRestartServerTimer">{{.UIText_AutoRestartServerTimer}}:</label>
                                     <input type="text" id="AutoRestartServerTimer" name="AutoRestartServerTimer"
                                         value="{{.AutoRestartServerTimer}}">
                                     <div class="input-info">{{.UIText_AutoRestartServerTimerInfo}}</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="gameBranch">{{.UIText_GameBranch}}</label>
-                                    <input type="text" id="gameBranch" name="gameBranch" value="{{.GameBranch}}">
-                                    <div class="input-info">{{.UIText_GameBranchInfo}}</div>
                                 </div>
 
                                 <div class="form-group">
@@ -292,6 +267,35 @@
                                     </select>
                                     <div class="input-info">{{.UIText_CreateGameServerLogFileInfo}}</div>
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="gameBranch">{{.UIText_GameBranch}}</label>
+                                    <input type="text" id="gameBranch" name="gameBranch" value="{{.GameBranch}}">
+                                    <div class="input-info">{{.UIText_GameBranchInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ExePath">{{.UIText_ServerExePath}}:</label>
+                                    <input type="text" id="ExePath" name="ExePath" value="{{.ExePath}}" readonly>
+                                    <div class="input-info">{{.UIText_ServerExePathInfo}}</div>
+                                    <div class="input-info">{{.UIText_ServerExePathInfo2}}</div>
+                                </div>
+
+                                <div class="form-group password-field">
+                                    <label for="AdminPassword">{{.UIText_AdminPassword}}:</label>
+                                    <input type="text" id="AdminPassword" name="AdminPassword"
+                                        value="{{.AdminPassword}}" pattern="^\S*$">
+                                    <div class="input-info">{{.UIText_AdminPasswordInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="AdditionalParams">{{.UIText_AdditionalParams}}:</label>
+                                    <input type="text" id="AdditionalParams" name="AdditionalParams"
+                                        value="{{.AdditionalParams}}">
+                                    <div class="input-info">{{.UIText_AdditionalParamsInfo}}</div>
+                                </div>
+
+
 
                             </div>
                         </div>

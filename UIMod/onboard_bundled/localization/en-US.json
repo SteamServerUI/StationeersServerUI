@@ -31,7 +31,7 @@
             "UIText_UseWizardAlternative": "Alternatively, use the Configuration Wizard to configure the server.",
             "UIText_BasicSettings": "Basic Settings",
             "UIText_NetworkSettings": "Network Settings",
-            "UIText_AdvancedSettings": "Advanced Settings",
+            "UIText_AdvancedSettings": "Advanced Features",
             "UIText_TerrainSettings": "World generation",
             "basic": {
                 "UIText_BasicServerSettings": "Basic Server Settings",

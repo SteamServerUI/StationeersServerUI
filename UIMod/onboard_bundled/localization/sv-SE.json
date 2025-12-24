@@ -74,7 +74,7 @@
                 "UIText_UseSteamP2PInfo": "Aktivera Steam Peer-to-Peer-nätverk"
             },
             "advanced": {
-                "UIText_AdvancedConfiguration": "Avancerad konfiguration",
+                "UIText_AdvancedConfiguration": "Avancerad funktioner",
                 "UIText_ServerAuthSecret": "Serverautentiseringshemlighet",
                 "UIText_ServerAuthSecretInfo": "Autentiseringshemlighet för servern (valfritt)",
                 "UIText_ServerExePath": "Sökväg till serverprogram",

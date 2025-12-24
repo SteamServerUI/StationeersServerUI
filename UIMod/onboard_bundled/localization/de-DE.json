@@ -74,7 +74,7 @@
                 "UIText_UseSteamP2PInfo": "Steam Peer-to-Peer Netzwerk aktivieren"
             },
             "advanced": {
-                "UIText_AdvancedConfiguration": "Erweiterte Konfiguration",
+                "UIText_AdvancedConfiguration": "Erweiterte Funktionen",
                 "UIText_ServerAuthSecret": "Server Auth Geheimnis",
                 "UIText_ServerAuthSecretInfo": "Authentifizierungsgeheimnis für Server (optional)",
                 "UIText_ServerExePath": "Server Ausführungspfad",
