@@ -29,23 +29,23 @@
     <main>
         <h1>{{.UIText_ServerConfig}}</h1>
 
-        <div class="tab-container">
-            <div class="config-tabs">
-                <button class="tab-button active" onclick="showTab('server-config-tab')">
+        <div class="sliding-tabs-container">
+            <div class="sliding-tabs">
+                <button class="sliding-tab-button active" data-tab="server-config-tab">
                     <span class="icon server-icon"></span>
-                    <span class="text">{{.UIText_ServerConfig}}</span>
+                    <span class="tab-text">{{.UIText_ServerConfig}}</span>
                 </button>
-                <button class="tab-button" onclick="showTab('discord-config-tab')">
+                <button class="sliding-tab-button" data-tab="discord-config-tab">
                     <span class="icon discord-icon"></span>
-                    <span class="text">{{.UIText_DiscordIntegration}}</span>
+                    <span class="tab-text">{{.UIText_DiscordIntegration}}</span>
                 </button>
-                <button class="tab-button" onclick="showTab('slp-config-tab')">
+                <button class="sliding-tab-button" data-tab="slp-config-tab">
                     <span class="icon slp-icon"></span>
-                    <span class="text">{{.UIText_ServerConfig}}</span>
+                    <span class="tab-text">{{.UIText_SLPModIntegration}}</span>
                 </button>
-                <button class="tab-button" onclick="window.location.href = '/detectionmanager'">
+                <button class="sliding-tab-button external" onclick="window.location.href = '/detectionmanager'">
                     <span class="icon detection-icon"></span>
-                    <span class="text">{{.UIText_DetectionManager}}</span>
+                    <span class="tab-text">{{.UIText_DetectionManager}}</span>
                 </button>
             </div>
         </div>
@@ -60,12 +60,16 @@
                 </div>
                 <div class="config-sections">
                     <div class="section-navigation">
-                        <button class="section-nav-button" data-section="basic-settings">{{.UIText_BasicSettings}}</button>
+                        <button class="section-nav-button"
+                            data-section="basic-settings">{{.UIText_BasicSettings}}</button>
                         {{if eq .IsNewTerrainAndSaveSystemTrueSelected "selected"}}
-                        <button class="section-nav-button" data-section="terrain-settings">{{.UIText_TerrainSettings}}</button>
+                        <button class="section-nav-button"
+                            data-section="terrain-settings">{{.UIText_TerrainSettings}}</button>
                         {{end}}
-                        <button class="section-nav-button" data-section="network-settings">{{.UIText_NetworkSettings}}</button>
-                        <button class="section-nav-button" data-section="advanced-settings">{{.UIText_AdvancedSettings}}</button>
+                        <button class="section-nav-button"
+                            data-section="network-settings">{{.UIText_NetworkSettings}}</button>
+                        <button class="section-nav-button"
+                            data-section="advanced-settings">{{.UIText_AdvancedSettings}}</button>
                     </div>
 
                     <form id="server-config-form" action="/saveconfigasjson" method="post">
@@ -95,7 +99,7 @@
                                     <input type="text" id="WorldID" name="WorldID" value="{{.WorldID}}">
                                     <div class="input-info">{{.UIText_WorldIDInfo}}</div>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <label for="ServerMaxPlayers">{{.UIText_MaxPlayers}}:</label>
                                     <input type="text" id="ServerMaxPlayers" name="ServerMaxPlayers"
@@ -110,7 +114,7 @@
                                     <div class="input-info">{{.UIText_ServerPasswordInfo}}</div>
                                 </div>
 
-                                
+
                                 <div class="form-group">
                                     <label for="ServerAuthSecret">{{.UIText_ServerAuthSecret}}:</label>
                                     <input type="text" id="ServerAuthSecret" name="ServerAuthSecret"
@@ -213,8 +217,8 @@
 
                                 <div class="form-group password-field">
                                     <label for="AdminPassword">{{.UIText_AdminPassword}}:</label>
-                                    <input type="text" id="AdminPassword" name="AdminPassword" value="{{.AdminPassword}}"
-                                        pattern="^\S*$">
+                                    <input type="text" id="AdminPassword" name="AdminPassword"
+                                        value="{{.AdminPassword}}" pattern="^\S*$">
                                     <div class="input-info">{{.UIText_AdminPasswordInfo}}</div>
                                 </div>
 
@@ -241,8 +245,7 @@
 
                                 <div class="form-group">
                                     <label for="gameBranch">{{.UIText_GameBranch}}</label>
-                                    <input type="text" id="gameBranch" name="gameBranch"
-                                        value="{{.GameBranch}}">
+                                    <input type="text" id="gameBranch" name="gameBranch" value="{{.GameBranch}}">
                                     <div class="input-info">{{.UIText_GameBranchInfo}}</div>
                                 </div>
 
@@ -256,10 +259,12 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="AllowAutoGameServerUpdates">{{.UIText_AllowAutoGameServerUpdates}}:</label>
+                                    <label
+                                        for="AllowAutoGameServerUpdates">{{.UIText_AllowAutoGameServerUpdates}}:</label>
                                     <select id="AllowAutoGameServerUpdates" name="AllowAutoGameServerUpdates" required>
                                         <option value="true" {{.AllowAutoGameServerUpdatesTrueSelected}}>TRUE</option>
-                                        <option value="false" {{.AllowAutoGameServerUpdatesFalseSelected}}>FALSE</option>
+                                        <option value="false" {{.AllowAutoGameServerUpdatesFalseSelected}}>FALSE
+                                        </option>
                                     </select>
                                     <div class="input-info">{{.UIText_AllowAutoGameServerUpdatesInfo}}</div>
                                 </div>
@@ -281,7 +286,7 @@
                                     </select>
                                     <div class="input-info">{{.UIText_CreateGameServerLogFileInfo}}</div>
                                 </div>
-                                
+
                             </div>
                         </div>
 
@@ -291,16 +296,16 @@
                             <br>
                             <div class="channel-grid">
 
-                                <div class="form-group">        
+                                <div class="form-group">
                                     <label for="WorldID">{{.UIText_WorldID}}:</label>
                                     <input type="text" id="WorldID" name="WorldID" value="{{.WorldID}}">
                                     <div class="input-info">{{.UIText_WorldIDInfo}}</div>
                                 </div>
 
-                                <div class="form-group">        
+                                <div class="form-group">
                                     <label for="Difficulty">{{.UIText_Difficulty}}:</label>
-                                    <input type="text" id="Difficulty" name="Difficulty"
-                                        value="{{.Difficulty}}" pattern="^\S*$" required>
+                                    <input type="text" id="Difficulty" name="Difficulty" value="{{.Difficulty}}"
+                                        pattern="^\S*$" required>
                                     <div class="input-info">✅{{.UIText_DifficultyInfo}}</div>
                                 </div>
 
@@ -318,7 +323,8 @@
                                     <div class="input-info">✅{{.UIText_StartLocationInfo}}</div>
                                 </div>
                             </div>
-                            <div class="fill-hint-wraper" id="fill-hint-wraper" style="display: none; justify-content: center;">
+                            <div class="fill-hint-wraper" id="fill-hint-wraper"
+                                style="display: none; justify-content: center;">
                                 <div class="fill-hint" id="fill-hint">{{.UIText_TerrainSettingsFillHint}}</div>
                             </div>
                         </div>
@@ -328,7 +334,7 @@
                             <button type="button" class="save-button"
                                 onclick="document.getElementById('server-config-form').submit()"></button>
                         </div>
-                    </form> 
+                    </form>
                 </div>
             </div>
         </div>
@@ -421,8 +427,9 @@
                     <li>{{.UIText_DiscordBenefit4}}</li>
                     <li>{{.UIText_DiscordBenefit5}}</li>
                 </ul>
-                <p>{{.UIText_DiscordSetupInstructions}} <a href="https://github.com/jacksonthemaster/StationeersServerUI"
-                        target="_blank">GitHub repository</a></p>
+                <p>{{.UIText_DiscordSetupInstructions}} <a
+                        href="https://github.com/jacksonthemaster/StationeersServerUI" target="_blank">GitHub
+                        repository</a></p>
             </div>
         </div>
         <div id="slp-config-tab" class="tab-content">
@@ -430,22 +437,31 @@
     </main>
     <footer>
         <div class="copyright">Copyright &copy; 2025 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a>
-            {{.UIText_CopyrightConfig1}} <a href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">{{.UIText_CopyrightConfig2}}</a>.</div>
+            {{.UIText_CopyrightConfig1}} <a
+                href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">{{.UIText_CopyrightConfig2}}</a>.
+        </div>
     </footer>
 
     <script>
-        function showTab(tabId) {
-            // Remove active class from all tabs and tab buttons
+        function showConfigTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('active');
+
+            document.querySelectorAll('.sliding-tab-button').forEach(btn => {
+                btn.classList.remove('active');
             });
 
-            // Add active class to selected tab and tab button
-            document.getElementById(tabId).classList.add('active');
-            document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
+            // Show the selected content
+            const content = document.getElementById(tabId);
+            if (content) {
+                content.classList.add('active');
+            }
+
+            const button = document.querySelector(`.sliding-tab-button[data-tab="${tabId}"]`);
+            if (button) {
+                button.classList.add('active');
+            }
         }
 
         document.getElementById('isDiscordEnabled').addEventListener('change', function () {
@@ -488,10 +504,16 @@
                 this.classList.add('active');
             });
         });
+        document.querySelectorAll('.sliding-tab-button[data-tab]').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                showConfigTab(tabId);
+            });
+        });
     </script>
     <script src="/static/js/main.js"></script>
     <script src="/static/js/world-gen-config.js"></script>
-    <script src="/static/js/xmas.js"></script>
+    <script src="/static/js/xmas.js"></script>  
 </body>
 
 </html>

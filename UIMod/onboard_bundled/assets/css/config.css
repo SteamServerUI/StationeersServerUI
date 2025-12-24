@@ -152,16 +152,74 @@
     background-position: center;
     border-radius: 5px;
 }
-
-.tab-button {
+.sliding-tabs {
     display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    flex-direction: column;
+    gap: 8px;
+    padding: 16px 0px;
+    min-width: 70px;
 }
 
-.tab-button.active .icon {
-    filter: brightness(1.2);
+.sliding-tab-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 12px;
+    background: var(--tab-bg);
+    border: 2px solid var(--primary-dim);
+    border-radius: 8px;
+    color: var(--primary);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    opacity: 0.7;
+    min-height: 80px;
+    width: 56px;
+    overflow: hidden;
+    position: relative;
+    font-size: 0.9rem;
+    font-family: 'Press Start 2P', cursive;
+    box-shadow: 0 0 10px var(--button-glow-soft);
+}
+
+.sliding-tab-button .icon {
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+.sliding-tab-button .tab-text {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    position: absolute;
+}
+
+.sliding-tab-button:hover{
+    width: 100%;
+    opacity: 1;
+    transform: translateY(0px) !important; /* Overrides the default transform on global button hover */
+}
+.sliding-tab-button.active {
+    width: 100%;
+    opacity: 1;
+    box-shadow: 0 0 15px var(--button-glow), 0 0 25px var(--button-glow-soft);
+    background-color: var(--tab-active-bg);
+}
+
+.sliding-tab-button:hover .icon,
+.sliding-tab-button.active .icon {
+    opacity: 0;
+}
+
+.sliding-tab-button:hover .tab-text,
+.sliding-tab-button.active .tab-text {
+    opacity: 1;
+}
+
+.sliding-tab-button.active {
+    box-shadow: 0 0 20px var(--tab-active-glow);
+    border-color: var(--primary);
 }
 
 .config-tabs{

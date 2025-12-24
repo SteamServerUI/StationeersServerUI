@@ -24,6 +24,7 @@
         "config": {
             "UIText_ServerConfig": "Konfiguration",
             "UIText_DiscordIntegration": "Discord-integration",
+            "UIText_SLPModIntegration": "Launchpad Mods",
             "UIText_DetectionManager": "Detektering",
             "UIText_ConfigurationWizard": "Konfigurationsguide",
             "UIText_PleaseSelectSection": "Välj en konfigurationssektion ovan",
