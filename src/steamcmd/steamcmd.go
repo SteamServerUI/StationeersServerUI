@@ -131,6 +131,10 @@ func runSteamCMD(steamCMDDir string) (int, error) {
 	if err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			logger.Install.Error("❌ SteamCMD exited unsuccessfully: " + err.Error() + "\n")
+			if err.Error() == "exit status 8" {
+				logger.Install.Error("   ⚠️ Exit status 8 after the first install is a known issue. Please restart SSUI and try again. If the issue persists, feel free to ask for help on the SSUI Discord server or GitHub issues page.")
+				logger.Install.Error("   ⚠️ Please restart SSUI and try again. If the issue persists, please report it on the SSUI Discord server or GitHub issues page.")
+			}
 			return exitErr.ExitCode(), err
 		}
 		logger.Install.Error("❌ Error running SteamCMD: " + err.Error() + "\n")
