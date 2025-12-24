@@ -217,6 +217,21 @@
     opacity: 1;
 }
 
+
+@media (max-width: 768px) {
+
+.sliding-tab-button:hover .icon,
+.sliding-tab-button.active .icon {
+    opacity: 1;
+}
+
+.sliding-tab-button:hover .tab-text,
+.sliding-tab-button.active .tab-text {
+    opacity: 0;
+}
+
+}
+
 .sliding-tab-button.active {
     box-shadow: 0 0 20px var(--tab-active-glow);
     border-color: var(--primary);
@@ -410,6 +425,11 @@ select option {
 
     .section-title {
         font-size: 0.9rem;
+    }
+
+    .sliding-tab-button {
+        width: 100%;
+        padding: 10px 15px;
     }
 }
 
