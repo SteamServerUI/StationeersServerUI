@@ -24,6 +24,7 @@
         "config": {
             "UIText_ServerConfig": "Server Konfiguration",
             "UIText_DiscordIntegration": "Discord-Integration",
+            "UIText_SLPModIntegration": "Launchpad Mods",
             "UIText_DetectionManager": "Erkennungsmanager",
             "UIText_ConfigurationWizard": "Konfigurations-Assistent",
             "UIText_PleaseSelectSection": "Bitte wähle oben eine Konfigurationssektion aus",
@@ -73,7 +74,7 @@
                 "UIText_UseSteamP2PInfo": "Steam Peer-to-Peer Netzwerk aktivieren"
             },
             "advanced": {
-                "UIText_AdvancedConfiguration": "Erweiterte Konfiguration",
+                "UIText_AdvancedConfiguration": "Erweiterte Funktionen",
                 "UIText_ServerAuthSecret": "Server Auth Geheimnis",
                 "UIText_ServerAuthSecretInfo": "Authentifizierungsgeheimnis für Server (optional)",
                 "UIText_ServerExePath": "Server Ausführungspfad",

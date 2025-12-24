@@ -1,16 +1,3 @@
-// Show active tab
-function showTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
-
-    document.getElementById(tabId).classList.add('active');
-    document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
-
-    if (tabId === 'detection-list-tab') {
-        loadDetections();
-    }
-}
-
 // Toggle detection type
 function setupDetectionTypeToggle() {
     const toggle = document.getElementById('detection-type-toggle');
@@ -50,7 +37,7 @@ function loadDetections() {
             loader.style.display = 'none';
 
             if (detections.length === 0) {
-                detectionItems.innerHTML = '<div class="empty-list">No custom detections found. Add one to get started.</div>';
+                detectionItems.innerHTML = '<div class="empty-list">No custom detections found. Add one below to get started.</div>';
                 return;
             }
 
@@ -163,8 +150,5 @@ function escapeHtml(unsafe) {
 document.addEventListener('DOMContentLoaded', () => {
     loadDetections();
     setupDetectionTypeToggle();
-    document.querySelectorAll('.tab-button').forEach(button => {
-        button.addEventListener('click', () => showTab(button.getAttribute('data-tab')));
-    });
     document.querySelector('.add-button').addEventListener('click', submitDetection);
 });

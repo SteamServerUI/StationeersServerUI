@@ -94,6 +94,7 @@ type ConfigTemplateData struct {
 
 	UIText_ServerConfig         string
 	UIText_DiscordIntegration   string
+	UIText_SLPModIntegration    string
 	UIText_DetectionManager     string
 	UIText_ConfigurationWizard  string
 	UIText_PleaseSelectSection  string
