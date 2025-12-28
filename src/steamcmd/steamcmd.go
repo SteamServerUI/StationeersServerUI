@@ -74,7 +74,7 @@ func runSteamCMD(steamCMDDir string) (int, error) {
 	} else {
 		// Another goroutine holds the lock; log and wait.
 		logger.Core.Warn("🔄 SteamMu is currently locked, waiting for it to be unlocked and then continuing...")
-		steamMu.Lock() // Block until steamMu becomes available, then snack it and lock it again
+		steamMu.Lock() // Block until steamMu becomes available, then snag it and lock it again
 		logger.Core.Debug("🔄 Locking SteamMu for SteamCMD execution..")
 	}
 	defer steamMu.Unlock()
@@ -94,16 +94,16 @@ func runSteamCMD(steamCMDDir string) (int, error) {
 		}
 	}
 
-	// Build SteamCMD command
+	// Build the initial SteamCMD command
 	cmd := buildSteamCMDCommand(steamCMDDir, currentDir)
 
 	// Set output to stdout and stderr
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
+	// Apply Linux-specific HOME environment variable override
 	if runtime.GOOS == "linux" {
 		env := os.Environ()
-		// Replace or set HOME
 		newEnv := make([]string, 0, len(env)+1)
 		foundHome := false
 		for _, e := range env {
@@ -120,28 +120,84 @@ func runSteamCMD(steamCMDDir string) (int, error) {
 		cmd.Env = newEnv
 	}
 
-	// Run the command
 	if config.GetLogLevel() == 10 {
 		cmdString := strings.Join(cmd.Args, " ")
 		logger.Install.Info("🕑 Running SteamCMD: " + cmdString)
 	} else {
 		logger.Install.Info("🕑 Running SteamCMD...")
 	}
-	err = cmd.Run()
-	if err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			logger.Install.Error("❌ SteamCMD exited unsuccessfully: " + err.Error() + "\n")
-			if err.Error() == "exit status 8" {
-				logger.Install.Error("   ⚠️ Exit status 8 after the first install is a known issue. Please restart SSUI and try again. If the issue persists, feel free to ask for help on the SSUI Discord server or GitHub issues page.")
-				logger.Install.Error("   ⚠️ Please restart SSUI and try again. If the issue persists, please report it on the SSUI Discord server or GitHub issues page.")
-			}
-			return exitErr.ExitCode(), err
+
+	// Retry loop: maximum 2 attempts, with retry only on exit status 8
+	var exitCode int = -1
+	var runErr error
+
+	for attempt := 1; attempt <= 2; attempt++ {
+		runErr = cmd.Run()
+
+		if runErr == nil {
+			// Success!
+			logger.Install.Info("✅ SteamCMD executed successfully.\n")
+			return 0, nil
 		}
-		logger.Install.Error("❌ Error running SteamCMD: " + err.Error() + "\n")
-		return -1, err
+
+		// Check if it's an ExitError so we can inspect the code
+		if exitErr, ok := runErr.(*exec.ExitError); ok {
+			exitCode = exitErr.ExitCode()
+			logger.Install.Error("❌ SteamCMD exited unsuccessfully: " + runErr.Error() + "\n")
+
+			if exitCode == 8 && attempt == 1 {
+				logger.Install.Warn("⚠️ SteamCMD failed with exit status 8 on first attempt. Retrying once...")
+				// Rebuild a fresh command for the retry
+				cmd = buildSteamCMDCommand(steamCMDDir, currentDir)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+
+				// Re-apply Linux env modifications
+				if runtime.GOOS == "linux" {
+					env := os.Environ()
+					newEnv := make([]string, 0, len(env)+1)
+					foundHome := false
+					for _, e := range env {
+						if !strings.HasPrefix(e, "HOME=") {
+							newEnv = append(newEnv, e)
+						} else {
+							newEnv = append(newEnv, "HOME="+currentDir)
+							foundHome = true
+						}
+					}
+					if !foundHome {
+						newEnv = append(newEnv, "HOME="+currentDir)
+					}
+					cmd.Env = newEnv
+				}
+
+				// Log the retry
+				if config.GetLogLevel() == 10 {
+					cmdString := strings.Join(cmd.Args, " ")
+					logger.Install.Info("🕑 Retrying SteamCMD: " + cmdString)
+				} else {
+					logger.Install.Info("🕑 Retrying SteamCMD...")
+				}
+
+				continue // Go to next attempt
+			}
+
+			// If we get here: either not exit 8, or it was exit 8 on the second attempt
+			if exitCode == 8 {
+				logger.Install.Error("   ⚠️ Exit status 8 persisted after retry. Please restart SSUI and try again. If the issue persists, feel free to ask for help on the SSUI Discord server or GitHub issues page.")
+			}
+		} else {
+			// Not an ExitError (e.g., command not found, permission denied, etc.)
+			logger.Install.Error("❌ Error running SteamCMD: " + runErr.Error() + "\n")
+			exitCode = -1
+		}
+
+		// If we reach here, the command failed and we're not retrying
+		break
 	}
-	logger.Install.Info("✅ SteamCMD executed successfully.\n")
-	return 0, nil
+
+	// Final return after failure (with or without retry)
+	return exitCode, runErr
 }
 
 // buildSteamCMDCommand constructs the SteamCMD command based on the OS.
