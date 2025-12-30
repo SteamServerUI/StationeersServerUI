@@ -886,8 +886,8 @@ async function fetchLatestRelease() {
             };
         }
         if (linuxAsset) {
-            curlCommand.textContent = `curl -L ${preferredAsset.browser_download_url} -o "${preferredAsset.name}"`;
-            wgetCommand.textContent = `wget ${preferredAsset.browser_download_url}`;
+            curlCommand.textContent = `curl -L ${linuxAsset.browser_download_url} -o "${linuxAsset.name}"`;
+            wgetCommand.textContent = `wget ${linuxAsset.browser_download_url}`;
         }
         if (windowsAsset) {
             psCommand.textContent = `Invoke-WebRequest -Uri ${windowsAsset.browser_download_url} -OutFile "${windowsAsset.name}"`;
