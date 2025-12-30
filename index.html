@@ -180,7 +180,8 @@
         }
 
         .curl-command,
-        .wget-command {
+        .wget-command,
+        .ps-command {
             background-color: rgba(15, 15, 26, 0.7);
             border-radius: 8px;
             padding: 15px;
@@ -191,13 +192,6 @@
             border: 1px solid rgba(123, 104, 238, 0.2);
             position: relative;
             margin-bottom: 20px;
-        }
-        
-        .curl-heading,
-        .wget-heading {
-            margin-bottom: 10px;
-            color: var(--text-secondary);
-            font-size: 1rem;
         }
         
         .features {
@@ -638,7 +632,7 @@
                     <div class="term-dot yellow"></div>
                     <div class="term-dot green"></div>
                     <div class="terminal-title">
-                        Download from CLI:
+                        Download from CLI (Linux):
                     </div>
                 </div>
 
@@ -646,15 +640,34 @@
                     <div class="prompt">
                         <span>stationeers</span>@server ➜ <span>~/install</span>
                     </div>
-                    <div class="command" id="curl-command">
-                        # Loading curl command...
+                    <div class="command" id="wget-command">
+                        # Loading command... If this fails, you may have exeeded the GitHub API rate limit. Retry in an hour.
                     </div>
 
                     <div class="prompt" style="margin-top:20px;">
                         <span>stationeers</span>@server ➜ <span>~/install</span>
                     </div>
-                    <div class="command" id="wget-command">
-                        # Loading wget command...
+                    <div class="command" id="curl-command">
+                        # Loading command... If this fails, you may have exeeded the GitHub API rate limit. Retry in an hour.
+                    </div>
+                </div>
+            </div>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="term-dot red"></div>
+                    <div class="term-dot yellow"></div>
+                    <div class="term-dot green"></div>
+                    <div class="terminal-title">
+                        Download from CLI (Windows):
+                    </div>
+                </div>
+
+                <div class="terminal-body">
+                    <div class="prompt">
+                        <span>PS </span>C:\MyGameServers\SSUI> <span></span>
+                    </div>
+                    <div class="command" id="ps-command">
+                        # Loading command... If this fails, you may have exeeded the GitHub API rate limit. Retry in an hour.
                     </div>
                 </div>
             </div>
@@ -737,7 +750,7 @@
             <div class="cta-buttons">
                 <button id="main-download" class="cta-btn cta-primary">
                     <i class="fas fa-download"></i>
-                    Download Now
+                    Download .exe Now
                 </button>
                 <a href="https://github.com/SteamServerUI/StationeersServerUI/wiki" target="_blank" class="cta-btn cta-secondary">
                     <i class="fas fa-book"></i>
@@ -779,23 +792,60 @@
         </div>
     </footer>
 
-    <script>
-const REPO_OWNER = "JacksonTheMaster";
+<script>
+const REPO_OWNER = "SteamServerUI";
 const REPO_NAME = "StationeersServerUI";
 const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
 const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 
-// Function to set button loading state
+async function fetchWithCache(url, key) {
+    const now = Date.now();
+    const cachedItem = localStorage.getItem(key);
+    if (cachedItem) {
+        try {
+            const { timestamp, data } = JSON.parse(cachedItem);
+            // Check if cache is still valid (less than 30 mins old)
+            if (now - timestamp < CACHE_DURATION) {
+                console.log(`[Cache Hit] Serving ${key} from local storage`);
+                return data;
+            }
+        } catch (e) {
+            console.warn("Error parsing cache, clearing it.");
+            localStorage.removeItem(key);
+        }
+    }
+    console.log(`[Network Request] Fetching ${url}`);
+    const response = await fetch(url);
+    if (!response.ok) {
+        // Attempt to parse the error body to check for rate limit messages
+        const errorBody = await response.json().catch(() => ({}));
+        const error = new Error(`GitHub API error: ${response.status}`);
+        error.status = response.status;
+        error.apiMessage = errorBody.message || response.statusText;
+        throw error;
+    }
+    const data = await response.json();
+    // Save to cache
+    try {
+        localStorage.setItem(key, JSON.stringify({ timestamp: now, data }));
+    } catch (e) {
+        console.warn("LocalStorage full or disabled");
+    }
+    return data;
+}
+
 function setButtonLoading(button, isLoading) {
+    if (!button) return;
     if (isLoading) {
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
     } else {
         button.disabled = false;
         if (button.id === 'windows-download') {
-            button.innerHTML = '<i class="fab fa-windows"></i> Download for Windows';
+            button.innerHTML = '<i class="fab fa-windows"></i> Download latest .exe for Windows';
         } else if (button.id === 'linux-download') {
-            button.innerHTML = '<i class="fab fa-linux"></i> Download for Linux';
+            button.innerHTML = '<i class="fab fa-linux"></i> Download latest .x86_64 for Linux';
         } else if (button.id === 'main-download') {
             button.innerHTML = '<i class="fas fa-download"></i> Download Now';
         }
@@ -810,6 +860,7 @@ async function fetchLatestRelease() {
     const releaseInfo = document.getElementById('release-info');
     const curlCommand = document.getElementById('curl-command');
     const wgetCommand = document.getElementById('wget-command');
+    const psCommand = document.getElementById('ps-command');
 
     const urlParams = new URLSearchParams(window.location.search);
     const autoDownloadType = urlParams.get('download');
@@ -821,49 +872,37 @@ async function fetchLatestRelease() {
     releaseInfo.textContent = 'Loading latest release info...';
 
     try {
-        const response = await fetch(`${API_URL}/releases/latest`);
-        if (!response.ok) {
-            throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
-        }
-        const release = await response.json();
-
+        // Use cached fetch
+        const release = await fetchWithCache(`${API_URL}/releases/latest`, 'ssui_latest_release');
         let windowsAsset = release.assets.find(a => a.name.toLowerCase().endsWith('.exe'));
         let linuxAsset = release.assets.find(a => a.name.toLowerCase().endsWith('.x86_64'));
-
         releaseInfo.textContent = `Latest Version: ${release.tag_name}`;
-
-        // Setup Windows Button
-        if (windowsAsset) {
-            windowsBtn.onclick = () => window.location.href = windowsAsset.browser_download_url;
+        if (windowsAsset) windowsBtn.onclick = () => window.location.href = windowsAsset.browser_download_url;
+        if (linuxAsset) linuxBtn.onclick = () => window.location.href = linuxAsset.browser_download_url;
+        const preferredAsset = windowsAsset || linuxAsset;
+        if (mainDownloadBtn) {
+            mainDownloadBtn.onclick = () => {
+                window.location.href = preferredAsset ? preferredAsset.browser_download_url : `${REPO_URL}/releases/latest`;
+            };
         }
-
-        // Setup Linux Button
         if (linuxAsset) {
-            linuxBtn.onclick = () => window.location.href = linuxAsset.browser_download_url;
-        }
-
-        // Setup Main Button
-        const preferredAsset = linuxAsset || windowsAsset;
-        mainDownloadBtn.onclick = () => {
-            window.location.href = preferredAsset ? preferredAsset.browser_download_url : `${REPO_URL}/releases/latest`;
-        };
-
-        if (preferredAsset) {
             curlCommand.textContent = `curl -L ${preferredAsset.browser_download_url} -o "${preferredAsset.name}"`;
-        }
-        if (preferredAsset) {
             wgetCommand.textContent = `wget ${preferredAsset.browser_download_url}`;
         }
-
-        if (autoDownloadType === 'windows' && windowsAsset) {
-            window.location.href = windowsAsset.browser_download_url;
-        } else if (autoDownloadType === 'linux' && linuxAsset) {
-            window.location.href = linuxAsset.browser_download_url;
+        if (windowsAsset) {
+            psCommand.textContent = `Invoke-WebRequest -Uri ${windowsAsset.browser_download_url} -OutFile "${windowsAsset.name}"`;
         }
-
+        if (autoDownloadType === 'windows' && windowsAsset) window.location.href = windowsAsset.browser_download_url;
+        else if (autoDownloadType === 'linux' && linuxAsset) window.location.href = linuxAsset.browser_download_url;
     } catch (error) {
-        console.error('Error:', error);
-        releaseInfo.textContent = 'Failed to load release info.';
+        console.error('Release Fetch Error:', error);
+        
+        // Check specifically for Rate Limit
+        if (error.status === 403 && error.apiMessage && error.apiMessage.includes('rate limit')) {
+            releaseInfo.innerHTML = `<span style="color:var(--warning)"><i class="fas fa-exclamation-triangle"></i> API Rate Limit Exceeded.</span> <a href="${REPO_URL}/releases/latest" target="_blank" style="color:var(--accent); text-decoration:underline;">Click here to manually download from GitHub</a>`;
+        } else {
+            releaseInfo.textContent = 'Failed to load info. Check internet connection.';
+        }
     } finally {
         // Reset loading states
         setButtonLoading(windowsBtn, false);
@@ -872,62 +911,55 @@ async function fetchLatestRelease() {
     }
 }
 
-// Function to fetch repository stats
 async function fetchRepoStats() {
     try {
-        const response = await fetch(API_URL);
-        if (!response.ok) {
-            throw new Error(`GitHub API error: ${response.status}`);
-        }
-        const repo = await response.json();
-
+        // 1. Fetch Repo Info (Stars, Forks)
+        const repo = await fetchWithCache(API_URL, 'ssui_repo_info');
+        
         document.getElementById('star-count').textContent = repo.stargazers_count.toLocaleString();
         document.getElementById('fork-count').textContent = repo.forks_count.toLocaleString();
 
         const lastUpdate = new Date(repo.updated_at);
         document.getElementById('last-update').textContent = lastUpdate.toLocaleDateString();
-
-        const releasesResponse = await fetch(`${API_URL}/releases`);
-        const releases = await releasesResponse.json();
-
+        // 2. Fetch Releases (for total downloads)
+        // Note: This consumes a second API call
+        const releases = await fetchWithCache(`${API_URL}/releases`, 'ssui_all_releases');
+        
         let totalDownloads = 0;
         releases.forEach(release => {
             release.assets.forEach(asset => {
                 totalDownloads += asset.download_count;
             });
         });
-
         document.getElementById('download-count').textContent = totalDownloads.toLocaleString();
     } catch (error) {
-        console.error('Error fetching repo stats:', error);
-        document.getElementById('star-count').textContent = 'N/A';
-        document.getElementById('fork-count').textContent = 'N/A';
-        document.getElementById('download-count').textContent = 'N/A';
-        document.getElementById('last-update').textContent = 'N/A';
+        console.error('Stats Fetch Error:', error);
+        const errorMsg = (error.status === 403) ? 'Rate Limit' : 'N/A';
+        
+        document.getElementById('star-count').textContent = errorMsg;
+        document.getElementById('fork-count').textContent = errorMsg;
+        document.getElementById('download-count').textContent = errorMsg;
+        document.getElementById('last-update').textContent = errorMsg;
     }
 }
 
-// Mouse follow effect for glow
 document.addEventListener('mousemove', (e) => {
     const glow1 = document.getElementById('glow1');
     const glow2 = document.getElementById('glow2');
-
-    setTimeout(() => {
+    
+    if(!glow1 || !glow2) return;
+    requestAnimationFrame(() => {
         glow1.style.left = (e.clientX - 150) + 'px';
         glow1.style.top = (e.clientY - 150) + 'px';
-    }, 100);
-
-    setTimeout(() => {
         glow2.style.left = (e.clientX - 150) + 'px';
         glow2.style.top = (e.clientY - 150) + 'px';
-    }, 200);
+    });
 });
 
-// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     fetchLatestRelease();
     fetchRepoStats();
 });
-    </script>
+</script>
 </body>
 </html>
