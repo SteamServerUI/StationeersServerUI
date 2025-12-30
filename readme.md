@@ -27,13 +27,14 @@
 
 ### 🌟 This is a WebUi, you don't need a graphical OS to run this 🌟
 
-[![Download latest Version](https://img.shields.io/badge/Download-Stationeers%20Server%20UI-orange?style=for-the-badge)](https://jacksonthemaster.github.io/StationeersServerUI)
+[![Download latest Version](https://img.shields.io/badge/Download-Stationeers%20Server%20UI-orange?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/)
+[![Preview Website](https://img.shields.io/badge/Visit-Live%20Preview%20Website-green?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/server.html)
 </div>
 
 </div>
 <div align="center">
   
-  [![UI Overview](media/SSUI_AD.gif)](https://jacksonthemaster.github.io/StationeersServerUI/)
+  [![UI Overview](media/SSUI_AD.gif)](https://steamserverui.github.io/StationeersServerUI/server.html)
   <em>Manage your Stationeers server with style - Retro interface, modern capabilities.</em>
 </div>
 
