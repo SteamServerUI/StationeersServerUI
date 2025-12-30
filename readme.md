@@ -15,7 +15,7 @@
 ![Last Commit](https://img.shields.io/github/last-commit/jacksonthemaster/StationeersServerUI?logo=git&logoColor=white)
 ![Stationeers](https://img.shields.io/badge/Game-Stationeers-orange?logo=steam&logoColor=white)
 
-
+Managing a Stationeers dedicated server shouldn't require a PhD in Linux or hours of config editing and wiki reading. SSUI gives you a powerful web interface, automated backups, Discord integration, and professional server management - all from a single executable. No drama, just a working server. In minutes.
 
 ## ✨ Feature Showcase ✨
 
@@ -27,29 +27,27 @@
 
 ### 🌟 This is a WebUi, you don't need a graphical OS to run this 🌟
 
-[![Download latest Version](https://img.shields.io/badge/Download-Page%20-orange?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/)
+[![Downloadpage](https://img.shields.io/badge/Open-Download%20Page-orange?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/)
 
-[![Download latest Version](https://img.shields.io/badge/Direct-Windows%20Download-blue?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/?download=windows)
-[![Download latest Version](https://img.shields.io/badge/Direct-Linux%20Download-%23FCC624?style=for-the-badge&logo=linux&logoColor=%23FCC624)](https://steamserverui.github.io/StationeersServerUI/?download=linux)
+[![Download latest windows Version](https://img.shields.io/badge/Direct-Windows%20Download-blue?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/?download=windows)
+[![Download latest linux Version](https://img.shields.io/badge/Direct-Linux%20Download-%23FCC624?style=for-the-badge&logo=linux&logoColor=%23FCC624)](https://steamserverui.github.io/StationeersServerUI/?download=linux)
 
-[![Preview Website](https://img.shields.io/badge/Visit-Live%20Preview%20Website-green?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/preview/server.html)
+[![Preview Website](https://img.shields.io/badge/Visit-Live%20Preview-green?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/preview/server.html)
 </div>
 
 </div>
 <div align="center">
+  <img src="media/events-preview.png" width="800" onclick="window.open('https://steamserverui.github.io/StationeersServerUI/server.html')">
   
-  [![UI Overview](media/SSUI_AD.gif)](https://steamserverui.github.io/StationeersServerUI/server.html)
   <em>Manage your Stationeers server with style - Retro interface, modern capabilities.</em>
 </div>
 
 
 ## TL;DR - Get Started Fast
 
-1. 📦 Download latest executable from [here](https://github.com/JacksonTheMaster/StationeersServerUI/releases)
-2. 📁 Place in empty folder and run it on Linux or Windows (chmod +x on linux)
-3. 🌐 Access UI at `https://<<server-ip>>:8443`
-4. 📚 See [First-Time Setup](https://github.com/JacksonTheMaster/StationeersServerUI/wiki/First-Time-Setup) in the wiki
-5. 📖 Read the [Wiki](https://github.com/JacksonTheMaster/StationeersServerUI/wiki) and follow the chained pages (links at bottom of page)!
+📚 Visit the [Quick-Start-Guide](https://github.com/SteamServerUI/StationeersServerUI/wiki/Quick-Start-Guide) in the [Wiki](https://github.com/JacksonTheMaster/StationeersServerUI/wiki)
+⛓️‍💥 Follow the chained pages (links at bottom of page)!
+📖 Full Documentation is provided in the [Wiki](https://github.com/JacksonTheMaster/StationeersServerUI/wiki).
 
 ## What is This?
 
