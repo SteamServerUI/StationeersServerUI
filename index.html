@@ -177,7 +177,7 @@
             box-shadow: 0 6px 20px rgba(123, 104, 238, 0.4);
         }
         
-        .curl-command {
+        .curl-command, .wget-command {
             background-color: rgba(15, 15, 26, 0.7);
             border-radius: 8px;
             padding: 15px;
@@ -187,9 +187,10 @@
             overflow-x: auto;
             border: 1px solid rgba(123, 104, 238, 0.2);
             position: relative;
+            margin-bottom: 20px;
         }
         
-        .curl-heading {
+        .curl-heading, .wget-heading {
             margin-bottom: 10px;
             color: var(--text-secondary);
             font-size: 1rem;
@@ -267,7 +268,6 @@
         
         .screenshot-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }
         
@@ -499,20 +499,21 @@
                 <div class="badge"><i class="fas fa-cog"></i> Zero Config</div>
             </div>
         </header>
+
+
         
         <section class="hero">
             <h1 class="headline">Manage Your Stationeers Server With Style</h1>
             <p class="subheadline">A sleek, retro-themed web UI to manage your Stationeers dedicated server. No more command line headaches or manual file editing!</p>
-            <img src="https://raw.githubusercontent.com/SteamServerUI/StationeersServerUI/main/media/events-preview.png" alt="Stationeers Server UI Dashboard" class="demo-img">
-        </section>
-        
-        <div class="cta-buttons">
+            <div class="cta-buttons">
             </button>
             <a href="https://SteamServerUI.github.io/StationeersServerUI/preview/server.html" target="_blank" class="cta-btn cta-secondary">
                 <i class="fas fa-globe"></i>
                 View Live Demo
             </a>
         </div>
+            <img src="https://raw.githubusercontent.com/SteamServerUI/StationeersServerUI/main/media/events-preview.png" alt="Stationeers Server UI Dashboard" class="demo-img">
+        </section>
 
         <section class="download-section">
             <h2 class="download-heading">Download Stationeers Server UI from GitHub</h2>
@@ -530,9 +531,14 @@
                 </button>
             </div>
             <div class="curl-command">
-                <p class="curl-heading">Or download with curl:</p>
+                <p class="curl-heading">Or download from CLI using curl:</p>
                 <code id="curl-command"># Loading curl command...</code>
                 <button class="copy-btn" onclick="copyToClipboard('curl-command')">Copy</button>
+            </div>
+            <div class="wget-command">
+                <p class="wget-heading">Or using wget:</p>
+                <code id="wget-command"># Loading wget command...</code>
+                <button class="copy-btn" onclick="copyToClipboard('wget-command')">Copy</button>
             </div>
         </section>
         
@@ -598,7 +604,7 @@
 
             <div class="cta-buttons">
             </button>
-            <a href="https://SteamServerUI.github.io/StationeersServerUI/server.html" target="_blank" class="cta-btn cta-secondary">
+            <a href="https://SteamServerUI.github.io/StationeersServerUI/preview/server.html" target="_blank" class="cta-btn cta-secondary">
                 <i class="fas fa-globe"></i>
                 View Live Demo
             </a>
@@ -685,6 +691,10 @@ async function fetchLatestRelease() {
     const mainDownloadBtn = document.getElementById('main-download');
     const releaseInfo = document.getElementById('release-info');
     const curlCommand = document.getElementById('curl-command');
+    const wgetCommand = document.getElementById('wget-command');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const autoDownloadType = urlParams.get('download');
 
     // Set loading states
     setButtonLoading(windowsBtn, true);
@@ -699,97 +709,43 @@ async function fetchLatestRelease() {
         }
         const release = await response.json();
 
-        if (!release.tag_name) {
-            throw new Error('No valid release found');
-        }
+        let windowsAsset = release.assets.find(a => a.name.toLowerCase().endsWith('.exe'));
+        let linuxAsset = release.assets.find(a => a.name.toLowerCase().endsWith('.x86_64'));
 
-        // Update release info
         releaseInfo.textContent = `Latest Version: ${release.tag_name}`;
 
-        // Find Windows and Linux assets
-        let windowsAsset = null;
-        let linuxAsset = null;
-
-        release.assets.forEach(asset => {
-            const name = asset.name.toLowerCase();
-            if (name.endsWith('.exe')) {
-                windowsAsset = asset;
-            }
-            if (name.endsWith('.x86_64')) {
-                linuxAsset = asset;
-            }
-        });
-
-        // Log for debugging
-        console.log('Detected assets:', { windowsAsset, linuxAsset });
-
-        // Update download buttons
+        // Setup Windows Button
         if (windowsAsset) {
-            windowsBtn.onclick = () => {
-                console.log('Windows download clicked:', windowsAsset.browser_download_url);
-                window.location.href = windowsAsset.browser_download_url;
-            };
-        } else {
-            windowsBtn.onclick = () => {
-                console.log('Windows asset not found, redirecting to releases');
-                window.location.href = `${REPO_URL}/releases/latest`;
-                alert('Windows download not available. Redirecting to releases page.');
-            };
-            windowsBtn.style.opacity = '0.7';
-            windowsBtn.title = 'Windows download not available';
+            windowsBtn.onclick = () => window.location.href = windowsAsset.browser_download_url;
         }
 
+        // Setup Linux Button
         if (linuxAsset) {
-            linuxBtn.onclick = () => {
-                console.log('Linux download clicked:', linuxAsset.browser_download_url);
-                window.location.href = linuxAsset.browser_download_url;
-            };
-        } else {
-            linuxBtn.onclick = () => {
-                console.log('Linux asset not found, redirecting to releases');
-                window.location.href = `${REPO_URL}/releases/latest`;
-                alert('Linux download not available. Redirecting to releases page.');
-            };
-            linuxBtn.style.opacity = '0.7';
-            linuxBtn.title = 'Linux download not available';
+            linuxBtn.onclick = () => window.location.href = linuxAsset.browser_download_url;
         }
 
-        // Set main download button
-        const preferredAsset = windowsAsset || linuxAsset;
+        // Setup Main Button
+        const preferredAsset = linuxAsset || windowsAsset;
         mainDownloadBtn.onclick = () => {
-            if (preferredAsset) {
-                console.log('Main download clicked:', preferredAsset.browser_download_url);
-                window.location.href = preferredAsset.browser_download_url;
-            } else {
-                console.log('No assets found for main download, redirecting to releases');
-                window.location.href = `${REPO_URL}/releases/latest`;
-                alert('No downloads available. Redirecting to releases page.');
-            }
+            window.location.href = preferredAsset ? preferredAsset.browser_download_url : `${REPO_URL}/releases/latest`;
         };
 
-        // Update curl command
         if (preferredAsset) {
             curlCommand.textContent = `curl -L ${preferredAsset.browser_download_url} -o "${preferredAsset.name}"`;
-        } else {
-            curlCommand.textContent = `Visit ${REPO_URL}/releases/latest for manual download`;
-            curlCommand.style.color = 'var(--warning)';
         }
-    } catch (error) {
-        console.error('Error fetching release info:', error);
-        releaseInfo.textContent = 'Failed to load release info. You may got Github Rate Limited. Redirecting to GitHub instead.';
-        releaseInfo.style.color = 'var(--danger)';
-        curlCommand.textContent = `Visit ${REPO_URL}/releases/latest for manual download`;
-        curlCommand.style.color = 'var(--warning)';
+        if (preferredAsset) {
+            wgetCommand.textContent = `wget ${preferredAsset.browser_download_url}`;
+        }
 
-        // Set fallback for buttons
-        [windowsBtn, linuxBtn, mainDownloadBtn].forEach(btn => {
-            btn.onclick = () => {
-                console.log('Error fallback, redirecting to releases');
-                window.location.href = `${REPO_URL}/releases/latest`;
-            };
-            btn.style.opacity = '0.7';
-            btn.title = 'Download not available';
-        });
+        if (autoDownloadType === 'windows' && windowsAsset) {
+            window.location.href = windowsAsset.browser_download_url;
+        } else if (autoDownloadType === 'linux' && linuxAsset) {
+            window.location.href = linuxAsset.browser_download_url;
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        releaseInfo.textContent = 'Failed to load release info.';
     } finally {
         // Reset loading states
         setButtonLoading(windowsBtn, false);
