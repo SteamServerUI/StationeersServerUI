@@ -14,18 +14,24 @@
             "UIText_API_Info": "API Endpoint Reference",
             "UIText_Copyright": "Copyright",
             "UIText_Copyright1": "Licensed under",
-            "UIText_Copyright2": "Proprietary License"
+            "UIText_Copyright2": "Proprietary License",
+            "UIText_UpdateAvailable": "A new version of SSUI is ready to install and will be installed the next time you restart the application.",
+            "UIText_UpdateLater": "Later",
+            "UIText_UpdateNow": "Update Now",
+            "UIText_UpdateInstalling": "Installing update, please wait...",
+            "UIText_UpdateFailed": "Update failed. Please try again later."
         },
         "config": {
             "UIText_ServerConfig": "Server Configuration",
             "UIText_DiscordIntegration": "Discord Integration",
+            "UIText_SLPModIntegration": "Launchpad Mods",
             "UIText_DetectionManager": "Detection Manager",
             "UIText_ConfigurationWizard": "Configuration Wizard",
             "UIText_PleaseSelectSection": "Please select a configuration section above",
             "UIText_UseWizardAlternative": "Alternatively, use the Configuration Wizard to configure the server.",
             "UIText_BasicSettings": "Basic Settings",
             "UIText_NetworkSettings": "Network Settings",
-            "UIText_AdvancedSettings": "Advanced Settings",
+            "UIText_AdvancedSettings": "Advanced Features",
             "UIText_TerrainSettings": "World generation",
             "basic": {
                 "UIText_BasicServerSettings": "Basic Server Settings",
@@ -37,9 +43,9 @@
                 "UIText_MaxPlayers": "Max Players",
                 "UIText_MaxPlayersInfo": "Maximum number of players allowed",
                 "UIText_ServerPassword": "Server Password",
-                "UIText_ServerPasswordInfo": "Leave empty for no password",
+                "UIText_ServerPasswordInfo": "Password needed to connect to the server. Leave empty for no password",
                 "UIText_AdminPassword": "Admin Password",
-                "UIText_AdminPasswordInfo": "Server Admin Password",
+                "UIText_AdminPasswordInfo": "Server Admin Password. VERY Legacy, unused in current Stationeers versions (as far as we know) - Leavy empty unless you know what this parameter does (and let us know if you do!)",
                 "UIText_AutoSave": "Auto Save",
                 "UIText_AutoSaveInfo": "Set to TRUE to enable automatic saving",
                 "UIText_SaveInterval": "Save Interval",
@@ -71,7 +77,7 @@
             "advanced": {
                 "UIText_AdvancedConfiguration": "Advanced Configuration",
                 "UIText_ServerAuthSecret": "Server Auth Secret",
-                "UIText_ServerAuthSecretInfo": "Authentication secret for the server (optional)",
+                "UIText_ServerAuthSecretInfo": "Authentication secret for the server. Needed to run console commands from the client (optional). SSUI also allows console commands from the WebUI and Discord.",
                 "UIText_ServerExePath": "Server Executable Path",
                 "UIText_ServerExePathInfo": "System path to server executable",
                 "UIText_ServerExePathInfo2": "Not editable from the UI for security reasons, but you can edit it manually in the config.json file.",
@@ -80,7 +86,7 @@
                 "UIText_AutoRestartServerTimer": "Scheduled Gameserver Restart",
                 "UIText_AutoRestartServerTimerInfo": "<p>Timeframe in <strong>minutes</strong> or <strong>time format (e.g., 15:04 or 03:04PM)</strong> to schedule an automatic gameserver restart. 0 = disabled, 1440 = 24 hours, etc. You will see 'Attention, server is restarting in 30/20/10/5 seconds!' messages <strong>ingame</strong> before the restart.</p>",
                 "UIText_GameBranch": "Game Branch",
-                "UIText_GameBranchInfo": "Branch of the game to use. When changed, requires to restart SSUI!",
+                "UIText_GameBranchInfo": "Branch of the game to use. When changed, requires to restart SSUI or press the Update Server button on the Main dashboard!",
                 "UIText_AllowAutoGameServerUpdates": "Enable Auto Game Server Updates",
                 "UIText_AllowAutoGameServerUpdatesInfo": "Allow the gameserver to automatically query for and update to the latest version. Attention: Restarts the server when a new version was found and installed. Will send multiple warning messages to the sever with SAY commands 60-10 seconds before the restart.",
                 "UIText_AutoStartServerOnStartup": "Auto Start Server on Startup",
@@ -226,7 +232,7 @@
             "UIText_UPnPEnabled_SkipButton": "Skip",
             "UIText_LocalIPAddress_Title": "Stationeers Server UI",
             "UIText_LocalIPAddress_HeaderTitle": "Network (4/4)",
-            "UIText_LocalIPAddress_StepMessage": "Enter server's local IP address in format 0.0.0.0 (no CIDR notation)",
+            "UIText_LocalIPAddress_StepMessage": "Enter the IP address to bind to. Recommended to leave at 0.0.0.0 unless you really know what you're doing.",
             "UIText_LocalIPAddress_PrimaryPlaceholder": "0.0.0.0",
             "UIText_LocalIPAddress_PrimaryLabel": "Local IP Address",
             "UIText_LocalIPAddress_SubmitButton": "Save & Continue",
@@ -257,7 +263,8 @@
             "UIText_ChangeUser_PrimaryLabel": "Username to Add/Update",
             "UIText_ChangeUser_SecondaryLabel": "New Password",
             "UIText_ChangeUser_SecondaryPlaceholder": "Password",
-            "UIText_ChangeUser_SubmitButton": "Add/Update User"
+            "UIText_ChangeUser_SubmitButton": "Add/Update User",
+            "UIText_FinalizeSubmitButtonText": "Finalize Setup"
         }
     },
     "BackendText": {

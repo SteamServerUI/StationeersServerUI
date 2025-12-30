@@ -44,7 +44,6 @@ type Event struct {
 	RawLog        string
 	Timestamp     string
 	PlayerInfo    *PlayerInfo
-	BackupInfo    *BackupInfo
 	ExceptionInfo *ExceptionInfo
 }
 
@@ -52,11 +51,6 @@ type Event struct {
 type PlayerInfo struct {
 	Username string
 	SteamID  string
-}
-
-// BackupInfo contains information about a world save/backup
-type BackupInfo struct {
-	BackupIndex string
 }
 
 // ExceptionInfo contains information about a server exception

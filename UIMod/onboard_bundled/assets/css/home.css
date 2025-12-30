@@ -20,6 +20,7 @@
   border-left: 3px solid var(--primary);
   transition: opacity var(--transition-fast);
 }
+
 .status-indicator {
   width: 16px;
   height: 16px;
@@ -52,9 +53,11 @@
   height: 2px;
   background-color: #FFFFFF;
 }
+
 .status-indicator.offline::before {
   transform: translate(-50%, -50%) rotate(45deg);
 }
+
 .status-indicator.offline::after {
   transform: translate(-50%, -50%) rotate(-45deg);
 }
@@ -70,10 +73,12 @@
     transform: scale(1);
     box-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
   }
+
   50% {
     transform: scale(1.2);
     box-shadow: 0 0 14px rgba(76, 175, 80, 0.9);
   }
+
   100% {
     transform: scale(1);
     box-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
@@ -81,12 +86,16 @@
 }
 
 @keyframes shake {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0);
   }
+
   25% {
     transform: translateX(-2px);
   }
+
   75% {
     transform: translateX(2px);
   }
@@ -175,6 +184,7 @@
 .log-console-element-warn {
   border-left-color: var(--warning)
 }
+
 .log-console-element-error {
   border-left-color: var(--danger);
 }
@@ -255,16 +265,16 @@
 }
 
 #playerListRefreshButton {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    padding: 5px 10px;
-    font-size: 1.3rem;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 5px 10px;
+  font-size: 1.3rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .player-item {
@@ -280,7 +290,8 @@
   line-height: 1.6;
 }
 
-.player-item:hover, .player-item.animate-in:hover {
+.player-item:hover,
+.player-item.animate-in:hover {
   background-color: rgba(0, 0, 0, 0.6);
   border-color: var(--primary);
   transform: translateX(5px);
@@ -319,142 +330,445 @@
 
 
 #backupRefreshButton {
-    padding: 5px 10px;
-    font-size: 1.3rem;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  padding: 5px 10px;
+  font-size: 1.3rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .backup-controls {
-    position: absolute;
-    top: 30px;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
+  position: absolute;
+  top: 30px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 @media (max-width: 767px) {
-    .backup-controls {
-        position: unset;
-    }
+  .backup-controls {
+    position: unset;
+  }
 }
 
 #backupLimit {
-    padding: 8px 12px;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: var(--text-bright);
-    border: 1px solid rgba(0, 255, 171, 0.5);
-    border-radius: 4px;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.7rem;
+  padding: 8px 12px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: var(--text-bright);
+  border: 1px solid rgba(0, 255, 171, 0.5);
+  border-radius: 4px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
 }
 
 .backup-item {
-    background-color: rgba(0, 0, 0, 0.4);
-    padding: 20px;
-    margin-bottom: 15px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 2px solid rgba(0, 255, 171, 0.3);
-    transition: all var(--transition-normal);
-    position: relative;
-    overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 2px solid rgba(0, 255, 171, 0.3);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
 }
 
 .backup-item.animate-in {
-    animation: slideIn 0.6s ease-out forwards;
+  animation: slideIn 0.6s ease-out forwards;
 }
 
-.backup-item:hover, .backup-item.animate-in:hover {
+.backup-item:hover,
+.backup-item.animate-in:hover {
   background-color: rgba(0, 0, 0, 0.6);
   border-color: var(--primary);
   transform: translateX(5px);
 }
 
 .backup-info {
-    flex: 1;
+  flex: 1;
 }
 
 .backup-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
 .backup-name {
-    font-weight: bold;
-    color: var(--text-bright);
-    font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--text-bright);
+  font-size: 0.9rem;
 }
 
 .backup-type {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
 .backup-type.preterrain-trio {
-    background-color: rgba(255, 165, 0, 0.2);
-    color: #ffa500;
-    border: 1px solid rgba(255, 165, 0, 0.4);
+  background-color: rgba(255, 165, 0, 0.2);
+  color: #ffa500;
+  border: 1px solid rgba(255, 165, 0, 0.4);
 }
 
 .backup-type.dotsave {
-    background-color: rgba(0, 255, 171, 0.2);
-    color: var(--primary);
-    border: 1px solid rgba(0, 255, 171, 0.4);
+  background-color: rgba(0, 255, 171, 0.2);
+  color: var(--primary);
+  border: 1px solid rgba(0, 255, 171, 0.4);
 }
 
 .backup-date {
-    color: var(--text-dim);
-    font-size: 0.7rem;
-    opacity: 0.8;
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  opacity: 0.8;
 }
 
 .restore-btn {
-    padding: 10px 18px;
-    background-color: rgba(0, 255, 171, 0.1);
-    color: var(--text-bright);
-    border: 2px solid var(--primary);
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.7rem;
-    transition: all var(--transition-normal);
-    text-transform: uppercase;
+  padding: 10px 18px;
+  background-color: rgba(0, 255, 171, 0.1);
+  color: var(--text-bright);
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+  transition: all var(--transition-normal);
+  text-transform: uppercase;
 }
 
 .restore-btn:hover {
-    background-color: var(--primary);
-    color: #000;
+  background-color: var(--primary);
+  color: #000;
 }
 
-.no-backups, .backuperror {
-    text-align: center;
-    padding: 40px;
-    color: var(--text-dim);
-    font-style: italic;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    border: 1px dashed rgba(0, 255, 171, 0.3);
+.no-backups,
+.backuperror {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-dim);
+  font-style: italic;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 1px dashed rgba(0, 255, 171, 0.3);
 }
 
 @keyframes slideIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.9) translateX(-30px) rotateX(10deg);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) translateX(0) rotateX(0deg);
-    }
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateX(-30px) rotateX(10deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateX(0) rotateX(0deg);
+  }
+}
+
+/* Update */
+/* Floating Update Indicator */
+#update-indicator-float {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #ff6b6b, #ff4444);
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(255, 68, 68, 0.5);
+  z-index: 9999;
+  animation: bounce 2s ease-in-out infinite;
+  transition: transform 0.2s ease;
+}
+
+#update-indicator-float:hover {
+  transform: scale(1.1);
+}
+
+#update-indicator-float::before {
+  content: "↑";
+  font-size: 32px;
+  color: white;
+  font-weight: bold;
+  animation: pulse-icon 1.5s ease-in-out infinite;
+}
+
+#update-indicator-float::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-icon {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes ping {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Update Modal */
+#update-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+}
+
+#update-modal.show {
+  display: flex;
+}
+
+.update-modal-content {
+  background: linear-gradient(135deg, #2d2d44, #1a1a2e);
+  border: 3px solid #ff4444;
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 8px 40px rgba(255, 68, 68, 0.3);
+  position: relative;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.update-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 28px;
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.update-modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.update-modal-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #ff6b6b, #ff4444);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: white;
+}
+
+.update-modal-content h2 {
+  color: #fff;
+  margin: 0 0 15px 0;
+  text-align: center;
+  font-size: 24px;
+}
+
+.update-modal-content p {
+  color: #ccc;
+  text-align: center;
+  margin: 0 0 10px 0;
+  line-height: 1.6;
+}
+
+.update-version {
+  color: #ff6b6b;
+  font-weight: bold;
+  font-size: 20px;
+  text-align: center;
+  margin: 10px 0 25px 0;
+}
+
+.update-modal-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.update-modal-buttons button {
+  flex: 1;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#update-now-btn {
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+}
+
+#update-now-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+#update-later-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+#update-later-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* Update Status Messages in Modal */
+.update-status-message {
+  display: none;
+  text-align: center;
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.update-status-message.running {
+  display: block;
+  background: rgba(33, 150, 243, 0.2);
+  border: 2px solid #2196F3;
+  color: #2196F3;
+}
+
+.update-status-message.success {
+  display: block;
+  background: rgba(76, 175, 80, 0.2);
+  border: 2px solid #4CAF50;
+  color: #4CAF50;
+}
+
+.update-status-message.failed {
+  display: block;
+  background: rgba(255, 68, 68, 0.2);
+  border: 2px solid #ff4444;
+  color: #ff4444;
+}
+
+#update-button {
+    display: none;
+    animation: none;
+}
+
+#update-button.bounce {
+    animation: bounce 2s infinite;
+    font-weight: bold;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+.update-status-message {
+    display: none;
+    margin-top: 20px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.update-status-message.running {
+    display: block;
+}
+
+
+.update-icon {
+  position: absolute;
+  top: 20px;
+  right: 45px;
+  width: 32px;
+  height: 32px;
+  background: #F44336;
+  box-shadow: 0 0 10px rgba(244, 67, 54, 0.7);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  transition: transform 0.2s ease;
+  font-size: 1.3rem;
+
+}
+
+.update-icon:hover {
+  background: #F44336;
+  transform: scale(1.1);
 }

@@ -33,6 +33,11 @@ func ServeIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := IndexTemplateData{
+		UIText_UpdateAvailable:         localization.GetString("UIText_UpdateAvailable"),
+		UIText_UpdateLater:             localization.GetString("UIText_UpdateLater"),
+		UIText_UpdateNow:               localization.GetString("UIText_UpdateNow"),
+		UIText_UpdateInstalling:        localization.GetString("UIText_UpdateInstalling"),
+		UIText_UpdateFailed:            localization.GetString("UIText_UpdateFailed"),
 		Version:                        config.GetVersion(),
 		Branch:                         config.GetBranch(),
 		SSUIIdentifier:                 Identifier,

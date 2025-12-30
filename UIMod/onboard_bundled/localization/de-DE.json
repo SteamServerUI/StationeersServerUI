@@ -14,11 +14,17 @@
             "UIText_API_Info": "API-Endpunktdokumentation",
             "UIText_Copyright": "Urheberrecht",
             "UIText_Copyright1": "Lizenziert unter",
-            "UIText_Copyright2": "Proprietärer Lizenz"
+            "UIText_Copyright2": "Proprietärer Lizenz",
+            "UIText_UpdateAvailable": "Eine neue Version von SSUI ist bereit zu installieren und wird beim nächsten Neustart installiert.",
+            "UIText_UpdateLater": "Später",
+            "UIText_UpdateNow": "Jetzt aktualisieren",
+            "UIText_UpdateInstalling": "Aktualisierung wird installiert, bitte warten...",
+            "UIText_UpdateFailed": "Aktualisierung fehlgeschlagen. Bitte versuche es später erneut."
         },
         "config": {
             "UIText_ServerConfig": "Server Konfiguration",
             "UIText_DiscordIntegration": "Discord-Integration",
+            "UIText_SLPModIntegration": "Launchpad Mods",
             "UIText_DetectionManager": "Erkennungsmanager",
             "UIText_ConfigurationWizard": "Konfigurations-Assistent",
             "UIText_PleaseSelectSection": "Bitte wähle oben eine Konfigurationssektion aus",
@@ -68,7 +74,7 @@
                 "UIText_UseSteamP2PInfo": "Steam Peer-to-Peer Netzwerk aktivieren"
             },
             "advanced": {
-                "UIText_AdvancedConfiguration": "Erweiterte Konfiguration",
+                "UIText_AdvancedConfiguration": "Erweiterte Funktionen",
                 "UIText_ServerAuthSecret": "Server Auth Geheimnis",
                 "UIText_ServerAuthSecretInfo": "Authentifizierungsgeheimnis für Server (optional)",
                 "UIText_ServerExePath": "Server Ausführungspfad",
@@ -219,7 +225,7 @@
             "UIText_UPnPEnabled_SkipButton": "Überspringen",
             "UIText_LocalIPAddress_Title": "Stationeers Server UI",
             "UIText_LocalIPAddress_HeaderTitle": "Netzwerk (4/4)",
-            "UIText_LocalIPAddress_StepMessage": "Lokale IP-Adresse des Servers im Format 0.0.0.0 eingeben (keine CIDR Notation)",
+            "UIText_LocalIPAddress_StepMessage": "Gib die IP-Adresse ein, auf der der Server auf eine Verbindung hören soll -  In den meisten fällen kann man den Wert auf 0.0.0.0 belassen",
             "UIText_LocalIPAddress_PrimaryPlaceholder": "0.0.0.0",
             "UIText_LocalIPAddress_PrimaryLabel": "Lokale IP-Adresse",
             "UIText_LocalIPAddress_SubmitButton": "Speichern & Weiter",
@@ -265,7 +271,8 @@
             "UIText_WorldID_SecondaryLabel": "Wähle aus dem Dropdown-Menü unten aus",
             "UIText_WorldID_SecondaryPlaceholder": "Wähle eine Karte aus",
             "UIText_WorldID_SubmitButton": "Speichern & Weiter",
-            "UIText_WorldID_SkipButton": "Überspringen"
+            "UIText_WorldID_SkipButton": "Überspringen",
+            "UIText_FinalizeSubmitButtonText": "Setup abschließen"
         }
     },
     "BackendText": {

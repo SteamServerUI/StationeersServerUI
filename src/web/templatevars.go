@@ -2,6 +2,11 @@ package web
 
 // TemplateData holds data to be passed to templates
 type IndexTemplateData struct {
+	UIText_UpdateAvailable         string
+	UIText_UpdateLater             string
+	UIText_UpdateNow               string
+	UIText_UpdateInstalling        string
+	UIText_UpdateFailed            string
 	Version                        string
 	Branch                         string
 	SSUIIdentifier                 string
@@ -89,6 +94,7 @@ type ConfigTemplateData struct {
 
 	UIText_ServerConfig         string
 	UIText_DiscordIntegration   string
+	UIText_SLPModIntegration    string
 	UIText_DetectionManager     string
 	UIText_ConfigurationWizard  string
 	UIText_PleaseSelectSection  string

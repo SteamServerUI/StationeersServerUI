@@ -1,21 +1,18 @@
 // dynamic-announcement.js
 (function () {
-    // Configuration - change only these values if needed
-    const ANNOUNCEMENT_ID = 'dynamic-announcement';
-    const JSON_URL = 'https://steamserverui.github.io/StationeersServerUI/dynamic-announcement.json';
+    // Configuration
+    const CONTAINER_ID = 'dynamic-announcement-list';
+    const JSON_URL = 'https://steamserverui.github.io/StationeersServerUI/dynamic-announcement-list.json';
     const FETCH_TIMEOUT = 8000; // ms
 
-    // Find the announcement container
-    const container = document.getElementById(ANNOUNCEMENT_ID);
+    const container = document.getElementById(CONTAINER_ID);
     if (!container) {
-        console.warn(`[Dynamic Announcement] Element #${ANNOUNCEMENT_ID} not found on page.`);
+        console.warn(`[Dynamic Announcement] Container #${CONTAINER_ID} not found on page.`);
         return;
     }
 
-    // Hide it initially (in case CSS shows it by default)
-    container.style.display = 'none';
+    container.innerHTML = '';
 
-    // Helper: simple timeout for fetch
     const fetchWithTimeout = (url, options = {}, timeout = FETCH_TIMEOUT) => {
         return Promise.race([
             fetch(url, options),
@@ -25,12 +22,24 @@
         ]);
     };
 
-    // Main logic
+    function attachCollapsibleHandlers() {
+        document.querySelectorAll('.info-notice h3').forEach(header => {
+            // Avoid adding multiple listeners if called repeatedly
+            header.removeEventListener('click', handleClick);
+            header.addEventListener('click', handleClick);
+        });
+    }
+
+    function handleClick(event) {
+        const notice = event.currentTarget.parentElement;
+        notice.classList.toggle('open');
+    }
+
     fetchWithTimeout(JSON_URL, { method: 'GET', cache: 'no-cache' })
         .then(response => {
             if (!response.ok) {
                 if (response.status === 404) {
-                    console.info('[Dynamic Announcement] No announcement (404) - staying hidden.');
+                    console.info('[Dynamic Announcement] No announcement file (404).');
                     return null;
                 }
                 throw new Error(`HTTP ${response.status}`);
@@ -38,73 +47,87 @@
             return response.json();
         })
         .then(data => {
-            if (!data) return; // 404 or empty
-
-            // Validate required fields
-            if (!data.headline || !data.bodyHtml) {
-                console.warn('[Dynamic Announcement] JSON is missing required fields.');
+            if (!data || (Array.isArray(data) && data.length === 0)) {
+                console.info('[Dynamic Announcement] No announcements defined.');
                 return;
             }
 
-            // Optional date range check
+            const announcements = Array.isArray(data) ? data : [data];
+
             const now = Date.now();
-            const start = data.validFrom ? new Date(data.validFrom).getTime() : null;
-            const end = data.validUntil ? new Date(data.validUntil).getTime() : null;
+            const validAnnouncements = announcements.filter(ann => {
+                if (!ann.headline || !ann.bodyHtml) return false;
 
-            if ((start !== null && now < start) || (end !== null && now > end)) {
-                console.info('[Dynamic Announcement] Current date is outside the valid range.');
+                const start = ann.validFrom ? new Date(ann.validFrom).getTime() : null;
+                const end = ann.validUntil ? new Date(ann.validUntil).getTime() : null;
+
+                if ((start !== null && now < start) || (end !== null && now > end)) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            if (validAnnouncements.length === 0) {
+                console.info('[Dynamic Announcement] No currently valid announcements.');
                 return;
             }
 
-            // Fill the template
-            const headerElement = container.querySelector('h3');
-            if (headerElement) {
-                headerElement.innerHTML = `
-                    <span class="notice-icon">📢</span>
-                    ${escapeHtml(data.headline)}
+            validAnnouncements.sort((a, b) => {
+                const timeA = a.validFrom ? new Date(a.validFrom).getTime() : 0;
+                const timeB = b.validFrom ? new Date(b.validFrom).getTime() : 0;
+                return timeB - timeA;
+            });
+
+            // Clear container
+            container.innerHTML = '';
+
+            validAnnouncements.forEach(ann => {
+                const notice = document.createElement('div');
+                notice.className = 'info-notice';
+
+                // Build inner HTML
+                let contentHTML = '';
+
+                if (ann.shortDescription) {
+                    contentHTML += `<p>${escapeHtml(ann.shortDescription)}</p>`;
+                }
+
+                contentHTML += `<p>${ann.bodyHtml}</p>`;
+
+                if (ann.warningHtml) {
+                    contentHTML += `<p class="status-bad">${ann.warningHtml}</p>`;
+                }
+
+                contentHTML += `<p></p>`; // spacer
+
+                if (ann.author || ann.authorRole) {
+                    const author = ann.author ? escapeHtml(ann.author) : '';
+                    const role = ann.authorRole ? escapeHtml(ann.authorRole) : '';
+                    contentHTML += `<p><i>${author}${author && role ? ' - ' : ''}${role}</i></p>`;
+                }
+
+                notice.innerHTML = `
+                    <h3>
+                        <span class="notice-icon">📢</span>
+                        ${escapeHtml(ann.headline)}
+                    </h3>
+                    <div class="collapsible-content">
+                        ${contentHTML}
+                    </div>
                 `;
-            }
 
-            const contentDiv = container.querySelector('.collapsible-content');
+                container.appendChild(notice);
+            });
 
-            // Short description (optional)
-            let shortHtml = '';
-            if (data.shortDescription) {
-                shortHtml = `<p>${escapeHtml(data.shortDescription)}</p>`;
-            }
+            attachCollapsibleHandlers();
 
-            // Warning (optional)
-            let warningHtml = '';
-            if (data.warningHtml) {
-                warningHtml = `<p class="status-bad">${data.warningHtml}</p>`;
-            }
-
-            // Signature (optional)
-            let signatureHtml = '';
-            if (data.author || data.authorRole) {
-                const author = data.author ? escapeHtml(data.author) : '';
-                const role = data.authorRole ? escapeHtml(data.authorRole) : '';
-                signatureHtml = `<p><i>${author}${author && role ? ' - ' : ''}${role}</i></p>`;
-            }
-
-            contentDiv.innerHTML = `
-                ${shortHtml}
-                <p>${data.bodyHtml}</p>
-                ${warningHtml}
-                <p></p>
-                ${signatureHtml}
-            `;
-
-            // Show the announcement
-            container.style.display = ''; // revert to CSS default (usually block)
-            console.info('[Dynamic Announcement] Announcement loaded and displayed.');
+            console.info(`[Dynamic Announcement] ${validAnnouncements.length} announcement(s) loaded and collapsible handlers attached.`);
         })
         .catch(err => {
-            // On any error (network, timeout, JSON parse, etc.) just keep it hidden
-            console.info('[Dynamic Announcement] Failed to load announcement:', err.message);
+            console.info('[Dynamic Announcement] Failed to load announcements:', err.message);
         });
 
-    // Simple HTML escape utility (prevents XSS if you trust the JSON source)
     function escapeHtml(text) {
         if (typeof text !== 'string') return text;
         const div = document.createElement('div');

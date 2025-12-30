@@ -29,6 +29,7 @@ func InitBackend() {
 	ReloadDiscordBot()
 	InitDetector()
 	StartIsGameServerRunningCheck()
+	StartUpdateCheckLoop()
 	LoadAdvertiser()
 }
 
@@ -104,6 +105,12 @@ func LoadAdvertiser() {
 	if config.GetAdvertiserOverride() != "" {
 		logger.Advertiser.Info("Starting server advertiser...")
 		advertiser.StartAdvertiser()
+	}
+}
+
+func StartUpdateCheckLoop() {
+	if config.GetIsUpdateEnabled() {
+		go update.StartUpdateCheckLoop()
 	}
 }
 

@@ -1,18 +1,11 @@
 package update
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"os/exec"
-	"path/filepath"
 	"runtime"
-	"strconv"
-	"strings"
-	"syscall"
-	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
@@ -35,23 +28,16 @@ type Version struct {
 	Patch int
 }
 
-// UpdateExecutable checks for and applies the latest release from GitHub
-func UpdateExecutable() error {
+// CheckForUpdates checks for the latest release from GitHub
+func Update(isInUpdateableState bool) (err error, newVersion string) {
 	if !config.GetIsUpdateEnabled() {
 		logger.Install.Warn("⚠️ Update check is disabled. Skipping update check. Change 'IsUpdateEnabled' in config.json to true to re-enable update checks.")
-		time.Sleep(1000 * time.Millisecond)
-		logger.Install.Info("⚠️ Continuing in 3 seconds...")
-		time.Sleep(1000 * time.Millisecond)
-		logger.Install.Info("⚠️ Continuing in 2 seconds...")
-		time.Sleep(1000 * time.Millisecond)
-		logger.Install.Info("⚠️ Continuing in 1 seconds...")
-		time.Sleep(1000 * time.Millisecond)
-		return nil
+		return nil, ""
 	}
 
 	if config.GetBranch() != "release" {
 		logger.Install.Warn("⚠️ You are running a development build. Skipping update check.")
-		return nil
+		return nil, ""
 	}
 
 	if config.GetAllowPrereleaseUpdates() {
@@ -61,38 +47,35 @@ func UpdateExecutable() error {
 	}
 	latestRelease, err := getLatestRelease()
 	if err != nil {
-		return fmt.Errorf("❌ Failed to fetch latest release: %v", err)
+		return fmt.Errorf("❌ Failed to fetch latest release: %v", err), ""
 	}
 
 	// Parse current and latest versions
 	currentVer, err := parseVersion(config.GetVersion())
 	if err != nil {
-		return fmt.Errorf("❌ Failed to parse current version %s: %v", config.GetVersion(), err)
+		return fmt.Errorf("❌ Failed to parse current version %s: %v", config.GetVersion(), err), ""
 	}
 	latestVer, err := parseVersion(latestRelease.TagName)
 	if err != nil {
-		return fmt.Errorf("❌ Failed to parse latest version %s: %v", latestRelease.TagName, err)
+		return fmt.Errorf("❌ Failed to parse latest version %s: %v", latestRelease.TagName, err), ""
 	}
 
-	logger.Install.Info(fmt.Sprintf("Current version: %s, Latest version: %s", config.GetVersion(), latestRelease.TagName))
+	logger.Install.Debug(fmt.Sprintf("Current version: %s, Latest version: %s", config.GetVersion(), latestRelease.TagName))
 
 	// Check if we should update
-	updateReason, shouldUpdate := shouldUpdate(currentVer, latestVer)
+	updateReason, shouldUpdate := shouldUpdate(currentVer, latestVer, isInUpdateableState)
 	if !shouldUpdate {
 		switch updateReason {
 		case "up-to-date":
 			logger.Install.Info("🎉 No update needed: you’re already on the latest version.")
 		case "major-update":
 			logger.Install.Warn(fmt.Sprintf("⚠️ Update found: Latest version %s is a major update from %s. Major Updates include Breaking changes in this project. Read the release notes and backup your Server folder before updating. Enable 'AllowMajorUpdates' in config to proceed.", latestRelease.TagName, config.Version))
-			time.Sleep(1000 * time.Millisecond)
-			logger.Install.Info("⚠️ Continuing in 3 seconds...")
-			time.Sleep(1000 * time.Millisecond)
-			logger.Install.Info("⚠️ Continuing in 2 seconds...")
-			time.Sleep(1000 * time.Millisecond)
-			logger.Install.Info("⚠️ Continuing in 1 seconds...")
-			time.Sleep(1000 * time.Millisecond)
+			return nil, latestRelease.TagName
+		case "not-in-updateable-state":
+			logger.Install.Debug("⚠️ Update found but SSUI is not in an updatable state.")
+			return nil, latestRelease.TagName
 		}
-		return nil
+		return nil, ""
 	}
 
 	// Proceed with update
@@ -111,21 +94,21 @@ func UpdateExecutable() error {
 		}
 	}
 	if downloadURL == "" {
-		return fmt.Errorf("❌ No matching asset found for %s", expectedExe)
+		return fmt.Errorf("❌ No matching asset found for %s", expectedExe), latestRelease.TagName
 	}
 
 	// Download and replace
 	logger.Install.Info(fmt.Sprintf("📡 Updating from %s to %s...", config.GetVersion(), latestRelease.TagName))
 	if err := downloadNewExecutable(expectedExe, downloadURL); err != nil {
 		logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: %v. Keeping version %s.", err, config.GetVersion()))
-		return err
+		return err, ""
 	}
 
 	// Set executable permissions on Linux
 	if runtime.GOOS != "windows" {
 		if err := os.Chmod(expectedExe, 0755); err != nil {
 			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t make %s executable: %v. Keeping version %s.", expectedExe, err, config.GetVersion()))
-			return err
+			return err, ""
 		}
 	}
 
@@ -134,172 +117,17 @@ func UpdateExecutable() error {
 	if runtime.GOOS == "windows" {
 		if err := runAndExit(expectedExe); err != nil {
 			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t launch %s: %v. Keeping version %s.", expectedExe, err, config.GetVersion()))
-			return err
+			return err, ""
 		}
 	}
 	if runtime.GOOS == "linux" {
 		if err := runAndExitLinux(expectedExe); err != nil {
 			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t launch %s: %v. Keeping version %s.", expectedExe, err, config.GetVersion()))
-			return err
+			return err, ""
 		}
 	}
 
-	return nil
-}
-
-func RestartMySelf() {
-	currentExe, err := os.Executable()
-	if err != nil {
-		logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t get current executable path: %v. Keeping version %s.", err, config.GetVersion()))
-		return
-	}
-
-	if runtime.GOOS == "windows" {
-		if err := runAndExit(currentExe); err != nil {
-			logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t launch %s: %v. Keeping version %s.", currentExe, err, config.GetVersion()))
-			return
-		}
-	}
-	if runtime.GOOS == "linux" {
-		if err := runAndExitLinux(currentExe); err != nil {
-			logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t launch %s: %v. Keeping version %s.", currentExe, err, config.GetVersion()))
-			return
-		}
-	}
-}
-
-// parseVersion parses a version string (e.g., "4.6.10") into a Version struct and tries to handle a few culprits too
-func parseVersion(v string) (Version, error) {
-	v = strings.TrimPrefix(v, "v")
-	if idx := strings.Index(v, "-"); idx != -1 {
-		v = v[:idx]
-	}
-
-	var ver Version
-	_, err := fmt.Sscanf(v, "%d.%d.%d", &ver.Major, &ver.Minor, &ver.Patch)
-	if err != nil {
-		return Version{}, fmt.Errorf("no valid X.Y.Z in tag: %s", v)
-	}
-	return ver, nil
-}
-
-// shouldUpdate determines if an update should proceed, returning reason if not
-func shouldUpdate(current, latest Version) (string, bool) {
-	// Check if already up-to-date or older
-	if latest.Major < current.Major ||
-		(latest.Major == current.Major && latest.Minor < current.Minor) ||
-		(latest.Major == current.Major && latest.Minor == current.Minor && latest.Patch <= current.Patch) {
-		return "up-to-date", false
-	}
-
-	// Check if it’s a major update and not allowed
-	if current.Major != latest.Major && !config.GetAllowMajorUpdates() {
-		return "major-update", false
-	}
-
-	return "", true
-}
-
-// getLatestRelease fetches the most recent release (or prerelease) from GitHub API
-func getLatestRelease() (*githubRelease, error) {
-	url := "https://api.github.com/repos/JacksonTheMaster/StationeersServerUI/releases"
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("bad response from GitHub API: %s", resp.Status)
-	}
-
-	var releases []githubRelease
-	if err := json.NewDecoder(resp.Body).Decode(&releases); err != nil {
-		return nil, fmt.Errorf("failed to parse GitHub API response: %v", err)
-	}
-
-	if len(releases) == 0 {
-		return nil, fmt.Errorf("no releases found")
-	}
-
-	// Find the most recent release
-	var latestRelease *githubRelease
-	var latestVersion Version
-	for i, release := range releases {
-		version, err := parseVersion(release.TagName)
-		if err != nil {
-			logger.Install.Warn(fmt.Sprintf("Skipping invalid version tag %s: %v", release.TagName, err))
-			continue
-		}
-		if i == 0 || isReleaseNewerVersion(version, latestVersion) {
-			currentVersion, err := parseVersion(config.GetVersion())
-			if err == nil && isReleaseNewerVersion(currentVersion, version) {
-				if release.Prerelease {
-					logger.Install.Warn("Found a prerelease, but it is older than the running version. Skipping...")
-					continue
-				}
-				continue
-			}
-			latestVersion = version
-			latestRelease = &releases[i]
-		}
-	}
-
-	if latestRelease == nil {
-		return nil, fmt.Errorf("no suitable releases found")
-	}
-
-	// Log warning if the latest release is a prerelease
-	if latestRelease.Prerelease && !config.GetAllowPrereleaseUpdates() {
-		logger.Install.Warn(fmt.Sprintf("⚠️ Pre-release Update found: Latest version %s is a pre-release. Enable 'AllowPrereleaseUpdates' in config.json to update to it.", latestRelease.TagName))
-		time.Sleep(1000 * time.Millisecond)
-		logger.Install.Info("⚠️ Continuing in 3 seconds...")
-		time.Sleep(1000 * time.Millisecond)
-		logger.Install.Info("⚠️ Continuing in 2 seconds...")
-		time.Sleep(1000 * time.Millisecond)
-		logger.Install.Info("⚠️ Continuing in 1 seconds...")
-		time.Sleep(1000 * time.Millisecond)
-	}
-
-	// If prerelease and AllowPrereleaseUpdates is false, find the latest stable release
-	if latestRelease.Prerelease && !config.GetAllowPrereleaseUpdates() {
-		var stableRelease *githubRelease
-		var stableVersion Version
-		for i, release := range releases {
-			if release.Prerelease {
-				continue
-			}
-			version, err := parseVersion(release.TagName)
-			if err != nil {
-				logger.Install.Warn(fmt.Sprintf("Skipping invalid version tag %s: %v", release.TagName, err))
-				continue
-			}
-			if i == 0 || isReleaseNewerVersion(version, stableVersion) {
-				stableVersion = version
-				stableRelease = &releases[i]
-			}
-		}
-		if stableRelease == nil {
-			return nil, fmt.Errorf("no stable releases found")
-		}
-		return stableRelease, nil
-	}
-
-	return latestRelease, nil
-}
-
-// isNewerVersion compares two versions to determine if the first is newer
-func isReleaseNewerVersion(v1, v2 Version) bool {
-	if v1.Major != v2.Major {
-		return v1.Major > v2.Major
-	}
-	if v1.Minor != v2.Minor {
-		return v1.Minor > v2.Minor
-	}
-	if v1.Patch == v2.Patch {
-		return false
-	}
-	return v1.Patch > v2.Patch
+	return nil, ""
 }
 
 // downloadNewExecutable downloads the new executable with a progress bar
@@ -345,116 +173,4 @@ func downloadNewExecutable(filename, url string) error {
 
 	logger.Install.Info("✅ Downloaded " + filename)
 	return nil
-}
-
-// runAndExit launches the new executable and terminates the current process
-func runAndExit(newExe string) error {
-	// Resolve absolute path
-	absPath, err := filepath.Abs(newExe)
-	if err != nil {
-		return fmt.Errorf("❌ Couldn’t resolve path to %s: %v", newExe, err)
-	}
-
-	// Prepare the new process
-	cmd := exec.Command(absPath)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	// Set SysProcAttr based on OS using the OS-specific implementation
-	setSysProcAttr(cmd)
-
-	// Start the new process
-	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("❌ Failed to start new executable: %v", err)
-	}
-
-	// Exit gracefully
-	logger.Install.Warn("✨ New version’s live! Catch you on the flip side!")
-	time.Sleep(500 * time.Millisecond) // Dramatic pause
-	os.Exit(0)
-	return nil
-}
-
-func runAndExitLinux(newExe string) error {
-	absPath, err := filepath.Abs(newExe)
-	if err != nil {
-		return fmt.Errorf("❌ Couldn’t resolve path to %s: %v", newExe, err)
-	}
-
-	// Use syscall.Exec to replace the current process
-	logger.Install.Warn("✨ New version’s live! Catch you on the flip side!")
-	time.Sleep(500 * time.Millisecond)
-
-	// Replace the current process with the new executable
-	err = syscall.Exec(absPath, []string{absPath}, os.Environ())
-	if err != nil {
-		return fmt.Errorf("❌ Failed to exec new executable: %v", err)
-	}
-
-	// This line is never reached if Exec succeeds
-	return nil
-}
-
-// writeCounter tracks download progress
-type writeCounter struct {
-	Total int64
-	count int64
-}
-
-func (wc *writeCounter) Write(p []byte) (int, error) {
-	n := len(p)
-	wc.count += int64(n)
-	wc.printProgress()
-	return n, nil
-}
-
-func (wc *writeCounter) printProgress() {
-	// If we don't know the total size, just show downloaded bytes
-	if wc.Total <= 0 {
-		logger.Backup.Info(fmt.Sprintf("\r%s downloaded", bytesToHuman(wc.count)))
-		return
-	}
-
-	// Calculate percentage with bounds checking
-	percent := float64(wc.count) / float64(wc.Total) * 100
-	if percent > 100 {
-		percent = 100
-	}
-
-	// Create simple progress bar
-	width := 20
-	complete := int(percent / 100 * float64(width))
-
-	progressBar := "["
-	for i := 0; i < width; i++ {
-		if i < complete {
-			progressBar += "="
-		} else if i == complete && complete < width {
-			progressBar += ">"
-		} else {
-			progressBar += " "
-		}
-	}
-	progressBar += "]"
-
-	// Print progress and erase to end of line
-	logger.Backup.Info(fmt.Sprintf("\r%s %.1f%% (%s/%s)",
-		progressBar,
-		percent,
-		bytesToHuman(wc.count),
-		bytesToHuman(wc.Total)))
-}
-
-// bytesToHuman converts bytes to human readable format
-func bytesToHuman(bytes int64) string {
-	const unit = 1024
-	if bytes < unit {
-		return strconv.FormatInt(bytes, 10) + " B"
-	}
-	div, exp := int64(unit), 0
-	for n := bytes / unit; n >= unit; n /= unit {
-		div *= unit
-		exp++
-	}
-	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
 }

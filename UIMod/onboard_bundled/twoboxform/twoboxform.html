@@ -47,9 +47,8 @@
             <div class="config-summary">
                 <div id="config-details">
                     <!-- Summary will be populated via JS -->
-                    <p>Your server is ready to be launched!</p>
                 </div>
-                <button type="button" id="finalize-btn" class="finalize-btn">Finalize Setup</button>
+                <button type="button" id="finalize-btn" class="finalize-btn">{{.FinalizeSubmitButtonText}}</button>
             </div>
             {{end}}
             
@@ -119,8 +118,10 @@
         </div>
 
         <footer>
+            {{if eq .Path "/setup"}}
             <p>{{.FooterTextInfo}}</p>
             <br>
+            {{end}}
             <p>{{.FooterText}}</p>
         </footer>
     </main>
