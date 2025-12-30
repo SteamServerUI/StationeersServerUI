@@ -19,7 +19,7 @@
             "UIText_UpdateLater": "Senare",
             "UIText_UpdateNow": "Uppdatera nu",
             "UIText_UpdateInstalling": "Uppdatering installeras, vänligen vänta...",
-            "UIText_UpdateFailed": "Uppdateringen installeras, vänligen vänta..."
+            "UIText_UpdateFailed": "Uppdateringen misslyckades. Försök igen senare."
         },
         "config": {
             "UIText_ServerConfig": "Konfiguration",
