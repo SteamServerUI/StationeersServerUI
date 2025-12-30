@@ -27,8 +27,12 @@
 
 ### 🌟 This is a WebUi, you don't need a graphical OS to run this 🌟
 
-[![Download latest Version](https://img.shields.io/badge/Download-Stationeers%20Server%20UI-orange?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/)
-[![Preview Website](https://img.shields.io/badge/Visit-Live%20Preview%20Website-green?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/server.html)
+[![Download latest Version](https://img.shields.io/badge/Download-Page%20-orange?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/)
+
+[![Download latest Version](https://img.shields.io/badge/Direct-Windows%20Download-blue?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/?download=windows)
+[![Download latest Version](https://img.shields.io/badge/Direct-Linux%20Download-%23FCC624?style=for-the-badge&logo=linux&logoColor=%23FCC624)](https://steamserverui.github.io/StationeersServerUI/?download=linux)
+
+[![Preview Website](https://img.shields.io/badge/Visit-Live%20Preview%20Website-green?style=for-the-badge)](https://steamserverui.github.io/StationeersServerUI/preview/server.html)
 </div>
 
 </div>
@@ -38,10 +42,6 @@
   <em>Manage your Stationeers server with style - Retro interface, modern capabilities.</em>
 </div>
 
-### New Power Features
-
-- 🛠️ **Stationeers Server Command Manager Mod** - Execute server commands directly through the UI or API
-- 🧩 **BepInEx Integration** - Automatic setup of the popular modding framework
 
 ## TL;DR - Get Started Fast
 
@@ -68,6 +68,8 @@ A sleek, retro-themed web UI to manage your Stationeers dedicated server. No mor
 - 🛠️ **Command Manager** - Execute server commands directly from the UI or from Discord commands
 - 🧩 **Mod Support** - Support for BepInEx mods
 - 📦 **Docker Support** - Runs in Docker containers
+- 🛠️ **Stationeers Server Command Manager** - Execute server commands directly through the UI, API, or Discord commands
+- 🧩 **BepInEx Integration** - Automatic setup of the popular modding framework
 
 ## Detailed Documentation
 
