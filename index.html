@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stationeers Server UI</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-primary: #0f0f1a;
@@ -176,8 +178,9 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(123, 104, 238, 0.4);
         }
-        
-        .curl-command, .wget-command {
+
+        .curl-command,
+        .wget-command {
             background-color: rgba(15, 15, 26, 0.7);
             border-radius: 8px;
             padding: 15px;
@@ -190,28 +193,11 @@
             margin-bottom: 20px;
         }
         
-        .curl-heading, .wget-heading {
+        .curl-heading,
+        .wget-heading {
             margin-bottom: 10px;
             color: var(--text-secondary);
             font-size: 1rem;
-        }
-        
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: rgba(123, 104, 238, 0.3);
-            border: none;
-            border-radius: 4px;
-            padding: 5px 10px;
-            cursor: pointer;
-            color: var(--text);
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-        }
-        
-        .copy-btn:hover {
-            background-color: rgba(123, 104, 238, 0.5);
         }
         
         .features {
@@ -430,8 +416,9 @@
             .headline {
                 font-size: 2rem;
             }
-            
-            .features, .screenshot-grid {
+
+            .features,
+            .screenshot-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -445,22 +432,41 @@
             }
         }
         
-        /* Add some animations */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
-        .hero, .download-section, .features, .screenshots {
+
+        .hero,
+        .download-section,
+        .features,
+        .screenshots {
             animation: fadeIn 1s ease-out forwards;
         }
-        
-        .feature-card:nth-child(1) { animation-delay: 0.2s; }
-        .feature-card:nth-child(2) { animation-delay: 0.4s; }
-        .feature-card:nth-child(3) { animation-delay: 0.6s; }
-        .feature-card:nth-child(4) { animation-delay: 0.8s; }
-        
-        /* Add some glowing effects */
+
+        .feature-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .feature-card:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .feature-card:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .feature-card:nth-child(4) {
+            animation-delay: 0.8s;
+        }
+
         .glow-effect {
             position: absolute;
             width: 300px;
@@ -470,22 +476,118 @@
             pointer-events: none;
             z-index: -1;
         }
-        
+
         #glow1 {
             top: 10%;
             left: 10%;
         }
-        
+
         #glow2 {
             bottom: 20%;
             right: 10%;
+        }
+
+        .terminal {
+            margin-top: 40px;
+            background: #0b0e14;
+            border-radius: 12px;
+            box-shadow:
+                0 0 0 1px rgba(123, 104, 238, 0.35),
+                0 20px 60px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            position: relative;
+            font-family: "JetBrains Mono", Consolas, monospace;
+        }
+
+        .terminal::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(to bottom,
+                    rgba(255, 255, 255, 0.03),
+                    rgba(255, 255, 255, 0.03) 1px,
+                    transparent 1px,
+                    transparent 3px);
+            pointer-events: none;
+            opacity: 0.15;
+        }
+
+        .terminal-header {
+            background: linear-gradient(180deg, #1a1f2b, #111522);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(123, 104, 238, 0.25);
+        }
+
+        .term-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .term-dot.red {
+            background: #ff5f56;
+        }
+
+        .term-dot.yellow {
+            background: #ffbd2e;
+        }
+
+        .term-dot.green {
+            background: #27c93f;
+        }
+
+        .terminal-title {
+            margin-left: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        .terminal-body {
+            padding: 20px;
+            color: #9ef0c3;
+            font-size: 0.95rem;
+        }
+
+        /* Prompt styling */
+        .prompt {
+            color: #7bffb3;
+        }
+
+        .prompt span {
+            color: #7b68ee;
+        }
+
+        .command {
+            color: #e0e0ff;
+            display: block;
+            margin: 6px 0 16px;
+            white-space: pre-wrap;
+        }
+
+        .download-options {
+            margin: 30px 0 10px;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, var(--accent), #9a8cff);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .terminal:hover {
+            box-shadow:
+                0 0 0 1px rgba(123, 104, 238, 0.6),
+                0 25px 80px rgba(123, 104, 238, 0.15);
         }
     </style>
 </head>
 <body>
     <div class="glow-effect" id="glow1"></div>
     <div class="glow-effect" id="glow2"></div>
-    
+
     <div class="container">
         <header>
             <div class="logo">Stationeers<span>ServerUI</span></div>
@@ -501,7 +603,7 @@
         </header>
 
 
-        
+
         <section class="hero">
             <h1 class="headline">Manage Your Stationeers Server With Style</h1>
             <p class="subheadline">A sleek, retro-themed web UI to manage your Stationeers dedicated server. No more command line headaches or manual file editing!</p>
@@ -523,25 +625,40 @@
             <div class="download-options">
                 <button id="windows-download" class="download-btn">
                     <i class="fab fa-windows"></i>
-                    Download for Windows
+                    Download latest .exe for Windows
                 </button>
                 <button id="linux-download" class="download-btn">
                     <i class="fab fa-linux"></i>
-                    Download for Linux
+                    Download latest .x86_64 for Linux
                 </button>
             </div>
-            <div class="curl-command">
-                <p class="curl-heading">Or download from CLI using curl:</p>
-                <code id="curl-command"># Loading curl command...</code>
-                <button class="copy-btn" onclick="copyToClipboard('curl-command')">Copy</button>
-            </div>
-            <div class="wget-command">
-                <p class="wget-heading">Or using wget:</p>
-                <code id="wget-command"># Loading wget command...</code>
-                <button class="copy-btn" onclick="copyToClipboard('wget-command')">Copy</button>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="term-dot red"></div>
+                    <div class="term-dot yellow"></div>
+                    <div class="term-dot green"></div>
+                    <div class="terminal-title">
+                        Download from CLI:
+                    </div>
+                </div>
+
+                <div class="terminal-body">
+                    <div class="prompt">
+                        <span>stationeers</span>@server ➜ <span>~/install</span>
+                    </div>
+                    <div class="command" id="curl-command">
+                        # Loading curl command...
+                    </div>
+
+                    <div class="prompt" style="margin-top:20px;">
+                        <span>stationeers</span>@server ➜ <span>~/install</span>
+                    </div>
+                    <div class="command" id="wget-command">
+                        # Loading wget command...
+                    </div>
+                </div>
             </div>
         </section>
-        
         <section class="features">
             <div class="feature-card">
                 <div class="feature-icon">
@@ -555,7 +672,8 @@
                     <i class="fas fa-sync-alt"></i>
                 </div>
                 <h3 class="feature-title">Auto Updates</h3>
-                <p class="feature-desc">Server and Management UI update automatically at startup - always stay on the latest version.</p>
+                <p class="feature-desc">Server and Management UI update automatically at startup - always stay on the
+                    latest version.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">
@@ -787,25 +905,6 @@ async function fetchRepoStats() {
         document.getElementById('download-count').textContent = 'N/A';
         document.getElementById('last-update').textContent = 'N/A';
     }
-}
-
-// Copy to clipboard function
-function copyToClipboard(elementId) {
-    const element = document.getElementById(elementId);
-    const text = element.textContent;
-
-    navigator.clipboard.writeText(text)
-        .then(() => {
-            const copyBtn = element.nextElementSibling;
-            copyBtn.textContent = 'Copied!';
-            setTimeout(() => {
-                copyBtn.textContent = 'Copy';
-            }, 2000);
-        })
-        .catch(err => {
-            console.error('Failed to copy text:', err);
-            alert('Failed to copy text. Please copy manually.');
-        });
 }
 
 // Mouse follow effect for glow
