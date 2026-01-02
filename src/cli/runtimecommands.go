@@ -23,6 +23,7 @@ import (
 	"github.com/SteamServerUI/SteamServerUI/v7/src/localization"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/gamemgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/setup/update"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/steamcmd"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/steamserverui/runfile"
 )
@@ -54,6 +55,8 @@ func init() {
 	RegisterCommand("printconfig", WrapNoReturn(printConfig), "pc")
 	RegisterCommand("testargbuilder", WrapNoReturn(TestArgBuilder), "targb")
 	RegisterCommand("testrunfilefiles", WrapNoReturn(TestRunfileFiles), "trff")
+	RegisterCommand("update", WrapNoReturn(triggerUpdateCheck), "u")
+	RegisterCommand("applyupdate", WrapNoReturn(applyUpdate), "au")
 }
 
 // CommandFunc defines the signature for command handler functions.
@@ -226,6 +229,25 @@ func testLocalization() {
 	currentLanguageSetting := config.GetLanguageSetting()
 	s := localization.GetString("UIText_StartButton")
 	logger.Core.Info("Start Server Button text (current language: " + currentLanguageSetting + "): " + s)
+}
+
+func triggerUpdateCheck() {
+	err, newVersion := update.Update(false)
+	if err != nil {
+		logger.Install.Warn("⚠️ Update check failed: " + err.Error())
+		return
+	}
+	if newVersion != "" {
+		logger.Install.Infof("✅ Update to %s available, Trigger update from WebUI or with applyupdate command", newVersion)
+	}
+}
+
+func applyUpdate() {
+	err, _ := update.Update(true)
+	if err != nil {
+		logger.Install.Warn("⚠️ Update failed: " + err.Error())
+		return
+	}
 }
 
 func supportMode() {

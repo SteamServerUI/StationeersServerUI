@@ -72,7 +72,7 @@ func CleanUpOldExecutables() error {
 		return nil
 	}
 	currentBackendVersion := config.GetVersion()
-	pattern := `StationeersServerControlv(\d+\.\d+\.\d+)(?:\.exe|\.x86_64)$`
+	pattern := `SteamServerUIv(\d+\.\d+\.\d+)(?:\.exe|\.x86_64)$`
 	re, err := regexp.Compile(pattern)
 	if err != nil {
 		return fmt.Errorf("failed to compile regex: %w", err)

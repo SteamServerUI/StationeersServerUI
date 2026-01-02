@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os" // Added for filepath.Dir
+	"os"
 	fp "path/filepath"
 	"strconv"
 	"strings"
@@ -28,27 +28,60 @@ func Install(wg *sync.WaitGroup) {
 	defer wg.Done() // Signal that installation is complete
 
 	// Step 0: Check for updates
-	if err := update.UpdateExecutable(); err != nil {
+	if err, _ := update.Update(true); err != nil {
 		logger.Install.Error("❌Update check went sideways: " + err.Error())
 	}
 
-	// Step 1: Check and download the SSUI folder contents
-	logger.Install.Debug("🔄Checking SSUI folder...")
-	CheckAndDownloadSSUI()
-	logger.Install.Debug("✅SSUI folder setup complete.")
-	logger.Install.Info("✅Setup complete!")
+	// Step 1: Check and download the SSUI folders
+	logger.Install.Debug("🔄Checking directory structure...")
+
+	uiModDir := config.GetSSUIFolder()
+	configDir := config.GetSSUIFolder() + "config/"
+	tlsDir := config.GetSSUIFolder() + "tls/"
+	requiredDirs := []string{uiModDir, configDir}
+
+	createRequiredDirs(requiredDirs)
+
+	//check if tlsDir exists, if not, set isFirstTimeSetup to true
+	if _, err := os.Stat(tlsDir); os.IsNotExist(err) {
+		config.SetIsFirstTimeSetup(true)
+	} else {
+		config.SetIsFirstTimeSetup(false)
+	}
+
+	CheckAndDownloadSSUI(uiModDir)
+
+	logger.Install.Debug("✅SSUI setup complete.")
+
 	// Step 3: Check for SteamCMD
 	logger.Install.Info("🔄Checking SteamCMD...")
 	steamcmd.InstallAndRunSteamCMD(false) // only install SteamCMD, don't run it
 	logger.Install.Info("✅SteamCMD verified or installed.")
+	logger.Install.Info("✅Setup complete!")
 }
 
-func CheckAndDownloadSSUI() {
-	uiModDir := config.GetSSUIFolder()
-	configDir := config.GetSSUIFolder() + "config/"
-	tlsDir := config.GetSSUIFolder() + "tls/"
+func createRequiredDirs(requiredDirs []string) {
+	// Create directories
+	for _, dir := range requiredDirs {
+		if _, err := os.Stat(dir); os.IsNotExist(err) {
+			config.SetIsFirstTimeSetup(true)
+			err := os.MkdirAll(dir, os.ModePerm)
+			if err != nil {
+				logger.Install.Error("❌Error creating folder: " + err.Error())
+				return
+			}
+			logger.Install.Warn("⚠️Created folder: " + dir)
+		}
+	}
+}
 
-	requiredDirs := []string{uiModDir, configDir}
+/*
+Below this line is the pre-v5 asset file updater code.
+All assets are now embedded in the executable since then, so this code is no longer needed or used - the CheckAndDownloadSSUI function returns early due to len files == 0.
+It is, however, left here in case we evert need to download some files from the web again.
+*/
+
+func CheckAndDownloadSSUI(uiModDir string) {
 
 	// Set branch
 	if config.GetBranch() == "release" || config.GetBranch() == "Release" {
@@ -66,8 +99,6 @@ func CheckAndDownloadSSUI() {
 		// "ui/config.html":           "https://raw.githubusercontent.com/SteamServerUI/SteamServerUI/{branch}/SSUI/ui/config.html",
 	}
 
-	createRequiredDirs(requiredDirs)
-
 	if len(files) == 0 {
 		logger.Install.Debug("📁 File mappings empty - no additional files to download available")
 		return
@@ -76,12 +107,6 @@ func CheckAndDownloadSSUI() {
 	// Check if the directory exists
 	if _, err := os.Stat(uiModDir); os.IsNotExist(err) {
 		// Initial download
-		//check if tlsDir exists, if not, set isFirstTimeSetup to true
-		if _, err := os.Stat(tlsDir); os.IsNotExist(err) {
-			config.SetIsFirstTimeSetup(true)
-		} else {
-			config.SetIsFirstTimeSetup(false)
-		}
 		downloadAllFiles(files)
 	} else {
 		// Directory exists
@@ -327,19 +352,4 @@ func downloadFile(filepath, url string) error {
 	// Write to file
 	_, err = io.Copy(out, resp.Body)
 	return err
-}
-
-func createRequiredDirs(requiredDirs []string) {
-	// Create directories
-	for _, dir := range requiredDirs {
-		if _, err := os.Stat(dir); os.IsNotExist(err) {
-			config.SetIsFirstTimeSetup(true)
-			err := os.MkdirAll(dir, os.ModePerm)
-			if err != nil {
-				logger.Install.Error("❌Error creating folder: " + err.Error())
-				return
-			}
-			logger.Install.Warn("⚠️Created folder: " + dir)
-		}
-	}
 }
