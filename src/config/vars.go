@@ -51,6 +51,7 @@ var (
 	IsDockerContainer    bool    // ONLY RUNTIME
 	NoSanityCheck        bool    // ONLY RUNTIME
 	IsTelemetryEnabled   = false // ONLY RUNTIME (for now)
+	IsGameServerRunning  bool    // ONLY RUNTIME
 )
 
 // Discord integration

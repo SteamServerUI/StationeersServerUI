@@ -400,3 +400,9 @@ func GetIsTelemetryEnabled() bool {
 	defer ConfigMu.RUnlock()
 	return IsTelemetryEnabled
 }
+
+func GetIsGameServerRunning() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return IsGameServerRunning
+}

@@ -516,3 +516,11 @@ func SetBackupLoopActive(value bool) error {
 	BackupLoopActive = value
 	return safeSaveConfigAtomic()
 }
+
+func SetIsGameServerRunning(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	IsGameServerRunning = value
+	return nil
+}

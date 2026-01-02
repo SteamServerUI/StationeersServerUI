@@ -30,7 +30,7 @@ func InternalStartServer() error {
 	mu.Lock()
 	defer mu.Unlock()
 
-	if internalIsServerRunningNoLock() {
+	if config.GetIsGameServerRunning() {
 		return fmt.Errorf("server is already running")
 	}
 
@@ -156,6 +156,7 @@ func InternalStartServer() error {
 
 	// Create a UUID for this specific run
 	createGameServerUUID()
+	config.SetIsGameServerRunning(true)
 
 	// Start auto-restart goroutine if AutoRestartServerTimer is set greater than 0
 	if config.GetAutoRestartServerTimer() != "0" {
@@ -174,7 +175,7 @@ func InternalStopServer() error {
 	mu.Lock()
 	defer mu.Unlock()
 
-	if !internalIsServerRunningNoLock() {
+	if !config.GetIsGameServerRunning() {
 		return fmt.Errorf("server not running")
 	}
 
@@ -244,6 +245,7 @@ func InternalStopServer() error {
 
 	// Process is confirmed stopped, clear cmd
 	cmd = nil
+	config.SetIsGameServerRunning(false)
 	clearGameServerUUID()
 	return nil
 }

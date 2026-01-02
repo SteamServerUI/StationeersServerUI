@@ -13,6 +13,7 @@ import (
 	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/backupmgr"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/detectionmgr"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/gamemgr"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/setup"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/setup/update"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/steamcmd"
@@ -32,6 +33,7 @@ func InitBackend(wg *sync.WaitGroup) {
 	ReloadAppInfoPoller()
 	ReloadDiscordBot()
 	InitDetector()
+	StartIsGameServerRunningCheck()
 	telemetry.InitTelemetry()
 }
 
@@ -91,6 +93,10 @@ func RestartBackend() {
 
 func ReloadLocalizer() {
 	localization.ReloadLocalizer()
+}
+
+func StartIsGameServerRunningCheck() {
+	gamemgr.StartIsGameServerRunningCheck()
 }
 
 func ReloadAppInfoPoller() {

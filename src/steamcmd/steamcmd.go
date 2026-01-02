@@ -53,7 +53,7 @@ func InstallAndRunSteamCMD(run ...bool) (int, error) {
 	defer isUpdatingMu.Unlock()
 	defer logger.Core.Debug("🔄 Unlocking isUpdatingMu after SteamCMD Update run...")
 
-	if gamemgr.InternalIsServerRunning() {
+	if config.GetIsGameServerRunning() {
 		logger.Core.Warn("Server is running, stopping server first...")
 		err := gamemgr.InternalStopServer()
 		if err != nil {

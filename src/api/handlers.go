@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/core/loader"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/gamemgr"
@@ -11,7 +12,7 @@ import (
 )
 
 func GetGameServerRunState(w http.ResponseWriter, r *http.Request) {
-	runState := gamemgr.InternalIsServerRunning()
+	runState := config.GetIsGameServerRunning()
 	response := map[string]interface{}{
 		"isRunning": runState,
 		"uuid":      gamemgr.GameServerUUID.String(),

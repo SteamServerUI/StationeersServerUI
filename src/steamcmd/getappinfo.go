@@ -157,7 +157,7 @@ func getAppInfo() error {
 			logger.Install.Info("❗New gameserver update detected!")
 			if config.GetAllowAutoGameServerUpdates() {
 				logger.Install.Info("🔍 Updating gameserver via SteamCMD...")
-				if gamemgr.InternalIsServerRunning() {
+				if config.GetIsGameServerRunning() {
 					commandmgr.WriteCommand("say Update found, stopping server in 60 seconds...")
 					logger.Install.Info("❗Stopping server in 60 seconds...")
 					time.Sleep(10 * time.Second)

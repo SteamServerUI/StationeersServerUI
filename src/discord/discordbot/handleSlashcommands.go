@@ -77,7 +77,7 @@ func handleStop(s *discordgo.Session, i *discordgo.InteractionCreate, data Embed
 }
 
 func handleStatus(s *discordgo.Session, i *discordgo.InteractionCreate, data EmbedData) error {
-	isRunning := gamemgr.InternalIsServerRunning()
+	isRunning := config.GetIsGameServerRunning()
 	data.Title = "🎮 Server Status"
 	data.Description = "Current process state for the Stationeers game server.\n*Note: 'Started' indicates a running process was found, but not necessarily fully operational.*"
 	data.Color = map[bool]int{true: 0x00FF00, false: 0xFF0000}[isRunning]
@@ -146,7 +146,7 @@ func handleCommand(s *discordgo.Session, i *discordgo.InteractionCreate, data Em
 	data.Title, data.Description, data.Color = "Server Control", "Sending a command to the gameserver console...", 0x00FF00
 	data.Fields = []EmbedField{{Name: "Status", Value: "❌ Failed, is the server running and SSCM enabled?", Inline: true}}
 	data.Color = 0xFF0000
-	if gamemgr.InternalIsServerRunning() {
+	if config.GetIsGameServerRunning() {
 		data.Color = 0x00FF00
 		err := commandmgr.WriteCommand(i.ApplicationCommandData().Options[0].StringValue())
 		if err != nil {
