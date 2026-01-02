@@ -21,6 +21,7 @@ var ConfigMu sync.RWMutex
 var (
 	IsDebugMode              bool //only used for pprof server, keep it like this and check the log level instead. Debug = 10
 	CreateSSUILogFile        bool
+	CreateGameServerLogFile  bool
 	LogLevel                 int
 	IsFirstTimeSetup         bool
 	SSEMessageBufferSize     = 2000

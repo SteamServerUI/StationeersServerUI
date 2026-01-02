@@ -406,3 +406,9 @@ func GetIsGameServerRunning() bool {
 	defer ConfigMu.RUnlock()
 	return IsGameServerRunning
 }
+
+func GetCreateGameServerLogFile() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return CreateGameServerLogFile
+}

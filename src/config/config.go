@@ -29,11 +29,12 @@ type JsonConfig struct {
 	GameBranch        string `json:"gameBranch"`
 
 	// Logging and debug settings
-	Debug              *bool    `json:"Debug"`
-	CreateSSUILogFile  *bool    `json:"CreateSSUILogFile"`
-	LogLevel           int      `json:"LogLevel"`
-	GameLogFromLogFile *bool    `json:"GameLogFromLogFile"`
-	SubsystemFilters   []string `json:"subsystemFilters"`
+	Debug                   *bool    `json:"Debug"`
+	CreateSSUILogFile       *bool    `json:"CreateSSUILogFile"`
+	CreateGameServerLogFile *bool    `json:"CreateGameServerLogFile"`
+	LogLevel                int      `json:"LogLevel"`
+	GameLogFromLogFile      *bool    `json:"GameLogFromLogFile"`
+	SubsystemFilters        []string `json:"subsystemFilters"`
 
 	// Authentication Settings
 	Users             map[string]string `json:"users"`       // Map of username to hashed password
@@ -150,6 +151,10 @@ func applyConfig(cfg *JsonConfig) {
 	CreateSSUILogFile = createSSUILogFileVal
 	cfg.CreateSSUILogFile = &createSSUILogFileVal
 
+	createGameServerLogFileVal := getBool(cfg.CreateGameServerLogFile, "CREATE_GAMESERVER_LOGFILE", false)
+	CreateGameServerLogFile = createGameServerLogFileVal
+	cfg.CreateGameServerLogFile = &createGameServerLogFileVal
+
 	LogLevel = getInt(cfg.LogLevel, "LOG_LEVEL", 20)
 
 	gameLogFromLogFileVal := getBool(cfg.GameLogFromLogFile, "GAME_LOG_FROM_LOG_FILE", false)
@@ -231,6 +236,7 @@ func buildCurrentJsonConfig() JsonConfig {
 		AuthTokenLifetime:          AuthTokenLifetime,
 		Debug:                      &IsDebugMode,
 		CreateSSUILogFile:          &CreateSSUILogFile,
+		CreateGameServerLogFile:    &CreateGameServerLogFile,
 		LogLevel:                   LogLevel,
 		LogClutterToConsole:        &LogClutterToConsole,
 		GameLogFromLogFile:         &GameLogFromLogFile,

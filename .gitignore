@@ -49,3 +49,4 @@ SSUI/runfiles/**
 SSUI/plugins/**
 Stationeers/**
 SSUI/config/files/dashboard-background.png
+UIMod/logs/*
