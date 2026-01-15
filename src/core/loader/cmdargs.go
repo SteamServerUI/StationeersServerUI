@@ -13,6 +13,7 @@ import (
 
 // Define flags matching the config variable names
 var backendEndpointPortFlag string
+var gamePortFlag string
 var gameBranchFlag string
 var logLevelFlag int
 var isDebugModeFlag bool
@@ -26,6 +27,7 @@ var advertiserOverrideFlag string
 // ParseFlags parses command-line arguments ONCE at startup (called from func main)
 func ParseFlags() {
 	flag.StringVar(&backendEndpointPortFlag, "BackendEndpointPort", "", "Override the backend endpoint port (e.g., 8080)")
+	flag.StringVar(&gamePortFlag, "GamePort", "", " Override the game endpoint port (e.g., 27018)")
 	flag.StringVar(&backendEndpointPortFlag, "p", "", "(Alias) Override the backend endpoint port (e.g., 8080)")
 	flag.StringVar(&gameBranchFlag, "GameBranch", "", "Override the game branch (e.g., beta)")
 	flag.StringVar(&gameBranchFlag, "b", "", "(Alias) Override the game branch (e.g., beta)")
@@ -62,10 +64,15 @@ func HandleFlags() {
 		config.SetSkipSteamCMD(true)
 	}
 
-	if backendEndpointPortFlag != "" && backendEndpointPortFlag != "8443" {
+	if backendEndpointPortFlag != "" {
 		oldPort := config.GetSSUIWebPort()
 		config.SetSSUIWebPort(backendEndpointPortFlag)
 		logger.Main.Info(fmt.Sprintf("Overriding SetSSUIWebPort from command line: Before=%s, Now=%s", oldPort, backendEndpointPortFlag))
+	}
+	if gamePortFlag != "" {
+		oldPort := config.GetGamePort()
+		config.SetGamePort(gamePortFlag)
+		logger.Main.Info(fmt.Sprintf("Overriding GamePort from command line: Before=%s, Now=%s", oldPort, gamePortFlag))
 	}
 
 	if gameBranchFlag != "" {
