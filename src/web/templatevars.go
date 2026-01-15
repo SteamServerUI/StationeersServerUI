@@ -201,4 +201,6 @@ type ConfigTemplateData struct {
 	UIText_Copyright        string
 	UIText_CopyrightConfig1 string
 	UIText_CopyrightConfig2 string
+
+	IsStationeersLaunchPadEnabled string
 }

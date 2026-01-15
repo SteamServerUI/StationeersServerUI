@@ -154,7 +154,7 @@ func downloadNewExecutable(filename, url string) error {
 	}
 
 	// Show progress
-	counter := &writeCounter{Total: resp.ContentLength}
+	counter := &WriteCounter{Total: resp.ContentLength}
 	_, err = io.Copy(out, io.TeeReader(resp.Body, counter))
 	if err != nil {
 		out.Close()

@@ -710,3 +710,19 @@ func SetAdvertiserOverride(value string) error {
 	AdvertiserOverride = value
 	return safeSaveConfig()
 }
+
+func SetIsStationeersLaunchPadEnabled(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	IsStationeersLaunchPadEnabled = value
+	return safeSaveConfig()
+}
+
+func SetIsStationeersLaunchPadAutoUpdatesEnabled(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	IsStationeersLaunchPadAutoUpdatesEnabled = value
+	return safeSaveConfig()
+}

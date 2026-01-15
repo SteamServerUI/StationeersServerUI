@@ -87,5 +87,9 @@ func SetupRoutes() (*http.ServeMux, *http.ServeMux) {
 	// Monitoring
 	protectedMux.HandleFunc("/api/v2/monitor/gameserver/status", HandleMonitorStatus)
 
+	// SLP
+	protectedMux.HandleFunc("/api/v2/slp/install", InstallSLPHandler)
+	protectedMux.HandleFunc("/api/v2/slp/uninstall", UninstallSLPHandler)
+
 	return mux, protectedMux
 }

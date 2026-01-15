@@ -8,19 +8,19 @@ import (
 )
 
 // writeCounter tracks download progress
-type writeCounter struct {
+type WriteCounter struct {
 	Total int64
 	count int64
 }
 
-func (wc *writeCounter) Write(p []byte) (int, error) {
+func (wc *WriteCounter) Write(p []byte) (int, error) {
 	n := len(p)
 	wc.count += int64(n)
 	wc.printProgress()
 	return n, nil
 }
 
-func (wc *writeCounter) printProgress() {
+func (wc *WriteCounter) printProgress() {
 	// If we don't know the total size, just show downloaded bytes
 	if wc.Total <= 0 {
 		logger.Backup.Info(fmt.Sprintf("\r%s downloaded", bytesToHuman(wc.count)))

@@ -82,6 +82,10 @@ type JsonConfig struct {
 	AllowMajorUpdates          *bool `json:"AllowMajorUpdates"`
 	AllowAutoGameServerUpdates *bool `json:"AllowAutoGameServerUpdates"`
 
+	// SLP Modding Settings
+	IsStationeersLaunchPadEnabled            *bool `json:"IsStationeersLaunchPadEnabled"`
+	IsStationeersLaunchPadAutoUpdatesEnabled *bool `json:"IsStationeersLaunchPadAutoUpdatesEnabled"`
+
 	// Discord Settings
 	DiscordToken            string `json:"discordToken"`
 	ControlChannelID        string `json:"controlChannelID"`
@@ -253,6 +257,14 @@ func applyConfig(cfg *JsonConfig) {
 	AllowAutoGameServerUpdates = allowAutoGameServerUpdatesVal
 	cfg.AllowAutoGameServerUpdates = &allowAutoGameServerUpdatesVal
 
+	isStationeersLaunchPadEnabledVal := getBool(cfg.IsStationeersLaunchPadEnabled, "IS_SLP_MODDING_ENABLED", false)
+	IsStationeersLaunchPadEnabled = isStationeersLaunchPadEnabledVal
+	cfg.IsStationeersLaunchPadEnabled = &isStationeersLaunchPadEnabledVal
+
+	isStationeersLaunchPadAutoUpdatesEnabledVal := getBool(cfg.IsStationeersLaunchPadAutoUpdatesEnabled, "IS_SLP_MODDING_AUTO_UPDATES_ENABLED", true)
+	IsStationeersLaunchPadAutoUpdatesEnabled = isStationeersLaunchPadAutoUpdatesEnabledVal
+	cfg.IsStationeersLaunchPadAutoUpdatesEnabled = &isStationeersLaunchPadAutoUpdatesEnabledVal
+
 	SubsystemFilters = getStringSlice(cfg.SubsystemFilters, "SUBSYSTEM_FILTERS", []string{})
 	AutoRestartServerTimer = getString(cfg.AutoRestartServerTimer, "AUTO_RESTART_SERVER_TIMER", "0")
 	isSSCMEnabledVal := getBool(cfg.IsSSCMEnabled, "IS_SSCM_ENABLED", true)
@@ -326,70 +338,72 @@ func applyConfig(cfg *JsonConfig) {
 // M U S T be called while holding a lock on ConfigMu!
 func safeSaveConfig() error {
 	cfg := JsonConfig{
-		DiscordToken:               DiscordToken,
-		ControlChannelID:           ControlChannelID,
-		StatusChannelID:            StatusChannelID,
-		ConnectionListChannelID:    ConnectionListChannelID,
-		LogChannelID:               LogChannelID,
-		SaveChannelID:              SaveChannelID,
-		ControlPanelChannelID:      ControlPanelChannelID,
-		DiscordCharBufferSize:      DiscordCharBufferSize,
-		BlackListFilePath:          BlackListFilePath,
-		IsDiscordEnabled:           &IsDiscordEnabled,
-		ErrorChannelID:             ErrorChannelID,
-		BackupKeepLastN:            BackupKeepLastN,
-		IsCleanupEnabled:           &IsCleanupEnabled,
-		BackupKeepDailyFor:         int(BackupKeepDailyFor / time.Hour),    // Convert to hours
-		BackupKeepWeeklyFor:        int(BackupKeepWeeklyFor / time.Hour),   // Convert to hours
-		BackupKeepMonthlyFor:       int(BackupKeepMonthlyFor / time.Hour),  // Convert to hours
-		BackupCleanupInterval:      int(BackupCleanupInterval / time.Hour), // Convert to hours
-		BackupWaitTime:             int(BackupWaitTime / time.Second),      // Convert to seconds
-		IsNewTerrainAndSaveSystem:  &IsNewTerrainAndSaveSystem,
-		GameBranch:                 GameBranch,
-		Difficulty:                 Difficulty,
-		StartCondition:             StartCondition,
-		StartLocation:              StartLocation,
-		ServerName:                 ServerName,
-		SaveName:                   SaveName,
-		WorldID:                    WorldID,
-		ServerMaxPlayers:           ServerMaxPlayers,
-		ServerPassword:             ServerPassword,
-		ServerAuthSecret:           ServerAuthSecret,
-		AdminPassword:              AdminPassword,
-		GamePort:                   GamePort,
-		UpdatePort:                 UpdatePort,
-		UPNPEnabled:                &UPNPEnabled,
-		AutoSave:                   &AutoSave,
-		SaveInterval:               SaveInterval,
-		AutoPauseServer:            &AutoPauseServer,
-		LocalIpAddress:             LocalIpAddress,
-		StartLocalHost:             &StartLocalHost,
-		ServerVisible:              &ServerVisible,
-		UseSteamP2P:                &UseSteamP2P,
-		ExePath:                    ExePath,
-		AdditionalParams:           AdditionalParams,
-		Users:                      Users,
-		AuthEnabled:                &AuthEnabled,
-		JwtKey:                     JwtKey,
-		AuthTokenLifetime:          AuthTokenLifetime,
-		Debug:                      &IsDebugMode,
-		CreateSSUILogFile:          &CreateSSUILogFile,
-		CreateGameServerLogFile:    &CreateGameServerLogFile,
-		LogLevel:                   LogLevel,
-		LogClutterToConsole:        &LogClutterToConsole,
-		SubsystemFilters:           SubsystemFilters,
-		IsUpdateEnabled:            &IsUpdateEnabled,
-		IsSSCMEnabled:              &IsSSCMEnabled,
-		AutoRestartServerTimer:     AutoRestartServerTimer,
-		AllowPrereleaseUpdates:     &AllowPrereleaseUpdates,
-		AllowMajorUpdates:          &AllowMajorUpdates,
-		AllowAutoGameServerUpdates: &AllowAutoGameServerUpdates,
-		IsConsoleEnabled:           &IsConsoleEnabled,
-		LanguageSetting:            LanguageSetting,
-		AutoStartServerOnStartup:   &AutoStartServerOnStartup,
-		SSUIIdentifier:             SSUIIdentifier,
-		SSUIWebPort:                SSUIWebPort,
-		AdvertiserOverride:         AdvertiserOverride,
+		DiscordToken:                             DiscordToken,
+		ControlChannelID:                         ControlChannelID,
+		StatusChannelID:                          StatusChannelID,
+		ConnectionListChannelID:                  ConnectionListChannelID,
+		LogChannelID:                             LogChannelID,
+		SaveChannelID:                            SaveChannelID,
+		ControlPanelChannelID:                    ControlPanelChannelID,
+		DiscordCharBufferSize:                    DiscordCharBufferSize,
+		BlackListFilePath:                        BlackListFilePath,
+		IsDiscordEnabled:                         &IsDiscordEnabled,
+		ErrorChannelID:                           ErrorChannelID,
+		BackupKeepLastN:                          BackupKeepLastN,
+		IsCleanupEnabled:                         &IsCleanupEnabled,
+		BackupKeepDailyFor:                       int(BackupKeepDailyFor / time.Hour),    // Convert to hours
+		BackupKeepWeeklyFor:                      int(BackupKeepWeeklyFor / time.Hour),   // Convert to hours
+		BackupKeepMonthlyFor:                     int(BackupKeepMonthlyFor / time.Hour),  // Convert to hours
+		BackupCleanupInterval:                    int(BackupCleanupInterval / time.Hour), // Convert to hours
+		BackupWaitTime:                           int(BackupWaitTime / time.Second),      // Convert to seconds
+		IsNewTerrainAndSaveSystem:                &IsNewTerrainAndSaveSystem,
+		GameBranch:                               GameBranch,
+		Difficulty:                               Difficulty,
+		StartCondition:                           StartCondition,
+		StartLocation:                            StartLocation,
+		ServerName:                               ServerName,
+		SaveName:                                 SaveName,
+		WorldID:                                  WorldID,
+		ServerMaxPlayers:                         ServerMaxPlayers,
+		ServerPassword:                           ServerPassword,
+		ServerAuthSecret:                         ServerAuthSecret,
+		AdminPassword:                            AdminPassword,
+		GamePort:                                 GamePort,
+		UpdatePort:                               UpdatePort,
+		UPNPEnabled:                              &UPNPEnabled,
+		AutoSave:                                 &AutoSave,
+		SaveInterval:                             SaveInterval,
+		AutoPauseServer:                          &AutoPauseServer,
+		LocalIpAddress:                           LocalIpAddress,
+		StartLocalHost:                           &StartLocalHost,
+		ServerVisible:                            &ServerVisible,
+		UseSteamP2P:                              &UseSteamP2P,
+		ExePath:                                  ExePath,
+		AdditionalParams:                         AdditionalParams,
+		Users:                                    Users,
+		AuthEnabled:                              &AuthEnabled,
+		JwtKey:                                   JwtKey,
+		AuthTokenLifetime:                        AuthTokenLifetime,
+		Debug:                                    &IsDebugMode,
+		CreateSSUILogFile:                        &CreateSSUILogFile,
+		CreateGameServerLogFile:                  &CreateGameServerLogFile,
+		LogLevel:                                 LogLevel,
+		LogClutterToConsole:                      &LogClutterToConsole,
+		SubsystemFilters:                         SubsystemFilters,
+		IsUpdateEnabled:                          &IsUpdateEnabled,
+		IsSSCMEnabled:                            &IsSSCMEnabled,
+		AutoRestartServerTimer:                   AutoRestartServerTimer,
+		AllowPrereleaseUpdates:                   &AllowPrereleaseUpdates,
+		AllowMajorUpdates:                        &AllowMajorUpdates,
+		AllowAutoGameServerUpdates:               &AllowAutoGameServerUpdates,
+		IsStationeersLaunchPadEnabled:            &IsStationeersLaunchPadEnabled,
+		IsStationeersLaunchPadAutoUpdatesEnabled: &IsStationeersLaunchPadAutoUpdatesEnabled,
+		IsConsoleEnabled:                         &IsConsoleEnabled,
+		LanguageSetting:                          LanguageSetting,
+		AutoStartServerOnStartup:                 &AutoStartServerOnStartup,
+		SSUIIdentifier:                           SSUIIdentifier,
+		SSUIWebPort:                              SSUIWebPort,
+		AdvertiserOverride:                       AdvertiserOverride,
 	}
 
 	file, err := os.Create(ConfigPath)

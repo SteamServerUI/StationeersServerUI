@@ -121,6 +121,11 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		createGameServerLogFileFalseSelected = "selected"
 	}
 
+	isStationeersLaunchPadEnabled := "false"
+	if config.GetIsStationeersLaunchPadEnabled() {
+		isStationeersLaunchPadEnabled = "true"
+	}
+
 	data := ConfigTemplateData{
 		// Config values
 		DiscordToken:                            config.GetDiscordToken(),
@@ -293,6 +298,8 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 
 		UIText_CopyrightConfig1: localization.GetString("UIText_Copyright1"),
 		UIText_CopyrightConfig2: localization.GetString("UIText_Copyright2"),
+
+		IsStationeersLaunchPadEnabled: isStationeersLaunchPadEnabled,
 	}
 
 	err = tmpl.Execute(w, data)

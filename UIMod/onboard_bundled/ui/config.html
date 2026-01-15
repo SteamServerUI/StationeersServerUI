@@ -40,15 +40,10 @@
                     <span class="icon discord-icon"></span>
                     <span class="tab-text">{{.UIText_DiscordIntegration}}</span>
                 </button>
-
-                <!--
-
                 <button class="sliding-tab-button" data-tab="slp-config-tab">
                     <span class="icon slp-icon"></span>
                     <span class="tab-text">{{.UIText_SLPModIntegration}}</span>
                 </button>
-
-                -->
                 <button class="sliding-tab-button" data-tab="detectionmanager-config-tab">
                     <span class="icon detection-icon"></span>
                     <span class="tab-text">{{.UIText_DetectionManager}}</span>
@@ -444,6 +439,15 @@
         </div>
 
         <div id="slp-config-tab" class="tab-content">
+            <p>Stationeers Launch Pad is a simple mod loader for Stationeers. SLP Updates itself automatically.</p>
+            {{if eq .IsStationeersLaunchPadEnabled "false"}}
+            <p>To install SLP, simply click the button below.</p>
+            <button onclick="installSLP()">Install SLP</button>
+            {{end}}
+            {{if eq .IsStationeersLaunchPadEnabled "true"}}
+            <p>To uninstall SLP and all Mods, simply click the button below. This will DELETE all Mods in the Mods folder!</p>
+            <button onclick="uninstallSLP()">Uninstall SLP</button>
+            {{end}}
         </div>
 
         <div id="detectionmanager-config-tab" class="tab-content">
@@ -614,6 +618,7 @@
     <script src="/static/js/world-gen-config.js"></script>
     <script src="/static/js/detectionmanager.js"></script>
     <script src="/static/js/xmas.js"></script>
+    <script src="/static/js/slp.js"></script>
 </body>
 
 </html>

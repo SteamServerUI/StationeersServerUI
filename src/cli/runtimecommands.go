@@ -166,6 +166,7 @@ func init() {
 	RegisterCommand("printconfig", WrapNoReturn(printConfig), "pc")
 	RegisterCommand("update", WrapNoReturn(triggerUpdateCheck), "u")
 	RegisterCommand("applyupdate", WrapNoReturn(applyUpdate), "au")
+	RegisterCommand("installslp", WrapNoReturn(installSLP), "slp")
 }
 
 func startServer() {
@@ -241,6 +242,10 @@ func applyUpdate() {
 		logger.Install.Warn("⚠️ Update failed: " + err.Error())
 		return
 	}
+}
+
+func installSLP() {
+	loader.InstallSLP()
 }
 
 func supportMode() {
