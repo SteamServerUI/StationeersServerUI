@@ -448,6 +448,8 @@
             <p>To uninstall SLP and all Mods, simply click the button below. This will DELETE all Mods in the Mods folder!</p>
             <button onclick="uninstallSLP()">Uninstall SLP</button>
             {{end}}
+            <p>To upload a mod package, simply select a file or drag and drop it into the box below.</p>
+            <input type="file" id="modPackageUpload" onchange="handleModPackageUpload(this.files)">
         </div>
 
         <div id="detectionmanager-config-tab" class="tab-content">
