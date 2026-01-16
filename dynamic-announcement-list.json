@@ -17,5 +17,14 @@
     "authorRole": "Lead Developer",
     "validFrom": "2025-12-18T00:00:00Z",
     "validUntil": "2025-12-19T23:59:59Z"
+  },
+  {
+    "headline": "SSUI v5.10.1: Bugfix Patch",
+    "shortDescription": "A small patch was released",
+    "bodyHtml": "This is a very small patch fixing 2 bugs: - The <code>BackendEndpointPort</code> flag (<code>-p</code>) would not apply if set to 8443 - The <code>WorldID</code> field would not apply if used on the Terrain Settings config page → removed it from the <em>Basic Settings</em>, now <code>WorldID</code> is to be set from the <em>wizard</em> or the <em>Terrain Settings</em> page - Added a <code>-GamePort</code> flag to set the connection port for gameserver connections from CLI directly at startup → This was added for BadDucky52's <strong>SSUI pterodactyl egg</strong> to work as intended → This means you <em>can</em> now run <a href=\"https://github.com/BadDucky52/PterodactylGameEggs/blob/main/egg-Stationeers-ServerUI.json\">SSUI inside pterodactyl</a> → if you have to<br><br>In the next days / weeks, a mod support update (v5.11.0) will follow, adding<br>• StationeersLaunchPad install & uninstall<br>• SLP ModPackage Uploads<br>• <em>Possibly</em> automatic mod updates"
+    "author": "JacksonTheMaster",
+    "authorRole": "Lead Developer",
+    "validFrom": "2026-01-16T00:00:00Z",
+    "validUntil": "2026-01-19T23:59:59Z"
   }
 ]
