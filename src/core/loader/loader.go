@@ -14,8 +14,8 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/modding"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/launchpad"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
@@ -122,7 +122,7 @@ func InitVirtFS(v1uiFS embed.FS) {
 }
 
 func InstallSLP() {
-	version, err := launchpad.InstallSLP()
+	version, err := modding.InstallSLP()
 	if err != nil {
 		logger.Install.Error("SLP installation failed: " + err.Error())
 		return
@@ -131,7 +131,7 @@ func InstallSLP() {
 }
 
 func EnsureSLPAutoUpdates() {
-	modified, err := launchpad.ToggleSLPAutoUpdates(config.GetIsStationeersLaunchPadAutoUpdatesEnabled())
+	modified, err := modding.ToggleSLPAutoUpdates(config.GetIsStationeersLaunchPadAutoUpdatesEnabled())
 	if err != nil {
 		logger.Install.Error("Failed to toggle SLP auto-updates: " + err.Error())
 		return

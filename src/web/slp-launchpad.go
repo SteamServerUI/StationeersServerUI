@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/launchpad"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/modding"
 )
 
 func InstallSLPHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	if _, err := launchpad.InstallSLP(); err != nil {
+	if _, err := modding.InstallSLP(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"success": false,
@@ -25,7 +25,7 @@ func InstallSLPHandler(w http.ResponseWriter, r *http.Request) {
 func UninstallSLPHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
-	if _, err := launchpad.UninstallSLP(); err != nil {
+	if _, err := modding.UninstallSLP(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"success": false,
@@ -41,7 +41,7 @@ func UninstallSLPHandler(w http.ResponseWriter, r *http.Request) {
 func UploadModPackageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	if err := launchpad.ProcessModPackageUpload(r.Body); err != nil {
+	if err := modding.ProcessModPackageUpload(r.Body); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"success": false,
@@ -60,7 +60,7 @@ func UploadModPackageHandler(w http.ResponseWriter, r *http.Request) {
 func GetInstalledModDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	mods := launchpad.GetModList()
+	mods := modding.GetModList()
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{

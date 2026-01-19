@@ -1,4 +1,4 @@
-package launchpad
+package modding
 
 import (
 	"encoding/base64"

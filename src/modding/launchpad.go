@@ -1,6 +1,4 @@
-//go:build !js
-
-package launchpad
+package modding
 
 import (
 	"archive/zip"

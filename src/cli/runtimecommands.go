@@ -23,7 +23,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/launchpad"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/modding"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
@@ -173,7 +173,7 @@ func init() {
 }
 
 func listmods() {
-	mods := launchpad.GetModList()
+	mods := modding.GetModList()
 	if len(mods) == 0 {
 		logger.Core.Info("No mods installed.")
 		return
@@ -191,7 +191,7 @@ func listmods() {
 }
 
 func listworkshophandles() {
-	handles := launchpad.GetModWorkshopHandles()
+	handles := modding.GetModWorkshopHandles()
 	if len(handles) == 0 {
 		logger.Core.Info("No mods with Workshop handles found.")
 		return
