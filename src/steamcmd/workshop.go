@@ -15,13 +15,18 @@ import (
 )
 
 // DownloadWorkshopItems downloads all installed workshop mods using SteamCMD
-func DownloadWorkshopItems() error {
+func UpdateWorkshopItems() error {
 	workshopHandles := modding.GetModWorkshopHandles()
 	if len(workshopHandles) == 0 {
 		logger.Install.Debug("ℹ️  No workshop items to download")
 		return nil
 	}
 
+	fmt.Println(workshopHandles)
+	return DownloadWorkshopItems(workshopHandles)
+}
+
+func DownloadWorkshopItems(workshopHandles []string) error {
 	logger.Install.Infof("🔄 Downloading %d workshop items...", len(workshopHandles))
 
 	currentDir, err := os.Getwd()

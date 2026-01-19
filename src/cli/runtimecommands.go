@@ -171,10 +171,16 @@ func init() {
 	RegisterCommand("listmods", WrapNoReturn(listmods), "lm")
 	RegisterCommand("listworkshophandles", WrapNoReturn(listworkshophandles), "lwh")
 	RegisterCommand("downloadworkshopupdates", WrapNoReturn(downloadWorkshopUpdates), "dwu")
+	RegisterCommand("downloadworkshopitemtest", WrapNoReturn(downloadWorkshopItemTest), "dwmodcon")
+}
+
+func downloadWorkshopItemTest() {
+	workshopHandles := []string{"3505169479"}
+	steamcmd.DownloadWorkshopItems(workshopHandles)
 }
 
 func downloadWorkshopUpdates() {
-	err := steamcmd.DownloadWorkshopItems()
+	err := steamcmd.UpdateWorkshopItems()
 	if err != nil {
 		logger.Core.Error("Error downloading workshop updates: " + err.Error())
 	}
