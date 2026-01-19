@@ -1,9 +1,11 @@
 package launchpad
 
 import (
+	"encoding/base64"
 	"encoding/xml"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // ModMetadata represents a parsed mod from About.xml
@@ -13,6 +15,7 @@ type ModMetadata struct {
 	Version        string
 	Description    string
 	WorkshopHandle string
+	Images         map[string]string // filename -> base64 encoded image data
 }
 
 // aboutXML is the structure for parsing About.xml files
@@ -22,6 +25,53 @@ type aboutXML struct {
 	Version        string `xml:"Version"`
 	Description    string `xml:"Description"`
 	WorkshopHandle string `xml:"WorkshopHandle"`
+}
+
+// loadModImages loads all images from the About folder and converts them to base64
+func loadModImages(aboutPath string) map[string]string {
+	images := make(map[string]string)
+
+	// List all files in the About folder
+	entries, err := os.ReadDir(aboutPath)
+	if err != nil {
+		return images // Return empty map if we can't read the directory
+	}
+
+	// Common image extensions (case-insensitive)
+	imageExtensions := map[string]bool{
+		".png":  true,
+		".jpg":  true,
+		".jpeg": true,
+		".webp": true,
+	}
+
+	// Iterate over files and look for images
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue // Skip directories
+		}
+
+		filename := entry.Name()
+		ext := strings.ToLower(filepath.Ext(filename))
+
+		// Check if file has an image extension
+		if !imageExtensions[ext] {
+			continue
+		}
+
+		// Read the image file
+		imagePath := filepath.Join(aboutPath, filename)
+		data, err := os.ReadFile(imagePath)
+		if err != nil {
+			continue // Skip if we can't read the file
+		}
+
+		// Convert to base64
+		encoded := base64.StdEncoding.EncodeToString(data)
+		images[filename] = encoded
+	}
+
+	return images
 }
 
 // GetModList returns an array of installed mods and their details
@@ -48,7 +98,8 @@ func GetModList() []ModMetadata {
 		}
 
 		dirName := entry.Name()
-		aboutXMLPath := filepath.Join(modsPath, dirName, "About", "About.xml")
+		aboutPath := filepath.Join(modsPath, dirName, "About")
+		aboutXMLPath := filepath.Join(aboutPath, "About.xml")
 
 		// Check if About.xml exists
 		if _, err := os.Stat(aboutXMLPath); os.IsNotExist(err) {
@@ -67,6 +118,9 @@ func GetModList() []ModMetadata {
 			continue // Skip if we can't parse the XML
 		}
 
+		// Load images from the About folder
+		images := loadModImages(aboutPath)
+
 		// Use WorkshopHandle from XML if available
 		workshopHandle := xmlData.WorkshopHandle
 
@@ -77,6 +131,7 @@ func GetModList() []ModMetadata {
 			Version:        xmlData.Version,
 			Description:    xmlData.Description,
 			WorkshopHandle: workshopHandle,
+			Images:         images,
 		}
 
 		mods = append(mods, mod)
