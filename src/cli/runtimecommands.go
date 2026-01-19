@@ -170,6 +170,14 @@ func init() {
 	RegisterCommand("installslp", WrapNoReturn(installSLP), "slp")
 	RegisterCommand("listmods", WrapNoReturn(listmods), "lm")
 	RegisterCommand("listworkshophandles", WrapNoReturn(listworkshophandles), "lwh")
+	RegisterCommand("downloadworkshopupdates", WrapNoReturn(downloadWorkshopUpdates), "dwu")
+}
+
+func downloadWorkshopUpdates() {
+	err := steamcmd.DownloadWorkshopItems()
+	if err != nil {
+		logger.Core.Error("Error downloading workshop updates: " + err.Error())
+	}
 }
 
 func listmods() {
