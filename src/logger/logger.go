@@ -25,6 +25,7 @@ var (
 	Security     = &Logger{suffix: SYS_SECURITY}
 	Localization = &Logger{suffix: SYS_LOCALIZATION}
 	Advertiser   = &Logger{suffix: SYS_ADVERTISER}
+	Modding      = &Logger{suffix: SYS_MODDING}
 )
 
 // Severity Levels
@@ -50,6 +51,7 @@ const (
 	SYS_SECURITY     = "SECURITY"
 	SYS_LOCALIZATION = "LOCALIZATION"
 	SYS_ADVERTISER   = "ADVERTISER"
+	SYS_MODDING      = "MODDING"
 )
 
 const (
@@ -76,6 +78,7 @@ var subsystemColors = map[string]string{
 	SYS_SECURITY:     colorRed,     // Screams "pay attention"
 	SYS_LOCALIZATION: colorCyan,    // Matches WEB, localization-related
 	SYS_ADVERTISER:   colorYellow,  // Matches Config, advanced feature
+	SYS_MODDING:      colorCyan,    //
 }
 
 // Global channels and mutex for all loggers
