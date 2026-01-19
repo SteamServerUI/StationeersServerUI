@@ -489,6 +489,14 @@
                 <p style="color: #ffaaaa;">⚠️ Uninstalling will DELETE all mods in the Mods folder.</p>
                 <button id="uninstallSLPBtn" class="slp-button slp-button-small danger" onclick="uninstallSLP()">🗑️ Uninstall SLP</button>
             </div>
+
+            <div class="slp-section">
+                <h3>Installed Mods</h3>
+                <div id="mods-list-container">
+                    <div class="loader" id="mods-loader"></div>
+                    <div id="mods-list" class="mods-list"></div>
+                </div>
+            </div>
             {{end}}
         </div>
 

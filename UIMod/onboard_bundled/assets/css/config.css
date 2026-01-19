@@ -667,3 +667,203 @@ select option {
         opacity: 1;
     }
 }
+
+/* Mods List Section */
+.mods-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.mod-card {
+    background: linear-gradient(135deg, var(--card-bg-start, #1a1a2e), var(--card-bg-end, #16213e));
+    border: 2px solid var(--primary-dim);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all var(--transition-normal);
+    box-shadow: 0 0 15px var(--button-glow-soft);
+}
+
+.mod-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 25px var(--button-glow);
+    transform: translateY(-5px);
+}
+
+.mod-image-container {
+    width: 100%;
+    height: 250px;
+    background: var(--input-bg, #0f0f1e);
+    border: 2px solid var(--primary-dim);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.mod-image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    padding: 5px;
+}
+
+.mod-image-container.no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim, #888);
+    font-size: 3rem;
+}
+
+
+
+.mod-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.95rem;
+    color: var(--text-bright);
+    margin-bottom: 5px;
+    word-break: break-word;
+}
+
+.mod-author {
+    color: var(--primary);
+    font-size: 0.85rem;
+    margin-bottom: 3px;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.mod-version {
+    color: var(--text-dim, #888);
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.mod-description {
+    color: var(--text-normal, #ccc);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-height: 250px;
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.3s ease;
+}
+
+.mod-description.expanded {
+    max-height: none;
+    overflow: visible;
+}
+
+.mod-description::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(transparent, var(--card-bg-start, #1a1a2e));
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.mod-description.expanded::after {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mod-description h1 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1rem;
+    color: var(--primary);
+    margin: 12px 0 8px 0;
+}
+
+.mod-description h2 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.95rem;
+    color: var(--primary);
+    margin: 10px 0 6px 0;
+}
+
+.mod-description h3,
+.mod-description h4 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.9rem;
+    color: var(--primary);
+    margin: 8px 0 5px 0;
+}
+
+.mod-description b {
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.mod-description i {
+    font-style: italic;
+    color: var(--primary-glow);
+}
+
+.mod-description u {
+    text-decoration: underline;
+}
+
+.mod-description ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.mod-description li {
+    margin: 4px 0;
+}
+
+.mod-description hr {
+    border: none;
+    border-top: 1px solid var(--primary-dim);
+    margin: 12px 0;
+}
+
+.mod-description a {
+    color: var(--primary);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.mod-description a:hover {
+    color: var(--primary-glow);
+}
+
+.mod-expand-button {
+    box-shadow: none !important;
+    display: inline-block;
+    margin-top: 10px;
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    transition: transform 0.3s ease;
+    font-weight: bold;
+}
+
+.mod-expand-button:hover {
+    color: var(--primary-glow);
+}
+
+.mod-expand-button.expanded {
+    transform: rotate(180deg);
+}
+
+.mods-empty {
+    text-align: center;
+    color: var(--text-dim, #888);
+    padding: 40px 20px;
+    font-family: 'Share Tech Mono', monospace;
+}
