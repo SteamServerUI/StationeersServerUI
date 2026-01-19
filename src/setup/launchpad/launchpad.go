@@ -133,20 +133,39 @@ func UninstallSLP() (string, error) {
 	pluginsDir := "BepInEx/plugins"
 	slpDir := filepath.Join(pluginsDir, "StationeersLaunchPad")
 
+	// stat the folder to see if it exists, if not skip removal
+	if _, err := os.Stat(slpDir); os.IsNotExist(err) {
+		logger.Install.Info("SLP is not installed; nothing to uninstall")
+		config.SetIsStationeersLaunchPadEnabled(false)
+		return "not_installed", nil
+	}
+
 	if err := os.RemoveAll(slpDir); err != nil {
 		logger.Install.Error("Failed to remove SLP folder: " + err.Error())
 		return "failed", fmt.Errorf("failed to remove SLP folder: %w", err)
 	}
 
-	// remove the ./mods folder and the modconfig.xml file too
-	if err := os.RemoveAll(filepath.Join(slpDir, "mods")); err != nil {
-		logger.Install.Error("Failed to remove the mods folder: " + err.Error())
-		return "failed", fmt.Errorf("failed to remove SLP mods folder: %w", err)
+	// stat the current directory to see if mod files exist, if not skip removal
+	if _, err := os.Stat(filepath.Join(".", "mods")); os.IsNotExist(err) {
+		logger.Install.Info("No mods folder found; skipping mods removal")
+	} else {
+
+		// remove the ./mods folder and the modconfig.xml file too
+		if err := os.RemoveAll(filepath.Join(".", "mods")); err != nil {
+			logger.Install.Error("Failed to remove the mods folder: " + err.Error())
+			return "failed", fmt.Errorf("failed to remove mods folder: %w", err)
+		}
 	}
 
-	if err := os.Remove(filepath.Join(slpDir, "modconfig.xml")); err != nil {
-		logger.Install.Error("Failed to remove SLP modconfig.xml file: " + err.Error())
-		return "failed", fmt.Errorf("failed to remove modconfig.xml file: %w", err)
+	// stat the modconfig.xml file to see if it exists, if not skip removal
+	if _, err := os.Stat(filepath.Join(".", "modconfig.xml")); os.IsNotExist(err) {
+		logger.Install.Info("No modconfig.xml file found; skipping its removal")
+	} else {
+
+		if err := os.Remove(filepath.Join(".", "modconfig.xml")); err != nil {
+			logger.Install.Error("Failed to remove modconfig.xml file: " + err.Error())
+			return "failed", fmt.Errorf("failed to remove modconfig.xml file: %w", err)
+		}
 	}
 
 	config.SetIsStationeersLaunchPadEnabled(false)

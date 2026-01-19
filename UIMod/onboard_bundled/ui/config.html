@@ -14,11 +14,19 @@
     <link rel="stylesheet" href="/static/css/config.css">
     <link rel="stylesheet" href="/static/css/detectionmanager.css">
     <link rel="stylesheet" href="/static/css/flags.css">
+    <link rel="stylesheet" href="/static/css/popup.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
 
 <body>
     <div id="space-background"></div>
+    <div id="universalPopup" class="popup">
+        <div class="popup-content">
+            <h2 id="popupTitle"></h2>
+            <p id="popupMessage"></p>
+            <button onclick="closePopup()">Close</button>
+        </div>
+    </div>
     <header>
         <img src="/static/stationeers.webp" alt="Stationeers Banner" id="banner">
         <div id="language-flags">
@@ -439,17 +447,49 @@
         </div>
 
         <div id="slp-config-tab" class="tab-content">
-            <p>Stationeers Launch Pad is a simple mod loader for Stationeers. SLP Updates itself automatically.</p>
             {{if eq .IsStationeersLaunchPadEnabled "false"}}
-            <p>To install SLP, simply click the button below.</p>
-            <button onclick="installSLP()">Install SLP</button>
+            <div class="slp-section slp-install-section">
+                <div class="slp-install-header">
+                    <span class="slp-install-icon">🚀</span>
+                    <h3>Stationeers Launch Pad</h3>
+                </div>
+                <p>Stationeers Launch Pad is a simple mod loader for Stationeers. It automatically updates itself and makes mod management easy.</p>
+                <p style="color: #00ff96; margin-top: 15px; font-weight: bold;">Ready to install? Click the button below to get started.</p>
+                <button id="installSLPBtn" class="slp-button slp-button-large" onclick="installSLP()">⬇️ Install Stationeers Launch Pad</button>
+            </div>
+
+            <div class="slp-section">
+                <h3>Upload Mod Package</h3>
+                <p>Once SLP is installed, you'll be able to upload SLP packages here.</p>
+                <div id="modPackageUploadZone" class="upload-zone-disabled">
+                    <span class="upload-icon">🔒</span>
+                    <div class="upload-text">Install SLP First</div>
+                    <div class="upload-subtext">SLP must be installed to upload mods</div>
+                </div>
+            </div>
             {{end}}
+
             {{if eq .IsStationeersLaunchPadEnabled "true"}}
-            <p>To uninstall SLP and all Mods, simply click the button below. This will DELETE all Mods in the Mods folder!</p>
-            <button onclick="uninstallSLP()">Uninstall SLP</button>
+            <div class="slp-section">
+                <h3>Upload Mod Package</h3>
+                <p>Select a mod package zip file or drag and drop it into the box below to upload and extract mods.</p>
+                
+                <div id="modPackageUploadZone">
+                    <span class="upload-icon">📦</span>
+                    <div class="upload-text">Drag & Drop Mod Package Here</div>
+                    <div class="upload-subtext">or click to select a .zip file</div>
+                </div>
+                <div id="modPackageUploadProgress"></div>
+                <input type="file" id="modPackageUpload" accept=".zip" onchange="handleModPackageSelection(this.files)">
+                <button id="uploadModPackageBtn" class="slp-button" onclick="uploadModPackage()" disabled>⬆️ Upload Mod Package</button>
+            </div>
+
+            <div class="slp-section slp-uninstall-section">
+                <h3>Manage Installation</h3>
+                <p style="color: #ffaaaa;">⚠️ Uninstalling will DELETE all mods in the Mods folder.</p>
+                <button id="uninstallSLPBtn" class="slp-button slp-button-small danger" onclick="uninstallSLP()">🗑️ Uninstall SLP</button>
+            </div>
             {{end}}
-            <p>To upload a mod package, simply select a file or drag and drop it into the box below.</p>
-            <input type="file" id="modPackageUpload" onchange="handleModPackageUpload(this.files)">
         </div>
 
         <div id="detectionmanager-config-tab" class="tab-content">
@@ -620,6 +660,7 @@
     <script src="/static/js/world-gen-config.js"></script>
     <script src="/static/js/detectionmanager.js"></script>
     <script src="/static/js/xmas.js"></script>
+    <script src="/static/js/popup.js"></script>
     <script src="/static/js/slp.js"></script>
 </body>
 
