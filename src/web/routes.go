@@ -91,6 +91,7 @@ func SetupRoutes() (*http.ServeMux, *http.ServeMux) {
 	protectedMux.HandleFunc("/api/v2/slp/install", InstallSLPHandler)
 	protectedMux.HandleFunc("/api/v2/slp/uninstall", UninstallSLPHandler)
 	protectedMux.HandleFunc("/api/v2/slp/upload", UploadModPackageHandler)
+	protectedMux.HandleFunc("/api/v2/slp/mods", GetInstalledModDetailsHandler)
 
 	return mux, protectedMux
 }

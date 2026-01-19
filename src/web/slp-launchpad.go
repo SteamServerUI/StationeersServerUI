@@ -56,3 +56,15 @@ func UploadModPackageHandler(w http.ResponseWriter, r *http.Request) {
 		"message": "Mod package uploaded and extracted successfully",
 	})
 }
+
+func GetInstalledModDetailsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	mods := launchpad.GetModList()
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"mods":    mods,
+	})
+}

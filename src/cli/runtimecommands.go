@@ -23,6 +23,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/launchpad"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
@@ -167,6 +168,37 @@ func init() {
 	RegisterCommand("update", WrapNoReturn(triggerUpdateCheck), "u")
 	RegisterCommand("applyupdate", WrapNoReturn(applyUpdate), "au")
 	RegisterCommand("installslp", WrapNoReturn(installSLP), "slp")
+	RegisterCommand("listmods", WrapNoReturn(listmods), "lm")
+	RegisterCommand("listworkshophandles", WrapNoReturn(listworkshophandles), "lwh")
+}
+
+func listmods() {
+	mods := launchpad.GetModList()
+	if len(mods) == 0 {
+		logger.Core.Info("No mods installed.")
+		return
+	}
+	logger.Core.Info(fmt.Sprintf("Installed Mods (%d):", len(mods)))
+	for _, mod := range mods {
+
+		// print mod details in one logger call but with /n for new lines
+		logger.Modding.Info("Mod Details:\n" +
+			fmt.Sprintf("Modname: %s\n", mod.Name) +
+			fmt.Sprintf("  Version: %s\n", mod.Version) +
+			fmt.Sprintf("  Author: %s\n", mod.Author) +
+			fmt.Sprintf("  Workshop Handle: %s\n", mod.WorkshopHandle))
+	}
+}
+
+func listworkshophandles() {
+	handles := launchpad.GetModWorkshopHandles()
+	if len(handles) == 0 {
+		logger.Core.Info("No mods with Workshop handles found.")
+		return
+	}
+	logger.Core.Info(fmt.Sprintf("Installed Mod Workshop Handles: (%d):", len(handles)))
+	logger.Modding.Info(fmt.Sprintf("%v", handles))
+
 }
 
 func startServer() {
