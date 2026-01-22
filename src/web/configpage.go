@@ -299,6 +299,27 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		UIText_CopyrightConfig1: localization.GetString("UIText_Copyright1"),
 		UIText_CopyrightConfig2: localization.GetString("UIText_Copyright2"),
 
+		// SLP Section
+		UIText_SLP_Title:                  localization.GetString("UIText_SLP_Title"),
+		UIText_SLP_Description:            localization.GetString("UIText_SLP_Description"),
+		UIText_SLP_ReadyToInstall:         localization.GetString("UIText_SLP_ReadyToInstall"),
+		UIText_SLP_InstallButton:          localization.GetString("UIText_SLP_InstallButton"),
+		UIText_SLP_UploadModPackage:       localization.GetString("UIText_SLP_UploadModPackage"),
+		UIText_SLP_UploadDescription:      localization.GetString("UIText_SLP_UploadDescription"),
+		UIText_SLP_UploadDescriptionLink:  localization.GetString("UIText_SLP_UploadDescriptionLink"),
+		UIText_SLP_InstallFirst:           localization.GetString("UIText_SLP_InstallFirst"),
+		UIText_SLP_InstallFirstSubtext:    localization.GetString("UIText_SLP_InstallFirstSubtext"),
+		UIText_SLP_DragDropHere:           localization.GetString("UIText_SLP_DragDropHere"),
+		UIText_SLP_OrClickToSelect:        localization.GetString("UIText_SLP_OrClickToSelect"),
+		UIText_SLP_UploadButton:           localization.GetString("UIText_SLP_UploadButton"),
+		UIText_SLP_ManageInstallation:     localization.GetString("UIText_SLP_ManageInstallation"),
+		UIText_SLP_UninstallWarning:       localization.GetString("UIText_SLP_UninstallWarning"),
+		UIText_SLP_UninstallButton:        localization.GetString("UIText_SLP_UninstallButton"),
+		UIText_SLP_UpdateWorkshopMods:     localization.GetString("UIText_SLP_UpdateWorkshopMods"),
+		UIText_SLP_UpdateWorkshopModsDesc: localization.GetString("UIText_SLP_UpdateWorkshopModsDesc"),
+		UIText_SLP_UpdateButton:           localization.GetString("UIText_SLP_UpdateButton"),
+		UIText_SLP_InstalledMods:          localization.GetString("UIText_SLP_InstalledMods"),
+
 		IsStationeersLaunchPadEnabled: isStationeersLaunchPadEnabled,
 	}
 

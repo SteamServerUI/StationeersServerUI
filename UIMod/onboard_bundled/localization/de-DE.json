@@ -137,6 +137,27 @@
                 "UIText_DiscordBenefit5": "Echtzeit Fehlerbenachrichtigungen",
                 "UIText_DiscordSetupInstructions": "Für Setup-Anweisungen besuche die"
             },
+            "slp": {
+                "UIText_SLP_Title": "Stationeers Launch Pad",
+                "UIText_SLP_Description": "Stationeers Launch Pad ist ein einfacher Mod-Loader für Stationeers. Es aktualisiert sich automatisch und macht Mod-Verwaltung einfach.",
+                "UIText_SLP_ReadyToInstall": "Bereit zur Installation? Klicke auf den Button unten, um zu starten.",
+                "UIText_SLP_InstallButton": "Stationeers Launch Pad installieren",
+                "UIText_SLP_UploadModPackage": "Mod-Paket hochladen",
+                "UIText_SLP_UploadDescription": "Wähle eine Mod-Paket (modpkg) ZIP-Datei oder ziehe sie per Drag & Drop in das Feld unten, um Mods hochzuladen und zu extrahieren.",
+                "UIText_SLP_UploadDescriptionLink": "Mod-Pakete müssen von deinem Spiel-Client exportiert werden. Siehe ",
+                "UIText_SLP_InstallFirst": "Zuerst SLP installieren",
+                "UIText_SLP_InstallFirstSubtext": "SLP muss installiert sein, um Mod-Pakete hochzuladen",
+                "UIText_SLP_DragDropHere": "Mod-Paket hierher ziehen",
+                "UIText_SLP_OrClickToSelect": "oder klicken, um eine Mod-Paket Datei auszuwählen",
+                "UIText_SLP_UploadButton": "Mod-Paket hochladen",
+                "UIText_SLP_ManageInstallation": "Installation verwalten",
+                "UIText_SLP_UninstallWarning": "Deinstallation LÖSCHT alle Mods im Mods-Ordner.",
+                "UIText_SLP_UninstallButton": "SLP deinstallieren",
+                "UIText_SLP_UpdateWorkshopMods": "Workshop-Mods aktualisieren",
+                "UIText_SLP_UpdateWorkshopModsDesc": "Aktualisiert alle installierten Workshop-Mods auf die neueste Version. Dieser Vorgang kann je nach Anzahl der Mods einige Zeit dauern.",
+                "UIText_SLP_UpdateButton": "Workshop-Mods aktualisieren",
+                "UIText_SLP_InstalledMods": "Installierte Mods"
+            },
             "UIText_TerrainSettings": "Weltgenerierung"
         },
         "setup": {

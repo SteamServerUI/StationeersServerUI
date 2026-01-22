@@ -451,55 +451,55 @@
             <div class="slp-section slp-install-section">
                 <div class="slp-install-header">
                     <span class="slp-install-icon">🚀</span>
-                    <h3>Stationeers Launch Pad</h3>
+                    <h3>{{.UIText_SLP_Title}}</h3>
                 </div>
-                <p>Stationeers Launch Pad is a simple mod loader for Stationeers. It automatically updates itself and makes mod management easy.</p>
-                <p style="color: #00ff96; margin-top: 15px; font-weight: bold;">Ready to install? Click the button below to get started.</p>
-                <button id="installSLPBtn" class="slp-button slp-button-large" onclick="installSLP()">⬇️ Install Stationeers Launch Pad</button>
+                <p>{{.UIText_SLP_Description}}</p>
+                <p style="color: #00ff96; margin-top: 15px; font-weight: bold;">{{.UIText_SLP_ReadyToInstall}}</p>
+                <button id="installSLPBtn" class="slp-button slp-button-large" onclick="installSLP()">⬇️ {{.UIText_SLP_InstallButton}}</button>
             </div>
 
             <div class="slp-section">
-                <h3>Upload Mod Package</h3>
+                <h3>{{.UIText_SLP_UploadModPackage}}</h3>
                 <div id="modPackageUploadZone" class="upload-zone-disabled">
                     <span class="upload-icon">🔒</span>
-                    <div class="upload-text">Install SLP First</div>
-                    <div class="upload-subtext">SLP must be installed to upload mod packages</div>
+                    <div class="upload-text">{{.UIText_SLP_InstallFirst}}</div>
+                    <div class="upload-subtext">{{.UIText_SLP_InstallFirstSubtext}}</div>
                 </div>
             </div>
             {{end}}
 
             {{if eq .IsStationeersLaunchPadEnabled "true"}}
             <div class="slp-section">
-                <h3>Upload Mod Package</h3>
-                <p>Select a mod package (modpkg) zip file or drag and drop it into the box below to upload and extract mods.</p>
-                <p>Mod packages need to be exported from your game <strong> client</strong>. See the <a href="https://github.com/SteamServerUI/StationeersServerUI/wiki/Modding-with-StationeersLaunchPad#generate-a-mod-package" target="_blank">wiki</a> for more information.</p>
+                <h3>{{.UIText_SLP_UploadModPackage}}</h3>
+                <p>{{.UIText_SLP_UploadDescription}}</p>
+                <p>{{.UIText_SLP_UploadDescriptionLink}} <a href="https://github.com/SteamServerUI/StationeersServerUI/wiki/Modding-with-StationeersLaunchPad#generate-a-mod-package" target="_blank">wiki</a>.</p>
                 
                 <div id="modPackageUploadZone">
                     <span class="upload-icon">📦</span>
-                    <div class="upload-text">Drag & Drop Mod Package Here</div>
-                    <div class="upload-subtext">or click to select a mod package file</div>
+                    <div class="upload-text">{{.UIText_SLP_DragDropHere}}</div>
+                    <div class="upload-subtext">{{.UIText_SLP_OrClickToSelect}}</div>
                 </div>
                 <div id="modPackageUploadProgress"></div>
                 <input type="file" id="modPackageUpload" accept=".zip" onchange="handleModPackageSelection(this.files)">
-                <button id="uploadModPackageBtn" class="slp-button" onclick="uploadModPackage()" disabled>⬆️ Upload Mod Package</button>
+                <button id="uploadModPackageBtn" class="slp-button" onclick="uploadModPackage()" disabled>⬆️ {{.UIText_SLP_UploadButton}}</button>
             </div>
 
             <div class="slp-section slp-manage-section">
-                <h3>Manage Installation</h3>
+                <h3>{{.UIText_SLP_ManageInstallation}}</h3>
                 <div class="manage-buttons">
                     <div class="manage-left">
-                        <p style="color: #ffaaaa;">⚠️ Uninstalling will DELETE all mods in the Mods folder.</p>
-                        <button id="uninstallSLPBtn" class="slp-button slp-button-small danger" onclick="uninstallSLP()">🗑️ Uninstall SLP</button>
+                        <p style="color: #ffaaaa;">⚠️ {{.UIText_SLP_UninstallWarning}}</p>
+                        <button id="uninstallSLPBtn" class="slp-button slp-button-small danger" onclick="uninstallSLP()">🗑️ {{.UIText_SLP_UninstallButton}}</button>
                     </div>
                     <div class="manage-right">
-                        <p>Update all installed workshop mods to their latest versions. This process may take some time depending on the number of mods.</p>
-                        <button id="updateWorkshopModsBtn" class="slp-button" onclick="updateWorkshopMods()">🔄 Update Workshop Mods</button>
+                        <p>{{.UIText_SLP_UpdateWorkshopModsDesc}}</p>
+                        <button id="updateWorkshopModsBtn" class="slp-button" onclick="updateWorkshopMods()">🔄 {{.UIText_SLP_UpdateButton}}</button>
                     </div>
                 </div>
             </div>
 
             <div class="slp-section">
-                <h3>Installed Mods</h3>
+                <h3>{{.UIText_SLP_InstalledMods}}</h3>
                 <div id="mods-list-container">
                     <div class="loader" id="mods-loader"></div>
                     <div id="mods-list" class="mods-list"></div>

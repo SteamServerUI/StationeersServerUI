@@ -202,5 +202,25 @@ type ConfigTemplateData struct {
 	UIText_CopyrightConfig1 string
 	UIText_CopyrightConfig2 string
 
+	UIText_SLP_Title                  string
+	UIText_SLP_Description            string
+	UIText_SLP_ReadyToInstall         string
+	UIText_SLP_InstallButton          string
+	UIText_SLP_UploadModPackage       string
+	UIText_SLP_UploadDescription      string
+	UIText_SLP_UploadDescriptionLink  string
+	UIText_SLP_InstallFirst           string
+	UIText_SLP_InstallFirstSubtext    string
+	UIText_SLP_DragDropHere           string
+	UIText_SLP_OrClickToSelect        string
+	UIText_SLP_UploadButton           string
+	UIText_SLP_ManageInstallation     string
+	UIText_SLP_UninstallWarning       string
+	UIText_SLP_UninstallButton        string
+	UIText_SLP_UpdateWorkshopMods     string
+	UIText_SLP_UpdateWorkshopModsDesc string
+	UIText_SLP_UpdateButton           string
+	UIText_SLP_InstalledMods          string
+
 	IsStationeersLaunchPadEnabled string
 }

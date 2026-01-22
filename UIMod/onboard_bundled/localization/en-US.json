@@ -136,6 +136,27 @@
                 "UIText_DiscordBenefit4": "Community management options",
                 "UIText_DiscordBenefit5": "Real-time error notifications",
                 "UIText_DiscordSetupInstructions": "For setup instructions, visit the"
+            },
+            "slp": {
+                "UIText_SLP_Title": "Stationeers Launch Pad",
+                "UIText_SLP_Description": "Stationeers Launch Pad is a simple mod loader for Stationeers. It automatically updates itself and makes mod management easy.",
+                "UIText_SLP_ReadyToInstall": "Ready to install? Click the button below to get started.",
+                "UIText_SLP_InstallButton": "Install Stationeers Launch Pad",
+                "UIText_SLP_UploadModPackage": "Upload Mod Package",
+                "UIText_SLP_UploadDescription": "Select a mod package (modpkg) zip file or drag and drop it into the box below to upload and extract mods.",
+                "UIText_SLP_UploadDescriptionLink": "Mod packages need to be exported from your game client. See the",
+                "UIText_SLP_InstallFirst": "Install SLP First",
+                "UIText_SLP_InstallFirstSubtext": "SLP must be installed to upload mod packages",
+                "UIText_SLP_DragDropHere": "Drag & Drop Mod Package Here",
+                "UIText_SLP_OrClickToSelect": "or click to select a mod package file",
+                "UIText_SLP_UploadButton": "Upload Mod Package",
+                "UIText_SLP_ManageInstallation": "Manage Installation",
+                "UIText_SLP_UninstallWarning": "Uninstalling will DELETE all mods in the Mods folder.",
+                "UIText_SLP_UninstallButton": "Uninstall SLP",
+                "UIText_SLP_UpdateWorkshopMods": "Update Workshop Mods",
+                "UIText_SLP_UpdateWorkshopModsDesc": "Update all installed workshop mods to their latest versions. This process may take some time depending on the number of mods.",
+                "UIText_SLP_UpdateButton": "Update Workshop Mods",
+                "UIText_SLP_InstalledMods": "Installed Mods"
             }
         },
         "setup": {
