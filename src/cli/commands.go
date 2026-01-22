@@ -48,7 +48,7 @@ func init() {
 // COMMAND HANDLERS WITH COMMANDS USEFUL FOR USERS
 
 func downloadWorkshopUpdates() {
-	err := steamcmd.UpdateWorkshopItems()
+	_, err := steamcmd.UpdateWorkshopItems()
 	if err != nil {
 		logger.Core.Error("Error downloading workshop updates: " + err.Error())
 	}

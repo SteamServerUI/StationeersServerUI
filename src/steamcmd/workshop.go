@@ -15,24 +15,31 @@ import (
 )
 
 // DownloadWorkshopItems downloads all installed workshop mods using SteamCMD
-func UpdateWorkshopItems() error {
+func UpdateWorkshopItems() ([]string, error) {
+	var logs []string
 	workshopHandles := modding.GetModWorkshopHandles()
 	if len(workshopHandles) == 0 {
 		logger.Install.Debug("ℹ️  No workshop items to download")
-		return nil
+		logs = append(logs, "No workshop items to download")
+		return logs, nil
 	}
 
 	fmt.Println(workshopHandles)
-	return DownloadWorkshopItems(workshopHandles)
+	logs2, err := DownloadWorkshopItems(workshopHandles)
+	logs = append(logs, logs2...)
+	return logs, err
 }
 
-func DownloadWorkshopItems(workshopHandles []string) error {
+func DownloadWorkshopItems(workshopHandles []string) ([]string, error) {
+	var logs []string
 	logger.Install.Infof("🔄 Downloading %d workshop items...", len(workshopHandles))
+	logs = append(logs, fmt.Sprintf("Downloading %d workshop items...", len(workshopHandles)))
 
 	currentDir, err := os.Getwd()
 	if err != nil {
 		logger.Install.Error("❌ Error getting current working directory: " + err.Error())
-		return err
+		logs = append(logs, "Error getting current working directory: "+err.Error())
+		return logs, err
 	}
 
 	// Acquire lock for SteamCMD access
@@ -99,29 +106,36 @@ func DownloadWorkshopItems(workshopHandles []string) error {
 		if err != nil {
 			if exitErr, ok := err.(*exec.ExitError); ok {
 				logger.Install.Warnf("⚠️  SteamCMD workshop download failed for %s (code %d): %s", appID, exitErr.ExitCode(), stderr.String())
+				logs = append(logs, fmt.Sprintf("SteamCMD workshop download failed for %s (code %d): %s", appID, exitErr.ExitCode(), stderr.String()))
 			} else {
 				logger.Install.Warnf("⚠️  Error running SteamCMD for workshop item %s: %s", appID, err.Error())
+				logs = append(logs, fmt.Sprintf("Error running SteamCMD for workshop item %s: %s", appID, err.Error()))
 			}
 			continue // Continue with next workshop item even if this one fails
 		}
 
 		logger.Install.Debugf("✅ Successfully downloaded workshop item: %s", appID)
+		logs = append(logs, fmt.Sprintf("Successfully downloaded workshop item: %s", appID))
 	}
 
 	logger.Install.Info("✅ Workshop items download complete")
+	logs = append(logs, "Workshop items download complete")
 
 	// Copy downloaded items to mods directory
-	err = copyDownloadedItemsToMods(workshopHandles)
+	logs2, err := copyDownloadedItemsToMods(workshopHandles)
+	logs = append(logs, logs2...)
 	if err != nil {
 		logger.Install.Error("❌ Error copying workshop items to mods directory: " + err.Error())
-		return err
+		logs = append(logs, "Error copying workshop items to mods directory: "+err.Error())
+		return logs, err
 	}
 
-	return nil
+	return logs, nil
 }
 
 // copyDownloadedItemsToMods copies downloaded workshop items from the Steam directory to ./mods
-func copyDownloadedItemsToMods(workshopHandles []string) error {
+func copyDownloadedItemsToMods(workshopHandles []string) ([]string, error) {
+	var logs []string
 	// Determine the steam content directory based on OS
 	var steamContentDir string
 	if runtime.GOOS == "windows" {
@@ -136,10 +150,11 @@ func copyDownloadedItemsToMods(workshopHandles []string) error {
 	// Ensure mods directory exists
 	modsDir := "./mods"
 	if err := os.MkdirAll(modsDir, 0755); err != nil {
-		return fmt.Errorf("failed to create mods directory: %w", err)
+		return logs, fmt.Errorf("failed to create mods directory: %w", err)
 	}
 
 	logger.Install.Infof("📂 Copying %d workshop items to mods directory...", len(workshopHandles))
+	logs = append(logs, fmt.Sprintf("Copying %d workshop items to mods directory...", len(workshopHandles)))
 
 	// Copy each workshop item
 	for i, appID := range workshopHandles {
@@ -152,6 +167,7 @@ func copyDownloadedItemsToMods(workshopHandles []string) error {
 		srcInfo, err := os.Stat(srcPath)
 		if err != nil || !srcInfo.IsDir() {
 			logger.Install.Errorf("❌ Workshop item not found at expected path: %s (skipping)", srcPath)
+			logs = append(logs, fmt.Sprintf("Workshop item not found at expected path: %s (skipping)", srcPath))
 			continue
 		}
 
@@ -163,20 +179,24 @@ func copyDownloadedItemsToMods(workshopHandles []string) error {
 			logger.Install.Debugf("🗑️  Removing existing directory: %s", destPath)
 			if err := os.RemoveAll(destPath); err != nil {
 				logger.Install.Warnf("⚠️  Failed to remove existing directory %s: %s (continuing anyway)", destPath, err.Error())
+				logs = append(logs, fmt.Sprintf("Failed to remove existing directory %s: %s (continuing anyway)", destPath, err.Error()))
 			}
 		}
 
 		// Copy the entire directory
 		if err := copyDir(srcPath, destPath); err != nil {
 			logger.Install.Warnf("⚠️  Failed to copy workshop item %s: %s (skipping)", appID, err.Error())
+			logs = append(logs, fmt.Sprintf("Failed to copy workshop item %s: %s (skipping)", appID, err.Error()))
 			continue
 		}
 
 		logger.Install.Debugf("✅ Successfully copied workshop item to: %s", destPath)
+		logs = append(logs, fmt.Sprintf("Successfully copied workshop item to: %s", destPath))
 	}
 
 	logger.Install.Info("✅ Workshop items copy complete")
-	return nil
+	logs = append(logs, "Workshop items copy complete")
+	return logs, nil
 }
 
 // copyDir recursively copies a directory from src to dst

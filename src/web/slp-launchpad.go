@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/modding"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
 
 func InstallSLPHandler(w http.ResponseWriter, r *http.Request) {
@@ -66,5 +67,27 @@ func GetInstalledModDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
 		"mods":    mods,
+	})
+}
+
+func UpdateWorkshopModsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	logs, err := steamcmd.UpdateWorkshopItems()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"error":   err.Error(),
+			"logs":    logs,
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Workshop mods updated successfully",
+		"logs":    logs,
 	})
 }

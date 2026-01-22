@@ -14,7 +14,10 @@ import (
 
 func downloadWorkshopItemTest() {
 	workshopHandles := []string{"3505169479"}
-	steamcmd.DownloadWorkshopItems(workshopHandles)
+	_, err := steamcmd.DownloadWorkshopItems(workshopHandles)
+	if err != nil {
+		logger.Core.Error("Error downloading workshop items: " + err.Error())
+	}
 }
 
 func listworkshophandles() {
