@@ -75,6 +75,28 @@ function uninstallSLP() {
         });
 }
 
+function updateWorkshopMods() {
+    setButtonLoading('updateWorkshopModsBtn', true);
+    showPopup('info', 'Updating workshop mods...\n\nThis may take some time depending on the number of mods. Please wait.');
+    
+    fetch('/api/v2/steamcmd/updatemods')
+        .then(response => response.json())
+        .then(data => {
+            setButtonLoading('updateWorkshopModsBtn', false);
+            if (data.success) {
+                const logsText = data.logs && data.logs.length > 0 ? '\n\n' + data.logs.join('\n') : '';
+                showPopup('success', 'Workshop mods updated successfully!' + logsText);
+            } else {
+                const logsText = data.logs && data.logs.length > 0 ? '\n\n' + data.logs.join('\n') : '';
+                showPopup('error', 'Failed to update workshop mods:\n\n' + (data.error || 'Unknown error') + logsText);
+            }
+        })
+        .catch(error => {
+            showPopup('error', 'Failed to update workshop mods:\n\n' + (error.message || 'Network error'));
+            setButtonLoading('updateWorkshopModsBtn', false);
+        });
+}
+
 let selectedModFile = null;
 
 function handleModPackageSelection(files) {

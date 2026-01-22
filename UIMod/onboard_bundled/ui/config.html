@@ -460,11 +460,10 @@
 
             <div class="slp-section">
                 <h3>Upload Mod Package</h3>
-                <p>Once SLP is installed, you'll be able to upload SLP packages here.</p>
                 <div id="modPackageUploadZone" class="upload-zone-disabled">
                     <span class="upload-icon">🔒</span>
                     <div class="upload-text">Install SLP First</div>
-                    <div class="upload-subtext">SLP must be installed to upload mods</div>
+                    <div class="upload-subtext">SLP must be installed to upload mod packages</div>
                 </div>
             </div>
             {{end}}
@@ -472,22 +471,31 @@
             {{if eq .IsStationeersLaunchPadEnabled "true"}}
             <div class="slp-section">
                 <h3>Upload Mod Package</h3>
-                <p>Select a mod package zip file or drag and drop it into the box below to upload and extract mods.</p>
+                <p>Select a mod package (modpkg) zip file or drag and drop it into the box below to upload and extract mods.</p>
+                <p>Mod packages need to be exported from your game <strong> client</strong>. See the <a href="https://github.com/SteamServerUI/StationeersServerUI/wiki/Modding-with-StationeersLaunchPad#generate-a-mod-package" target="_blank">wiki</a> for more information.</p>
                 
                 <div id="modPackageUploadZone">
                     <span class="upload-icon">📦</span>
                     <div class="upload-text">Drag & Drop Mod Package Here</div>
-                    <div class="upload-subtext">or click to select a .zip file</div>
+                    <div class="upload-subtext">or click to select a mod package file</div>
                 </div>
                 <div id="modPackageUploadProgress"></div>
                 <input type="file" id="modPackageUpload" accept=".zip" onchange="handleModPackageSelection(this.files)">
                 <button id="uploadModPackageBtn" class="slp-button" onclick="uploadModPackage()" disabled>⬆️ Upload Mod Package</button>
             </div>
 
-            <div class="slp-section slp-uninstall-section">
+            <div class="slp-section slp-manage-section">
                 <h3>Manage Installation</h3>
-                <p style="color: #ffaaaa;">⚠️ Uninstalling will DELETE all mods in the Mods folder.</p>
-                <button id="uninstallSLPBtn" class="slp-button slp-button-small danger" onclick="uninstallSLP()">🗑️ Uninstall SLP</button>
+                <div class="manage-buttons">
+                    <div class="manage-left">
+                        <p style="color: #ffaaaa;">⚠️ Uninstalling will DELETE all mods in the Mods folder.</p>
+                        <button id="uninstallSLPBtn" class="slp-button slp-button-small danger" onclick="uninstallSLP()">🗑️ Uninstall SLP</button>
+                    </div>
+                    <div class="manage-right">
+                        <p>Update all installed workshop mods to their latest versions. This process may take some time depending on the number of mods.</p>
+                        <button id="updateWorkshopModsBtn" class="slp-button" onclick="updateWorkshopMods()">🔄 Update Workshop Mods</button>
+                    </div>
+                </div>
             </div>
 
             <div class="slp-section">

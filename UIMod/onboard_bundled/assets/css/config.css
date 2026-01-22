@@ -439,166 +439,248 @@ select option {
 }
 
 .slp-section {
-    padding: 20px;
-    border-radius: 8px;
-    background-color: var(--form-bg, #1a1a1a);
-    margin: 20px 0;
+    padding: 25px;
+    border-radius: 12px;
+    margin: 15px 0;
+    border: 1px solid var(--primary-dim);
+    transition: all var(--transition-normal);
 }
 
-.slp-install-section {
-    background: linear-gradient(135deg, rgba(0, 255, 150, 0.15), rgba(0, 150, 255, 0.15));
-    border: 2px solid var(--primary);
-    box-shadow: 0 0 20px rgba(0, 255, 150, 0.2);
+.slp-section:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(0, 255, 150, 0.1);
 }
 
-.slp-install-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.slp-install-icon {
-    font-size: 48px;
-}
-
-.slp-install-header h3 {
-    color: var(--text-bright);
-    font-family: 'Press Start 2P', cursive;
-    font-size: 1rem;
-    margin: 0;
-    padding: 0;
-    border: none;
+.slp-section p {
+    color: var(--text-normal, #aaa);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0 0 15px 0;
 }
 
 .slp-section h3 {
     color: var(--text-bright);
     font-family: 'Press Start 2P', cursive;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
+    font-size: 0.85rem;
+    margin: 0 0 20px 0;
+    padding-bottom: 12px;
     border-bottom: 2px solid var(--primary-dim);
+    letter-spacing: 1px;
+}
+
+.slp-install-section {
+    background: linear-gradient(135deg, rgba(0, 255, 150, 0.08), rgba(0, 150, 255, 0.08));
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 25px rgba(0, 255, 150, 0.15);
+    text-align: center;
+    padding: 40px;
+}
+
+.slp-install-section:hover {
+    box-shadow: 0 0 35px rgba(0, 255, 150, 0.25);
+}
+
+.slp-install-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.slp-install-icon {
+    font-size: 52px;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 150, 0.5));
+}
+
+.slp-install-header h3 {
+    color: var(--text-bright);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.1rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    text-shadow: 0 0 10px rgba(0, 255, 150, 0.3);
 }
 
 .slp-button {
-    padding: 12px 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;
+    padding: 14px 28px;
     background-color: var(--primary);
     border: 2px solid var(--primary);
     color: var(--bg-dark);
-    border-radius: 6px;
+    border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
-    transition: all var(--transition-normal);
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.8rem;
-    box-shadow: 0 0 10px rgba(0, 255, 150, 0.3);
-    margin: 10px 5px 10px 0;
+    transition: all 0.2s ease;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 15px rgba(0, 255, 150, 0.25);
+    margin: 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .slp-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 0 20px rgba(0, 255, 150, 0.6);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(0, 255, 150, 0.4);
 }
 
 .slp-button:active:not(:disabled) {
-    transform: translateY(0);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 15px rgba(0, 255, 150, 0.3);
 }
 
 .slp-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
 }
 
 .slp-button.loading {
-    opacity: 0.8;
+    opacity: 0.7;
     cursor: wait;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.9; }
 }
 
 .slp-button-large {
-    padding: 16px 32px;
+    min-width: 320px;
+    padding: 18px 36px;
     font-size: 0.9rem;
-    width: 100%;
-    max-width: 500px;
-    box-shadow: 0 0 20px rgba(0, 255, 150, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 255, 150, 0.35);
 }
 
 .slp-button-large:hover:not(:disabled) {
-    box-shadow: 0 0 30px rgba(0, 255, 150, 0.7);
+    box-shadow: 0 8px 35px rgba(0, 255, 150, 0.5);
 }
 
 .slp-button-small {
-    padding: 8px 16px;
-    font-size: 0.7rem;
+    min-width: 160px;
+    padding: 10px 20px;
+    font-size: 0.75rem;
 }
 
 .slp-button.danger {
-    background-color: #ff4444;
-    border-color: #ff4444;
-    box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+    background-color: #e53935;
+    border-color: #e53935;
+    box-shadow: 0 4px 15px rgba(229, 57, 53, 0.25);
 }
 
 .slp-button.danger:hover:not(:disabled) {
-    box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
+    background-color: #ff5252;
+    border-color: #ff5252;
+    box-shadow: 0 6px 25px rgba(255, 82, 82, 0.4);
 }
 
-.slp-uninstall-section {
-    opacity: 0.8;
-    border: 1px solid var(--primary-dim);
+.slp-manage-section {
+    border: 1px solid rgba(0, 255, 150, 0.2);
+}
+
+.manage-buttons {
+    display: flex;
+    gap: 30px;
+    align-items: stretch;
+}
+
+.manage-left,
+.manage-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.manage-left p,
+.manage-right p {
+    flex: 1;
+    margin-bottom: 15px;
+    font-size: 0.85rem;
+}
+
+.manage-left .slp-button,
+.manage-right .slp-button {
+    width: 100%;
+    margin-top: auto;
+}
+
+@media (max-width: 768px) {
+    .manage-buttons {
+        flex-direction: column;
+    }
 }
 
 #modPackageUploadZone {
-    border: 3px dashed var(--primary-dim);
-    border-radius: 10px;
-    padding: 40px;
+    border: 2px dashed var(--primary-dim);
+    border-radius: 12px;
+    padding: 50px 40px;
     text-align: center;
     cursor: pointer;
-    transition: all var(--transition-normal);
-    background-color: rgba(0, 255, 150, 0.05);
+    transition: all 0.25s ease;
+    background: linear-gradient(145deg, rgba(0, 255, 150, 0.03), rgba(0, 150, 255, 0.03));
     position: relative;
     margin: 20px 0;
 }
 
 #modPackageUploadZone:hover:not(.upload-zone-disabled) {
     border-color: var(--primary);
-    background-color: rgba(0, 255, 150, 0.1);
+    background: linear-gradient(145deg, rgba(0, 255, 150, 0.08), rgba(0, 150, 255, 0.08));
+    box-shadow: 0 0 25px rgba(0, 255, 150, 0.15);
+    transform: translateY(-2px);
 }
 
 #modPackageUploadZone.highlight {
     border-color: var(--primary);
-    background-color: rgba(0, 255, 150, 0.15);
-    box-shadow: 0 0 20px rgba(0, 255, 150, 0.3);
+    border-style: solid;
+    background: linear-gradient(145deg, rgba(0, 255, 150, 0.12), rgba(0, 150, 255, 0.12));
+    box-shadow: 0 0 30px rgba(0, 255, 150, 0.25);
 }
 
 .upload-zone-disabled {
     cursor: not-allowed !important;
-    opacity: 0.6;
-    border-color: var(--primary-dim) !important;
-    background-color: rgba(0, 150, 150, 0.05) !important;
+    opacity: 0.5;
+    border-color: rgba(150, 150, 150, 0.3) !important;
+    background: rgba(50, 50, 50, 0.2) !important;
 }
 
 .upload-zone-disabled:hover {
-    border-color: var(--primary-dim) !important;
-    background-color: rgba(0, 150, 150, 0.05) !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 .upload-icon {
-    font-size: 48px;
-    margin-bottom: 15px;
+    font-size: 56px;
+    margin-bottom: 18px;
     display: block;
+    filter: drop-shadow(0 0 8px rgba(0, 255, 150, 0.3));
 }
 
 .upload-text {
     color: var(--text-bright);
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.9rem;
-    margin: 10px 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 12px 0;
+    letter-spacing: 0.5px;
 }
 
 .upload-subtext {
     color: var(--text-dim);
     font-family: 'Share Tech Mono', monospace;
-    font-size: 0.8rem;
-    margin-top: 10px;
+    font-size: 0.85rem;
+    margin-top: 8px;
+    opacity: 0.8;
 }
 
 #modPackageUpload {
@@ -620,7 +702,6 @@ select option {
     display: block;
 }
 
-/* Notification Styling */
 .notification {
     display: none;
     padding: 16px 20px;
@@ -668,7 +749,6 @@ select option {
     }
 }
 
-/* Mods List Section */
 .mods-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -677,7 +757,7 @@ select option {
 }
 
 .mod-card {
-    background: linear-gradient(135deg, var(--card-bg-start, #1a1a2e), var(--card-bg-end, #16213e));
+    background: #11111142;
     border: 2px solid var(--primary-dim);
     border-radius: 12px;
     padding: 20px;
@@ -768,7 +848,6 @@ select option {
     left: 0;
     right: 0;
     height: 40px;
-    background: linear-gradient(transparent, var(--card-bg-start, #1a1a2e));
     pointer-events: none;
     transition: opacity 0.3s ease;
 }
@@ -783,6 +862,7 @@ select option {
     font-size: 1rem;
     color: var(--primary);
     margin: 12px 0 8px 0;
+    padding-left: 20px;
 }
 
 .mod-description h2 {
@@ -864,6 +944,11 @@ select option {
 .mods-empty {
     text-align: center;
     color: var(--text-dim, #888);
-    padding: 40px 20px;
+    padding: 60px 30px;
     font-family: 'Share Tech Mono', monospace;
+    font-size: 0.95rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 2px dashed var(--primary-dim);
+    margin: 10px 0;
 }
