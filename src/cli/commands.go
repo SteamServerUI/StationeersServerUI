@@ -35,7 +35,6 @@ func init() {
 	RegisterCommand("supportmode", WrapNoReturn(supportMode), "sm")
 	RegisterCommand("supportpackage", WrapNoReturn(supportPackage), "sp")
 	RegisterCommand("getbuildid", WrapNoReturn(getBuildID), "gbid")
-	RegisterCommand("setdummybuildid", WrapNoReturn(setDummyBuildID), "sdbid")
 	RegisterCommand("printconfig", WrapNoReturn(printConfig), "pc")
 	RegisterCommand("update", WrapNoReturn(triggerUpdateCheck), "u")
 	RegisterCommand("applyupdate", WrapNoReturn(applyUpdate), "au")
