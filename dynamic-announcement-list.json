@@ -26,5 +26,14 @@
     "authorRole": "Lead Developer",
     "validFrom": "2026-01-16T00:00:00Z",
     "validUntil": "2026-01-19T23:59:59Z"
-  }
+  },
+  {
+    "headline": "If your server won't start after updating to latest, read this",
+    "shortDescription": "Quick fix for RakNet-related startup crashes (Fallback handler could not load library / DllNotFoundException)",
+    "bodyHtml": "If your server fails to start after the recent Stationeers update and you see errors like:<br>• <code>Fallback handler could not load library</code><br>• <code>DllNotFoundException</code> related to <strong>RakNet</strong><br>• or basically any other RakNet-related crash,<br><br>do the following:<br><br>0. Update SSUI to v5.11.0<br><br>1. Go to <code>/setup?step=game_branch</code> <a href='/setup?step=game_branch' target='_blank'>Click</a><br>2. Select <strong>\"A slightly rolled back Multiplayer-Safe version\"</strong><br>3. Save the change<br>4. You can then exit the wizard immediately after saving (click the <strong>X</strong> in the top-right corner)<br><br>5. Hit the <code>Update Server</code> button on the main Dashboard<br><br>This switches you to a known-stable branch that avoids the current RakNet issues in the latest version. You can switch back to latest once the problem is officially fixed upstream.",
+    "author": "JacksonTheMaster",
+    "authorRole": "Lead Developer",
+    "validFrom": "2026-01-28T00:00:00Z",
+    "validUntil": "2026-02-04T23:59:59Z"
+}
 ]
