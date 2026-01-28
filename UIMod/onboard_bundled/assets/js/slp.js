@@ -1,3 +1,38 @@
+// SLP Beta Disclaimer Handler
+function acknowledgeSLPDisclaimer() {
+    const disclaimer = document.getElementById('slp-disclaimer');
+    const content = document.getElementById('slp-content');
+    
+    if (disclaimer && content) {
+        disclaimer.classList.add('slp-disclaimer-hidden');
+        content.classList.remove('slp-content-hidden');
+        
+        // Store acknowledgment in session storage (resets on browser close)
+        sessionStorage.setItem('slp-disclaimer-acknowledged', 'true');
+    }
+}
+
+// Check if disclaimer was already acknowledged this session
+function checkSLPDisclaimerState() {
+    const acknowledged = sessionStorage.getItem('slp-disclaimer-acknowledged');
+    if (acknowledged === 'true') {
+        const disclaimer = document.getElementById('slp-disclaimer');
+        const content = document.getElementById('slp-content');
+        
+        if (disclaimer && content) {
+            disclaimer.classList.add('slp-disclaimer-hidden');
+            content.classList.remove('slp-content-hidden');
+        }
+    }
+}
+
+// Initialize disclaimer state on page load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkSLPDisclaimerState);
+} else {
+    checkSLPDisclaimerState();
+}
+
 function showNotification(message, type = 'info') {
     const notification = document.getElementById('notification');
     notification.textContent = message;
