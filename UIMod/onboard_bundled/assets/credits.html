@@ -18,6 +18,24 @@
             overflow: hidden;
             position: relative;
         }
+        .nebula {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(240, 147, 251, 0.08) 0%, transparent 60%);
+            animation: nebula-drift 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes nebula-drift {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.1) rotate(5deg); }
+        }
 
         .stars {
             position: fixed;
@@ -33,6 +51,26 @@
             background: white;
             border-radius: 50%;
             animation: twinkle 3s infinite;
+        }
+
+        .star.bright {
+            box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.6);
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.8), transparent);
+            opacity: 0;
+            animation: shoot 4s linear infinite;
+        }
+
+        @keyframes shoot {
+            0% { transform: translateX(0) translateY(0); opacity: 0; }
+            5% { opacity: 1; }
+            20% { transform: translateX(300px) translateY(150px); opacity: 0; }
+            100% { opacity: 0; }
         }
 
         @keyframes twinkle {
@@ -53,15 +91,27 @@
             width: 80%;
             max-width: 900px;
             left: 50%;
-            bottom: 0;
-            transform: translateX(-50%) translateY(100%);
-            animation: scroll-up 90s linear forwards;
+            top: 100%;
+            transform: translateX(-50%);
             text-align: center;
+            will-change: transform;
+            transition: none;
+        }
+
+        .credits-scroll.animating {
+            animation: scroll-up 90s linear forwards;
+        }
+
+        .credits-scroll.paused {
+            animation-play-state: paused;
         }
 
         @keyframes scroll-up {
+            from {
+                top: 100%;
+            }
             to {
-                transform: translateX(-50%) translateY(-100%);
+                top: -100%;
             }
         }
 
@@ -69,15 +119,28 @@
             font-size: 3.5em;
             font-weight: bold;
             margin-bottom: 2em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+            animation: gradient-shift 5s ease infinite;
+            filter: drop-shadow(0 0 30px rgba(102, 126, 234, 0.5));
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         .section {
             margin: 4em 0;
+            padding: 2em;
+            transition: all 0.4s ease;
+        }
+
+        .section:hover {
+            transform: scale(1.02);
         }
 
         .role {
@@ -87,6 +150,17 @@
             letter-spacing: 3px;
             margin-bottom: 0.5em;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            position: relative;
+        }
+
+        .role::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            margin: 0.5em auto;
+            border-radius: 2px;
         }
 
         .name {
@@ -110,11 +184,16 @@
             color: #60a5fa;
             text-decoration: none;
             font-size: 1em;
-            transition: color 0.3s;
+            transition: all 0.3s;
+            padding: 0.3em 1em;
+            border-radius: 20px;
+            display: inline-block;
         }
 
         .link:hover {
             color: #93c5fd;
+            background: rgba(96, 165, 250, 0.1);
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
         }
 
         .description {
@@ -137,7 +216,7 @@
             font-size: 2em;
             color: #008cff;
             margin: 3em 0 1em 0;
-            text-shadow: 0 0 20px rgba(72, 187, 120, 0.6);
+            text-shadow: 0 0 20px rgba(0, 140, 255, 0.6);
         }
 
         .tech-stack {
@@ -167,13 +246,101 @@
         .glow {
             text-shadow: 0 0 10px currentColor;
         }
+
+        /* Scroll hint indicator */
+        .scroll-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9em;
+            text-align: center;
+            z-index: 100;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .scroll-hint .mouse-icon {
+            width: 26px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 13px;
+            margin: 0 auto 10px;
+            position: relative;
+        }
+
+        .scroll-hint .wheel {
+            width: 4px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 2px;
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: scroll-wheel 2s infinite;
+        }
+
+        @keyframes scroll-wheel {
+            0%, 100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+            50% { transform: translateX(-50%) translateY(10px); opacity: 0.3; }
+        }
+
+        /* Control buttons */
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .control-btn.active {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: rgba(102, 126, 234, 0.6);
+        }
     </style>
 </head>
 <body>
+    <div class="nebula"></div>
     <div class="stars" id="stars"></div>
     
-    <div class="credits-container">
-        <div class="credits-scroll">
+    <!-- Controls -->
+    <div class="controls">
+        <button class="control-btn active" id="playPauseBtn" title="Play/Pause auto-scroll">▶ Auto</button>
+        <button class="control-btn" id="resetBtn" title="Reset to beginning">↺ Reset</button>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="scroll-hint" id="scrollHint">
+        <div class="mouse-icon">
+            <div class="wheel"></div>
+        </div>
+        <span>Scroll to navigate</span>
+    </div>
+    
+    <div class="credits-container" id="creditsContainer">
+        <div class="credits-scroll animating" id="creditsScroll">
             <div class="title">StationeersServerUI</div>
 
             <div class="section">
@@ -283,11 +450,11 @@
     <script>
         // Create stars
         const starsContainer = document.getElementById('stars');
-        const numStars = 150;
+        const numStars = 200;
 
         for (let i = 0; i < numStars; i++) {
             const star = document.createElement('div');
-            star.className = 'star';
+            star.className = 'star' + (Math.random() > 0.9 ? ' bright' : '');
             const size = Math.random() * 2 + 1;
             star.style.width = size + 'px';
             star.style.height = size + 'px';
@@ -298,14 +465,173 @@
             starsContainer.appendChild(star);
         }
 
-        // Restart animation when it ends
-        const creditsScroll = document.querySelector('.credits-scroll');
-        creditsScroll.addEventListener('animationend', () => {
+        // Create shooting stars
+        for (let i = 0; i < 3; i++) {
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            shootingStar.style.top = Math.random() * 50 + '%';
+            shootingStar.style.left = Math.random() * 50 + '%';
+            shootingStar.style.animationDelay = (i * 6 + Math.random() * 4) + 's';
+            shootingStar.style.transform = `rotate(${30 + Math.random() * 30}deg)`;
+            starsContainer.appendChild(shootingStar);
+        }
+
+        // Credits scroll handling
+        const creditsScroll = document.getElementById('creditsScroll');
+        const creditsContainer = document.getElementById('creditsContainer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const scrollHint = document.getElementById('scrollHint');
+        
+        let isAutoScrolling = true;
+        let currentPosition = window.innerHeight; // Start from bottom
+        let animationId = null;
+        let scrollSpeed = 0.8; // pixels per frame
+        let userScrollTimeout = null;
+        
+        // Get the total height needed for scrolling
+        function getTotalHeight() {
+            return creditsScroll.offsetHeight + window.innerHeight;
+        }
+        
+        // Update position via transform for smooth performance
+        function updatePosition() {
+            creditsScroll.style.top = currentPosition + 'px';
+        }
+        
+        // Stop CSS animation and switch to JS control
+        function initManualControl() {
+            creditsScroll.classList.remove('animating');
             creditsScroll.style.animation = 'none';
-            setTimeout(() => {
-                creditsScroll.style.animation = 'scroll-up 90s linear forwards';
-            }, 100);
+            currentPosition = window.innerHeight;
+            updatePosition();
+        }
+        
+        // Auto scroll animation loop
+        function autoScroll() {
+            if (!isAutoScrolling) return;
+            
+            currentPosition -= scrollSpeed;
+            
+            // Reset when scrolled past content
+            if (currentPosition < -creditsScroll.offsetHeight) {
+                currentPosition = window.innerHeight;
+            }
+            
+            updatePosition();
+            animationId = requestAnimationFrame(autoScroll);
+        }
+        
+        // Start auto scrolling
+        function startAutoScroll() {
+            isAutoScrolling = true;
+            playPauseBtn.textContent = '⏸ Pause';
+            playPauseBtn.classList.add('active');
+            autoScroll();
+        }
+        
+        // Stop auto scrolling
+        function stopAutoScroll() {
+            isAutoScrolling = false;
+            playPauseBtn.textContent = '▶ Auto';
+            playPauseBtn.classList.remove('active');
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+        
+        // Toggle auto scroll
+        playPauseBtn.addEventListener('click', () => {
+            if (isAutoScrolling) {
+                stopAutoScroll();
+            } else {
+                startAutoScroll();
+            }
         });
+        
+        // Reset credits
+        resetBtn.addEventListener('click', () => {
+            currentPosition = window.innerHeight;
+            updatePosition();
+            if (!isAutoScrolling) {
+                startAutoScroll();
+            }
+        });
+        
+        // Handle mouse wheel scrolling
+        creditsContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            
+            // Pause auto-scroll when user scrolls
+            if (isAutoScrolling) {
+                stopAutoScroll();
+            }
+            
+            // Scroll the credits
+            currentPosition -= e.deltaY * 0.5;
+            
+            // Clamp position
+            const minPos = -creditsScroll.offsetHeight + 100;
+            const maxPos = window.innerHeight - 100;
+            currentPosition = Math.max(minPos, Math.min(maxPos, currentPosition));
+            
+            updatePosition();
+            
+            // Hide scroll hint after first interaction
+            scrollHint.style.opacity = '0';
+            
+            // Resume auto-scroll after 5 seconds of inactivity
+            clearTimeout(userScrollTimeout);
+            userScrollTimeout = setTimeout(() => {
+                startAutoScroll();
+                scrollHint.style.opacity = '0.5';
+            }, 5000);
+        }, { passive: false });
+        
+        // Touch support for mobile
+        let touchStartY = 0;
+        let touchCurrentY = 0;
+        
+        creditsContainer.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+            if (isAutoScrolling) {
+                stopAutoScroll();
+            }
+        }, { passive: true });
+        
+        creditsContainer.addEventListener('touchmove', (e) => {
+            touchCurrentY = e.touches[0].clientY;
+            const deltaY = touchStartY - touchCurrentY;
+            touchStartY = touchCurrentY;
+            
+            currentPosition -= deltaY;
+            
+            const minPos = -creditsScroll.offsetHeight + 100;
+            const maxPos = window.innerHeight - 100;
+            currentPosition = Math.max(minPos, Math.min(maxPos, currentPosition));
+            
+            updatePosition();
+            scrollHint.style.opacity = '0';
+        }, { passive: true });
+        
+        creditsContainer.addEventListener('touchend', () => {
+            clearTimeout(userScrollTimeout);
+            userScrollTimeout = setTimeout(() => {
+                startAutoScroll();
+            }, 5000);
+        });
+        
+        // Initialize: stop CSS animation and start JS-controlled scrolling
+        setTimeout(() => {
+            initManualControl();
+            startAutoScroll();
+        }, 100);
+        
+        // Hide scroll hint after a while
+        setTimeout(() => {
+            scrollHint.style.opacity = '0';
+        }, 8000);
     </script>
 </body>
 </html>
