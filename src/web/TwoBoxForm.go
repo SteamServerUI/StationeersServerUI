@@ -85,6 +85,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		{Display: "Pre-terrain rework update", Value: "preterrain"},
 		{Display: "Pre-rocket refactor update", Value: "prerocket"},
 		{Display: "Version before the latest update", Value: "previous"},
+		{Display: "A slightly rolled back Multiplayer-Safe version", Value: "multiplayersafe"},
 	}
 
 	var worldOptions = []struct{ Display, Value string }{
