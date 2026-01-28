@@ -45,3 +45,6 @@ frontend/dist
 frontend/build
 UIMod/onboard_bundled/v2
 UIMod/logs/*
+.agent-context/**
+.github/copilot-instructions.md
+mods/**

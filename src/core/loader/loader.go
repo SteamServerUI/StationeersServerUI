@@ -14,6 +14,7 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/modding"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
@@ -27,6 +28,7 @@ func InitBackend() {
 	ReloadLocalizer()
 	ReloadAppInfoPoller()
 	ReloadDiscordBot()
+	EnsureSLPAutoUpdates()
 	InitDetector()
 	StartIsGameServerRunningCheck()
 	StartUpdateCheckLoop()
@@ -117,6 +119,26 @@ func StartUpdateCheckLoop() {
 // InitBundler initialized the onboard bundled assets for the web UI
 func InitVirtFS(v1uiFS embed.FS) {
 	config.SetV1UIFS(v1uiFS)
+}
+
+func InstallSLP() {
+	version, err := modding.InstallSLP()
+	if err != nil {
+		logger.Install.Error("SLP installation failed: " + err.Error())
+		return
+	}
+	logger.Install.Infof("SLP %s installed successfully", version)
+}
+
+func EnsureSLPAutoUpdates() {
+	modified, err := modding.ToggleSLPAutoUpdates(config.GetIsStationeersLaunchPadAutoUpdatesEnabled())
+	if err != nil {
+		logger.Install.Error("Failed to toggle SLP auto-updates: " + err.Error())
+		return
+	}
+	if modified {
+		logger.Install.Infof("StationeersLaunchPad auto-updates toggled to %t", config.GetIsStationeersLaunchPadAutoUpdatesEnabled())
+	}
 }
 
 func SanityCheck() {

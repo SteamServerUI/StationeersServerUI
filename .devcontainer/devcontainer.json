@@ -22,7 +22,6 @@
             "extensions": [
                 "golang.go",
                 "svelte.svelte-vscode",
-                "supermaven.supermaven",
                 "eamodio.gitlens"
             ],
             "settings": {

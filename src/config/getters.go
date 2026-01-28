@@ -536,3 +536,15 @@ func GetStationeersServerPingEndpoint() string {
 	defer ConfigMu.RUnlock()
 	return StationeersServerPingEndpoint
 }
+
+func GetIsStationeersLaunchPadEnabled() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return IsStationeersLaunchPadEnabled
+}
+
+func GetIsStationeersLaunchPadAutoUpdatesEnabled() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return IsStationeersLaunchPadAutoUpdatesEnabled
+}

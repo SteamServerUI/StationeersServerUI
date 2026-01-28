@@ -65,6 +65,7 @@ func SetupRoutes() (*http.ServeMux, *http.ServeMux) {
 	protectedMux.HandleFunc("/api/v2/SSCM/run", HandleCommand)                     // Command execution via SSCM (needs to be enable, config.IsSSCMEnabled)
 	protectedMux.HandleFunc("/api/v2/SSCM/enabled", HandleIsSSCMEnabled)           // Check if SSCM is enabled
 	protectedMux.HandleFunc("/api/v2/steamcmd/run", HandleRunSteamCMD)             // Run SteamCMD
+	// /api/v2/steamcmd/updatemods is defined in the SLP & Modding section below
 
 	// Custom Detections
 	protectedMux.HandleFunc("/api/v2/custom-detections", detectionmgr.HandleCustomDetection)
@@ -86,6 +87,13 @@ func SetupRoutes() (*http.ServeMux, *http.ServeMux) {
 
 	// Monitoring
 	protectedMux.HandleFunc("/api/v2/monitor/gameserver/status", HandleMonitorStatus)
+
+	// SLP & Modding
+	protectedMux.HandleFunc("/api/v2/slp/install", InstallSLPHandler)
+	protectedMux.HandleFunc("/api/v2/slp/uninstall", UninstallSLPHandler)
+	protectedMux.HandleFunc("/api/v2/slp/upload", UploadModPackageHandler)
+	protectedMux.HandleFunc("/api/v2/slp/mods", GetInstalledModDetailsHandler)
+	protectedMux.HandleFunc("/api/v2/steamcmd/updatemods", UpdateWorkshopModsHandler)
 
 	return mux, protectedMux
 }

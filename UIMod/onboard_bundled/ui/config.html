@@ -14,11 +14,19 @@
     <link rel="stylesheet" href="/static/css/config.css">
     <link rel="stylesheet" href="/static/css/detectionmanager.css">
     <link rel="stylesheet" href="/static/css/flags.css">
+    <link rel="stylesheet" href="/static/css/popup.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
 
 <body>
     <div id="space-background"></div>
+    <div id="universalPopup" class="popup">
+        <div class="popup-content">
+            <h2 id="popupTitle"></h2>
+            <p id="popupMessage"></p>
+            <button onclick="closePopup()">Close</button>
+        </div>
+    </div>
     <header>
         <img src="/static/stationeers.webp" alt="Stationeers Banner" id="banner">
         <div id="language-flags">
@@ -40,15 +48,10 @@
                     <span class="icon discord-icon"></span>
                     <span class="tab-text">{{.UIText_DiscordIntegration}}</span>
                 </button>
-
-                <!--
-
                 <button class="sliding-tab-button" data-tab="slp-config-tab">
                     <span class="icon slp-icon"></span>
                     <span class="tab-text">{{.UIText_SLPModIntegration}}</span>
                 </button>
-
-                -->
                 <button class="sliding-tab-button" data-tab="detectionmanager-config-tab">
                     <span class="icon detection-icon"></span>
                     <span class="tab-text">{{.UIText_DetectionManager}}</span>
@@ -446,6 +449,79 @@
         </div>
 
         <div id="slp-config-tab" class="tab-content">
+            <!-- Beta Disclaimer -->
+            <div id="slp-disclaimer" class="slp-disclaimer">
+                <div class="slp-disclaimer-content">
+                    <span class="slp-disclaimer-icon">⚠️</span>
+                    <h2>Beta Feature</h2>
+                    <p>The SLP (Stationeers LaunchPad) Integration is currently in <strong>Beta</strong> and is subject to change.</p>
+                    <p>Handle with care and report any issues you encounter.</p>
+                    <button class="slp-button slp-button-large" onclick="acknowledgeSLPDisclaimer()">I Understand, Continue</button>
+                </div>
+            </div>
+
+            <!-- Actual SLP Content (hidden by default) -->
+            <div id="slp-content" class="slp-content-hidden">
+            {{if eq .IsStationeersLaunchPadEnabled "false"}}
+            <div class="slp-section slp-install-section">
+                <div class="slp-install-header">
+                    <span class="slp-install-icon">🚀</span>
+                    <h3>{{.UIText_SLP_Title}}</h3>
+                </div>
+                <p>{{.UIText_SLP_Description}}</p>
+                <p style="color: #00ff96; margin-top: 15px; font-weight: bold;">{{.UIText_SLP_ReadyToInstall}}</p>
+                <button id="installSLPBtn" class="slp-button slp-button-large" onclick="installSLP()">⬇️ {{.UIText_SLP_InstallButton}}</button>
+            </div>
+
+            <div class="slp-section">
+                <h3>{{.UIText_SLP_UploadModPackage}}</h3>
+                <div id="modPackageUploadZone" class="upload-zone-disabled">
+                    <span class="upload-icon">🔒</span>
+                    <div class="upload-text">{{.UIText_SLP_InstallFirst}}</div>
+                    <div class="upload-subtext">{{.UIText_SLP_InstallFirstSubtext}}</div>
+                </div>
+            </div>
+            {{end}}
+
+            {{if eq .IsStationeersLaunchPadEnabled "true"}}
+            <div class="slp-section">
+                <h3>{{.UIText_SLP_UploadModPackage}}</h3>
+                <p>{{.UIText_SLP_UploadDescription}}</p>
+                <p>{{.UIText_SLP_UploadDescriptionLink}} <a href="https://github.com/SteamServerUI/StationeersServerUI/wiki/Modding-with-StationeersLaunchPad#generate-a-mod-package" target="_blank">wiki</a>.</p>
+                
+                <div id="modPackageUploadZone">
+                    <span class="upload-icon">📦</span>
+                    <div class="upload-text">{{.UIText_SLP_DragDropHere}}</div>
+                    <div class="upload-subtext">{{.UIText_SLP_OrClickToSelect}}</div>
+                </div>
+                <div id="modPackageUploadProgress"></div>
+                <input type="file" id="modPackageUpload" accept=".zip" onchange="handleModPackageSelection(this.files)">
+                <button id="uploadModPackageBtn" class="slp-button" onclick="uploadModPackage()" disabled>⬆️ {{.UIText_SLP_UploadButton}}</button>
+            </div>
+
+            <div class="slp-section slp-manage-section">
+                <h3>{{.UIText_SLP_ManageInstallation}}</h3>
+                <div class="manage-buttons">
+                    <div class="manage-left">
+                        <p style="color: #ffaaaa;">⚠️ {{.UIText_SLP_UninstallWarning}}</p>
+                        <button id="uninstallSLPBtn" class="slp-button slp-button-small danger" onclick="uninstallSLP()">🗑️ {{.UIText_SLP_UninstallButton}}</button>
+                    </div>
+                    <div class="manage-right">
+                        <p>{{.UIText_SLP_UpdateWorkshopModsDesc}}</p>
+                        <button id="updateWorkshopModsBtn" class="slp-button" onclick="updateWorkshopMods()">🔄 {{.UIText_SLP_UpdateButton}}</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slp-section">
+                <h3>{{.UIText_SLP_InstalledMods}}</h3>
+                <div id="mods-list-container">
+                    <div class="loader" id="mods-loader"></div>
+                    <div id="mods-list" class="mods-list"></div>
+                </div>
+            </div>
+            {{end}}
+            </div><!-- End slp-content -->
         </div>
 
         <div id="detectionmanager-config-tab" class="tab-content">
@@ -616,6 +692,8 @@
     <script src="/static/js/world-gen-config.js"></script>
     <script src="/static/js/detectionmanager.js"></script>
     <script src="/static/js/xmas.js"></script>
+    <script src="/static/js/popup.js"></script>
+    <script src="/static/js/slp.js"></script>
 </body>
 
 </html>

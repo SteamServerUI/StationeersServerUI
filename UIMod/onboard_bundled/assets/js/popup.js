@@ -5,7 +5,7 @@ function showPopup(status, message) {
     
     popup.className = 'popup';
     popupTitle.textContent = '';
-    popupMessage.textContent = message;
+    popupMessage.innerHTML = message.replace(/\n/g, '<br>');
 
     switch(status.toLowerCase()) {
         case 'error':

@@ -135,6 +135,27 @@
                 "UIText_DiscordBenefit5": "Felnotiser i realtid",
                 "UIText_DiscordSetupInstructions": "För installationsinstruktioner, besök"
             },
+            "slp": {
+                "UIText_SLP_Title": "Stationeers Launch Pad",
+                "UIText_SLP_Description": "Stationeers Launch Pad är en enkel mod-loader för Stationeers. Den uppdateras automatiskt och gör mod-hantering enkel.",
+                "UIText_SLP_ReadyToInstall": "Redo att installera? Klicka på knappen nedan för att börja.",
+                "UIText_SLP_InstallButton": "Installera Stationeers Launch Pad",
+                "UIText_SLP_UploadModPackage": "Ladda upp Mod-paket",
+                "UIText_SLP_UploadDescription": "Välj en mod-paket (modpkg) zip-fil eller dra och släpp den i rutan nedan för att ladda upp och extrahera mods.",
+                "UIText_SLP_UploadDescriptionLink": "Mod-paket måste exporteras från din spelklient. Se",
+                "UIText_SLP_InstallFirst": "Installera SLP först",
+                "UIText_SLP_InstallFirstSubtext": "SLP måste installeras för att ladda upp mod-paket",
+                "UIText_SLP_DragDropHere": "Dra & Släpp Mod-paket här",
+                "UIText_SLP_OrClickToSelect": "eller klicka för att välja en mod-paketfil",
+                "UIText_SLP_UploadButton": "Ladda upp Mod-paket",
+                "UIText_SLP_ManageInstallation": "Hantera Installation",
+                "UIText_SLP_UninstallWarning": "Avinstallation kommer att RADERA alla mods i Mods-mappen.",
+                "UIText_SLP_UninstallButton": "Avinstallera SLP",
+                "UIText_SLP_UpdateWorkshopMods": "Uppdatera Workshop-mods",
+                "UIText_SLP_UpdateWorkshopModsDesc": "Uppdatera alla installerade workshop-mods till deras senaste versioner. Denna process kan ta lite tid beroende på antalet mods.",
+                "UIText_SLP_UpdateButton": "Uppdatera Workshop-mods",
+                "UIText_SLP_InstalledMods": "Installerade Mods"
+            },
             "UIText_TerrainSettings": "Världsgenerering"
         },
         "setup": {
