@@ -49,8 +49,8 @@ func ToggleSLPAutoUpdates(enable bool) (modified bool, err error) {
 
 	modified = (newContent != content)
 
-	// If neither key existed → append them under [Startup] section
-	if !modified || (!reCheck.MatchString(content) && !reAuto.MatchString(content)) {
+	// If any key is missing → append them under [Startup] section
+	if !reCheck.MatchString(content) || !reAuto.MatchString(content) {
 		// Look for [Startup] section
 		startupSectionRe := regexp.MustCompile(`(?m)^\[Startup\]\s*$`)
 

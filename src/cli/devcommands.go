@@ -49,11 +49,6 @@ func listmods() {
 	}
 }
 
-func setDummyBuildID() {
-	config.SetCurrentBranchBuildID("dummy")
-	logger.Core.Info("Dummy build ID set")
-}
-
 func testLocalization() {
 	currentLanguageSetting := config.GetLanguageSetting()
 	s := localization.GetString("UIText_StartButton")

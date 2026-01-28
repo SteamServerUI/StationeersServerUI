@@ -139,11 +139,6 @@ func extractZip(zipPath string, destDir string) error {
 				return fmt.Errorf("failed to open file in archive: %w", err)
 			}
 
-			if err := os.MkdirAll(filepath.Dir(filePath), 0755); err != nil {
-				rc.Close()
-				return fmt.Errorf("failed to create directory for file: %w", err)
-			}
-
 			outFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 			if err != nil {
 				rc.Close()

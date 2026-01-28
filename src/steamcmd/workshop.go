@@ -24,7 +24,7 @@ func UpdateWorkshopItems() ([]string, error) {
 		return logs, nil
 	}
 
-	fmt.Println(workshopHandles)
+	//logger.Install.Debugf("Workshop handles to update: %v", workshopHandles)
 	logs2, err := DownloadWorkshopItems(workshopHandles)
 	logs = append(logs, logs2...)
 	return logs, err

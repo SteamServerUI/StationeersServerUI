@@ -65,7 +65,7 @@ func InstallSLP() (string, error) {
 
 	for _, rel := range releases {
 		if rel.Prerelease {
-			continue // skip prereleases for now (you can make configurable later)
+			continue // skip prereleases for now (can be made configurable later)
 		}
 
 		for _, asset := range rel.Assets {
