@@ -9,7 +9,6 @@ import (
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/commandmgr"
 
 	"github.com/fsnotify/fsnotify"
 )
@@ -146,13 +145,13 @@ func (m *BackupManager) handleNewBackup(filePath string) {
 
 		time.Sleep(m.config.WaitTime)
 
-		// save the world into Head save too if SSCM is enabled
-		if config.GetIsSSCMEnabled() && config.GetIsNewTerrainAndSaveSystem() {
-			commandmgr.WriteCommand("SAVE")
-			logger.Backup.Debug("HEAD Save triggered via SSCM")
-		} else {
-			logger.Backup.Debug("HEAD Save NOT refreshed via SSCM")
-		}
+		//// save the world into Head save too if SSCM is enabled
+		//if config.GetIsSSCMEnabled() && config.GetIsNewTerrainAndSaveSystem() {
+		//	commandmgr.WriteCommand("SAVE")
+		//	logger.Backup.Debug("HEAD Save triggered via SSCM")
+		//} else {
+		//	logger.Backup.Debug("HEAD Save NOT refreshed via SSCM")
+		//}
 
 		m.mu.Lock()
 		defer m.mu.Unlock()
