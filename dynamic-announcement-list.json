@@ -37,9 +37,9 @@
     "validUntil": "2026-02-04T23:59:59Z"
 },
 {
-    "headline": "Important note when using the Multiplayer-Safe branch",
+    "headline": "[FIXED - Update SSUI!] Important note when using the Multiplayer-Safe branch",
     "shortDescription": "Automatic switch to 'old terrain' mode bug – affects backups and startup command",
-    "bodyHtml": "When switching to the <strong>\"A slightly rolled back Multiplayer-Safe version\"</strong> branch via SSUI, it currently <strong>automatically switches to \"old terrain\" mode</strong> — this is a <strong>bug</strong> and will be fixed soon.<br><br>As soon as the config is saved/changed, SSUI applies this mode switch, which:<br>• Breaks the backup manager<br>• Changes the base startup command to <code>-LOAD</code> instead of <code>-FILE</code><br><br>This causes several issues/culprits when using <strong>new terrain</strong> saves.<br><br><strong>There is currently NO workaround.</strong><br><br>Just be aware of this side effect until the bug is resolved. I'll push an SSUI update to address this asap, probably within the next 12-16 hours.",
+    "bodyHtml": "Bug is fixed, make sure to update SSUI to v5.11.1",
     "author": "JacksonTheMaster",
     "authorRole": "Lead Developer",
     "validFrom": "2026-01-28T00:00:00Z",
