@@ -1,5 +1,5 @@
 # Use Debian-based VS Code dev container image
-FROM mcr.microsoft.com/vscode/devcontainers/base:bookworm
+FROM mcr.microsoft.com/vscode/devcontainers/base:trixie
 
 ARG TZ
 ENV TZ="$TZ"
