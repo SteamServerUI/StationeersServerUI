@@ -297,7 +297,7 @@ func applyConfig(cfg *JsonConfig) {
 		cfg.SaveInfo = ""
 	}
 
-	if GameBranch != "public" && GameBranch != "beta" {
+	if GameBranch != "public" && GameBranch != "beta" && GameBranch != "multiplayersafe" {
 		IsNewTerrainAndSaveSystem = false
 		fmt.Println("The old terrain system and save format are no longer fully supported by SSUI. Please switch to the new terrain and save system if you wish to continue to use SSUI with all features. Please switch to the new Terrain system if you wish to continue to use new SSUI features. Alternatively, you can continue to use the old system by using an older version of SSUI, disabling auto-updates via the config.json file")
 		fmt.Println("Sleeping for 10 seconds to allow you to read and understand the above message...")
