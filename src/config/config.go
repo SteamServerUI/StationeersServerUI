@@ -75,6 +75,7 @@ type JsonConfig struct {
 	AutoStartServerOnStartup  *bool  `json:"AutoStartServerOnStartup"`
 	SSUIIdentifier            string `json:"SSUIIdentifier"`
 	SSUIWebPort               string `json:"SSUIWebPort"`
+	ShowExpertSettings        *bool  `json:"ShowExpertSettings"` // Show Expert Settings tab in web UI
 
 	// Update Settings
 	IsUpdateEnabled            *bool `json:"IsUpdateEnabled"`
@@ -290,6 +291,10 @@ func applyConfig(cfg *JsonConfig) {
 	AutoStartServerOnStartup = autoStartServerOnStartupVal
 	cfg.AutoStartServerOnStartup = &autoStartServerOnStartupVal
 
+	showExpertSettingsVal := getBool(cfg.ShowExpertSettings, "SHOW_EXPERT_SETTINGS", false)
+	ShowExpertSettings = showExpertSettingsVal
+	cfg.ShowExpertSettings = &showExpertSettingsVal
+
 	// Process SaveInfo to maintain backwards compatibility with pre-5.6.6 SaveInfo field (deprecated)
 	if SaveInfo != "" {
 		parts := strings.Split(SaveInfo, " ")
@@ -413,6 +418,7 @@ func safeSaveConfig() error {
 		SSUIIdentifier:                           SSUIIdentifier,
 		SSUIWebPort:                              SSUIWebPort,
 		AdvertiserOverride:                       AdvertiserOverride,
+		ShowExpertSettings:                       &ShowExpertSettings,
 	}
 
 	file, err := os.Create(ConfigPath)

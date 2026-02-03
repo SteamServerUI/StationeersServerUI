@@ -121,6 +121,13 @@ func GetBackupCleanupInterval() time.Duration {
 	return BackupCleanupInterval
 }
 
+// GetBackupWaitTime returns the backup wait time in seconds.
+func GetBackupWaitTime() time.Duration {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return BackupWaitTime
+}
+
 func GetIsNewTerrainAndSaveSystem() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
@@ -409,6 +416,12 @@ func GetSSUIWebPort() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return SSUIWebPort
+}
+
+func GetShowExpertSettings() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return ShowExpertSettings
 }
 
 // GetIsFirstTimeSetup returns the IsFirstTimeSetup
