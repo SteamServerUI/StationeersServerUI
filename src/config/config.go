@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.12.0"
+	Version = "5.12.1"
 	Branch  = "release"
 )
 
