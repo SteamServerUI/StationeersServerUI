@@ -411,6 +411,12 @@ func GetSSUIWebPort() string {
 	return SSUIWebPort
 }
 
+func GetShowExpertSettings() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return ShowExpertSettings
+}
+
 // GetIsFirstTimeSetup returns the IsFirstTimeSetup
 func GetIsFirstTimeSetup() bool {
 	ConfigMu.RLock()

@@ -231,4 +231,52 @@ type ConfigTemplateData struct {
 	UIText_SLP_InstalledMods          string
 
 	IsStationeersLaunchPadEnabled string
+
+	// Expert Settings
+	ShowExpertSettings              string
+	ShowExpertSettingsTrueSelected  string
+	ShowExpertSettingsFalseSelected string
+
+	// Expert Settings values
+	Debug                                         string
+	DebugTrueSelected                             string
+	DebugFalseSelected                            string
+	LogLevel                                      string
+	LogClutterToConsole                           string
+	LogClutterToConsoleTrueSelected               string
+	LogClutterToConsoleFalseSelected              string
+	IsSSCMEnabled                                 string
+	IsSSCMEnabledTrueSelected                     string
+	IsSSCMEnabledFalseSelected                    string
+	IsConsoleEnabled                              string
+	IsConsoleEnabledTrueSelected                  string
+	IsConsoleEnabledFalseSelected                 string
+	SSUIWebPort                                   string
+	IsUpdateEnabled                               string
+	IsUpdateEnabledTrueSelected                   string
+	IsUpdateEnabledFalseSelected                  string
+	AllowPrereleaseUpdates                        string
+	AllowPrereleaseUpdatesTrueSelected            string
+	AllowPrereleaseUpdatesFalseSelected           string
+	AllowMajorUpdates                             string
+	AllowMajorUpdatesTrueSelected                 string
+	AllowMajorUpdatesFalseSelected                string
+	AuthEnabled                                   string
+	AuthEnabledTrueSelected                       string
+	AuthEnabledFalseSelected                      string
+	AuthTokenLifetime                             string
+	DiscordCharBufferSize                         string
+	BackupKeepLastN                               string
+	IsCleanupEnabled                              string
+	IsCleanupEnabledTrueSelected                  string
+	IsCleanupEnabledFalseSelected                 string
+	BackupKeepDailyFor                            string
+	BackupKeepWeeklyFor                           string
+	BackupKeepMonthlyFor                          string
+	BackupCleanupInterval                         string
+	BackupWaitTime                                string
+	AdvertiserOverride                            string
+	IsStationeersLaunchPadAutoUpdatesEnabled      string
+	IsStationeersLaunchPadAutoUpdatesEnabledTrue  string
+	IsStationeersLaunchPadAutoUpdatesEnabledFalse string
 }

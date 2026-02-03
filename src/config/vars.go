@@ -65,6 +65,7 @@ var (
 	AdvertiserOverride                       string
 	IsStationeersLaunchPadEnabled            bool
 	IsStationeersLaunchPadAutoUpdatesEnabled bool
+	ShowExpertSettings                       bool
 )
 
 // Runtime only variables

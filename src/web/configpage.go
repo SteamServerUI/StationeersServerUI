@@ -134,6 +134,88 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		rotateServerPasswordFalseSelected = "selected"
 	}
 
+	// Expert Settings toggle
+	showExpertSettingsTrueSelected := ""
+	showExpertSettingsFalseSelected := ""
+	if config.GetShowExpertSettings() {
+		showExpertSettingsTrueSelected = "selected"
+	} else {
+		showExpertSettingsFalseSelected = "selected"
+	}
+
+	// Expert Settings booleans
+	debugTrueSelected := ""
+	debugFalseSelected := ""
+	if config.GetIsDebugMode() {
+		debugTrueSelected = "selected"
+	} else {
+		debugFalseSelected = "selected"
+	}
+
+	logClutterToConsoleTrueSelected := ""
+	logClutterToConsoleFalseSelected := ""
+	if config.GetLogClutterToConsole() {
+		logClutterToConsoleTrueSelected = "selected"
+	} else {
+		logClutterToConsoleFalseSelected = "selected"
+	}
+
+	isSSCMEnabledTrueSelected := ""
+	isSSCMEnabledFalseSelected := ""
+	if config.GetIsSSCMEnabled() {
+		isSSCMEnabledTrueSelected = "selected"
+	} else {
+		isSSCMEnabledFalseSelected = "selected"
+	}
+
+	isConsoleEnabledTrueSelected := ""
+	isConsoleEnabledFalseSelected := ""
+	if config.GetIsConsoleEnabled() {
+		isConsoleEnabledTrueSelected = "selected"
+	} else {
+		isConsoleEnabledFalseSelected = "selected"
+	}
+
+	isUpdateEnabledTrueSelected := ""
+	isUpdateEnabledFalseSelected := ""
+	if config.GetIsUpdateEnabled() {
+		isUpdateEnabledTrueSelected = "selected"
+	} else {
+		isUpdateEnabledFalseSelected = "selected"
+	}
+
+	allowPrereleaseUpdatesTrueSelected := ""
+	allowPrereleaseUpdatesFalseSelected := ""
+	if config.GetAllowPrereleaseUpdates() {
+		allowPrereleaseUpdatesTrueSelected = "selected"
+	} else {
+		allowPrereleaseUpdatesFalseSelected = "selected"
+	}
+
+	allowMajorUpdatesTrueSelected := ""
+	allowMajorUpdatesFalseSelected := ""
+	if config.GetAllowMajorUpdates() {
+		allowMajorUpdatesTrueSelected = "selected"
+	} else {
+		allowMajorUpdatesFalseSelected = "selected"
+	}
+
+	authEnabledTrueSelected := ""
+	authEnabledFalseSelected := ""
+	if config.GetAuthEnabled() {
+		authEnabledTrueSelected = "selected"
+	} else {
+		authEnabledFalseSelected = "selected"
+	}
+
+	isStationeersLaunchPadAutoUpdatesEnabledTrue := ""
+	isStationeersLaunchPadAutoUpdatesEnabledFalse := ""
+	if config.GetIsStationeersLaunchPadAutoUpdatesEnabled() {
+		isStationeersLaunchPadAutoUpdatesEnabledTrue = "selected"
+	} else {
+		isStationeersLaunchPadAutoUpdatesEnabledFalse = "selected"
+	}
+
 	data := ConfigTemplateData{
 		// Config values
 		DiscordToken:                            config.GetDiscordToken(),
@@ -337,6 +419,45 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		UIText_SLP_InstalledMods:          localization.GetString("UIText_SLP_InstalledMods"),
 
 		IsStationeersLaunchPadEnabled: isStationeersLaunchPadEnabled,
+
+		// Expert Settings
+		ShowExpertSettings:              fmt.Sprintf("%v", config.GetShowExpertSettings()),
+		ShowExpertSettingsTrueSelected:  showExpertSettingsTrueSelected,
+		ShowExpertSettingsFalseSelected: showExpertSettingsFalseSelected,
+
+		// Expert Settings values
+		Debug:                                         fmt.Sprintf("%v", config.GetIsDebugMode()),
+		DebugTrueSelected:                             debugTrueSelected,
+		DebugFalseSelected:                            debugFalseSelected,
+		LogLevel:                                      fmt.Sprintf("%d", config.GetLogLevel()),
+		LogClutterToConsole:                           fmt.Sprintf("%v", config.GetLogClutterToConsole()),
+		LogClutterToConsoleTrueSelected:               logClutterToConsoleTrueSelected,
+		LogClutterToConsoleFalseSelected:              logClutterToConsoleFalseSelected,
+		IsSSCMEnabled:                                 fmt.Sprintf("%v", config.GetIsSSCMEnabled()),
+		IsSSCMEnabledTrueSelected:                     isSSCMEnabledTrueSelected,
+		IsSSCMEnabledFalseSelected:                    isSSCMEnabledFalseSelected,
+		IsConsoleEnabled:                              fmt.Sprintf("%v", config.GetIsConsoleEnabled()),
+		IsConsoleEnabledTrueSelected:                  isConsoleEnabledTrueSelected,
+		IsConsoleEnabledFalseSelected:                 isConsoleEnabledFalseSelected,
+		SSUIWebPort:                                   config.GetSSUIWebPort(),
+		IsUpdateEnabled:                               fmt.Sprintf("%v", config.GetIsUpdateEnabled()),
+		IsUpdateEnabledTrueSelected:                   isUpdateEnabledTrueSelected,
+		IsUpdateEnabledFalseSelected:                  isUpdateEnabledFalseSelected,
+		AllowPrereleaseUpdates:                        fmt.Sprintf("%v", config.GetAllowPrereleaseUpdates()),
+		AllowPrereleaseUpdatesTrueSelected:            allowPrereleaseUpdatesTrueSelected,
+		AllowPrereleaseUpdatesFalseSelected:           allowPrereleaseUpdatesFalseSelected,
+		AllowMajorUpdates:                             fmt.Sprintf("%v", config.GetAllowMajorUpdates()),
+		AllowMajorUpdatesTrueSelected:                 allowMajorUpdatesTrueSelected,
+		AllowMajorUpdatesFalseSelected:                allowMajorUpdatesFalseSelected,
+		AuthEnabled:                                   fmt.Sprintf("%v", config.GetAuthEnabled()),
+		AuthEnabledTrueSelected:                       authEnabledTrueSelected,
+		AuthEnabledFalseSelected:                      authEnabledFalseSelected,
+		AuthTokenLifetime:                             fmt.Sprintf("%d", config.GetAuthTokenLifetime()),
+		DiscordCharBufferSize:                         fmt.Sprintf("%d", config.GetDiscordCharBufferSize()),
+		AdvertiserOverride:                            config.GetAdvertiserOverride(),
+		IsStationeersLaunchPadAutoUpdatesEnabled:      fmt.Sprintf("%v", config.GetIsStationeersLaunchPadAutoUpdatesEnabled()),
+		IsStationeersLaunchPadAutoUpdatesEnabledTrue:  isStationeersLaunchPadAutoUpdatesEnabledTrue,
+		IsStationeersLaunchPadAutoUpdatesEnabledFalse: isStationeersLaunchPadAutoUpdatesEnabledFalse,
 	}
 
 	err = tmpl.Execute(w, data)
