@@ -3,29 +3,12 @@ package gamemgr
 
 import (
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
-
-// Predefined list of Stationeers-themed passwords
-var stationeersPasswords = []string{
-	"Stationeer",
-	"Mimas",
-	"Europa",
-	"Lunar",
-	"Vulcan",
-	"Venus",
-	"Rocket",
-	"Oxygen",
-	"Nitrogen",
-	"Volatiles",
-	"Hardsuit",
-	"Jetpack",
-	"Airlock",
-	"Station",
-}
 
 // rotatePasswordIfEnabled checks if password rotation is enabled and sets a new random password
 func rotatePasswordIfEnabled() {
@@ -37,8 +20,8 @@ func rotatePasswordIfEnabled() {
 	// Seed the random number generator
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	// Select a random password from the list
-	newPassword := stationeersPasswords[rng.Intn(len(stationeersPasswords))]
+	// Generate a random 6-digit password
+	newPassword := strconv.Itoa(rng.Intn(900000) + 100000)
 
 	// Set the new password in config
 	err := config.SetServerPassword(newPassword)
