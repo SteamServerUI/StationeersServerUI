@@ -33,6 +33,9 @@ func InternalStartServer() error {
 		return fmt.Errorf("server is already running")
 	}
 
+	// Rotate password if enabled (sets new random password before building args)
+	rotatePasswordIfEnabled()
+
 	args := buildCommandArgs()
 
 	logger.Core.Info("=== GAMESERVER STARTING ===")

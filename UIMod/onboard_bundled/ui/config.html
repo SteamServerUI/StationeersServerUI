@@ -389,6 +389,22 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="serverInfoPanelChannelID">{{.UIText_ServerInfoPanelChannel}}:</label>
+                            <input type="text" id="serverInfoPanelChannelID" name="serverInfoPanelChannelID"
+                                value="{{.ServerInfoPanelChannelID}}">
+                            <div class="input-info">{{.UIText_ServerInfoPanelChannelInfo}}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rotateServerPassword">{{.UIText_RotateServerPassword}}:</label>
+                            <select id="rotateServerPassword" name="rotateServerPassword">
+                                <option value="true" {{.RotateServerPasswordTrueSelected}}>ENABLED</option>
+                                <option value="false" {{.RotateServerPasswordFalseSelected}}>DISABLED</option>
+                            </select>
+                            <div class="input-info">{{.UIText_RotateServerPasswordInfo}}</div>
+                        </div>
+
+                        <div class="form-group">
                             <label for="statusChannelID">{{.UIText_StatusChannel}}:</label>
                             <input type="text" id="statusChannelID" name="statusChannelID" value="{{.StatusChannelID}}">
                             <div class="input-info">{{.UIText_StatusChannelInfo}}</div>

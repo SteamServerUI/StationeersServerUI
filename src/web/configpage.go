@@ -126,6 +126,14 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		isStationeersLaunchPadEnabled = "true"
 	}
 
+	rotateServerPasswordTrueSelected := ""
+	rotateServerPasswordFalseSelected := ""
+	if config.GetRotateServerPassword() {
+		rotateServerPasswordTrueSelected = "selected"
+	} else {
+		rotateServerPasswordFalseSelected = "selected"
+	}
+
 	data := ConfigTemplateData{
 		// Config values
 		DiscordToken:                            config.GetDiscordToken(),
@@ -135,11 +143,15 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		LogChannelID:                            config.GetLogChannelID(),
 		SaveChannelID:                           config.GetSaveChannelID(),
 		ControlPanelChannelID:                   config.GetControlPanelChannelID(),
+		ServerInfoPanelChannelID:                config.GetServerInfoPanelChannelID(),
 		BlackListFilePath:                       config.GetBlackListFilePath(),
 		ErrorChannelID:                          config.GetErrorChannelID(),
 		IsDiscordEnabled:                        fmt.Sprintf("%v", config.GetIsDiscordEnabled()),
 		IsDiscordEnabledTrueSelected:            discordTrueSelected,
 		IsDiscordEnabledFalseSelected:           discordFalseSelected,
+		RotateServerPassword:                    fmt.Sprintf("%v", config.GetRotateServerPassword()),
+		RotateServerPasswordTrueSelected:        rotateServerPasswordTrueSelected,
+		RotateServerPasswordFalseSelected:       rotateServerPasswordFalseSelected,
 		GameBranch:                              config.GetGameBranch(),
 		Difficulty:                              config.GetDifficulty(),
 		StartCondition:                          config.GetStartCondition(),
@@ -276,6 +288,10 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		UIText_AdminCommandChannelInfo:    localization.GetString("UIText_AdminCommandChannelInfo"),
 		UIText_ControlPanelChannel:        localization.GetString("UIText_ControlPanelChannel"),
 		UIText_ControlPanelChannelInfo:    localization.GetString("UIText_ControlPanelChannelInfo"),
+		UIText_ServerInfoPanelChannel:     localization.GetString("UIText_ServerInfoPanelChannel"),
+		UIText_ServerInfoPanelChannelInfo: localization.GetString("UIText_ServerInfoPanelChannelInfo"),
+		UIText_RotateServerPassword:       localization.GetString("UIText_RotateServerPassword"),
+		UIText_RotateServerPasswordInfo:   localization.GetString("UIText_RotateServerPasswordInfo"),
 		UIText_StatusChannel:              localization.GetString("UIText_StatusChannel"),
 		UIText_StatusChannelInfo:          localization.GetString("UIText_StatusChannelInfo"),
 		UIText_ConnectionListChannel:      localization.GetString("UIText_ConnectionListChannel"),

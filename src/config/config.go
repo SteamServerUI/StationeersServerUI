@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.11.1"
+	Version = "5.12.0"
 	Branch  = "release"
 )
 
@@ -87,17 +87,19 @@ type JsonConfig struct {
 	IsStationeersLaunchPadAutoUpdatesEnabled *bool `json:"IsStationeersLaunchPadAutoUpdatesEnabled"`
 
 	// Discord Settings
-	DiscordToken            string `json:"discordToken"`
-	ControlChannelID        string `json:"controlChannelID"`
-	StatusChannelID         string `json:"statusChannelID"`
-	ConnectionListChannelID string `json:"connectionListChannelID"`
-	LogChannelID            string `json:"logChannelID"`
-	SaveChannelID           string `json:"saveChannelID"`
-	ControlPanelChannelID   string `json:"controlPanelChannelID"`
-	DiscordCharBufferSize   int    `json:"DiscordCharBufferSize"`
-	BlackListFilePath       string `json:"blackListFilePath"`
-	IsDiscordEnabled        *bool  `json:"isDiscordEnabled"`
-	ErrorChannelID          string `json:"errorChannelID"`
+	DiscordToken             string `json:"discordToken"`
+	ControlChannelID         string `json:"controlChannelID"`
+	StatusChannelID          string `json:"statusChannelID"`
+	ConnectionListChannelID  string `json:"connectionListChannelID"`
+	LogChannelID             string `json:"logChannelID"`
+	SaveChannelID            string `json:"saveChannelID"`
+	ControlPanelChannelID    string `json:"controlPanelChannelID"`
+	ServerInfoPanelChannelID string `json:"serverInfoPanelChannelID"`
+	DiscordCharBufferSize    int    `json:"DiscordCharBufferSize"`
+	BlackListFilePath        string `json:"blackListFilePath"`
+	IsDiscordEnabled         *bool  `json:"isDiscordEnabled"`
+	RotateServerPassword     *bool  `json:"rotateServerPassword"`
+	ErrorChannelID           string `json:"errorChannelID"`
 
 	//Backup Settings
 	BackupKeepLastN       int   `json:"backupKeepLastN"`       // Number of most recent backups to keep (default: 2000)
@@ -146,12 +148,17 @@ func applyConfig(cfg *JsonConfig) {
 	LogChannelID = getString(cfg.LogChannelID, "LOG_CHANNEL_ID", "")
 	SaveChannelID = getString(cfg.SaveChannelID, "SAVE_CHANNEL_ID", "")
 	ControlPanelChannelID = getString(cfg.ControlPanelChannelID, "CONTROL_PANEL_CHANNEL_ID", "")
+	ServerInfoPanelChannelID = getString(cfg.ServerInfoPanelChannelID, "SERVER_INFO_PANEL_CHANNEL_ID", "")
 	DiscordCharBufferSize = getInt(cfg.DiscordCharBufferSize, "DISCORD_CHAR_BUFFER_SIZE", 1000)
 	BlackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "./Blacklist.txt")
 
 	isDiscordEnabledVal := getBool(cfg.IsDiscordEnabled, "IS_DISCORD_ENABLED", false)
 	IsDiscordEnabled = isDiscordEnabledVal
 	cfg.IsDiscordEnabled = &isDiscordEnabledVal
+
+	rotateServerPasswordVal := getBool(cfg.RotateServerPassword, "ROTATE_SERVER_PASSWORD", false)
+	RotateServerPassword = rotateServerPasswordVal
+	cfg.RotateServerPassword = &rotateServerPasswordVal
 
 	ErrorChannelID = getString(cfg.ErrorChannelID, "ERROR_CHANNEL_ID", "")
 	BackupKeepLastN = getInt(cfg.BackupKeepLastN, "BACKUP_KEEP_LAST_N", 2000)
@@ -345,9 +352,11 @@ func safeSaveConfig() error {
 		LogChannelID:                             LogChannelID,
 		SaveChannelID:                            SaveChannelID,
 		ControlPanelChannelID:                    ControlPanelChannelID,
+		ServerInfoPanelChannelID:                 ServerInfoPanelChannelID,
 		DiscordCharBufferSize:                    DiscordCharBufferSize,
 		BlackListFilePath:                        BlackListFilePath,
 		IsDiscordEnabled:                         &IsDiscordEnabled,
+		RotateServerPassword:                     &RotateServerPassword,
 		ErrorChannelID:                           ErrorChannelID,
 		BackupKeepLastN:                          BackupKeepLastN,
 		IsCleanupEnabled:                         &IsCleanupEnabled,

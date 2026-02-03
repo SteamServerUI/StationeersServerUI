@@ -46,6 +46,12 @@ func GetControlPanelChannelID() string {
 	return ControlPanelChannelID
 }
 
+func GetServerInfoPanelChannelID() string {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return ServerInfoPanelChannelID
+}
+
 func GetDiscordCharBufferSize() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
@@ -62,6 +68,12 @@ func GetIsDiscordEnabled() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return IsDiscordEnabled
+}
+
+func GetRotateServerPassword() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return RotateServerPassword
 }
 
 func GetErrorChannelID() string {

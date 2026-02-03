@@ -35,11 +35,15 @@ type ConfigTemplateData struct {
 	LogChannelID                            string
 	SaveChannelID                           string
 	ControlPanelChannelID                   string
+	ServerInfoPanelChannelID                string
 	BlackListFilePath                       string
 	ErrorChannelID                          string
 	IsDiscordEnabled                        string
 	IsDiscordEnabledTrueSelected            string
 	IsDiscordEnabledFalseSelected           string
+	RotateServerPassword                    string
+	RotateServerPasswordTrueSelected        string
+	RotateServerPasswordFalseSelected       string
 	GameBranch                              string
 	Difficulty                              string
 	StartCondition                          string
@@ -178,6 +182,10 @@ type ConfigTemplateData struct {
 	UIText_AdminCommandChannelInfo    string
 	UIText_ControlPanelChannel        string
 	UIText_ControlPanelChannelInfo    string
+	UIText_ServerInfoPanelChannel     string
+	UIText_ServerInfoPanelChannelInfo string
+	UIText_RotateServerPassword       string
+	UIText_RotateServerPasswordInfo   string
 	UIText_StatusChannel              string
 	UIText_StatusChannelInfo          string
 	UIText_ConnectionListChannel      string
