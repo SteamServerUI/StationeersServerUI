@@ -91,12 +91,6 @@ func PrintConfigDetails(logLevel ...string) {
 
 	// Backup Configuration
 	backup := map[string]string{
-		"BackupKeepLastN":         fmt.Sprintf("%d", config.GetBackupKeepLastN()),
-		"IsCleanupEnabled":        fmt.Sprintf("%v", config.GetIsCleanupEnabled()),
-		"BackupKeepDailyFor":      fmt.Sprintf("%v", config.GetBackupKeepDailyFor()),
-		"BackupKeepWeeklyFor":     fmt.Sprintf("%v", config.GetBackupKeepWeeklyFor()),
-		"BackupKeepMonthlyFor":    fmt.Sprintf("%v", config.GetBackupKeepMonthlyFor()),
-		"BackupCleanupInterval":   fmt.Sprintf("%v", config.GetBackupCleanupInterval()),
 		"ConfiguredBackupDir":     config.GetConfiguredBackupDir(),
 		"ConfiguredSafeBackupDir": config.GetConfiguredSafeBackupDir(),
 	}
