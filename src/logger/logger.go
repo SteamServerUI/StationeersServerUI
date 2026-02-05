@@ -223,6 +223,12 @@ func processLogs() {
 			entry.logger.writeToFile(entry.fileLine, entry.logger.suffix)
 		}
 
+		// Check if dashboard is active - if so, capture logs for dashboard display and suppress console output
+		if isDashboardActive() {
+			captureDashboardLog(entry.fileLine)
+			continue // Skip stdout console output while dashboard is running
+		}
+
 		// Send to global console channel
 		select {
 		case globalConsoleChan <- entry.consoleLine:
@@ -257,4 +263,36 @@ func (l *Logger) shouldLog(severity int) bool {
 		}
 	}
 	return severity >= config.GetLogLevel()
+}
+
+// AI figured below part out, but it works great. Import cycles are my villain here,
+// and this seems like a neat way to allow the dashboard to capture logs without importing the dashboard package
+// into the logger. This avoids circular dependencies.
+
+// Dashboard integration hooks - these allow the dashboard to intercept console output
+var (
+	dashboardActiveFunc  func() bool
+	dashboardCaptureFunc func(string)
+)
+
+// RegisterDashboardHooks allows the dashboard package to register its functions
+// for checking active state and capturing logs. This avoids import cycles.
+func RegisterDashboardHooks(activeFunc func() bool, captureFunc func(string)) {
+	dashboardActiveFunc = activeFunc
+	dashboardCaptureFunc = captureFunc
+}
+
+// isDashboardActive checks if the dashboard is currently running
+func isDashboardActive() bool {
+	if dashboardActiveFunc == nil {
+		return false
+	}
+	return dashboardActiveFunc()
+}
+
+// captureDashboardLog sends a log line to the dashboard for display
+func captureDashboardLog(line string) {
+	if dashboardCaptureFunc != nil {
+		dashboardCaptureFunc(line)
+	}
 }

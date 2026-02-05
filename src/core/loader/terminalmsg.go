@@ -40,12 +40,12 @@ func printStartupMessage() {
 
 func printFirstTimeSetupMessage() {
 	// Setup guide
+	logger.Core.Cleanf("")
 	logger.Core.Cleanf("  📋 GETTING STARTED:")
 	logger.Core.Cleanf("  ┌─────────────────────────────────────────────────────────────────────────────────────────────┐")
 	logger.Core.Cleanf("  │ • Ready, set, go! Welcome to StationeersServerUI, new User!                                 │")
 	logger.Core.Cleanf("  │ • The good news: you made it here, which means you are likely ready to run your server!     │")
 	logger.Core.Cleanf("  │ • If this is your first time here, no worries: SSUI is made to be easy to use.              │")
-	logger.Core.Cleanf("  │ • Configure your server by visiting the WebUI!                                              │")
 	logger.Core.Cleanf("  │ • Support is provided at https://discord.gg/8n3vN92MyJ                                      │")
 	logger.Core.Cleanf("  │ • For more details, check the GitHub Wiki:                                                  │")
 	logger.Core.Cleanf("  │ • https://github.com/SteamServerUI/StationeersServerUI/v5/wiki                              │")

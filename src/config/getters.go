@@ -387,6 +387,12 @@ func GetIsConsoleEnabled() bool {
 	return IsConsoleEnabled
 }
 
+func GetIsCLIDashboardEnabled() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return IsCLIDashboardEnabled
+}
+
 func GetLanguageSetting() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()

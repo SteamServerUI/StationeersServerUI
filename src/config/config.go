@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.12.1"
+	Version = "5.12.3"
 	Branch  = "release"
 )
 
@@ -71,6 +71,7 @@ type JsonConfig struct {
 	IsSSCMEnabled             *bool  `json:"IsSSCMEnabled"`
 	AutoRestartServerTimer    string `json:"AutoRestartServerTimer"`
 	IsConsoleEnabled          *bool  `json:"IsConsoleEnabled"`
+	IsCLIDashboardEnabled     *bool  `json:"IsCLIDashboardEnabled"`
 	LanguageSetting           string `json:"LanguageSetting"`
 	AutoStartServerOnStartup  *bool  `json:"AutoStartServerOnStartup"`
 	SSUIIdentifier            string `json:"SSUIIdentifier"`
@@ -283,6 +284,10 @@ func applyConfig(cfg *JsonConfig) {
 	IsConsoleEnabled = isConsoleEnabledVal
 	cfg.IsConsoleEnabled = &isConsoleEnabledVal
 
+	isCLIDashboardEnabledVal := getBool(cfg.IsCLIDashboardEnabled, "IS_CLI_DASHBOARD_ENABLED", false)
+	IsCLIDashboardEnabled = isCLIDashboardEnabledVal
+	cfg.IsCLIDashboardEnabled = &isCLIDashboardEnabledVal
+
 	logClutterToConsoleVal := getBool(cfg.LogClutterToConsole, "LOG_CLUTTER_TO_CONSOLE", false)
 	LogClutterToConsole = logClutterToConsoleVal
 	cfg.LogClutterToConsole = &logClutterToConsoleVal
@@ -413,6 +418,7 @@ func safeSaveConfig() error {
 		IsStationeersLaunchPadEnabled:            &IsStationeersLaunchPadEnabled,
 		IsStationeersLaunchPadAutoUpdatesEnabled: &IsStationeersLaunchPadAutoUpdatesEnabled,
 		IsConsoleEnabled:                         &IsConsoleEnabled,
+		IsCLIDashboardEnabled:                    &IsCLIDashboardEnabled,
 		LanguageSetting:                          LanguageSetting,
 		AutoStartServerOnStartup:                 &AutoStartServerOnStartup,
 		SSUIIdentifier:                           SSUIIdentifier,
