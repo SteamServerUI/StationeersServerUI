@@ -9,220 +9,365 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-// Color palette - cohesive with SSUI branding
-var (
-	// Primary colors
-	primaryColor   = lipgloss.Color("#7C3AED") // Purple - main brand
-	secondaryColor = lipgloss.Color("#10B981") // Green - success/online
-	errorColor     = lipgloss.Color("#EF4444") // Red - errors/offline
-	mutedColor     = lipgloss.Color("#6B7280") // Gray - muted text
+// SSUI ASCII Art Logo
 
-	// Background colors
-	bgDark = lipgloss.Color("#1F2937")
-)
+const ssuiLogo = `███████╗███████╗██╗   ██╗██╗
+██╔════╝██╔════╝██║   ██║██║
+███████╗███████╗██║   ██║██║
+╚════██║╚════██║██║   ██║██║
+███████║███████║╚██████╔╝██║
+╚══════╝╚══════╝ ╚═════╝ ╚═╝`
 
-// Styles
-var (
-	// Header style
-	headerStyle = lipgloss.NewStyle().
-			Bold(true).
-			Foreground(lipgloss.Color("#F9FAFB")).
-			Background(bgDark).
-			Padding(0, 2)
-
-	titleStyle = lipgloss.NewStyle().
-			Bold(true).
-			Foreground(lipgloss.Color("#F9FAFB")).
-			Background(primaryColor).
-			Padding(0, 2)
-
-	// Panel styles
-	panelStyle = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder()).
-			BorderForeground(primaryColor).
-			Padding(1, 2)
-
-	// Status indicators
-	onlineStyle = lipgloss.NewStyle().
-			Foreground(secondaryColor).
-			Bold(true)
-
-	offlineStyle = lipgloss.NewStyle().
-			Foreground(errorColor).
-			Bold(true)
-
-	// Labels and values
-	labelStyle = lipgloss.NewStyle().
-			Foreground(mutedColor).
-			Width(18)
-
-	valueStyle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#F9FAFB"))
-
-	// Help style
-	helpStyle = lipgloss.NewStyle().
-			Foreground(mutedColor)
-
-	// Footer
-	footerStyle = lipgloss.NewStyle().
-			Foreground(mutedColor).
-			Background(bgDark).
-			Padding(0, 2)
-
-	// Tab indicator style
-	tabActiveStyle = lipgloss.NewStyle().
-			Bold(true).
-			Foreground(primaryColor)
-
-	tabInactiveStyle = lipgloss.NewStyle().
-				Foreground(mutedColor)
-
-	// Player list styles
-	playerNameStyle = lipgloss.NewStyle().
-			Foreground(secondaryColor)
-
-	playerIDStyle = lipgloss.NewStyle().
-			Foreground(mutedColor).
-			Italic(true)
-)
+// Main View
 
 // View implements tea.Model - renders the entire UI
 func (m Model) View() string {
 	if m.quitting {
-		return "\n  Exiting dashboard...\n\n"
+		farewell := lipgloss.NewStyle().
+			Foreground(Purple).
+			Bold(true).
+			Render("\n  👋 Dashboard closed. Returning to CLI...\n\n")
+		return farewell
 	}
 
 	// Build the UI
 	var b strings.Builder
 
-	// Header with tabs
+	// Header with logo and status bar
 	b.WriteString(m.renderHeader())
+	b.WriteString("\n")
+
+	// Tab bar
+	b.WriteString(m.renderTabBar())
 	b.WriteString("\n\n")
 
-	// Render the active panel (full view) - all panels use same sizing
+	// Main content panel
 	switch m.activePanel {
-	case PanelSSUILog:
-		b.WriteString(m.renderLogPanel())
 	case PanelStatus:
 		b.WriteString(m.renderStatusPanel())
+	case PanelSSUILog:
+		b.WriteString(m.renderLogPanel())
 	case PanelPlayers:
 		b.WriteString(m.renderPlayersPanel())
+	case PanelConfig:
+		b.WriteString(m.renderConfigPanel())
 	}
+
 	b.WriteString("\n")
 
-	// Help
-	b.WriteString(helpStyle.Render(m.help.View(m.keys)))
-	b.WriteString("\n")
-
-	// Footer
+	// Footer with all controls
 	b.WriteString(m.renderFooter())
 
 	return b.String()
 }
 
-// renderHeader renders the dashboard header with tab indicators
-func (m Model) renderHeader() string {
-	title := titleStyle.Render("🚀 SSUI Dashboard")
+// Header Components
 
-	// Tab indicators
+// renderHeader renders the header with status indicators
+func (m Model) renderHeader() string {
+	// Status indicators
+	var statusItems []string
+
+	// Server status pill
+	if m.serverRunning {
+		statusItems = append(statusItems, StatusPillOnline.Render(" "+BulletFilled+" ONLINE "))
+	} else {
+		statusItems = append(statusItems, StatusPillOffline.Render(" "+BulletEmpty+" OFFLINE "))
+	}
+
+	// Player count with mini progress bar
+	playerCount := len(m.connectedPlayers)
+	playerBar := RenderMiniBar(playerCount, m.maxPlayers, 6)
+	playerText := fmt.Sprintf("%d/%d", playerCount, m.maxPlayers)
+	if playerCount > 0 {
+		playerStyle := lipgloss.NewStyle().Foreground(Cyan).Bold(true)
+		statusItems = append(statusItems, playerStyle.Render("👥 "+playerBar+" "+playerText))
+	} else {
+		statusItems = append(statusItems, MutedStyle.Render("👥 "+playerBar+" "+playerText))
+	}
+
+	// Uptime (if running)
+	if m.serverRunning && m.serverUptime > 0 {
+		uptimeStyle := lipgloss.NewStyle().Foreground(Green)
+		statusItems = append(statusItems, uptimeStyle.Render("⏱ "+formatUptimeShort(m.serverUptime)))
+	}
+
+	// Version badge
+	statusItems = append(statusItems, VersionBadgeStyle.Render("v"+m.ssuiVersion))
+
+	statusBar := lipgloss.JoinHorizontal(lipgloss.Center, strings.Join(statusItems, "  "))
+
+	// Simple centered status bar
+	return lipgloss.NewStyle().
+		Width(m.width).
+		Align(lipgloss.Center).
+		Render(statusBar)
+}
+
+// renderTabBar renders the navigation tab bar
+func (m Model) renderTabBar() string {
 	var tabs []string
+
 	for i := Panel(0); i < PanelCount; i++ {
+		icon := panelIcons[i]
 		name := panelNames[i]
+		label := icon + " " + name
+
 		if i == m.activePanel {
-			tabs = append(tabs, tabActiveStyle.Render("["+name+"]"))
+			tabs = append(tabs, TabActiveStyle.Render(label))
 		} else {
-			tabs = append(tabs, tabInactiveStyle.Render(" "+name+" "))
+			tabs = append(tabs, TabInactiveStyle.Render(label))
 		}
 	}
-	tabBar := strings.Join(tabs, " ")
 
-	// Session uptime
-	uptime := time.Since(m.startTime).Round(time.Second)
-	uptimeStr := fmt.Sprintf("Session: %s", uptime)
+	tabBar := lipgloss.JoinHorizontal(lipgloss.Top, tabs...)
 
-	// Build header
-	return headerStyle.Width(m.width).Render(
-		lipgloss.JoinVertical(lipgloss.Left,
-			lipgloss.JoinHorizontal(lipgloss.Top, title, "  ", mutedStyle(uptimeStr)),
-			tabBar,
-		),
-	)
+	// Add subtle divider line under tabs
+	dividerWidth := lipgloss.Width(tabBar)
+	if m.width > dividerWidth {
+		dividerWidth = m.width - 4
+	}
+	divider := DividerStyle.Render(strings.Repeat("─", dividerWidth))
+
+	return lipgloss.JoinVertical(lipgloss.Left, tabBar, divider)
 }
 
-// renderStatusPanel renders the server status panel (full view)
+// Status Panel
+
 func (m Model) renderStatusPanel() string {
-	// Status icon and text
-	var statusDisplay string
-	if m.serverRunning {
-		statusDisplay = onlineStyle.Render("● Online")
-	} else {
-		statusDisplay = offlineStyle.Render("○ Offline")
+	// Left column: Server info
+	leftCol := m.renderServerInfoBox()
+
+	// Right column: World info + Quick stats
+	rightCol := lipgloss.JoinVertical(lipgloss.Left,
+		m.renderWorldInfoBox(),
+		"",
+		m.renderQuickStatsBox(),
+	)
+
+	// Combine columns
+	leftWidth := m.width/2 - 4
+	rightWidth := m.width/2 - 4
+	if leftWidth < 30 {
+		leftWidth = 30
+	}
+	if rightWidth < 30 {
+		rightWidth = 30
 	}
 
-	// Format uptime
-	uptimeStr := formatUptime(m.serverUptime)
+	leftColStyled := lipgloss.NewStyle().Width(leftWidth).Render(leftCol)
+	rightColStyled := lipgloss.NewStyle().Width(rightWidth).Render(rightCol)
 
-	// Player count
-	playerCount := len(m.connectedPlayers)
+	content := lipgloss.JoinHorizontal(lipgloss.Top, leftColStyled, "  ", rightColStyled)
 
-	// Build status content with sections
-	serverSection := lipgloss.JoinVertical(lipgloss.Left,
-		boldStyle("═══ Server Status ═══"),
-		"",
-		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Status:"), statusDisplay),
-		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Server Name:"), valueStyle.Render(m.serverName)),
-		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Uptime:"), valueStyle.Render(uptimeStr)),
-		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Players:"), valueStyle.Render(fmt.Sprintf("%d / %d", playerCount, m.maxPlayers))),
-	)
-
-	worldSection := lipgloss.JoinVertical(lipgloss.Left,
-		"",
-		boldStyle("═══ World Info ═══"),
-		"",
-		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Save Name:"), valueStyle.Render(m.saveName)),
-		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("World ID:"), valueStyle.Render(m.worldID)),
-		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Game Port:"), valueStyle.Render(m.gamePort)),
-	)
-
-	ssuiSection := lipgloss.JoinVertical(lipgloss.Left,
-		"",
-		boldStyle("═══ SSUI Info ═══"),
-		"",
-		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Version:"), valueStyle.Render(m.ssuiVersion)),
-		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Runtime:"), valueStyle.Render(m.goRuntime)),
-	)
-
-	controlsSection := lipgloss.JoinVertical(lipgloss.Left,
-		"",
-		boldStyle("═══ Quick Actions ═══"),
-		"",
-		mutedStyle("  [s] Start Server    [x] Stop Server    [r] Refresh    [tab] Switch View [q/esc] Exit dashboard"),
-	)
-
-	content := lipgloss.JoinVertical(lipgloss.Left, serverSection, worldSection, ssuiSection, controlsSection)
-
-	// Use consistent panel sizing
-	return m.renderPanelWithContent(content)
+	return m.renderPanelContainer(content)
 }
 
-// renderPlayersPanel renders the connected players panel (full view)
+// renderLogoBlock renders the SSUI ASCII logo with gradient
+func (m Model) renderLogoBlock() string {
+	logoLines := strings.Split(ssuiLogo, "\n")
+	var styledLogo strings.Builder
+
+	// Apply gradient colors to logo lines
+	gradientColors := []lipgloss.Color{PurpleLight, Purple, Purple, PurpleDark, PurpleDark, Gray500}
+	for i, line := range logoLines {
+		color := gradientColors[i%len(gradientColors)]
+		styledLogo.WriteString(lipgloss.NewStyle().Foreground(color).Bold(true).Render(line))
+		if i < len(logoLines)-1 {
+			styledLogo.WriteString("\n")
+		}
+	}
+	return styledLogo.String()
+}
+
+func (m Model) renderServerInfoBox() string {
+	var lines []string
+
+	lines = append(lines, RenderSectionTitle("Server Status"))
+	lines = append(lines, "")
+
+	// Status line (simple, no animation)
+	var statusLine string
+	if m.serverRunning {
+		statusLine = lipgloss.NewStyle().Foreground(Green).Bold(true).Render(BulletFilled+" Online") +
+			MutedStyle.Render(" • ") +
+			lipgloss.NewStyle().Foreground(Cyan).Render("⏱ "+formatUptime(m.serverUptime))
+	} else {
+		statusLine = OfflineStyle.Render(BulletEmpty+" Offline") +
+			MutedStyle.Render(" • press ") +
+			KeyStyle.Render("s") +
+			MutedStyle.Render(" to start")
+	}
+	lines = append(lines, statusLine)
+	lines = append(lines, "")
+
+	// Server details with icons
+	lines = append(lines, "  "+lipgloss.NewStyle().Foreground(PurpleLight).Render("🏷")+"  "+RenderKeyValue("Server Name", m.serverName))
+	lines = append(lines, "  "+lipgloss.NewStyle().Foreground(Cyan).Render("🌐")+"  "+RenderKeyValue("Game Port", m.gamePort))
+	lines = append(lines, "  "+lipgloss.NewStyle().Foreground(Blue).Render("📡")+"  "+RenderKeyValue("Update Port", m.updatePort))
+	lines = append(lines, "")
+
+	// Player capacity with fancy progress bar
+	playerCount := len(m.connectedPlayers)
+	barWidth := 20
+	playerBar := RenderProgressBar(playerCount, m.maxPlayers, barWidth)
+	playerText := fmt.Sprintf("%d/%d", playerCount, m.maxPlayers)
+
+	// Add player icon and styling
+	playerIcon := "👥"
+	if playerCount == 0 {
+		playerIcon = MutedStyle.Render("👥")
+	}
+
+	lines = append(lines, "  "+playerIcon+"  "+LabelStyle.Render("Players:"))
+	lines = append(lines, "      "+playerBar+" "+NumberStyle.Render(playerText))
+	lines = append(lines, "")
+
+	// Add SSUI Logo underneath player count
+	lines = append(lines, m.renderLogoBlock())
+
+	return lipgloss.JoinVertical(lipgloss.Left, lines...)
+}
+
+func (m Model) renderWorldInfoBox() string {
+	var lines []string
+
+	lines = append(lines, RenderSectionTitle("World Info"))
+	lines = append(lines, "")
+
+	// World details with icons
+	lines = append(lines, "  "+lipgloss.NewStyle().Foreground(Green).Render("💾")+"  "+RenderKeyValue("Save Name", m.saveName))
+	lines = append(lines, "  "+lipgloss.NewStyle().Foreground(Cyan).Render("🔑")+"  "+RenderKeyValue("World ID", m.worldID))
+	lines = append(lines, "")
+
+	// Game version with special formatting
+	versionDisplay := m.gameVersion
+	if versionDisplay == "" {
+		versionDisplay = MutedStyle.Render("Unknown")
+	} else {
+		versionDisplay = ValueHighlightStyle.Render(versionDisplay)
+	}
+	lines = append(lines, "  "+lipgloss.NewStyle().Foreground(Yellow).Render("📦")+"  "+LabelStyle.Render("Game Version:")+" "+versionDisplay)
+
+	// Branch
+	branchDisplay := m.gameBranch
+	if branchDisplay == "" || branchDisplay == "public" {
+		branchDisplay = lipgloss.NewStyle().Foreground(Green).Render("public")
+	} else {
+		branchDisplay = lipgloss.NewStyle().Foreground(Yellow).Render(branchDisplay)
+	}
+	lines = append(lines, "  "+lipgloss.NewStyle().Foreground(PurpleLight).Render("🌿")+"  "+LabelStyle.Render("Branch:")+" "+branchDisplay)
+
+	// Build ID if available
+	if m.buildID != "" {
+		lines = append(lines, "  "+lipgloss.NewStyle().Foreground(Gray500).Render("🔢")+"  "+RenderKeyValue("Build ID", m.buildID))
+	}
+
+	return lipgloss.JoinVertical(lipgloss.Left, lines...)
+}
+
+func (m Model) renderQuickStatsBox() string {
+	var lines []string
+
+	lines = append(lines, RenderSectionTitle("SSUI Info"))
+	lines = append(lines, "")
+
+	// Version with branding
+	lines = append(lines, "  "+lipgloss.NewStyle().Foreground(Purple).Bold(true).Render(Rocket)+"  "+LabelStyle.Render("Version:")+" "+ValueHighlightStyle.Render(m.ssuiVersion))
+
+	// Runtime info
+	lines = append(lines, "  "+lipgloss.NewStyle().Foreground(Blue).Render("⚡")+"  "+RenderKeyValue("Runtime", m.goRuntime))
+
+	// Environment with icon
+	if m.isDocker {
+		lines = append(lines, "  "+lipgloss.NewStyle().Foreground(Cyan).Render("🐳")+"  "+LabelStyle.Render("Environment:")+" "+ValueHighlightStyle.Render("Docker"))
+	} else {
+		lines = append(lines, "  "+lipgloss.NewStyle().Foreground(Green).Render("💻")+"  "+LabelStyle.Render("Environment:")+" "+ValueStyle.Render("Native"))
+	}
+
+	// Session info with animated indicator
+	sessionUptime := time.Since(m.startTime).Round(time.Second)
+	lines = append(lines, "")
+	sessionIcon := GetSpinnerDot(m.tickCount)
+	lines = append(lines, "  "+lipgloss.NewStyle().Foreground(PurpleLight).Render(sessionIcon)+"  "+LabelStyle.Render("Session:")+" "+ValueStyle.Render(formatUptime(sessionUptime)))
+
+	return lipgloss.JoinVertical(lipgloss.Left, lines...)
+}
+
+// Players Panel
+
 func (m Model) renderPlayersPanel() string {
 	var content string
 
 	if len(m.connectedPlayers) == 0 {
-		content = mutedStyle("No players connected\n\n")
-		if !m.serverRunning {
-			content += mutedStyle("Server is offline. Press 's' to start.")
-		} else {
-			content += mutedStyle("Waiting for players to join...")
-		}
-	} else {
-		// Sort player names for consistent display
-		var lines []string
-		lines = append(lines, boldStyle(fmt.Sprintf("═══ Connected Players (%d/%d) ═══", len(m.connectedPlayers), m.maxPlayers)))
-		lines = append(lines, "")
+		// Empty state with nice styling
+		emptyIcon := lipgloss.NewStyle().
+			Foreground(Gray500).
+			Render("👥")
 
-		// Get sorted keys
+		emptyTitle := lipgloss.NewStyle().
+			Foreground(Gray400).
+			Bold(true).
+			Render("No Players Connected")
+
+		var emptySubtext string
+		if !m.serverRunning {
+			emptySubtext = MutedStyle.Render("Server is offline. Press ") +
+				KeyStyle.Render("s") +
+				MutedStyle.Render(" to start.")
+		} else {
+			// Show animated waiting indicator
+			spinner := GetSpinnerFrame(m.tickCount)
+			emptySubtext = lipgloss.NewStyle().Foreground(Cyan).Render(spinner) +
+				MutedStyle.Render(" Waiting for players to join...")
+		}
+
+		content = lipgloss.JoinVertical(lipgloss.Center,
+			"",
+			"",
+			emptyIcon,
+			"",
+			emptyTitle,
+			"",
+			emptySubtext,
+			"",
+			"",
+		)
+
+		// Center the content
+		content = lipgloss.NewStyle().
+			Width(m.width - 8).
+			Align(lipgloss.Center).
+			Render(content)
+	} else {
+		// Player list header with player bar
+		playerBar := RenderProgressBar(len(m.connectedPlayers), m.maxPlayers, 15)
+		headerLine := lipgloss.JoinHorizontal(lipgloss.Top,
+			RenderSectionTitle("Connected Players"),
+			"  ",
+			playerBar,
+			" ",
+			NumberStyle.Render(fmt.Sprintf("%d/%d", len(m.connectedPlayers), m.maxPlayers)),
+		)
+
+		// Column headers with better styling
+		colHeader := lipgloss.JoinHorizontal(lipgloss.Top,
+			lipgloss.NewStyle().Width(4).Foreground(Gray600).Render("#"),
+			lipgloss.NewStyle().Width(26).Foreground(Gray500).Bold(true).Render("Player Name"),
+			lipgloss.NewStyle().Foreground(Gray500).Bold(true).Render("Steam ID"),
+		)
+
+		// Fancy divider
+		divider := DividerStyle.Render(BoxTeeRight + strings.Repeat(BoxHorizontal, 60) + BoxTeeLeft)
+
+		// Player rows
+		var rows []string
+		rows = append(rows, headerLine)
+		rows = append(rows, "")
+		rows = append(rows, colHeader)
+		rows = append(rows, divider)
+
+		// Sort players for consistent display
 		var steamIDs []string
 		for steamID := range m.connectedPlayers {
 			steamIDs = append(steamIDs, steamID)
@@ -231,79 +376,139 @@ func (m Model) renderPlayersPanel() string {
 
 		for i, steamID := range steamIDs {
 			playerName := m.connectedPlayers[steamID]
-			line := fmt.Sprintf("  %d. %s  %s",
-				i+1,
-				playerNameStyle.Render(playerName),
-				playerIDStyle.Render("("+steamID+")"),
+
+			// Alternate row styling for readability
+			indexStyle := lipgloss.NewStyle().Width(4).Foreground(Gray500)
+			nameStyle := lipgloss.NewStyle().Width(26).Foreground(GreenLight).Bold(true)
+			idStyle := lipgloss.NewStyle().Foreground(Gray500).Italic(true)
+
+			// Add online indicator
+			onlineIndicator := lipgloss.NewStyle().Foreground(Green).Render(BulletFilled)
+
+			row := lipgloss.JoinHorizontal(lipgloss.Top,
+				indexStyle.Render(fmt.Sprintf("%d.", i+1)),
+				onlineIndicator+" "+nameStyle.Render(playerName),
+				idStyle.Render("  "+steamID),
 			)
-			lines = append(lines, line)
+			rows = append(rows, row)
 		}
 
-		content = strings.Join(lines, "\n")
+		content = lipgloss.JoinVertical(lipgloss.Left, rows...)
 	}
 
-	// Use consistent panel sizing
-	return m.renderPanelWithContent(content)
+	return m.renderPanelContainer(content)
 }
 
-// renderLogPanel renders the SSUI log viewer panel (full view)
+// Log Panel
+
 func (m Model) renderLogPanel() string {
 	// Header with scroll indicator
-	scrollInfo := fmt.Sprintf("(%d%%)", int(m.logViewport.ScrollPercent()*100))
-	header := boldStyle("═══ SSUI Log ═══") + "  " + mutedStyle(scrollInfo)
+	scrollPercent := int(m.logViewport.ScrollPercent() * 100)
+	scrollIndicator := LogScrollIndicatorStyle.Render(fmt.Sprintf("(%d%%)", scrollPercent))
 
+	// Scroll position indicator
+	var scrollHint string
+	if scrollPercent < 100 {
+		scrollHint = MutedStyle.Render(" • Use ↑↓ to scroll, 'G' for bottom")
+	}
+
+	header := lipgloss.JoinHorizontal(lipgloss.Top,
+		RenderSectionTitle("SSUI Logs"),
+		"  ",
+		scrollIndicator,
+		scrollHint,
+	)
+
+	// Log content
 	content := lipgloss.JoinVertical(lipgloss.Left,
 		header,
 		"",
 		m.logViewport.View(),
 	)
 
-	return panelStyle.Width(m.width - 4).Render(content)
-}
-
-// renderPanelWithContent renders content in a consistently-sized panel
-func (m Model) renderPanelWithContent(content string) string {
-	// Calculate consistent content height
-	// Account for: header (3 lines), panel borders/padding (4 lines), help (1 line), footer (1 line), newlines (3)
-	contentHeight := m.height - 12
-	if contentHeight < 5 {
-		contentHeight = 5
+	// Use a slightly different style for log panel
+	panelWidth := m.width - 4
+	if panelWidth < 40 {
+		panelWidth = 40
 	}
 
-	return panelStyle.Width(m.width - 4).Height(contentHeight).Render(content)
+	return LogContainerStyle.
+		Width(panelWidth).
+		BorderForeground(Purple).
+		Render(content)
 }
 
-// renderFooter renders the footer with version and status info
+// Footer
+
 func (m Model) renderFooter() string {
-	// Left side: SSUI branding with real version
-	left := fmt.Sprintf("SSUI %s", m.ssuiVersion)
+	// Left: Branding
+	brand := FooterBrandStyle.Render("SSUI")
+	version := MutedStyle.Render(" v" + m.ssuiVersion)
+	left := brand + version
 
-	// Right side: Quick status indicator
-	var serverIndicator string
-	if m.serverRunning {
-		serverIndicator = onlineStyle.Render("●")
-	} else {
-		serverIndicator = offlineStyle.Render("○")
-	}
-	right := fmt.Sprintf("%s Server  |  %d players", serverIndicator, len(m.connectedPlayers))
+	// Center: All key hints in one comprehensive line
+	var keyHints []string
 
-	// Calculate spacing
-	width := m.width - lipgloss.Width(left) - lipgloss.Width(right) - 4
-	if width < 0 {
-		width = 0
-	}
-	spacer := strings.Repeat(" ", width)
-
-	return footerStyle.Width(m.width).Render(
-		lipgloss.JoinHorizontal(lipgloss.Top, left, spacer, right),
+	keyHints = append(keyHints,
+		KeyStyle.Render("tab")+KeyDescStyle.Render(" panels"),
+		KeyStyle.Render("↑↓")+KeyDescStyle.Render(" nav"),
+		KeyStyle.Render("s")+KeyDescStyle.Render(" start"),
+		KeyStyle.Render("x")+KeyDescStyle.Render(" stop"),
 	)
+
+	// Add config-specific hints when on config panel
+	if m.activePanel == PanelConfig {
+		keyHints = append(keyHints,
+			KeyStyle.Render("enter")+KeyDescStyle.Render(" edit"),
+			KeyStyle.Render("ctrl+s")+KeyDescStyle.Render(" save"),
+		)
+	}
+
+	keyHints = append(keyHints,
+		KeyStyle.Render("r")+KeyDescStyle.Render(" refresh"),
+		KeyStyle.Render("q")+KeyDescStyle.Render(" quit"),
+	)
+
+	center := lipgloss.JoinHorizontal(lipgloss.Top,
+		strings.Join(keyHints, FooterSeparatorStyle.Render(" │ ")),
+	)
+
+	// Calculate spacing - simple centered layout
+	leftWidth := lipgloss.Width(left)
+	centerWidth := lipgloss.Width(center)
+	totalContentWidth := leftWidth + centerWidth
+
+	var footerContent string
+	if m.width > totalContentWidth+10 {
+		// Full layout with spacing
+		spacing := max((m.width-totalContentWidth)/2, 2)
+		footerContent = left + strings.Repeat(" ", spacing) + center
+	} else {
+		// Compact layout
+		footerContent = left + "  " + center
+	}
+
+	return FooterStyle.Width(m.width).Render(footerContent)
 }
 
-// Helper style functions
-func boldStyle(s string) string {
-	return lipgloss.NewStyle().Bold(true).Render(s)
-}
+// Helper Functions
 
-func mutedStyle(s string) string {
-	return lipgloss.NewStyle().Foreground(mutedColor).Render(s)
+// renderPanelContainer wraps content in the standard panel style
+func (m Model) renderPanelContainer(content string) string {
+	// Calculate consistent content height
+	headerHeight := 6 // Status bar + tabs
+	footerHeight := 2 // Footer
+	panelPadding := 4 // Border + padding
+
+	contentHeight := max(m.height-headerHeight-footerHeight-panelPadding, 10)
+
+	panelWidth := m.width - 4
+	if panelWidth < 40 {
+		panelWidth = 40
+	}
+
+	return PanelStyle.
+		Width(panelWidth).
+		Height(contentHeight).
+		Render(content)
 }

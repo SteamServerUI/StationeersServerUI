@@ -1,5 +1,3 @@
-// Package dashboard provides an interactive terminal UI using Bubble Tea.
-// It offers a dashboard-like experience with server status, logs, and controls.
 package dashboard
 
 import (
@@ -14,7 +12,8 @@ import (
 
 func init() {
 	// Register hooks with the logger to enable log capture during dashboard mode.
-	// This avoids import cycles (logger doesn't import dashboard).
+	// (logger doesn't import dashboard, dashboard imports logger).
+	// See note in logger/logger.go (bottom)
 	logger.RegisterDashboardHooks(IsDashboardActive, CaptureLog)
 }
 
@@ -27,7 +26,7 @@ var (
 	// logBuffer holds SSUI log messages captured while dashboard is active.
 	logBuffer   []string
 	logBufferMu sync.Mutex
-	maxLogLines = 200 // Rolling buffer size
+	maxLogLines = 200
 )
 
 // IsDashboardActive returns whether the dashboard is currently running.
@@ -45,7 +44,7 @@ func setDashboardActive(active bool) {
 	dashboardActive = active
 }
 
-// CaptureLog captures a SSUI log line for display in the dashboard.
+// CaptureLog captures a Backend log line for display in the dashboard.
 // Called by the logger when dashboard is active.
 func CaptureLog(line string) {
 	logBufferMu.Lock()
@@ -56,7 +55,7 @@ func CaptureLog(line string) {
 	}
 }
 
-// GetLogBuffer returns a copy of the current SSUI log buffer.
+// GetLogBuffer returns a copy of the current Backend log buffer. (Dashboard-Local)
 func GetLogBuffer() []string {
 	logBufferMu.Lock()
 	defer logBufferMu.Unlock()
@@ -65,7 +64,7 @@ func GetLogBuffer() []string {
 	return result
 }
 
-// ClearLogBuffer clears the SSUI log buffer.
+// ClearLogBuffer clears the Backend log buffer. (Dashboard-Local)
 func ClearLogBuffer() {
 	logBufferMu.Lock()
 	defer logBufferMu.Unlock()
@@ -74,68 +73,34 @@ func ClearLogBuffer() {
 
 // IsInteractiveTerminal checks if stdin/stdout are connected to a terminal.
 // Returns false for Docker, systemd, or piped/redirected IO.
-// Note: go-isatty works on Windows too (uses GetConsoleMode).
 func IsInteractiveTerminal() bool {
 	return isatty.IsTerminal(os.Stdin.Fd()) && isatty.IsTerminal(os.Stdout.Fd())
 }
 
-// Run starts the interactive dashboard.
-// It takes over the terminal until the user exits.
-// Returns an error if the dashboard fails to start.
+// Run takes over the terminal until the user exits.
 func Run() error {
-	// Signal that dashboard is active - logger should suppress console output
+
 	setDashboardActive(true)
 	ClearLogBuffer()
 
-	// Create the initial model
 	m := NewModel()
 
-	// Create the Bubble Tea program with options for full terminal control
 	p := tea.NewProgram(
 		m,
-		tea.WithAltScreen(),       // Use alternate screen buffer (preserves shell history)
-		tea.WithMouseCellMotion(), // Enable mouse support for future interactions
+		tea.WithAltScreen(), // Use alternate screen buffer (preserves shell history)
 	)
 
-	// Run the program (blocking)
 	finalModel, err := p.Run()
 
-	// Signal that dashboard is no longer active
 	setDashboardActive(false)
 
 	if err != nil {
 		return fmt.Errorf("dashboard error: %w", err)
 	}
 
-	// Check if there was an error in the final model
 	if m, ok := finalModel.(Model); ok && m.err != nil {
 		return m.err
 	}
 
 	return nil
-}
-
-// RunWithOutput is similar to Run but captures output for testing.
-func RunWithOutput(input *os.File, output *os.File) error {
-	setDashboardActive(true)
-	ClearLogBuffer()
-
-	m := NewModel()
-
-	opts := []tea.ProgramOption{
-		tea.WithAltScreen(),
-	}
-	if input != nil {
-		opts = append(opts, tea.WithInput(input))
-	}
-	if output != nil {
-		opts = append(opts, tea.WithOutput(output))
-	}
-
-	p := tea.NewProgram(m, opts...)
-
-	_, err := p.Run()
-	setDashboardActive(false)
-
-	return err
 }
