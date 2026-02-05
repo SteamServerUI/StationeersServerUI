@@ -107,7 +107,7 @@ type logEntry struct {
 func (l *Logger) Init() {
 	globalOnce.Do(func() {
 		globalLogChan = make(chan logEntry, 1000) // Buffered global channel for log processing
-		globalConsoleChan = make(chan string, 20) // Buffered global channel for console output
+		globalConsoleChan = make(chan string, 50) // Buffered global channel for console output
 		go processLogs()
 		go processConsoleOutput()
 	})
