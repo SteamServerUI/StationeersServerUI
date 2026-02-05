@@ -14,13 +14,11 @@ var (
 	// Primary colors
 	primaryColor   = lipgloss.Color("#7C3AED") // Purple - main brand
 	secondaryColor = lipgloss.Color("#10B981") // Green - success/online
-	warningColor   = lipgloss.Color("#F59E0B") // Amber - warnings
 	errorColor     = lipgloss.Color("#EF4444") // Red - errors/offline
 	mutedColor     = lipgloss.Color("#6B7280") // Gray - muted text
 
 	// Background colors
-	bgDark   = lipgloss.Color("#1F2937")
-	bgDarker = lipgloss.Color("#111827")
+	bgDark = lipgloss.Color("#1F2937")
 )
 
 // Styles
@@ -198,7 +196,7 @@ func (m Model) renderStatusPanel() string {
 		"",
 		boldStyle("═══ Quick Actions ═══"),
 		"",
-		mutedStyle("  [s] Start Server    [x] Stop Server    [r] Refresh    [tab] Switch View"),
+		mutedStyle("  [s] Start Server    [x] Stop Server    [r] Refresh    [tab] Switch View [q/esc] Exit dashboard"),
 	)
 
 	content := lipgloss.JoinVertical(lipgloss.Left, serverSection, worldSection, ssuiSection, controlsSection)

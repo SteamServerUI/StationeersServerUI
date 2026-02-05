@@ -15,16 +15,16 @@ import (
 type Panel int
 
 const (
-	PanelSSUILog Panel = iota // SSUI backend logs (default)
-	PanelStatus               // Server status overview
+	PanelStatus  Panel = iota // Server status overview (default)
+	PanelSSUILog              // SSUI backend logs
 	PanelPlayers              // Connected players list
 	PanelCount                // Used for cycling
 )
 
 // PanelNames for display
 var panelNames = map[Panel]string{
-	PanelSSUILog: "SSUI Log",
 	PanelStatus:  "Status",
+	PanelSSUILog: "SSUI Log",
 	PanelPlayers: "Players",
 }
 
@@ -93,35 +93,35 @@ func defaultKeyMap() keyMap {
 	return keyMap{
 		Tab: key.NewBinding(
 			key.WithKeys("tab"),
-			key.WithHelp("tab", "switch view"),
+			key.WithHelp("tab", "-> switch view"),
 		),
 		Up: key.NewBinding(
 			key.WithKeys("up", "k"),
-			key.WithHelp("↑/k", "scroll up"),
+			key.WithHelp("↑/k", "-> scroll up"),
 		),
 		Down: key.NewBinding(
 			key.WithKeys("down", "j"),
-			key.WithHelp("↓/j", "scroll down"),
+			key.WithHelp("↓/j", "-> scroll down"),
 		),
 		Start: key.NewBinding(
 			key.WithKeys("s"),
-			key.WithHelp("s", "start server"),
+			key.WithHelp("s", "-> start server"),
 		),
 		Stop: key.NewBinding(
 			key.WithKeys("x"),
-			key.WithHelp("x", "stop server"),
+			key.WithHelp("x", "-> stop server"),
 		),
 		Refresh: key.NewBinding(
 			key.WithKeys("r"),
-			key.WithHelp("r", "refresh"),
+			key.WithHelp("r", "-> refresh"),
 		),
 		Help: key.NewBinding(
 			key.WithKeys("?"),
-			key.WithHelp("?", "toggle help"),
+			key.WithHelp("?", "-> toggle help"),
 		),
 		Quit: key.NewBinding(
 			key.WithKeys("q", "esc", "ctrl+c"),
-			key.WithHelp("q/esc", "quit"),
+			key.WithHelp("q/esc", "->exit dashboard"),
 		),
 	}
 }
@@ -133,7 +133,7 @@ func NewModel() Model {
 	vp.SetContent("Waiting for SSUI logs...")
 
 	return Model{
-		activePanel:      PanelSSUILog, // Default to SSUI log view
+		activePanel:      PanelStatus, // Default to status view
 		logViewport:      vp,
 		help:             help.New(),
 		keys:             defaultKeyMap(),
