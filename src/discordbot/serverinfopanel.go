@@ -13,7 +13,8 @@ var ServerInfoMessageID string
 
 // Custom IDs for button interactions
 const (
-	ButtonGetPassword = "ssui_get_password"
+	ButtonGetPassword       = "ssui_get_password"
+	ButtonDownloadBackupPfx = "ssui_download_backup_" // Prefix for download backup button. Has NOTHING TO DO WITH SERVERINFOPANEL, but this file felt like the best place to put it for now
 )
 
 // sendServerInfoPanel sends the server info panel with interactive buttons

@@ -51,6 +51,7 @@ func InitializeDiscordBot() {
 	config.DiscordSession.AddHandler(listenToDiscordReactions)
 	config.DiscordSession.AddHandler(listenToSlashCommands)
 	config.DiscordSession.AddHandler(handleServerInfoButtonInteraction) // Handle button interactions
+	config.DiscordSession.AddHandler(handleDownloadButtonInteraction)   // Handle download button interactions
 	registerSlashCommands(config.DiscordSession)
 
 	logger.Discord.Info("Bot is now running.")
