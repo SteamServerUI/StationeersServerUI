@@ -22,6 +22,7 @@
             "UIText_UpdateFailed": "Update failed. Please try again later."
         },
         "config": {
+            "UIText_ConfigHeadline": "Settings & Configuration",
             "UIText_ServerConfig": "Server Configuration",
             "UIText_DiscordIntegration": "Discord Integration",
             "UIText_SLPModIntegration": "Launchpad Mods",
@@ -33,6 +34,11 @@
             "UIText_NetworkSettings": "Network Settings",
             "UIText_AdvancedSettings": "Advanced Features",
             "UIText_TerrainSettings": "World generation",
+            "tabDescriptions": {
+                "UIText_ServerConfigTabDescription": "Here you can configure settings related to your gameserver like basic settings like server name and password, network settings like ports and UPnP, and SSUI settings like automatic SSUI updates, scheduled gameserver restarts and more.",
+                "UIText_DiscordIntegrationTabDescription": "Configure the Discord integration for real-time server status updates, remote management, player connection tracking, and community engagement. Learn more about the Discord integration and setup instructions in the <href href='https://github.com/SteamServerUI/StationeersServerUI/wiki/Discord-Integration'>Wiki.</href>",
+                "UIText_SLPModIntegrationTabDescription": "Easily manage your Stationeers mods with our Stationeers Launch Pad (SLP) integration. Learn more about the SLP integration in the <href href='https://github.com/SteamServerUI/StationeersServerUI/wiki/Modding-with-StationeersLaunchPad'>Wiki.</href>"
+            },
             "basic": {
                 "UIText_BasicServerSettings": "Basic Server Settings",
                 "UIText_ServerName": "Server Name",

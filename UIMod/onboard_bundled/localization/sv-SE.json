@@ -22,6 +22,7 @@
             "UIText_UpdateFailed": "Uppdateringen misslyckades. Försök igen senare."
         },
         "config": {
+            "UIText_ConfigHeadline": "Inställningar",
             "UIText_ServerConfig": "Konfiguration",
             "UIText_DiscordIntegration": "Discord-integration",
             "UIText_SLPModIntegration": "Launchpad Mods",
@@ -32,6 +33,7 @@
             "UIText_BasicSettings": "Grund",
             "UIText_NetworkSettings": "Nätverk",
             "UIText_AdvancedSettings": "Avancerad",
+            "UIText_TerrainSettings": "Världsgenerering",
             "basic": {
                 "UIText_BasicServerSettings": "Grundläggande serverinställningar",
                 "UIText_ServerName": "Servernamn",
@@ -159,8 +161,7 @@
                 "UIText_SLP_UpdateWorkshopModsDesc": "Uppdatera alla installerade workshop-mods till deras senaste versioner. Denna process kan ta lite tid beroende på antalet mods.",
                 "UIText_SLP_UpdateButton": "Uppdatera Workshop-mods",
                 "UIText_SLP_InstalledMods": "Installerade Mods"
-            },
-            "UIText_TerrainSettings": "Världsgenerering"
+            }
         },
         "setup": {
             "UIText_FooterText": "Behöver du hjälp? Kolla Stationeers Server UI Github Wiki.",

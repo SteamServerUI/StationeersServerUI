@@ -96,6 +96,7 @@ type ConfigTemplateData struct {
 	CreateGameServerLogFileTrueSelected     string
 	CreateGameServerLogFileFalseSelected    string
 
+	UIText_ConfigHeadline       string
 	UIText_ServerConfig         string
 	UIText_DiscordIntegration   string
 	UIText_SLPModIntegration    string

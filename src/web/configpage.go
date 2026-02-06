@@ -286,6 +286,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		CreateGameServerLogFileFalseSelected:    createGameServerLogFileFalseSelected,
 
 		// Localized UI text
+		UIText_ConfigHeadline:       localization.GetString("UIText_ConfigHeadline"),
 		UIText_ServerConfig:         localization.GetString("UIText_ServerConfig"),
 		UIText_DiscordIntegration:   localization.GetString("UIText_DiscordIntegration"),
 		UIText_SLPModIntegration:    localization.GetString("UIText_SLPModIntegration"),

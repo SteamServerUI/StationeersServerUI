@@ -22,6 +22,7 @@
             "UIText_UpdateFailed": "Aktualisierung fehlgeschlagen. Bitte versuche es später erneut."
         },
         "config": {
+            "UIText_ConfigHeadline": "Einstellungen",
             "UIText_ServerConfig": "Server Konfiguration",
             "UIText_DiscordIntegration": "Discord-Integration",
             "UIText_SLPModIntegration": "Launchpad Mods",
@@ -32,6 +33,7 @@
             "UIText_BasicSettings": "Basis",
             "UIText_NetworkSettings": "Netzwerk",
             "UIText_AdvancedSettings": "Erweitert",
+            "UIText_TerrainSettings": "Weltgenerierung",
             "basic": {
                 "UIText_BasicServerSettings": "Grundlegende Servereinstellungen",
                 "UIText_ServerName": "Servername",
@@ -161,8 +163,7 @@
                 "UIText_SLP_UpdateWorkshopModsDesc": "Aktualisiert alle installierten Workshop-Mods auf die neueste Version. Dieser Vorgang kann je nach Anzahl der Mods einige Zeit dauern.",
                 "UIText_SLP_UpdateButton": "Workshop-Mods aktualisieren",
                 "UIText_SLP_InstalledMods": "Installierte Mods"
-            },
-            "UIText_TerrainSettings": "Weltgenerierung"
+            }
         },
         "setup": {
             "UIText_FooterText": "Hilfe benötigt? Schaue ins Stationeers Server UI Github Wiki.",
