@@ -58,6 +58,7 @@ var (
 	SubsystemFilters                         []string
 	AutoRestartServerTimer                   string
 	IsConsoleEnabled                         bool
+	IsCLIDashboardEnabled                    bool
 	LogClutterToConsole                      bool // surpresses clutter mono logs from the gameserver
 	LanguageSetting                          string
 	AutoStartServerOnStartup                 bool

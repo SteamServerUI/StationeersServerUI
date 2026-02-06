@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/cli/dashboard"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 )
@@ -54,6 +55,18 @@ func StartConsole(wg *sync.WaitGroup) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+
+		// Auto-launch dashboard on interactive terminals if enabled in config
+		if config.GetIsCLIDashboardEnabled() && dashboard.IsInteractiveTerminal() {
+			time.Sleep(3 * time.Second) // Give other subsystems time to initialize
+			logger.Core.Info("CLI Dashboard is enabled, launching...")
+			time.Sleep(500 * time.Millisecond) // Small delay for log to be visible
+			if err := dashboard.Run(); err != nil {
+				logger.Core.Error("Dashboard exited with error: " + err.Error())
+			}
+			logger.Core.Info("Dashboard closed, returning to SSUICLI prompt...")
+		}
+
 		scanner := bufio.NewScanner(os.Stdin)
 		logger.Core.Info("SSUICLI runtime console started. Type 'help' for commands.")
 		time.Sleep(10 * time.Millisecond)

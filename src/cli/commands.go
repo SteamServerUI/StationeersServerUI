@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/cli/dashboard"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
@@ -23,6 +24,7 @@ import (
 // init registers default cli commands and their aliases.
 func init() {
 	RegisterCommand("help", helpCommand, "h")
+	RegisterCommand("dashboard", dashboardCommand, "dash", "d")
 	RegisterCommand("reloadbackend", WrapNoReturn(loader.ReloadBackend), "rlb", "rb", "r")
 	RegisterCommand("reloadconfig", WrapNoReturn(loader.ReloadConfig), "rlc", "rc")
 	RegisterCommand("restartbackend", WrapNoReturn(loader.RestartBackend), "rsb")
@@ -42,6 +44,16 @@ func init() {
 	RegisterCommand("listworkshophandles", WrapNoReturn(listworkshophandles), "lwh")
 	RegisterCommand("downloadworkshopupdates", WrapNoReturn(downloadWorkshopUpdates), "dwu")
 	RegisterCommand("downloadworkshopitemtest", WrapNoReturn(downloadWorkshopItemTest), "dwmodcon")
+}
+
+// dashboardCommand launches the interactive terminal dashboard
+func dashboardCommand(args []string) error {
+	logger.Core.Info("Launching interactive dashboard... (press 'q' or 'esc' to exit)")
+	if err := dashboard.Run(); err != nil {
+		return fmt.Errorf("dashboard error: %w", err)
+	}
+	logger.Core.Info("Dashboard closed, returning to SSUICLI")
+	return nil
 }
 
 // COMMAND HANDLERS WITH COMMANDS USEFUL FOR USERS
