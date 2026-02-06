@@ -90,3 +90,45 @@ func (h *HTTPHandler) RestoreBackupHandler(w http.ResponseWriter, r *http.Reques
 
 	w.Write([]byte("Server stopped & Backup restored successfully, Start the server to load the restored backup"))
 }
+
+// DownloadBackupRequest represents the JSON request for downloading a backup
+type DownloadBackupRequest struct {
+	Index int `json:"index"`
+}
+
+// DownloadBackupHandler handles requests to download a backup file
+func (h *HTTPHandler) DownloadBackupHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Web.Debug("Received backup download request")
+
+	if r.Method != http.MethodPost {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{"error": "method not allowed, use POST"})
+		return
+	}
+
+	var req DownloadBackupRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "invalid JSON request body"})
+		return
+	}
+
+	backupData, err := h.manager.GetBackupFileData(req.Index)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		if strings.Contains(err.Error(), "out of range") {
+			w.WriteHeader(http.StatusNotFound)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", backupData.Filename))
+	w.Header().Set("Content-Length", fmt.Sprintf("%d", backupData.Size))
+	w.Write(backupData.Data)
+}
