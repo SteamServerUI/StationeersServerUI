@@ -271,6 +271,7 @@ func (l *Logger) shouldLog(severity int) bool {
 
 // Dashboard integration hooks - these allow the dashboard to intercept console output
 var (
+	dashboardHooksMutex  sync.Mutex
 	dashboardActiveFunc  func() bool
 	dashboardCaptureFunc func(string)
 )
@@ -278,12 +279,16 @@ var (
 // RegisterDashboardHooks allows the dashboard package to register its functions
 // for checking active state and capturing logs. This avoids import cycles.
 func RegisterDashboardHooks(activeFunc func() bool, captureFunc func(string)) {
+	dashboardHooksMutex.Lock()
 	dashboardActiveFunc = activeFunc
 	dashboardCaptureFunc = captureFunc
+	dashboardHooksMutex.Unlock()
 }
 
 // isDashboardActive checks if the dashboard is currently running
 func isDashboardActive() bool {
+	dashboardHooksMutex.Lock()
+	defer dashboardHooksMutex.Unlock()
 	if dashboardActiveFunc == nil {
 		return false
 	}
@@ -292,6 +297,8 @@ func isDashboardActive() bool {
 
 // captureDashboardLog sends a log line to the dashboard for display
 func captureDashboardLog(line string) {
+	dashboardHooksMutex.Lock()
+	defer dashboardHooksMutex.Unlock()
 	if dashboardCaptureFunc != nil {
 		dashboardCaptureFunc(line)
 	}
