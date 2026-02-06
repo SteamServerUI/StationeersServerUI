@@ -40,6 +40,10 @@
 
         <div class="sliding-tabs-container">
             <div class="sliding-tabs">
+                <button class="sliding-tab-button" onclick="window.location.href = '/'">
+                    <span class="icon back-icon"></span>
+                    <span class="tab-text">{{.UIText_BackToDashboard}}</span>
+                </button>
                 <button class="sliding-tab-button active" data-tab="server-config-tab">
                     <span class="icon server-icon"></span>
                     <span class="tab-text">{{.UIText_ServerConfig}}</span>

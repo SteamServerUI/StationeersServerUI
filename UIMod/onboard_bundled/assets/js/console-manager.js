@@ -98,6 +98,7 @@ function handleConsole() {
         "Balancing gas mixtures... kaboom imminent, run you fool!",
         "Spoiler: object reference not set to an instance of an object, lol",
         "Fun fact: SSUI was originally a simple powershell script",
+        "Fun fact: This dashboard was supposed to look like the retro computer from Stationeers. We tried, ok?",
         "Convincing server that 'out of memory' is just a state of mind.",
         "Moo, Moo! I'm a cow!",
         "Welcome home, Sir!"

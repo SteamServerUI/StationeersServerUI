@@ -288,6 +288,7 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		// Localized UI text
 		UIText_ConfigHeadline:       localization.GetString("UIText_ConfigHeadline"),
 		UIText_ServerConfig:         localization.GetString("UIText_ServerConfig"),
+		UIText_BackToDashboard:      localization.GetString("UIText_BackToDashboard"),
 		UIText_DiscordIntegration:   localization.GetString("UIText_DiscordIntegration"),
 		UIText_SLPModIntegration:    localization.GetString("UIText_SLPModIntegration"),
 		UIText_DetectionManager:     localization.GetString("UIText_DetectionManager"),

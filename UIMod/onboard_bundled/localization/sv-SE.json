@@ -22,6 +22,7 @@
             "UIText_UpdateFailed": "Uppdateringen misslyckades. Försök igen senare."
         },
         "config": {
+            "UIText_BackToDashboard": "Tillbaka till dashboard",
             "UIText_ConfigHeadline": "Inställningar",
             "UIText_ServerConfig": "Konfiguration",
             "UIText_DiscordIntegration": "Discord-integration",

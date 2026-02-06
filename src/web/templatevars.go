@@ -98,6 +98,7 @@ type ConfigTemplateData struct {
 
 	UIText_ConfigHeadline       string
 	UIText_ServerConfig         string
+	UIText_BackToDashboard      string
 	UIText_DiscordIntegration   string
 	UIText_SLPModIntegration    string
 	UIText_DetectionManager     string

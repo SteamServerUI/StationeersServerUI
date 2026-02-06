@@ -22,6 +22,7 @@
             "UIText_UpdateFailed": "Aktualisierung fehlgeschlagen. Bitte versuche es später erneut."
         },
         "config": {
+            "UIText_BackToDashboard": "Zurück zum Dashboard",
             "UIText_ConfigHeadline": "Einstellungen",
             "UIText_ServerConfig": "Server Konfiguration",
             "UIText_DiscordIntegration": "Discord-Integration",

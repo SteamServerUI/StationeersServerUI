@@ -22,6 +22,7 @@
             "UIText_UpdateFailed": "Update failed. Please try again later."
         },
         "config": {
+            "UIText_BackToDashboard": "Back to Dashboard",
             "UIText_ConfigHeadline": "Settings & Configuration",
             "UIText_ServerConfig": "Server Configuration",
             "UIText_DiscordIntegration": "Discord Integration",
