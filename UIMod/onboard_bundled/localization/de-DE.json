@@ -85,6 +85,8 @@
                 "UIText_ServerExePathInfo2": "Aus Sicherheitsgründen nicht über UI editierbar, aber manuell in config.json änderbar.",
                 "UIText_AdditionalParams": "Zusätzliche Parameter",
                 "UIText_AdditionalParamsInfo": "Format: EigenParam1 Wert1 EigenParam2 Wert2",
+                "UIText_ShowExpertSettings": "Experteneinstellungen anzeigen",
+                "UIText_ShowExpertSettingsInfo": "Die Experteneinstellungen anzeigen, um auf spezielle Konfigurationsoptionen zuzugreifen. Die Konfiguration muss nach Änderung dieser Einstellung gespeichert werden, damit die Änderungen wirksam werden.",
                 "UIText_AutoRestartServerTimer": "Geplanter Gameserver Neustart",
                 "UIText_AutoRestartServerTimerInfo": "<p>Zeitraum in <strong>Minuten</strong> oder <strong>Zeitformat (z. B. 15:04 oder 03:04 Uhr)</strong> um einen automatischen Neustart des Spielservers zu planen. 0 = deaktiviert, 1440 = 24 Stunden usw. Vor dem Neustart wird <strong>im Spiel</strong> die Meldung „Achtung, der Server wird in 30/20/10/5 Sekunden neu gestartet!“ angezeigt .</p>",
                 "UIText_GameBranch": "Spiel Branch",

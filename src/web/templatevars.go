@@ -152,6 +152,8 @@ type ConfigTemplateData struct {
 	UIText_ServerExePathInfo2             string
 	UIText_AdditionalParams               string
 	UIText_AdditionalParamsInfo           string
+	UIText_ShowExpertSettings             string
+	UIText_ShowExpertSettingsInfo         string
 	UIText_AutoRestartServerTimer         string
 	UIText_AutoRestartServerTimerInfo     string
 	UIText_GameBranch                     string

@@ -85,6 +85,8 @@
                 "UIText_ServerExePathInfo2": "Kan inte redigeras från gränssnittet av säkerhetsskäl, men du kan ändra det manuellt i config.json-filen.",
                 "UIText_AdditionalParams": "Ytterligare parametrar",
                 "UIText_AdditionalParamsInfo": "Format: AnpassadParam1 Värde1 AnpassadParam2 Värde2",
+                "UIText_ShowExpertSettings": "Visa expertinställningar",
+                "UIText_ShowExpertSettingsInfo": "Visa expertinställningarna för att få tillgång till speciella konfigurationsalternativ nedan. Konfigurationen måste sparas efter att denna inställning ändrats för att ändringarna ska träda i kraft.",
                 "UIText_AutoRestartServerTimer": "Schemalagd spelserveromstart",
                 "UIText_AutoRestartServerTimerInfo": "<p>Tidsram i <strong>minuter</strong> eller <strong>tidsformat (t.ex. 15:04 eller 03:04PM)</strong> för att schemalägga en automatisk omstart av spelservern. 0 = inaktiverad, 1440 = 24 timmar, etc. Du kommer att se meddelandet &#x27;Observera, server startar om 30/20/10/5 sekunder!&#x27; <strong>i spelet</strong> före omstarten.</p>",
                 "UIText_GameBranch": "Spel-Branch",

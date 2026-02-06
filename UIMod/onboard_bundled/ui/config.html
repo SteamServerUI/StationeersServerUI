@@ -305,12 +305,12 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="ShowExpertSettings">Show Expert Settings:</label>
+                                    <label for="ShowExpertSettings">{{.UIText_ShowExpertSettings}}</label>
                                     <select id="ShowExpertSettings" name="ShowExpertSettings" required>
                                         <option value="true" {{.ShowExpertSettingsTrueSelected}}>TRUE</option>
                                         <option value="false" {{.ShowExpertSettingsFalseSelected}}>FALSE</option>
                                     </select>
-                                    <div class="input-info">Show the Expert Settings to access special configuration options.</div>
+                                    <div class="input-info">{{.UIText_ShowExpertSettingsInfo}}</div>
                                 </div>
                             </div>
 

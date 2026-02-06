@@ -342,6 +342,8 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		UIText_ServerExePathInfo2:             localization.GetString("UIText_ServerExePathInfo2"),
 		UIText_AdditionalParams:               localization.GetString("UIText_AdditionalParams"),
 		UIText_AdditionalParamsInfo:           localization.GetString("UIText_AdditionalParamsInfo"),
+		UIText_ShowExpertSettings:             localization.GetString("UIText_ShowExpertSettings"),
+		UIText_ShowExpertSettingsInfo:         localization.GetString("UIText_ShowExpertSettingsInfo"),
 		UIText_AutoRestartServerTimer:         localization.GetString("UIText_AutoRestartServerTimer"),
 		UIText_AutoRestartServerTimerInfo:     localization.GetString("UIText_AutoRestartServerTimerInfo"),
 		UIText_GameBranch:                     localization.GetString("UIText_GameBranch"),
