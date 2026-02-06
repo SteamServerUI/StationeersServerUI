@@ -121,6 +121,13 @@ func GetBackupCleanupInterval() time.Duration {
 	return BackupCleanupInterval
 }
 
+// GetBackupWaitTime returns the backup wait time in seconds.
+func GetBackupWaitTime() time.Duration {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return BackupWaitTime
+}
+
 func GetIsNewTerrainAndSaveSystem() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
