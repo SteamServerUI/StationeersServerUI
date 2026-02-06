@@ -208,12 +208,12 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		authEnabledFalseSelected = "selected"
 	}
 
-	isStationeersLaunchPadAutoUpdatesEnabledTrue := ""
-	isStationeersLaunchPadAutoUpdatesEnabledFalse := ""
+	isStationeersLaunchPadAutoUpdatesEnabledTrueSelected := ""
+	isStationeersLaunchPadAutoUpdatesEnabledFalseSelected := ""
 	if config.GetIsStationeersLaunchPadAutoUpdatesEnabled() {
-		isStationeersLaunchPadAutoUpdatesEnabledTrue = "selected"
+		isStationeersLaunchPadAutoUpdatesEnabledTrueSelected = "selected"
 	} else {
-		isStationeersLaunchPadAutoUpdatesEnabledFalse = "selected"
+		isStationeersLaunchPadAutoUpdatesEnabledFalseSelected = "selected"
 	}
 
 	data := ConfigTemplateData{
@@ -426,38 +426,38 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		ShowExpertSettingsFalseSelected: showExpertSettingsFalseSelected,
 
 		// Expert Settings values
-		Debug:                                         fmt.Sprintf("%v", config.GetIsDebugMode()),
-		DebugTrueSelected:                             debugTrueSelected,
-		DebugFalseSelected:                            debugFalseSelected,
-		LogLevel:                                      fmt.Sprintf("%d", config.GetLogLevel()),
-		LogClutterToConsole:                           fmt.Sprintf("%v", config.GetLogClutterToConsole()),
-		LogClutterToConsoleTrueSelected:               logClutterToConsoleTrueSelected,
-		LogClutterToConsoleFalseSelected:              logClutterToConsoleFalseSelected,
-		IsSSCMEnabled:                                 fmt.Sprintf("%v", config.GetIsSSCMEnabled()),
-		IsSSCMEnabledTrueSelected:                     isSSCMEnabledTrueSelected,
-		IsSSCMEnabledFalseSelected:                    isSSCMEnabledFalseSelected,
-		IsConsoleEnabled:                              fmt.Sprintf("%v", config.GetIsConsoleEnabled()),
-		IsConsoleEnabledTrueSelected:                  isConsoleEnabledTrueSelected,
-		IsConsoleEnabledFalseSelected:                 isConsoleEnabledFalseSelected,
-		SSUIWebPort:                                   config.GetSSUIWebPort(),
-		IsUpdateEnabled:                               fmt.Sprintf("%v", config.GetIsUpdateEnabled()),
-		IsUpdateEnabledTrueSelected:                   isUpdateEnabledTrueSelected,
-		IsUpdateEnabledFalseSelected:                  isUpdateEnabledFalseSelected,
-		AllowPrereleaseUpdates:                        fmt.Sprintf("%v", config.GetAllowPrereleaseUpdates()),
-		AllowPrereleaseUpdatesTrueSelected:            allowPrereleaseUpdatesTrueSelected,
-		AllowPrereleaseUpdatesFalseSelected:           allowPrereleaseUpdatesFalseSelected,
-		AllowMajorUpdates:                             fmt.Sprintf("%v", config.GetAllowMajorUpdates()),
-		AllowMajorUpdatesTrueSelected:                 allowMajorUpdatesTrueSelected,
-		AllowMajorUpdatesFalseSelected:                allowMajorUpdatesFalseSelected,
-		AuthEnabled:                                   fmt.Sprintf("%v", config.GetAuthEnabled()),
-		AuthEnabledTrueSelected:                       authEnabledTrueSelected,
-		AuthEnabledFalseSelected:                      authEnabledFalseSelected,
-		AuthTokenLifetime:                             fmt.Sprintf("%d", config.GetAuthTokenLifetime()),
-		DiscordCharBufferSize:                         fmt.Sprintf("%d", config.GetDiscordCharBufferSize()),
-		AdvertiserOverride:                            config.GetAdvertiserOverride(),
-		IsStationeersLaunchPadAutoUpdatesEnabled:      fmt.Sprintf("%v", config.GetIsStationeersLaunchPadAutoUpdatesEnabled()),
-		IsStationeersLaunchPadAutoUpdatesEnabledTrue:  isStationeersLaunchPadAutoUpdatesEnabledTrue,
-		IsStationeersLaunchPadAutoUpdatesEnabledFalse: isStationeersLaunchPadAutoUpdatesEnabledFalse,
+		Debug:                                    fmt.Sprintf("%v", config.GetIsDebugMode()),
+		DebugTrueSelected:                        debugTrueSelected,
+		DebugFalseSelected:                       debugFalseSelected,
+		LogLevel:                                 fmt.Sprintf("%d", config.GetLogLevel()),
+		LogClutterToConsole:                      fmt.Sprintf("%v", config.GetLogClutterToConsole()),
+		LogClutterToConsoleTrueSelected:          logClutterToConsoleTrueSelected,
+		LogClutterToConsoleFalseSelected:         logClutterToConsoleFalseSelected,
+		IsSSCMEnabled:                            fmt.Sprintf("%v", config.GetIsSSCMEnabled()),
+		IsSSCMEnabledTrueSelected:                isSSCMEnabledTrueSelected,
+		IsSSCMEnabledFalseSelected:               isSSCMEnabledFalseSelected,
+		IsConsoleEnabled:                         fmt.Sprintf("%v", config.GetIsConsoleEnabled()),
+		IsConsoleEnabledTrueSelected:             isConsoleEnabledTrueSelected,
+		IsConsoleEnabledFalseSelected:            isConsoleEnabledFalseSelected,
+		SSUIWebPort:                              config.GetSSUIWebPort(),
+		IsUpdateEnabled:                          fmt.Sprintf("%v", config.GetIsUpdateEnabled()),
+		IsUpdateEnabledTrueSelected:              isUpdateEnabledTrueSelected,
+		IsUpdateEnabledFalseSelected:             isUpdateEnabledFalseSelected,
+		AllowPrereleaseUpdates:                   fmt.Sprintf("%v", config.GetAllowPrereleaseUpdates()),
+		AllowPrereleaseUpdatesTrueSelected:       allowPrereleaseUpdatesTrueSelected,
+		AllowPrereleaseUpdatesFalseSelected:      allowPrereleaseUpdatesFalseSelected,
+		AllowMajorUpdates:                        fmt.Sprintf("%v", config.GetAllowMajorUpdates()),
+		AllowMajorUpdatesTrueSelected:            allowMajorUpdatesTrueSelected,
+		AllowMajorUpdatesFalseSelected:           allowMajorUpdatesFalseSelected,
+		AuthEnabled:                              fmt.Sprintf("%v", config.GetAuthEnabled()),
+		AuthEnabledTrueSelected:                  authEnabledTrueSelected,
+		AuthEnabledFalseSelected:                 authEnabledFalseSelected,
+		AuthTokenLifetime:                        fmt.Sprintf("%d", config.GetAuthTokenLifetime()),
+		DiscordCharBufferSize:                    fmt.Sprintf("%d", config.GetDiscordCharBufferSize()),
+		AdvertiserOverride:                       config.GetAdvertiserOverride(),
+		IsStationeersLaunchPadAutoUpdatesEnabled: fmt.Sprintf("%v", config.GetIsStationeersLaunchPadAutoUpdatesEnabled()),
+		IsStationeersLaunchPadAutoUpdatesEnabledTrueSelected:  isStationeersLaunchPadAutoUpdatesEnabledTrueSelected,
+		IsStationeersLaunchPadAutoUpdatesEnabledFalseSelected: isStationeersLaunchPadAutoUpdatesEnabledFalseSelected,
 	}
 
 	err = tmpl.Execute(w, data)

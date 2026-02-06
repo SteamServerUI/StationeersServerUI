@@ -115,7 +115,7 @@ func saveConfigItem(item ConfigItem) error {
 		return config.SetLogClutterToConsole(strToBool(item.Value))
 
 	}
-	return nil
+	return nil // Attention: saveConfigItem silently succeeds for unknown keys
 }
 
 // saveAllConfigChanges saves all config items and reloads the backend
