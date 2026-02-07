@@ -340,7 +340,7 @@ func fetchStatusCmd() tea.Cmd {
 
 			// Game info
 			gameVersion: config.GetExtractedGameVersion(),
-			gameBranch:  config.GetBranch(),
+			gameBranch:  config.GetGameBranch(),
 			buildID:     config.GetCurrentBranchBuildID(),
 
 			// SSUI info
