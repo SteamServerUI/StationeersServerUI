@@ -288,18 +288,20 @@ func RegisterDashboardHooks(activeFunc func() bool, captureFunc func(string)) {
 // isDashboardActive checks if the dashboard is currently running
 func isDashboardActive() bool {
 	dashboardHooksMutex.Lock()
-	defer dashboardHooksMutex.Unlock()
-	if dashboardActiveFunc == nil {
+	fn := dashboardActiveFunc
+	dashboardHooksMutex.Unlock()
+	if fn == nil {
 		return false
 	}
-	return dashboardActiveFunc()
+	return fn()
 }
 
 // captureDashboardLog sends a log line to the dashboard for display
 func captureDashboardLog(line string) {
 	dashboardHooksMutex.Lock()
-	defer dashboardHooksMutex.Unlock()
-	if dashboardCaptureFunc != nil {
-		dashboardCaptureFunc(line)
+	fn := dashboardCaptureFunc
+	dashboardHooksMutex.Unlock()
+	if fn != nil {
+		fn(line)
 	}
 }
