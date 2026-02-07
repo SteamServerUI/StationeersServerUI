@@ -58,6 +58,7 @@ var (
 	SubsystemFilters                         []string
 	AutoRestartServerTimer                   string
 	IsConsoleEnabled                         bool
+	IsCLIDashboardEnabled                    bool
 	LogClutterToConsole                      bool // surpresses clutter mono logs from the gameserver
 	LanguageSetting                          string
 	AutoStartServerOnStartup                 bool
@@ -65,6 +66,7 @@ var (
 	AdvertiserOverride                       string
 	IsStationeersLaunchPadEnabled            bool
 	IsStationeersLaunchPadAutoUpdatesEnabled bool
+	ShowExpertSettings                       bool
 )
 
 // Runtime only variables
@@ -80,19 +82,21 @@ var (
 
 // Discord integration
 var (
-	DiscordToken            string
-	DiscordSession          *discordgo.Session
-	IsDiscordEnabled        bool
-	ControlChannelID        string
-	StatusChannelID         string
-	LogChannelID            string
-	ErrorChannelID          string
-	ConnectionListChannelID string
-	SaveChannelID           string
-	ControlPanelChannelID   string
-	DiscordCharBufferSize   int
-	ExceptionMessageID      string
-	BlackListFilePath       string
+	DiscordToken             string
+	DiscordSession           *discordgo.Session
+	IsDiscordEnabled         bool
+	RotateServerPassword     bool
+	ControlChannelID         string
+	StatusChannelID          string
+	LogChannelID             string
+	ErrorChannelID           string
+	ConnectionListChannelID  string
+	SaveChannelID            string
+	ControlPanelChannelID    string
+	ServerInfoPanelChannelID string
+	DiscordCharBufferSize    int
+	ExceptionMessageID       string
+	BlackListFilePath        string
 )
 
 // Backup and cleanup settings

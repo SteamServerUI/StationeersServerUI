@@ -46,6 +46,12 @@ func GetControlPanelChannelID() string {
 	return ControlPanelChannelID
 }
 
+func GetServerInfoPanelChannelID() string {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return ServerInfoPanelChannelID
+}
+
 func GetDiscordCharBufferSize() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
@@ -62,6 +68,12 @@ func GetIsDiscordEnabled() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return IsDiscordEnabled
+}
+
+func GetRotateServerPassword() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return RotateServerPassword
 }
 
 func GetErrorChannelID() string {
@@ -107,6 +119,13 @@ func GetBackupCleanupInterval() time.Duration {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return BackupCleanupInterval
+}
+
+// GetBackupWaitTime returns the backup wait time in seconds.
+func GetBackupWaitTime() time.Duration {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return BackupWaitTime
 }
 
 func GetIsNewTerrainAndSaveSystem() bool {
@@ -375,6 +394,12 @@ func GetIsConsoleEnabled() bool {
 	return IsConsoleEnabled
 }
 
+func GetIsCLIDashboardEnabled() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return IsCLIDashboardEnabled
+}
+
 func GetLanguageSetting() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
@@ -397,6 +422,12 @@ func GetSSUIWebPort() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return SSUIWebPort
+}
+
+func GetShowExpertSettings() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return ShowExpertSettings
 }
 
 // GetIsFirstTimeSetup returns the IsFirstTimeSetup

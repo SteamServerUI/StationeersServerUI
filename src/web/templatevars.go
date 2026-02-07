@@ -35,11 +35,15 @@ type ConfigTemplateData struct {
 	LogChannelID                            string
 	SaveChannelID                           string
 	ControlPanelChannelID                   string
+	ServerInfoPanelChannelID                string
 	BlackListFilePath                       string
 	ErrorChannelID                          string
 	IsDiscordEnabled                        string
 	IsDiscordEnabledTrueSelected            string
 	IsDiscordEnabledFalseSelected           string
+	RotateServerPassword                    string
+	RotateServerPasswordTrueSelected        string
+	RotateServerPasswordFalseSelected       string
 	GameBranch                              string
 	Difficulty                              string
 	StartCondition                          string
@@ -92,7 +96,9 @@ type ConfigTemplateData struct {
 	CreateGameServerLogFileTrueSelected     string
 	CreateGameServerLogFileFalseSelected    string
 
+	UIText_ConfigHeadline       string
 	UIText_ServerConfig         string
+	UIText_BackToDashboard      string
 	UIText_DiscordIntegration   string
 	UIText_SLPModIntegration    string
 	UIText_DetectionManager     string
@@ -146,6 +152,8 @@ type ConfigTemplateData struct {
 	UIText_ServerExePathInfo2             string
 	UIText_AdditionalParams               string
 	UIText_AdditionalParamsInfo           string
+	UIText_ShowExpertSettings             string
+	UIText_ShowExpertSettingsInfo         string
 	UIText_AutoRestartServerTimer         string
 	UIText_AutoRestartServerTimerInfo     string
 	UIText_GameBranch                     string
@@ -178,6 +186,10 @@ type ConfigTemplateData struct {
 	UIText_AdminCommandChannelInfo    string
 	UIText_ControlPanelChannel        string
 	UIText_ControlPanelChannelInfo    string
+	UIText_ServerInfoPanelChannel     string
+	UIText_ServerInfoPanelChannelInfo string
+	UIText_RotateServerPassword       string
+	UIText_RotateServerPasswordInfo   string
 	UIText_StatusChannel              string
 	UIText_StatusChannelInfo          string
 	UIText_ConnectionListChannel      string
@@ -223,4 +235,52 @@ type ConfigTemplateData struct {
 	UIText_SLP_InstalledMods          string
 
 	IsStationeersLaunchPadEnabled string
+
+	// Expert Settings
+	ShowExpertSettings              string
+	ShowExpertSettingsTrueSelected  string
+	ShowExpertSettingsFalseSelected string
+
+	// Expert Settings values
+	Debug                                                 string
+	DebugTrueSelected                                     string
+	DebugFalseSelected                                    string
+	LogLevel                                              string
+	LogClutterToConsole                                   string
+	LogClutterToConsoleTrueSelected                       string
+	LogClutterToConsoleFalseSelected                      string
+	IsSSCMEnabled                                         string
+	IsSSCMEnabledTrueSelected                             string
+	IsSSCMEnabledFalseSelected                            string
+	IsConsoleEnabled                                      string
+	IsConsoleEnabledTrueSelected                          string
+	IsConsoleEnabledFalseSelected                         string
+	SSUIWebPort                                           string
+	IsUpdateEnabled                                       string
+	IsUpdateEnabledTrueSelected                           string
+	IsUpdateEnabledFalseSelected                          string
+	AllowPrereleaseUpdates                                string
+	AllowPrereleaseUpdatesTrueSelected                    string
+	AllowPrereleaseUpdatesFalseSelected                   string
+	AllowMajorUpdates                                     string
+	AllowMajorUpdatesTrueSelected                         string
+	AllowMajorUpdatesFalseSelected                        string
+	AuthEnabled                                           string
+	AuthEnabledTrueSelected                               string
+	AuthEnabledFalseSelected                              string
+	AuthTokenLifetime                                     string
+	DiscordCharBufferSize                                 string
+	BackupKeepLastN                                       string
+	IsCleanupEnabled                                      string
+	IsCleanupEnabledTrueSelected                          string
+	IsCleanupEnabledFalseSelected                         string
+	BackupKeepDailyFor                                    string
+	BackupKeepWeeklyFor                                   string
+	BackupKeepMonthlyFor                                  string
+	BackupCleanupInterval                                 string
+	BackupWaitTime                                        string
+	AdvertiserOverride                                    string
+	IsStationeersLaunchPadAutoUpdatesEnabled              string
+	IsStationeersLaunchPadAutoUpdatesEnabledTrueSelected  string
+	IsStationeersLaunchPadAutoUpdatesEnabledFalseSelected string
 }

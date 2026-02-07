@@ -126,6 +126,96 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		isStationeersLaunchPadEnabled = "true"
 	}
 
+	rotateServerPasswordTrueSelected := ""
+	rotateServerPasswordFalseSelected := ""
+	if config.GetRotateServerPassword() {
+		rotateServerPasswordTrueSelected = "selected"
+	} else {
+		rotateServerPasswordFalseSelected = "selected"
+	}
+
+	// Expert Settings toggle
+	showExpertSettingsTrueSelected := ""
+	showExpertSettingsFalseSelected := ""
+	if config.GetShowExpertSettings() {
+		showExpertSettingsTrueSelected = "selected"
+	} else {
+		showExpertSettingsFalseSelected = "selected"
+	}
+
+	// Expert Settings booleans
+	debugTrueSelected := ""
+	debugFalseSelected := ""
+	if config.GetIsDebugMode() {
+		debugTrueSelected = "selected"
+	} else {
+		debugFalseSelected = "selected"
+	}
+
+	logClutterToConsoleTrueSelected := ""
+	logClutterToConsoleFalseSelected := ""
+	if config.GetLogClutterToConsole() {
+		logClutterToConsoleTrueSelected = "selected"
+	} else {
+		logClutterToConsoleFalseSelected = "selected"
+	}
+
+	isSSCMEnabledTrueSelected := ""
+	isSSCMEnabledFalseSelected := ""
+	if config.GetIsSSCMEnabled() {
+		isSSCMEnabledTrueSelected = "selected"
+	} else {
+		isSSCMEnabledFalseSelected = "selected"
+	}
+
+	isConsoleEnabledTrueSelected := ""
+	isConsoleEnabledFalseSelected := ""
+	if config.GetIsConsoleEnabled() {
+		isConsoleEnabledTrueSelected = "selected"
+	} else {
+		isConsoleEnabledFalseSelected = "selected"
+	}
+
+	isUpdateEnabledTrueSelected := ""
+	isUpdateEnabledFalseSelected := ""
+	if config.GetIsUpdateEnabled() {
+		isUpdateEnabledTrueSelected = "selected"
+	} else {
+		isUpdateEnabledFalseSelected = "selected"
+	}
+
+	allowPrereleaseUpdatesTrueSelected := ""
+	allowPrereleaseUpdatesFalseSelected := ""
+	if config.GetAllowPrereleaseUpdates() {
+		allowPrereleaseUpdatesTrueSelected = "selected"
+	} else {
+		allowPrereleaseUpdatesFalseSelected = "selected"
+	}
+
+	allowMajorUpdatesTrueSelected := ""
+	allowMajorUpdatesFalseSelected := ""
+	if config.GetAllowMajorUpdates() {
+		allowMajorUpdatesTrueSelected = "selected"
+	} else {
+		allowMajorUpdatesFalseSelected = "selected"
+	}
+
+	authEnabledTrueSelected := ""
+	authEnabledFalseSelected := ""
+	if config.GetAuthEnabled() {
+		authEnabledTrueSelected = "selected"
+	} else {
+		authEnabledFalseSelected = "selected"
+	}
+
+	isStationeersLaunchPadAutoUpdatesEnabledTrueSelected := ""
+	isStationeersLaunchPadAutoUpdatesEnabledFalseSelected := ""
+	if config.GetIsStationeersLaunchPadAutoUpdatesEnabled() {
+		isStationeersLaunchPadAutoUpdatesEnabledTrueSelected = "selected"
+	} else {
+		isStationeersLaunchPadAutoUpdatesEnabledFalseSelected = "selected"
+	}
+
 	data := ConfigTemplateData{
 		// Config values
 		DiscordToken:                            config.GetDiscordToken(),
@@ -135,11 +225,15 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		LogChannelID:                            config.GetLogChannelID(),
 		SaveChannelID:                           config.GetSaveChannelID(),
 		ControlPanelChannelID:                   config.GetControlPanelChannelID(),
+		ServerInfoPanelChannelID:                config.GetServerInfoPanelChannelID(),
 		BlackListFilePath:                       config.GetBlackListFilePath(),
 		ErrorChannelID:                          config.GetErrorChannelID(),
 		IsDiscordEnabled:                        fmt.Sprintf("%v", config.GetIsDiscordEnabled()),
 		IsDiscordEnabledTrueSelected:            discordTrueSelected,
 		IsDiscordEnabledFalseSelected:           discordFalseSelected,
+		RotateServerPassword:                    fmt.Sprintf("%v", config.GetRotateServerPassword()),
+		RotateServerPasswordTrueSelected:        rotateServerPasswordTrueSelected,
+		RotateServerPasswordFalseSelected:       rotateServerPasswordFalseSelected,
 		GameBranch:                              config.GetGameBranch(),
 		Difficulty:                              config.GetDifficulty(),
 		StartCondition:                          config.GetStartCondition(),
@@ -192,7 +286,9 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		CreateGameServerLogFileFalseSelected:    createGameServerLogFileFalseSelected,
 
 		// Localized UI text
+		UIText_ConfigHeadline:       localization.GetString("UIText_ConfigHeadline"),
 		UIText_ServerConfig:         localization.GetString("UIText_ServerConfig"),
+		UIText_BackToDashboard:      localization.GetString("UIText_BackToDashboard"),
 		UIText_DiscordIntegration:   localization.GetString("UIText_DiscordIntegration"),
 		UIText_SLPModIntegration:    localization.GetString("UIText_SLPModIntegration"),
 		UIText_DetectionManager:     localization.GetString("UIText_DetectionManager"),
@@ -246,6 +342,8 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		UIText_ServerExePathInfo2:             localization.GetString("UIText_ServerExePathInfo2"),
 		UIText_AdditionalParams:               localization.GetString("UIText_AdditionalParams"),
 		UIText_AdditionalParamsInfo:           localization.GetString("UIText_AdditionalParamsInfo"),
+		UIText_ShowExpertSettings:             localization.GetString("UIText_ShowExpertSettings"),
+		UIText_ShowExpertSettingsInfo:         localization.GetString("UIText_ShowExpertSettingsInfo"),
 		UIText_AutoRestartServerTimer:         localization.GetString("UIText_AutoRestartServerTimer"),
 		UIText_AutoRestartServerTimerInfo:     localization.GetString("UIText_AutoRestartServerTimerInfo"),
 		UIText_GameBranch:                     localization.GetString("UIText_GameBranch"),
@@ -276,6 +374,10 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		UIText_AdminCommandChannelInfo:    localization.GetString("UIText_AdminCommandChannelInfo"),
 		UIText_ControlPanelChannel:        localization.GetString("UIText_ControlPanelChannel"),
 		UIText_ControlPanelChannelInfo:    localization.GetString("UIText_ControlPanelChannelInfo"),
+		UIText_ServerInfoPanelChannel:     localization.GetString("UIText_ServerInfoPanelChannel"),
+		UIText_ServerInfoPanelChannelInfo: localization.GetString("UIText_ServerInfoPanelChannelInfo"),
+		UIText_RotateServerPassword:       localization.GetString("UIText_RotateServerPassword"),
+		UIText_RotateServerPasswordInfo:   localization.GetString("UIText_RotateServerPasswordInfo"),
 		UIText_StatusChannel:              localization.GetString("UIText_StatusChannel"),
 		UIText_StatusChannelInfo:          localization.GetString("UIText_StatusChannelInfo"),
 		UIText_ConnectionListChannel:      localization.GetString("UIText_ConnectionListChannel"),
@@ -321,6 +423,45 @@ func ServeConfigPage(w http.ResponseWriter, r *http.Request) {
 		UIText_SLP_InstalledMods:          localization.GetString("UIText_SLP_InstalledMods"),
 
 		IsStationeersLaunchPadEnabled: isStationeersLaunchPadEnabled,
+
+		// Expert Settings
+		ShowExpertSettings:              fmt.Sprintf("%v", config.GetShowExpertSettings()),
+		ShowExpertSettingsTrueSelected:  showExpertSettingsTrueSelected,
+		ShowExpertSettingsFalseSelected: showExpertSettingsFalseSelected,
+
+		// Expert Settings values
+		Debug:                                    fmt.Sprintf("%v", config.GetIsDebugMode()),
+		DebugTrueSelected:                        debugTrueSelected,
+		DebugFalseSelected:                       debugFalseSelected,
+		LogLevel:                                 fmt.Sprintf("%d", config.GetLogLevel()),
+		LogClutterToConsole:                      fmt.Sprintf("%v", config.GetLogClutterToConsole()),
+		LogClutterToConsoleTrueSelected:          logClutterToConsoleTrueSelected,
+		LogClutterToConsoleFalseSelected:         logClutterToConsoleFalseSelected,
+		IsSSCMEnabled:                            fmt.Sprintf("%v", config.GetIsSSCMEnabled()),
+		IsSSCMEnabledTrueSelected:                isSSCMEnabledTrueSelected,
+		IsSSCMEnabledFalseSelected:               isSSCMEnabledFalseSelected,
+		IsConsoleEnabled:                         fmt.Sprintf("%v", config.GetIsConsoleEnabled()),
+		IsConsoleEnabledTrueSelected:             isConsoleEnabledTrueSelected,
+		IsConsoleEnabledFalseSelected:            isConsoleEnabledFalseSelected,
+		SSUIWebPort:                              config.GetSSUIWebPort(),
+		IsUpdateEnabled:                          fmt.Sprintf("%v", config.GetIsUpdateEnabled()),
+		IsUpdateEnabledTrueSelected:              isUpdateEnabledTrueSelected,
+		IsUpdateEnabledFalseSelected:             isUpdateEnabledFalseSelected,
+		AllowPrereleaseUpdates:                   fmt.Sprintf("%v", config.GetAllowPrereleaseUpdates()),
+		AllowPrereleaseUpdatesTrueSelected:       allowPrereleaseUpdatesTrueSelected,
+		AllowPrereleaseUpdatesFalseSelected:      allowPrereleaseUpdatesFalseSelected,
+		AllowMajorUpdates:                        fmt.Sprintf("%v", config.GetAllowMajorUpdates()),
+		AllowMajorUpdatesTrueSelected:            allowMajorUpdatesTrueSelected,
+		AllowMajorUpdatesFalseSelected:           allowMajorUpdatesFalseSelected,
+		AuthEnabled:                              fmt.Sprintf("%v", config.GetAuthEnabled()),
+		AuthEnabledTrueSelected:                  authEnabledTrueSelected,
+		AuthEnabledFalseSelected:                 authEnabledFalseSelected,
+		AuthTokenLifetime:                        fmt.Sprintf("%d", config.GetAuthTokenLifetime()),
+		DiscordCharBufferSize:                    fmt.Sprintf("%d", config.GetDiscordCharBufferSize()),
+		AdvertiserOverride:                       config.GetAdvertiserOverride(),
+		IsStationeersLaunchPadAutoUpdatesEnabled: fmt.Sprintf("%v", config.GetIsStationeersLaunchPadAutoUpdatesEnabled()),
+		IsStationeersLaunchPadAutoUpdatesEnabledTrueSelected:  isStationeersLaunchPadAutoUpdatesEnabledTrueSelected,
+		IsStationeersLaunchPadAutoUpdatesEnabledFalseSelected: isStationeersLaunchPadAutoUpdatesEnabledFalseSelected,
 	}
 
 	err = tmpl.Execute(w, data)

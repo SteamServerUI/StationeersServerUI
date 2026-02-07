@@ -35,6 +35,14 @@ type BackupSaveFile struct {
 	SaveTime time.Time
 }
 
+// BackupFileData contains the backup file bytes and metadata for download/transfer
+type BackupFileData struct {
+	Data     []byte
+	Filename string
+	Size     int64
+	SaveTime time.Time
+}
+
 // BackupManager manages backup operations
 type BackupManager struct {
 	config  BackupConfig

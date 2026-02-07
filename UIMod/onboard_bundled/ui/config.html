@@ -36,10 +36,14 @@
         </div>
     </header>
     <main>
-        <h1>{{.UIText_ServerConfig}}</h1>
+        <h1>{{.UIText_ConfigHeadline}}</h1>
 
         <div class="sliding-tabs-container">
             <div class="sliding-tabs">
+                <button class="sliding-tab-button" onclick="window.location.href = '/'">
+                    <span class="icon back-icon"></span>
+                    <span class="tab-text">{{.UIText_BackToDashboard}}</span>
+                </button>
                 <button class="sliding-tab-button active" data-tab="server-config-tab">
                     <span class="icon server-icon"></span>
                     <span class="tab-text">{{.UIText_ServerConfig}}</span>
@@ -300,9 +304,126 @@
                                     <div class="input-info">{{.UIText_AdditionalParamsInfo}}</div>
                                 </div>
 
-
-
+                                <div class="form-group">
+                                    <label for="ShowExpertSettings">{{.UIText_ShowExpertSettings}}</label>
+                                    <select id="ShowExpertSettings" name="ShowExpertSettings" required>
+                                        <option value="true" {{.ShowExpertSettingsTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.ShowExpertSettingsFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_ShowExpertSettingsInfo}}</div>
+                                </div>
                             </div>
+
+                            {{if eq .ShowExpertSettingsTrueSelected "selected"}}
+                            <h3 class="section-title">Expert Settings below - only change if you know what you are doing</h3>
+                                <div class="channel-grid">
+                            
+                                    <div class="form-group">
+                                        <label for="Debug">Debug Mode:</label>
+                                        <select id="Debug" name="Debug" required>
+                                            <option value="true" {{.DebugTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.DebugFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">Enable debug mode for verbose logging (also enables pprof server)</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="LogLevel">Log Level:</label>
+                                        <input type="number" id="LogLevel" name="LogLevel" value="{{.LogLevel}}" min="10" max="40" step="10">
+                                        <div class="input-info">Log level: 10=Debug, 20=Info (default), 30=Warn, 40=Error</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="LogClutterToConsole">Log Clutter to Console:</label>
+                                        <select id="LogClutterToConsole" name="LogClutterToConsole" required>
+                                            <option value="true" {{.LogClutterToConsoleTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.LogClutterToConsoleFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">Show verbose mono/unity logs from game server in console</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="SSUIWebPort">SSUI Web Port:</label>
+                                        <input type="text" id="SSUIWebPort" name="SSUIWebPort" value="{{.SSUIWebPort}}">
+                                        <div class="input-info">Port for the SSUI web interface (default: 8443). Requires restart.</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="IsConsoleEnabled">SSUI CLI Console:</label>
+                                        <select id="IsConsoleEnabled" name="IsConsoleEnabled" required>
+                                            <option value="true" {{.IsConsoleEnabledTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.IsConsoleEnabledFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">Enable the SSUICLI interactive console</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="IsSSCMEnabled">SSCM Integration:</label>
+                                        <select id="IsSSCMEnabled" name="IsSSCMEnabled" required>
+                                            <option value="true" {{.IsSSCMEnabledTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.IsSSCMEnabledFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">Enable Stationeers Server Command Manager integration (Linux)</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="AdvertiserOverride">Advertiser Override IP:</label>
+                                        <input type="text" id="AdvertiserOverride" name="AdvertiserOverride" value="{{.AdvertiserOverride}}">
+                                        <div class="input-info">Override the IP address advertised to Steam. Leave empty for auto-detection.</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="IsUpdateEnabled">SSUI Updates:</label>
+                                        <select id="IsUpdateEnabled" name="IsUpdateEnabled" required>
+                                            <option value="true" {{.IsUpdateEnabledTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.IsUpdateEnabledFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">Enable automatic SSUI update checks</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="AllowPrereleaseUpdates">Allow Prerelease Updates:</label>
+                                        <select id="AllowPrereleaseUpdates" name="AllowPrereleaseUpdates" required>
+                                            <option value="true" {{.AllowPrereleaseUpdatesTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.AllowPrereleaseUpdatesFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">Include beta/prerelease versions in update checks</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="AllowMajorUpdates">Allow Major Updates:</label>
+                                        <select id="AllowMajorUpdates" name="AllowMajorUpdates" required>
+                                            <option value="true" {{.AllowMajorUpdatesTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.AllowMajorUpdatesFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">Allow automatic major version upgrades (may have breaking changes)</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="IsStationeersLaunchPadAutoUpdatesEnabled">SLP Auto Updates:</label>
+                                        <select id="IsStationeersLaunchPadAutoUpdatesEnabled" name="IsStationeersLaunchPadAutoUpdatesEnabled" required>
+                                            <option value="true" {{.IsStationeersLaunchPadAutoUpdatesEnabledTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.IsStationeersLaunchPadAutoUpdatesEnabledFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">Automatically update StationeersLaunchPad</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="authEnabled">Web Auth Enabled:</label>
+                                        <select id="authEnabled" name="authEnabled" required>
+                                            <option value="true" {{.AuthEnabledTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.AuthEnabledFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">Enable authentication for the web interface</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="AuthTokenLifetime">Auth Token Lifetime:</label>
+                                        <input type="number" id="AuthTokenLifetime" name="AuthTokenLifetime" value="{{.AuthTokenLifetime}}" min="1">
+                                        <div class="input-info">JWT token lifetime in minutes (default: 1440 = 24 hours)</div>
+                                    </div>
+                                </div>
+                            {{end}}
                         </div>
 
                         <div id="terrain-settings" class="config-section">
@@ -343,6 +464,7 @@
                                 <div class="fill-hint" id="fill-hint">{{.UIText_TerrainSettingsFillHint}}</div>
                             </div>
                         </div>
+
 
                         <div class="form-actions">
                             <button type="button" class="back-button" onclick="window.location.href = '/'"></button>
@@ -386,6 +508,22 @@
                             <input type="text" id="controlPanelChannelID" name="controlPanelChannelID"
                                 value="{{.ControlPanelChannelID}}">
                             <div class="input-info">{{.UIText_ControlPanelChannelInfo}}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="serverInfoPanelChannelID">{{.UIText_ServerInfoPanelChannel}}:</label>
+                            <input type="text" id="serverInfoPanelChannelID" name="serverInfoPanelChannelID"
+                                value="{{.ServerInfoPanelChannelID}}">
+                            <div class="input-info">{{.UIText_ServerInfoPanelChannelInfo}}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rotateServerPassword">{{.UIText_RotateServerPassword}}:</label>
+                            <select id="rotateServerPassword" name="rotateServerPassword">
+                                <option value="true" {{.RotateServerPasswordTrueSelected}}>ENABLED</option>
+                                <option value="false" {{.RotateServerPasswordFalseSelected}}>DISABLED</option>
+                            </select>
+                            <div class="input-info">{{.UIText_RotateServerPasswordInfo}}</div>
                         </div>
 
                         <div class="form-group">
@@ -525,7 +663,6 @@
         </div>
 
         <div id="detectionmanager-config-tab" class="tab-content">
-            <h1>Custom Detection Manager</h1>
                 <p>Custom detections allow you to create custom patterns for event detection. These patterns can be used to
                     detect specific events in the server log and send alerts to the "Status" channel in Discord and will be shown in the Events tab on the main dashboard.</p>
                 <p>To create a custom detection, you can either define a regex pattern or

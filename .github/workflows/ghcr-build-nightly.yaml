@@ -22,7 +22,7 @@ jobs:
 
       - name: Lowercase the repo name
         run: |
-          echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}-nightly" >> $GITHUB_ENV
 
       - name: Extract metadata
         id: meta
@@ -31,8 +31,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=nightly
-          flavor: |
-            latest=false
+            type=raw,value=latest
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

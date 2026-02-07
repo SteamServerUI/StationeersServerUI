@@ -76,6 +76,7 @@ function fetchBackups() {
                 const backupType = "Dotsave"
                 const fileName = "Backup Index: " + backup.Index;
                 const formattedDate = "Created: " + new Date(backup.SaveTime).toLocaleString();
+                const isDotsave = backupType === "Dotsave";
                 
                 li.innerHTML = `
                     <div class="backup-info">
@@ -85,7 +86,10 @@ function fetchBackups() {
                         </div>
                         <div class="backup-date">${formattedDate}</div>
                     </div>
-                    <button class="restore-btn" onclick="restoreBackup(${backup.Index})">Restore</button>
+                    <div class="backup-actions">
+                        ${isDotsave ? `<button class="download-btn" onclick="downloadBackup(${backup.Index})">Download</button>` : ''}
+                        <button class="restore-btn" onclick="restoreBackup(${backup.Index})">Restore</button>
+                    </div>
                 `;
                 
                 backupList.appendChild(li);
@@ -206,6 +210,48 @@ function restoreBackup(index) {
             showPopup('info', data);
         })
         .catch(err => console.error(`Failed to restore backup ${index}:`, err));
+}
+
+function downloadBackup(index) {
+    const status = document.getElementById('status');
+    status.hidden = false;
+    typeTextWithCallback(status, 'Preparing download...', 20, () => {});
+    
+    fetch('/api/v2/backups/download', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ index: index })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error || 'Download failed'); });
+        }
+        const disposition = response.headers.get('Content-Disposition');
+        let filename = `backup_${index}.save`;
+        if (disposition) {
+            const match = disposition.match(/filename="(.+)"/);
+            if (match) filename = match[1];
+        }
+        return response.blob().then(blob => ({ blob, filename }));
+    })
+    .then(({ blob, filename }) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        status.hidden = true;
+    })
+    .catch(err => {
+        console.error(`Failed to download backup ${index}:`, err);
+        showPopup('error', 'Download failed: ' + err.message);
+        status.hidden = true;
+    });
 }
 
 function pollRecurringTasks() {

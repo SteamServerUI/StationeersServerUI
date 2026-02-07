@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.11.1"
+	Version = "5.12.3"
 	Branch  = "release"
 )
 
@@ -71,10 +71,12 @@ type JsonConfig struct {
 	IsSSCMEnabled             *bool  `json:"IsSSCMEnabled"`
 	AutoRestartServerTimer    string `json:"AutoRestartServerTimer"`
 	IsConsoleEnabled          *bool  `json:"IsConsoleEnabled"`
+	IsCLIDashboardEnabled     *bool  `json:"IsCLIDashboardEnabled"`
 	LanguageSetting           string `json:"LanguageSetting"`
 	AutoStartServerOnStartup  *bool  `json:"AutoStartServerOnStartup"`
 	SSUIIdentifier            string `json:"SSUIIdentifier"`
 	SSUIWebPort               string `json:"SSUIWebPort"`
+	ShowExpertSettings        *bool  `json:"ShowExpertSettings"` // Show Expert Settings tab in web UI
 
 	// Update Settings
 	IsUpdateEnabled            *bool `json:"IsUpdateEnabled"`
@@ -87,17 +89,19 @@ type JsonConfig struct {
 	IsStationeersLaunchPadAutoUpdatesEnabled *bool `json:"IsStationeersLaunchPadAutoUpdatesEnabled"`
 
 	// Discord Settings
-	DiscordToken            string `json:"discordToken"`
-	ControlChannelID        string `json:"controlChannelID"`
-	StatusChannelID         string `json:"statusChannelID"`
-	ConnectionListChannelID string `json:"connectionListChannelID"`
-	LogChannelID            string `json:"logChannelID"`
-	SaveChannelID           string `json:"saveChannelID"`
-	ControlPanelChannelID   string `json:"controlPanelChannelID"`
-	DiscordCharBufferSize   int    `json:"DiscordCharBufferSize"`
-	BlackListFilePath       string `json:"blackListFilePath"`
-	IsDiscordEnabled        *bool  `json:"isDiscordEnabled"`
-	ErrorChannelID          string `json:"errorChannelID"`
+	DiscordToken             string `json:"discordToken"`
+	ControlChannelID         string `json:"controlChannelID"`
+	StatusChannelID          string `json:"statusChannelID"`
+	ConnectionListChannelID  string `json:"connectionListChannelID"`
+	LogChannelID             string `json:"logChannelID"`
+	SaveChannelID            string `json:"saveChannelID"`
+	ControlPanelChannelID    string `json:"controlPanelChannelID"`
+	ServerInfoPanelChannelID string `json:"serverInfoPanelChannelID"`
+	DiscordCharBufferSize    int    `json:"DiscordCharBufferSize"`
+	BlackListFilePath        string `json:"blackListFilePath"`
+	IsDiscordEnabled         *bool  `json:"isDiscordEnabled"`
+	RotateServerPassword     *bool  `json:"rotateServerPassword"`
+	ErrorChannelID           string `json:"errorChannelID"`
 
 	//Backup Settings
 	BackupKeepLastN       int   `json:"backupKeepLastN"`       // Number of most recent backups to keep (default: 2000)
@@ -146,12 +150,17 @@ func applyConfig(cfg *JsonConfig) {
 	LogChannelID = getString(cfg.LogChannelID, "LOG_CHANNEL_ID", "")
 	SaveChannelID = getString(cfg.SaveChannelID, "SAVE_CHANNEL_ID", "")
 	ControlPanelChannelID = getString(cfg.ControlPanelChannelID, "CONTROL_PANEL_CHANNEL_ID", "")
+	ServerInfoPanelChannelID = getString(cfg.ServerInfoPanelChannelID, "SERVER_INFO_PANEL_CHANNEL_ID", "")
 	DiscordCharBufferSize = getInt(cfg.DiscordCharBufferSize, "DISCORD_CHAR_BUFFER_SIZE", 1000)
 	BlackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "./Blacklist.txt")
 
 	isDiscordEnabledVal := getBool(cfg.IsDiscordEnabled, "IS_DISCORD_ENABLED", false)
 	IsDiscordEnabled = isDiscordEnabledVal
 	cfg.IsDiscordEnabled = &isDiscordEnabledVal
+
+	rotateServerPasswordVal := getBool(cfg.RotateServerPassword, "ROTATE_SERVER_PASSWORD", false)
+	RotateServerPassword = rotateServerPasswordVal
+	cfg.RotateServerPassword = &rotateServerPasswordVal
 
 	ErrorChannelID = getString(cfg.ErrorChannelID, "ERROR_CHANNEL_ID", "")
 	BackupKeepLastN = getInt(cfg.BackupKeepLastN, "BACKUP_KEEP_LAST_N", 2000)
@@ -275,6 +284,10 @@ func applyConfig(cfg *JsonConfig) {
 	IsConsoleEnabled = isConsoleEnabledVal
 	cfg.IsConsoleEnabled = &isConsoleEnabledVal
 
+	isCLIDashboardEnabledVal := getBool(cfg.IsCLIDashboardEnabled, "IS_CLI_DASHBOARD_ENABLED", false)
+	IsCLIDashboardEnabled = isCLIDashboardEnabledVal
+	cfg.IsCLIDashboardEnabled = &isCLIDashboardEnabledVal
+
 	logClutterToConsoleVal := getBool(cfg.LogClutterToConsole, "LOG_CLUTTER_TO_CONSOLE", false)
 	LogClutterToConsole = logClutterToConsoleVal
 	cfg.LogClutterToConsole = &logClutterToConsoleVal
@@ -282,6 +295,10 @@ func applyConfig(cfg *JsonConfig) {
 	autoStartServerOnStartupVal := getBool(cfg.AutoStartServerOnStartup, "AUTO_START_SERVER_ON_STARTUP", false)
 	AutoStartServerOnStartup = autoStartServerOnStartupVal
 	cfg.AutoStartServerOnStartup = &autoStartServerOnStartupVal
+
+	showExpertSettingsVal := getBool(cfg.ShowExpertSettings, "SHOW_EXPERT_SETTINGS", false)
+	ShowExpertSettings = showExpertSettingsVal
+	cfg.ShowExpertSettings = &showExpertSettingsVal
 
 	// Process SaveInfo to maintain backwards compatibility with pre-5.6.6 SaveInfo field (deprecated)
 	if SaveInfo != "" {
@@ -345,9 +362,11 @@ func safeSaveConfig() error {
 		LogChannelID:                             LogChannelID,
 		SaveChannelID:                            SaveChannelID,
 		ControlPanelChannelID:                    ControlPanelChannelID,
+		ServerInfoPanelChannelID:                 ServerInfoPanelChannelID,
 		DiscordCharBufferSize:                    DiscordCharBufferSize,
 		BlackListFilePath:                        BlackListFilePath,
 		IsDiscordEnabled:                         &IsDiscordEnabled,
+		RotateServerPassword:                     &RotateServerPassword,
 		ErrorChannelID:                           ErrorChannelID,
 		BackupKeepLastN:                          BackupKeepLastN,
 		IsCleanupEnabled:                         &IsCleanupEnabled,
@@ -399,11 +418,13 @@ func safeSaveConfig() error {
 		IsStationeersLaunchPadEnabled:            &IsStationeersLaunchPadEnabled,
 		IsStationeersLaunchPadAutoUpdatesEnabled: &IsStationeersLaunchPadAutoUpdatesEnabled,
 		IsConsoleEnabled:                         &IsConsoleEnabled,
+		IsCLIDashboardEnabled:                    &IsCLIDashboardEnabled,
 		LanguageSetting:                          LanguageSetting,
 		AutoStartServerOnStartup:                 &AutoStartServerOnStartup,
 		SSUIIdentifier:                           SSUIIdentifier,
 		SSUIWebPort:                              SSUIWebPort,
 		AdvertiserOverride:                       AdvertiserOverride,
+		ShowExpertSettings:                       &ShowExpertSettings,
 	}
 
 	file, err := os.Create(ConfigPath)

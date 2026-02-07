@@ -22,6 +22,8 @@
             "UIText_UpdateFailed": "Uppdateringen misslyckades. Försök igen senare."
         },
         "config": {
+            "UIText_BackToDashboard": "Tillbaka till dashboard",
+            "UIText_ConfigHeadline": "Inställningar",
             "UIText_ServerConfig": "Konfiguration",
             "UIText_DiscordIntegration": "Discord-integration",
             "UIText_SLPModIntegration": "Launchpad Mods",
@@ -32,6 +34,7 @@
             "UIText_BasicSettings": "Grund",
             "UIText_NetworkSettings": "Nätverk",
             "UIText_AdvancedSettings": "Avancerad",
+            "UIText_TerrainSettings": "Världsgenerering",
             "basic": {
                 "UIText_BasicServerSettings": "Grundläggande serverinställningar",
                 "UIText_ServerName": "Servernamn",
@@ -82,6 +85,8 @@
                 "UIText_ServerExePathInfo2": "Kan inte redigeras från gränssnittet av säkerhetsskäl, men du kan ändra det manuellt i config.json-filen.",
                 "UIText_AdditionalParams": "Ytterligare parametrar",
                 "UIText_AdditionalParamsInfo": "Format: AnpassadParam1 Värde1 AnpassadParam2 Värde2",
+                "UIText_ShowExpertSettings": "Visa expertinställningar",
+                "UIText_ShowExpertSettingsInfo": "Visa expertinställningarna för att få tillgång till speciella konfigurationsalternativ nedan. Konfigurationen måste sparas efter att denna inställning ändrats för att ändringarna ska träda i kraft.",
                 "UIText_AutoRestartServerTimer": "Schemalagd spelserveromstart",
                 "UIText_AutoRestartServerTimerInfo": "<p>Tidsram i <strong>minuter</strong> eller <strong>tidsformat (t.ex. 15:04 eller 03:04PM)</strong> för att schemalägga en automatisk omstart av spelservern. 0 = inaktiverad, 1440 = 24 timmar, etc. Du kommer att se meddelandet &#x27;Observera, server startar om 30/20/10/5 sekunder!&#x27; <strong>i spelet</strong> före omstarten.</p>",
                 "UIText_GameBranch": "Spel-Branch",
@@ -115,6 +120,10 @@
                 "UIText_AdminCommandChannelInfo": "Kanal för admin-kommandon",
                 "UIText_ControlPanelChannel": "Kontrollpanelkanal",
                 "UIText_ControlPanelChannelInfo": "Kanal för kontrollpanel",
+                "UIText_ServerInfoPanelChannel": "Serverinfo-panelkanal",
+                "UIText_ServerInfoPanelChannelInfo": "Valfri kanal som visar servernamn för användare (inte administratörer) och ger användare möjligheten att hämta det aktuella serverlösenordet.",
+                "UIText_RotateServerPassword": "Rotera serverlösenord",
+                "UIText_RotateServerPasswordInfo": "Roterar automatiskt serverlösenordet vid varje serverstart. Spelare kan hämta det aktuella lösenordet via en knapp i \"Serverinfo-panelkanalen\".",
                 "UIText_StatusChannel": "Statuskanal",
                 "UIText_StatusChannelInfo": "Uppdateringar om serverstatus",
                 "UIText_ConnectionListChannel": "Anslutningslistkanal",
@@ -155,8 +164,7 @@
                 "UIText_SLP_UpdateWorkshopModsDesc": "Uppdatera alla installerade workshop-mods till deras senaste versioner. Denna process kan ta lite tid beroende på antalet mods.",
                 "UIText_SLP_UpdateButton": "Uppdatera Workshop-mods",
                 "UIText_SLP_InstalledMods": "Installerade Mods"
-            },
-            "UIText_TerrainSettings": "Världsgenerering"
+            }
         },
         "setup": {
             "UIText_FooterText": "Behöver du hjälp? Kolla Stationeers Server UI Github Wiki.",

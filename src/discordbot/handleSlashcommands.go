@@ -1,6 +1,7 @@
 package discordbot
 
 import (
+	"bytes"
 	"fmt"
 	"sort"
 	"strconv"
@@ -27,6 +28,7 @@ var handlers = map[string]commandHandler{
 	"help":         handleHelp,
 	"restore":      handleRestore,
 	"list":         handleList,
+	"download":     handleDownload,
 	"bansteamid":   handleBan,
 	"unbansteamid": handleUnban,
 	"update":       handleUpdate,
@@ -142,6 +144,7 @@ func handleHelp(s *discordgo.Session, i *discordgo.InteractionCreate, data Embed
 		{Name: "/update", Value: "Updates the gameserver via SteamCMD"},
 		{Name: "/list [limit]", Value: "Lists recent backups (default: 5)"},
 		{Name: "/restore <index>", Value: "Restores a backup"},
+		{Name: "/download [index]", Value: "Downloads a backup (most recent if no index)"},
 		{Name: "/bansteamid <SteamID>", Value: "Bans a player"},
 		{Name: "/unbansteamid <SteamID>", Value: "Unbans a player"},
 		{Name: "/command <command>", Value: "Sends a command to the gameserver console"},
@@ -172,6 +175,63 @@ func handleRestore(s *discordgo.Session, i *discordgo.InteractionCreate, data Em
 	time.Sleep(5 * time.Second)
 	gamemgr.InternalStartServer()
 	return nil
+}
+
+const maxDiscordFileSize = 10 * 1024 * 1024 // 10MB Discord file upload limit
+
+func handleDownload(s *discordgo.Session, i *discordgo.InteractionCreate, data EmbedData) error {
+	index := -1 // -1 means most recent
+
+	if len(i.ApplicationCommandData().Options) > 0 {
+		index = int(i.ApplicationCommandData().Options[0].IntValue())
+	}
+
+	// If no index provided, get the most recent backup index
+	if index == -1 {
+		backups, err := backupmgr.GlobalBackupManager.ListBackups(1)
+		if err != nil || len(backups) == 0 {
+			data.Title, data.Description = "Download Failed", "No backups available"
+			data.Fields = []EmbedField{{Name: "Error", Value: "Could not find any backups", Inline: true}}
+			return respond(s, i, data)
+		}
+		index = backups[0].Index
+	}
+
+	data.Title, data.Description, data.Color = "📥 Backup Download", fmt.Sprintf("Preparing backup #%d for download...", index), 0xFFA500
+	data.Fields = []EmbedField{{Name: "Status", Value: "🕛 Processing", Inline: true}}
+	if err := respond(s, i, data); err != nil {
+		return err
+	}
+
+	sendBackupToChannel(s, i.ChannelID, index)
+	return nil
+}
+
+func sendBackupToChannel(s *discordgo.Session, channelID string, index int) {
+	backupData, err := backupmgr.GlobalBackupManager.GetBackupFileData(index)
+	if err != nil {
+		s.ChannelMessageSend(channelID, fmt.Sprintf("❌ Failed to download backup #%d: %v", index, err))
+		return
+	}
+
+	if backupData.Size > maxDiscordFileSize {
+		s.ChannelMessageSend(channelID, fmt.Sprintf("❌ Backup #%d is too large to upload (%.2f MB > 10 MB limit)", index, float64(backupData.Size)/(1024*1024)))
+		return
+	}
+
+	file := &discordgo.File{
+		Name:        backupData.Filename,
+		ContentType: "application/octet-stream",
+		Reader:      bytes.NewReader(backupData.Data),
+	}
+
+	_, err = s.ChannelMessageSendComplex(channelID, &discordgo.MessageSend{
+		Content: fmt.Sprintf("📦 Backup #%d (%s)", index, backupData.SaveTime.Format("Jan 2, 2006 3:04 PM")),
+		Files:   []*discordgo.File{file},
+	})
+	if err != nil {
+		s.ChannelMessageSend(channelID, fmt.Sprintf("❌ Failed to upload backup #%d: %v", index, err))
+	}
 }
 
 func handleList(s *discordgo.Session, i *discordgo.InteractionCreate, data EmbedData) error {
@@ -217,9 +277,27 @@ func handleList(s *discordgo.Session, i *discordgo.InteractionCreate, data Embed
 			Color: 0xFFD700, Fields: fields,
 		}))
 	}
+
+	// Add download buttons if showing 5 or fewer backups
+	var components []discordgo.MessageComponent
+	if len(backups) <= 5 {
+		var buttons []discordgo.MessageComponent
+		for _, b := range backups {
+			buttons = append(buttons, discordgo.Button{
+				Label:    fmt.Sprintf("📥 Download #%d", b.Index),
+				Style:    discordgo.SecondaryButton,
+				CustomID: fmt.Sprintf("%s%d", ButtonDownloadBackupPfx, b.Index),
+			})
+		}
+		components = append(components, discordgo.ActionsRow{Components: buttons})
+	}
+
 	if err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{Embeds: []*discordgo.MessageEmbed{embeds[0]}},
+		Data: &discordgo.InteractionResponseData{
+			Embeds:     []*discordgo.MessageEmbed{embeds[0]},
+			Components: components,
+		},
 	}); err != nil {
 		return err
 	}
@@ -273,4 +351,47 @@ func handleCommand(s *discordgo.Session, i *discordgo.InteractionCreate, data Em
 		return err
 	}
 	return nil
+}
+
+// handleDownloadButtonInteraction handles button interactions for downloading backups
+func handleDownloadButtonInteraction(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	if i.Type != discordgo.InteractionMessageComponent {
+		return
+	}
+
+	customID := i.MessageComponentData().CustomID
+	if !strings.HasPrefix(customID, ButtonDownloadBackupPfx) {
+		return
+	}
+
+	indexStr := strings.TrimPrefix(customID, ButtonDownloadBackupPfx)
+	index, err := strconv.Atoi(indexStr)
+	if err != nil {
+		respondToButtonError(s, i, "Invalid backup index")
+		return
+	}
+
+	err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Content: fmt.Sprintf("📥 Preparing backup #%d for download...", index),
+			Flags:   discordgo.MessageFlagsEphemeral,
+		},
+	})
+	if err != nil {
+		logger.Discord.Error("Error responding to download button: " + err.Error())
+		return
+	}
+
+	go sendBackupToChannel(s, config.GetControlChannelID(), index)
+}
+
+func respondToButtonError(s *discordgo.Session, i *discordgo.InteractionCreate, message string) {
+	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Content: "❌ " + message,
+			Flags:   discordgo.MessageFlagsEphemeral,
+		},
+	})
 }

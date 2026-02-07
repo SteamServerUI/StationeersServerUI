@@ -69,6 +69,18 @@ func registerSlashCommands(s *discordgo.Session) {
 			},
 		},
 		{
+			Name:        "download",
+			Description: "Download a backup file (most recent if no index given)",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionInteger,
+					Name:        "index",
+					Description: "Backup index to download (default: most recent)",
+					Required:    false,
+				},
+			},
+		},
+		{
 			Name:        "bansteamid",
 			Description: "Bans a player by their SteamID. Needs a Server restart to take effect.",
 			Options: []*discordgo.ApplicationCommandOption{

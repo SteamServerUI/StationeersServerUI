@@ -33,6 +33,9 @@ func InternalStartServer() error {
 		return fmt.Errorf("server is already running")
 	}
 
+	// Rotate password if enabled (sets new random password before building args)
+	rotatePasswordIfEnabled()
+
 	args := buildCommandArgs()
 
 	logger.Core.Info("=== GAMESERVER STARTING ===")
@@ -129,6 +132,7 @@ func InternalStartServer() error {
 	}
 	// create a UUID for this specific run
 	createGameServerUUID()
+	setServerStartTime()
 	config.SetIsGameServerRunning(true)
 
 	// Start auto-restart goroutine if AutoRestartServerTimer is set greater than 0
@@ -219,6 +223,7 @@ func InternalStopServer() error {
 	// Process is confirmed stopped, clear cmd
 	cmd = nil
 	config.SetIsGameServerRunning(false)
+	clearServerStartTime()
 	clearGameServerUUID()
 	return nil
 }

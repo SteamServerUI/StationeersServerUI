@@ -50,11 +50,14 @@ func InitializeDiscordBot() {
 	// Register handlers and commands after session is open
 	config.DiscordSession.AddHandler(listenToDiscordReactions)
 	config.DiscordSession.AddHandler(listenToSlashCommands)
+	config.DiscordSession.AddHandler(handleServerInfoButtonInteraction) // Handle button interactions
+	config.DiscordSession.AddHandler(handleDownloadButtonInteraction)   // Handle download button interactions
 	registerSlashCommands(config.DiscordSession)
 
 	logger.Discord.Info("Bot is now running.")
 	SendMessageToStatusChannel("🤖 SSUI Version " + config.GetVersion() + " connected to Discord.")
-	sendControlPanel() // Send control panel message to Discord
+	sendControlPanel()    // Send control panel message to Discord
+	sendServerInfoPanel() // Send server info panel with buttons to Discord
 	UpdateBotStatusWithMessage("StationeersServerUI v" + config.GetVersion())
 	// Start buffer flush ticker
 	BufferFlushTicker = time.NewTicker(5 * time.Second)

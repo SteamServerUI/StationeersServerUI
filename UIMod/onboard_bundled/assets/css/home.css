@@ -432,7 +432,14 @@
   opacity: 0.8;
 }
 
-.restore-btn {
+.backup-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.restore-btn,
+.download-btn {
   padding: 10px 18px;
   background-color: rgba(0, 255, 171, 0.1);
   color: var(--text-bright);
@@ -445,7 +452,8 @@
   text-transform: uppercase;
 }
 
-.restore-btn:hover {
+.restore-btn:hover,
+.download-btn:hover {
   background-color: var(--primary);
   color: #000;
 }

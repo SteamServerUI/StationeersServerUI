@@ -1,6 +1,8 @@
 package loader
 
 import (
+	"time"
+
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordrpc"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
@@ -26,11 +28,10 @@ func AfterStartComplete() {
 	//setup.SetupAutostartScripts()
 	discordrpc.StartDiscordRPC()
 
-	go func() {
-		//time.Sleep(10 * time.Second)
-		printStartupMessage()
-		if config.GetIsFirstTimeSetup() {
-			printFirstTimeSetupMessage()
-		}
-	}()
+	time.Sleep(500 * time.Millisecond)
+	printStartupMessage()
+
+	if config.GetIsFirstTimeSetup() {
+		printFirstTimeSetupMessage()
+	}
 }

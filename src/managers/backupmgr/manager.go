@@ -223,6 +223,38 @@ func (m *BackupManager) ListBackups(limit int) ([]BackupSaveFile, error) {
 	return saves, nil
 }
 
+// GetBackupFileData retrieves backup file data by index for download/transfer
+func (m *BackupManager) GetBackupFileData(index int) (*BackupFileData, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	saves, err := m.getBackupSaveFiles()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get backup files: %w", err)
+	}
+
+	if index < 0 || index >= len(saves) {
+		return nil, fmt.Errorf("backup index %d out of range (0-%d)", index, len(saves)-1)
+	}
+
+	targetSave := saves[index]
+	filePath := targetSave.SaveFile
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read backup file: %w", err)
+	}
+
+	filename := filepath.Base(filePath)
+
+	return &BackupFileData{
+		Data:     data,
+		Filename: filename,
+		Size:     int64(len(data)),
+		SaveTime: targetSave.SaveTime,
+	}, nil
+}
+
 // Shutdown stops all backup operations
 func (m *BackupManager) Shutdown() {
 	logger.Backup.Debug("Shutting down previous backup manager...")
