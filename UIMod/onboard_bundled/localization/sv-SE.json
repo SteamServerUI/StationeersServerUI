@@ -55,7 +55,7 @@
                 "UIText_AutoPauseServer": "Autopausa server",
                 "UIText_AutoPauseServerInfo": "Pausa servern automatiskt när inga spelare är anslutna",
                 "UIText_SaveName": "Sparfil namn",
-                "UIText_SaveNameInfo": "Namnet på den sparade mappen, till exempel 'MySave' eller 'Europa Brutal'",
+                "UIText_SaveNameInfo": "Namnet på den sparade mappen, till exempel 'MySave' eller 'Europa Brutal'. Detta är namnet på mappen som kommer att skapas i 'saves'-mappen. Att ändra detta värde till ett icke-existerande mappnamn kommer att skapa en ny sparfil.",
                 "UIText_WorldID": "Världs-ID",
                 "UIText_WorldIDInfo": "Världs-ID som används när du skapar en ny värld. För en lista över världs-ID:n, se Dedicated Server Wiki eller konfigurera det enkelt från installationsguiden."
             },
