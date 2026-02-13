@@ -73,7 +73,7 @@ func SendMessageToSavesChannel(message string) {
 	}
 }
 
-func SendUntrackedMessageToErrorChannel(message string) {
+func SendMessageToErrorChannel(message string) {
 	if !config.GetIsDiscordEnabled() {
 		return
 	}
