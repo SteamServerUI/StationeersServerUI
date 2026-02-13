@@ -59,6 +59,29 @@ func (m *BackupManager) cleanBackupDir() error {
 	return nil
 }
 
+// sameCalendarDay returns true if two times fall on the same calendar day (year + day-of-year).
+func sameCalendarDay(a, b time.Time) bool {
+	return a.Year() == b.Year() && a.YearDay() == b.YearDay()
+}
+
+// updateRetentionTrackers updates the daily/weekly/monthly tracker timestamps for a kept backup.
+func updateRetentionTrackers(saveTime time.Time, lastKeptDaily, lastKeptWeekly, lastKeptMonthly *time.Time) {
+	// Track daily
+	if lastKeptDaily.IsZero() || !sameCalendarDay(saveTime, *lastKeptDaily) {
+		*lastKeptDaily = saveTime
+	}
+	// Track weekly
+	y1, w1 := saveTime.ISOWeek()
+	y2, w2 := lastKeptWeekly.ISOWeek()
+	if lastKeptWeekly.IsZero() || y1 != y2 || w1 != w2 {
+		*lastKeptWeekly = saveTime
+	}
+	// Track monthly
+	if lastKeptMonthly.IsZero() || saveTime.Month() != lastKeptMonthly.Month() || saveTime.Year() != lastKeptMonthly.Year() {
+		*lastKeptMonthly = saveTime
+	}
+}
+
 // cleanSafeBackupDir cleans the safe backup directory with retention policy
 func (m *BackupManager) cleanSafeBackupDir() error {
 	saves, err := m.getBackupSaveFiles()
@@ -78,28 +101,33 @@ func (m *BackupManager) cleanSafeBackupDir() error {
 		lastKeptMonthly time.Time
 	)
 
-	for i, group := range saves {
-		age := now.Sub(group.SaveTime)
+	for i, backup := range saves {
+		age := now.Sub(backup.SaveTime)
 
-		// Always keep the most recent N backups
+		// Always keep the most recent N backups, but also update the retention
+		// trackers so the daily/weekly/monthly logic doesn't redundantly keep
+		// backups for days already covered by KeepLastN.
 		if i < m.config.RetentionPolicy.KeepLastN {
+			updateRetentionTrackers(backup.SaveTime, &lastKeptDaily, &lastKeptWeekly, &lastKeptMonthly)
 			continue
 		}
 
 		// Keep daily backups for specified duration
+		// Compare full calendar day (year + day-of-year) instead of just day-of-month
+		// to avoid incorrectly treating e.g. Jan 15 and Feb 15 as the "same day".
 		if age < m.config.RetentionPolicy.KeepDailyFor {
-			if lastKeptDaily.IsZero() || group.SaveTime.Day() != lastKeptDaily.Day() {
-				lastKeptDaily = group.SaveTime
+			if lastKeptDaily.IsZero() || !sameCalendarDay(backup.SaveTime, lastKeptDaily) {
+				lastKeptDaily = backup.SaveTime
 				continue
 			}
 		}
 
 		// Keep weekly backups for specified duration
 		if age < m.config.RetentionPolicy.KeepWeeklyFor {
-			year1, week1 := group.SaveTime.ISOWeek()
+			year1, week1 := backup.SaveTime.ISOWeek()
 			year2, week2 := lastKeptWeekly.ISOWeek()
 			if lastKeptWeekly.IsZero() || year1 != year2 || week1 != week2 {
-				lastKeptWeekly = group.SaveTime
+				lastKeptWeekly = backup.SaveTime
 				continue
 			}
 		}
@@ -107,15 +135,15 @@ func (m *BackupManager) cleanSafeBackupDir() error {
 		// Keep monthly backups for specified duration
 		if age < m.config.RetentionPolicy.KeepMonthlyFor {
 			if lastKeptMonthly.IsZero() ||
-				group.SaveTime.Month() != lastKeptMonthly.Month() ||
-				group.SaveTime.Year() != lastKeptMonthly.Year() {
-				lastKeptMonthly = group.SaveTime
+				backup.SaveTime.Month() != lastKeptMonthly.Month() ||
+				backup.SaveTime.Year() != lastKeptMonthly.Year() {
+				lastKeptMonthly = backup.SaveTime
 				continue
 			}
 		}
 
 		// If we get here, the backup should be deleted
-		m.deleteBackupGroup(group)
+		m.deleteBackupGroup(backup)
 	}
 
 	return nil
