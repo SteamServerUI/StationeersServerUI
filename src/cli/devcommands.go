@@ -2,8 +2,13 @@ package cli
 
 import (
 	"fmt"
+	"os"
+	"runtime"
+	"runtime/pprof"
+	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/modding"
@@ -53,4 +58,36 @@ func testLocalization() {
 	currentLanguageSetting := config.GetLanguageSetting()
 	s := localization.GetString("UIText_StartButton")
 	logger.Core.Info("Start Server Button text (current language: " + currentLanguageSetting + "): " + s)
+}
+
+func dumpHeapProfile() {
+	runtime.GC()
+	if _, err := os.Stat("heap.pprof"); err == nil {
+		if err := os.Remove("heap.pprof"); err != nil {
+			logger.Main.Errorf("could not remove old heap profile", "err", err)
+			return
+		}
+	}
+	f, err := os.Create("heap.pprof")
+	if err != nil {
+		logger.Main.Errorf("could not create heap profile file", "err", err)
+		return
+	}
+	defer f.Close()
+
+	if err := pprof.WriteHeapProfile(f); err != nil {
+		logger.Main.Errorf("could not write heap profile", "err", err)
+		return
+	}
+
+	logger.Main.Info("Heap profile written to heap.pprof")
+}
+
+func testConnectedPlayersListDiscord() {
+	players := map[string]string{
+		"76561198334231312": "JacksonTheMaster",
+		"76561198012262058": "Sebastian - TheNovice",
+		"76561197995322389": "Non Action Man",
+	}
+	discordbot.AddToConnectedPlayers("ThisDataDoesntMatter", "ThisDataDoesntMatter", time.Now(), players)
 }
