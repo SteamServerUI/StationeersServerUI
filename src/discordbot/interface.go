@@ -56,8 +56,9 @@ func InitializeDiscordBot() {
 
 	logger.Discord.Info("Bot is now running.")
 	SendMessageToStatusChannel("🤖 SSUI Version " + config.GetVersion() + " connected to Discord.")
-	sendControlPanel()    // Send control panel message to Discord
-	sendServerInfoPanel() // Send server info panel with buttons to Discord
+	sendControlPanel()          // Send control panel message to Discord
+	sendServerInfoPanel()       // Send server info panel with buttons to Discord
+	sendConnectedPlayersPanel() // Send connected players panel to Discord
 	UpdateBotStatusWithMessage("StationeersServerUI v" + config.GetVersion())
 	// Start buffer flush ticker
 	BufferFlushTicker = time.NewTicker(5 * time.Second)

@@ -52,7 +52,7 @@
                 "UIText_ServerPassword": "Server Password",
                 "UIText_ServerPasswordInfo": "Password needed to connect to the server. Leave empty for no password",
                 "UIText_AdminPassword": "Admin Password",
-                "UIText_AdminPasswordInfo": "Server Admin Password. VERY Legacy, unused in current Stationeers versions (as far as we know) - Leavy empty unless you know what this parameter does (and let us know if you do!)",
+                "UIText_AdminPasswordInfo": "Server Admin Password. VERY Legacy, unused in current Stationeers versions (as far as we know) - Leave empty unless you know what this parameter does (and let us know if you do!)",
                 "UIText_AutoSave": "Auto Save",
                 "UIText_AutoSaveInfo": "Set to TRUE to enable automatic saving",
                 "UIText_SaveInterval": "Save Interval",
@@ -60,7 +60,7 @@
                 "UIText_AutoPauseServer": "Auto Pause Server",
                 "UIText_AutoPauseServerInfo": "Automatically pause server when no players are connected",
                 "UIText_SaveName": "Save Name",
-                "UIText_SaveNameInfo": "Name of the save folder, like 'MySave' or 'Europa Brutal'",
+                "UIText_SaveNameInfo": "Name of the save folder, like 'MySave' or 'Europa Brutal'. This is the name of the folder that will be created in the 'saves' folder. Changing this value to a non-existent folder name will create a new save.",
                 "UIText_WorldID": "World ID",
                 "UIText_WorldIDInfo": "World ID used when creating a new world. For a list of world IDs, see the Dedicated Server Wiki or configure them easily from the setup wizard. For more options, see the World generation tab."
             },
