@@ -21,6 +21,21 @@
   transition: opacity var(--transition-fast);
 }
 
+.uptime-display {
+  position: absolute;
+  right: 50px;
+  top: 22px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+  background-color: rgba(0, 0, 0, 0.35);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  transition: opacity 0.3s ease;
+}
+
 .status-indicator {
   width: 16px;
   height: 16px;
