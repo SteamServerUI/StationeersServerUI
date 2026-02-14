@@ -16,7 +16,7 @@ RUN npm run build
 ############
 # Go build
 ############
-FROM golang:1.25-bookworm AS go-builder
+FROM golang:1.26-bookworm AS go-builder
 
 WORKDIR /src
 

@@ -8,7 +8,7 @@
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/project,type=bind,consistency=cached",
     "features": {
         "ghcr.io/devcontainers/features/go:1": {
-            "version": "1.25.0"
+            "version": "1.26.0"
         }
     },
     "forwardPorts": [8443],

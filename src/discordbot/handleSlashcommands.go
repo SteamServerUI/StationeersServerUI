@@ -37,7 +37,11 @@ var handlers = map[string]commandHandler{
 
 // Check channel and handle initial validation
 func listenToSlashCommands(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	if i.Type != discordgo.InteractionApplicationCommand || i.ChannelID != config.GetControlChannelID() {
+	if i.Type != discordgo.InteractionApplicationCommand {
+		return
+	}
+
+	if i.ChannelID != config.GetControlChannelID() {
 		respond(s, i, EmbedData{
 			Title: "Wrong Channel", Description: "Commands must be sent to the configured control channel",
 			Color: 0xFF0000, Fields: []EmbedField{{Name: "Accepted Channel", Value: fmt.Sprintf("<#%s>", config.GetControlChannelID()), Inline: true}},
@@ -71,7 +75,7 @@ func handleStart(s *discordgo.Session, i *discordgo.InteractionCreate, data Embe
 		return err
 	}
 	gamemgr.InternalStartServer()
-	SendMessageToStatusChannel("🕛Start command received, Server is Starting...")
+	SendMessageToEventLogChannel("🕛Start command received, Server is Starting...")
 	return nil
 }
 
@@ -82,7 +86,7 @@ func handleStop(s *discordgo.Session, i *discordgo.InteractionCreate, data Embed
 		return err
 	}
 	gamemgr.InternalStopServer()
-	SendMessageToStatusChannel("🕛Stop command received, flatlining Server in 5 Seconds...")
+	SendMessageToEventLogChannel("🕛Stop command received, flatlining Server in 5 Seconds...")
 	return nil
 }
 
@@ -168,7 +172,7 @@ func handleRestore(s *discordgo.Session, i *discordgo.InteractionCreate, data Em
 	gamemgr.InternalStopServer()
 	if err := backupmgr.GlobalBackupManager.RestoreBackup(index); err != nil {
 		SendMessageToControlChannel(fmt.Sprintf("❌Failed to restore backup %d: %v", index, err))
-		SendMessageToStatusChannel("⚠️Restore command failed")
+		SendMessageToEventLogChannel("⚠️Restore command failed")
 		return nil
 	}
 	SendMessageToControlChannel(fmt.Sprintf("✅Backup %d restored, Starting Server...", index))

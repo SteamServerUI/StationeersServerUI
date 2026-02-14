@@ -23,27 +23,35 @@ import (
 
 // init registers default cli commands and their aliases.
 func init() {
-	RegisterCommand("help", helpCommand, "h")
-	RegisterCommand("dashboard", dashboardCommand, "dash", "d")
-	RegisterCommand("reloadbackend", WrapNoReturn(loader.ReloadBackend), "rlb", "rb", "r")
-	RegisterCommand("reloadconfig", WrapNoReturn(loader.ReloadConfig), "rlc", "rc")
-	RegisterCommand("restartbackend", WrapNoReturn(loader.RestartBackend), "rsb")
-	RegisterCommand("exit", WrapNoReturn(exitfromcli), "e")
-	RegisterCommand("deleteconfig", WrapNoReturn(deleteConfig), "delc", "dc")
-	RegisterCommand("startserver", WrapNoReturn(startServer), "start")
-	RegisterCommand("stopserver", WrapNoReturn(stopServer), "stop")
-	RegisterCommand("runsteamcmd", WrapNoReturn(runSteamCMD), "steamcmd", "stcmd")
-	RegisterCommand("testlocalization", WrapNoReturn(testLocalization), "tl")
-	RegisterCommand("supportmode", WrapNoReturn(supportMode), "sm")
-	RegisterCommand("supportpackage", WrapNoReturn(supportPackage), "sp")
-	RegisterCommand("getbuildid", WrapNoReturn(getBuildID), "gbid")
-	RegisterCommand("printconfig", WrapNoReturn(printConfig), "pc")
-	RegisterCommand("update", WrapNoReturn(triggerUpdateCheck), "u")
-	RegisterCommand("applyupdate", WrapNoReturn(applyUpdate), "au")
-	RegisterCommand("listmods", WrapNoReturn(listmods), "lm")
-	RegisterCommand("listworkshophandles", WrapNoReturn(listworkshophandles), "lwh")
-	RegisterCommand("downloadworkshopupdates", WrapNoReturn(downloadWorkshopUpdates), "dwu")
-	RegisterCommand("downloadworkshopitemtest", WrapNoReturn(downloadWorkshopItemTest), "dwmodcon")
+
+	//Long command, Description, IsDevCommand, Aliases
+
+	// User commands
+	RegisterCommand("help", helpCommand, "Show available commands", false, "h")
+	RegisterCommand("dashboard", dashboardCommand, "Launch interactive CLI dashboard", false, "dash", "d")
+	RegisterCommand("startserver", WrapNoReturn(startServer), "Start the game server", false, "start")
+	RegisterCommand("stopserver", WrapNoReturn(stopServer), "Stop the game server", false, "stop")
+	RegisterCommand("update", WrapNoReturn(triggerUpdateCheck), "Trigger an SSUI update check", false, "u")
+	RegisterCommand("applyupdate", WrapNoReturn(applyUpdate), "Apply available SSUI updates", false, "au")
+	RegisterCommand("reloadbackend", WrapNoReturn(loader.ReloadBackend), "Reload the SSUI backend", false, "rlb", "rb", "r")
+	RegisterCommand("reloadconfig", WrapNoReturn(loader.ReloadConfig), "Reload the SSUI configuration", false, "rlc", "rc")
+	RegisterCommand("restartbackend", WrapNoReturn(loader.RestartBackend), "Restart the SSUI backend", false, "rsb")
+	RegisterCommand("supportmode", WrapNoReturn(supportMode), "Enter support mode", false, "sm")
+	RegisterCommand("supportpackage", WrapNoReturn(supportPackage), "Create a support package", false, "sp")
+	RegisterCommand("exit", WrapNoReturn(exitfromcli), "Exit / Shutdown SSUI", false, "e")
+	RegisterCommand("runsteamcmd", WrapNoReturn(runSteamCMD), "Run SteamCMD to update the Gameserver", false, "steamcmd", "stcmd")
+	RegisterCommand("downloadworkshopupdates", WrapNoReturn(downloadWorkshopUpdates), "Download Steam workshop Mod updates", true, "dwu")
+
+	// Dev commands
+	RegisterCommand("deleteconfig", WrapNoReturn(deleteConfig), "DELETE the SSUI configuration file", true, "delc", "dc")
+	RegisterCommand("testlocalization", WrapNoReturn(testLocalization), "Test localization strings", true, "tl")
+	RegisterCommand("getbuildid", WrapNoReturn(getBuildID), "Get the current game build ID (server must have started once, else empty)", true, "gbid")
+	RegisterCommand("printconfig", WrapNoReturn(printConfig), "Print the current SSUI configuration", true, "pc")
+	RegisterCommand("listmods", WrapNoReturn(listmods), "List installed SLP mods", true, "lm")
+	RegisterCommand("listworkshophandles", WrapNoReturn(listworkshophandles), "List workshop Mod handles", true, "lwh")
+	RegisterCommand("downloadworkshopitemtest", WrapNoReturn(downloadWorkshopItemTest), "Test downloading a workshop item (ModularConsolesMod)", true, "dwmodcon")
+	RegisterCommand("dumpheapprofile", WrapNoReturn(dumpHeapProfile), "Dump a pprof heap profile for debugging", true, "dhp")
+	RegisterCommand("testserverstatuspaneldiscord", WrapNoReturn(testServerStatusPanelDiscord), "Send a fake player list to the Discord package to test the server status panel", true, "tsspd")
 }
 
 // dashboardCommand launches the interactive terminal dashboard

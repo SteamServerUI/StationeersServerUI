@@ -32,12 +32,16 @@ var commandRegistry = make(map[string]CommandFunc)
 var mu sync.Mutex
 
 var commandAliases = make(map[string][]string)
+var commandDescriptions = make(map[string]string)
+var commandIsDevOnly = make(map[string]bool)
 
 // RegisterCommand adds a new command and its handler to the registry.
-func RegisterCommand(name string, handler CommandFunc, aliases ...string) {
+func RegisterCommand(name string, handler CommandFunc, desc string, isDevCommand bool, aliases ...string) {
 	mu.Lock()
 	defer mu.Unlock()
 	commandRegistry[name] = handler
+	commandDescriptions[name] = desc
+	commandIsDevOnly[name] = isDevCommand
 	if len(aliases) > 0 {
 		commandAliases[name] = append(commandAliases[name], aliases...)
 		for _, alias := range aliases {
@@ -127,24 +131,59 @@ func WrapNoReturn(fn func()) CommandFunc {
 	}
 }
 
-// helpCommand displays available commands along with their aliases.
+// helpCommand displays available commands along with their aliases and descriptions.
 func helpCommand(args []string) error {
 	mu.Lock()
 	defer mu.Unlock()
-	logger.Core.Info("Available commands:")
-	// Collect primary commands (those in commandAliases keys)
+	showDev := len(args) > 0 && args[0] == "dev"
+
+	// Collect primary commands
 	primaryCommands := make([]string, 0, len(commandAliases))
 	for cmd := range commandAliases {
 		primaryCommands = append(primaryCommands, cmd)
 	}
 	sort.Strings(primaryCommands)
+
+	// Find the longest command name for alignment
+	maxLen := 0
 	for _, cmd := range primaryCommands {
-		aliases := commandAliases[cmd]
-		if len(aliases) > 0 {
-			logger.Core.Info("- " + cmd + " (aliases: " + strings.Join(aliases, ", ") + ")")
-		} else {
-			logger.Core.Info("- %s" + cmd)
+		if !showDev && commandIsDevOnly[cmd] {
+			continue
+		}
+		if len(cmd) > maxLen {
+			maxLen = len(cmd)
 		}
 	}
+
+	logger.Core.Cleanf("")
+	if showDev {
+		logger.Core.Cleanf("  \033[33m═══ SSUICLI Commands (including dev) ═══\033[0m")
+	} else {
+		logger.Core.Cleanf("  \033[32m═══ SSUICLI Commands ═══\033[0m")
+	}
+	logger.Core.Cleanf("")
+
+	for _, cmd := range primaryCommands {
+		isDev := commandIsDevOnly[cmd]
+		if !showDev && isDev {
+			continue
+		}
+
+		desc := commandDescriptions[cmd]
+		aliases := commandAliases[cmd]
+
+		aliasStr := ""
+		if len(aliases) > 0 {
+			aliasStr = " \033[90m(" + strings.Join(aliases, ", ") + ")\033[0m"
+		}
+
+		if isDev {
+			logger.Core.Cleanf("  \033[33m%-*s\033[0m  %s%s", maxLen, cmd, desc, aliasStr)
+		} else {
+			logger.Core.Cleanf("  \033[36m%-*s\033[0m  %s%s", maxLen, cmd, desc, aliasStr)
+		}
+	}
+
+	logger.Core.Cleanf("")
 	return nil
 }

@@ -116,10 +116,10 @@ func handleControlReactions(s *discordgo.Session, r *discordgo.MessageReactionAd
 			_, err := steamcmd.InstallAndRunSteamCMD()
 
 			Value := map[bool]string{true: "🟢 Success", false: "🔴 Failed"}[err == nil]
-			SendMessageToStatusChannel(fmt.Sprintf("SteamCMD Update status: %s", Value))
+			SendMessageToEventLogChannel(fmt.Sprintf("SteamCMD Update status: %s", Value))
 			sendTemporaryMessage(s, config.GetControlPanelChannelID(), fmt.Sprintf("SteamCMD Update status: %s", Value), 30*time.Second)
 			if err != nil {
-				SendMessageToStatusChannel(fmt.Sprintf("Update failed: %v", err.Error()))
+				SendMessageToEventLogChannel(fmt.Sprintf("Update failed: %v", err.Error()))
 			}
 		}()
 
@@ -140,7 +140,7 @@ func handleControlReactions(s *discordgo.Session, r *discordgo.MessageReactionAd
 	sendTemporaryMessage(s, config.GetControlPanelChannelID(), actionMessage, 30*time.Second)
 
 	// Send the action message to the status channel
-	SendMessageToStatusChannel(fmt.Sprintf("%s triggered by %s.", actionMessage, username))
+	SendMessageToEventLogChannel(fmt.Sprintf("%s triggered by %s.", actionMessage, username))
 
 	// Remove the reaction after processing
 	err = s.MessageReactionRemove(config.GetControlPanelChannelID(), r.MessageID, r.Emoji.APIName(), r.UserID)

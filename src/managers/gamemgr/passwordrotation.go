@@ -13,7 +13,7 @@ import (
 // rotatePasswordIfEnabled checks if password rotation is enabled and sets a new random password
 func rotatePasswordIfEnabled() {
 
-	if !config.GetIsDiscordEnabled() || config.GetServerInfoPanelChannelID() == "" || !config.GetRotateServerPassword() {
+	if !config.GetIsDiscordEnabled() || config.GetStatusPanelChannelID() == "" || !config.GetRotateServerPassword() {
 		return
 	}
 

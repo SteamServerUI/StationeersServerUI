@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
@@ -49,8 +50,9 @@ func StopServer(w http.ResponseWriter, r *http.Request) {
 
 func GetGameServerRunState(w http.ResponseWriter, r *http.Request) {
 	runState := config.GetIsGameServerRunning()
-	response := map[string]interface{}{
+	response := map[string]any{
 		"isRunning": runState,
+		"uptime":    prettyUptime(gamemgr.GetServerUptime()),
 		"uuid":      gamemgr.GameServerUUID.String(),
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -58,6 +60,40 @@ func GetGameServerRunState(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to respond with Game Server status", http.StatusInternalServerError)
 		return
 	}
+}
+
+// helper to format the uptime in a more human readable way, e.g. "1d2h3m4s" instead of "26h3m4s"
+func prettyUptime(d time.Duration) string {
+	if d <= 0 {
+		return "0s"
+	}
+
+	d = d.Round(time.Second) // optional: round to nearest second
+	var parts []string
+
+	days := int64(d / (24 * time.Hour))
+	d -= time.Duration(days) * 24 * time.Hour
+
+	hours := int64(d / time.Hour)
+	d -= time.Duration(hours) * time.Hour
+
+	minutes := int64(d / time.Minute)
+	d -= time.Duration(minutes) * time.Minute
+
+	seconds := int64(d / time.Second)
+
+	if days > 0 {
+		parts = append(parts, fmt.Sprintf("%dd", days))
+	}
+	if hours > 0 || days > 0 {
+		parts = append(parts, fmt.Sprintf("%dh", hours))
+	}
+	if minutes > 0 || hours > 0 || days > 0 {
+		parts = append(parts, fmt.Sprintf("%dm", minutes))
+	}
+	parts = append(parts, fmt.Sprintf("%ds", seconds))
+
+	return strings.Join(parts, "")
 }
 
 // CommandHandler handles POST requests to execute commands via commandmgr.
