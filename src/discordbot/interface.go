@@ -35,10 +35,9 @@ func InitializeDiscordBot() {
 	logger.Discord.Info("Starting Discord integration...")
 	//logger.Discord.Debug("Discord token: " + config.GetDiscordToken())
 	logger.Discord.Debug("ControlChannelID: " + config.GetControlChannelID())
-	logger.Discord.Debug("StatusChannelID: " + config.GetStatusChannelID())
-	logger.Discord.Debug("ConnectionListChannelID: " + config.GetConnectionListChannelID())
+	logger.Discord.Debug("EventLogChannelID: " + config.GetEventLogChannelID())
+	logger.Discord.Debug("StatusPanelChannelID: " + config.GetStatusPanelChannelID())
 	logger.Discord.Debug("LogChannelID: " + config.GetLogChannelID())
-	logger.Discord.Debug("SaveChannelID: " + config.GetSaveChannelID())
 
 	// Open session first
 	err = config.DiscordSession.Open()
@@ -50,15 +49,14 @@ func InitializeDiscordBot() {
 	// Register handlers and commands after session is open
 	config.DiscordSession.AddHandler(listenToDiscordReactions)
 	config.DiscordSession.AddHandler(listenToSlashCommands)
-	config.DiscordSession.AddHandler(handleServerInfoButtonInteraction) // Handle button interactions
-	config.DiscordSession.AddHandler(handleDownloadButtonInteraction)   // Handle download button interactions
+	config.DiscordSession.AddHandler(handlePanelButtonInteraction)    // Handle button interactions (server info + players panel)
+	config.DiscordSession.AddHandler(handleDownloadButtonInteraction) // Handle download button interactions
 	registerSlashCommands(config.DiscordSession)
 
 	logger.Discord.Info("Bot is now running.")
-	SendMessageToStatusChannel("🤖 SSUI Version " + config.GetVersion() + " connected to Discord.")
-	sendControlPanel()          // Send control panel message to Discord
-	sendServerInfoPanel()       // Send server info panel with buttons to Discord
-	sendConnectedPlayersPanel() // Send connected players panel to Discord
+	SendMessageToEventLogChannel("🤖 SSUI Version " + config.GetVersion() + " connected to Discord.")
+	sendControlPanel()      // Send control panel message to Discord
+	sendServerStatusPanel() // Send server status panel to Discord
 	UpdateBotStatusWithMessage("StationeersServerUI v" + config.GetVersion())
 	// Start buffer flush ticker
 	BufferFlushTicker = time.NewTicker(5 * time.Second)
