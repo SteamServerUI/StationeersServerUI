@@ -33,12 +33,12 @@ func SendMessageToControlChannel(message string) {
 	}
 }
 
-func SendMessageToStatusChannel(message string) {
+func SendMessageToEventLogChannel(message string) {
 	if !config.GetIsDiscordEnabled() {
 		return
 	}
 
-	if config.GetStatusChannelID() == "" {
+	if config.GetEventLogChannelID() == "" {
 		return
 	}
 
@@ -46,30 +46,10 @@ func SendMessageToStatusChannel(message string) {
 		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 		return
 	}
-	//clearMessagesAboveLastN(config.StatusChannelID, 10)
-	_, err := config.DiscordSession.ChannelMessageSend(config.GetStatusChannelID(), message)
+	//clearMessagesAboveLastN(config.EventLogChannelID, 10)
+	_, err := config.DiscordSession.ChannelMessageSend(config.GetEventLogChannelID(), message)
 	if err != nil {
-		logger.Discord.Error("Error sending message to status channel: " + err.Error())
-	}
-}
-
-func SendMessageToSavesChannel(message string) {
-	if !config.GetIsDiscordEnabled() {
-		return
-	}
-
-	if config.GetSaveChannelID() == "" {
-		return
-	}
-
-	if config.DiscordSession == nil {
-		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
-		return
-	}
-	//clearMessagesAboveLastN(config.SaveChannelID, 300)
-	_, err := config.DiscordSession.ChannelMessageSend(config.GetSaveChannelID(), message)
-	if err != nil {
-		logger.Discord.Error("Error sending message to saves channel: " + err.Error())
+		logger.Discord.Error("Error sending message to game event log channel: " + err.Error())
 	}
 }
 

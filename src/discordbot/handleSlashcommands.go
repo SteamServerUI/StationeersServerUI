@@ -75,7 +75,7 @@ func handleStart(s *discordgo.Session, i *discordgo.InteractionCreate, data Embe
 		return err
 	}
 	gamemgr.InternalStartServer()
-	SendMessageToStatusChannel("🕛Start command received, Server is Starting...")
+	SendMessageToEventLogChannel("🕛Start command received, Server is Starting...")
 	return nil
 }
 
@@ -86,7 +86,7 @@ func handleStop(s *discordgo.Session, i *discordgo.InteractionCreate, data Embed
 		return err
 	}
 	gamemgr.InternalStopServer()
-	SendMessageToStatusChannel("🕛Stop command received, flatlining Server in 5 Seconds...")
+	SendMessageToEventLogChannel("🕛Stop command received, flatlining Server in 5 Seconds...")
 	return nil
 }
 
@@ -172,7 +172,7 @@ func handleRestore(s *discordgo.Session, i *discordgo.InteractionCreate, data Em
 	gamemgr.InternalStopServer()
 	if err := backupmgr.GlobalBackupManager.RestoreBackup(index); err != nil {
 		SendMessageToControlChannel(fmt.Sprintf("❌Failed to restore backup %d: %v", index, err))
-		SendMessageToStatusChannel("⚠️Restore command failed")
+		SendMessageToEventLogChannel("⚠️Restore command failed")
 		return nil
 	}
 	SendMessageToControlChannel(fmt.Sprintf("✅Backup %d restored, Starting Server...", index))

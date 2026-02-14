@@ -83,11 +83,11 @@ func dumpHeapProfile() {
 	logger.Main.Info("Heap profile written to heap.pprof")
 }
 
-func testConnectedPlayersListDiscord() {
+func testServerStatusPanelDiscord() {
 	players := map[string]string{
 		"76561198334231312": "JacksonTheMaster",
 		"76561198012262058": "Sebastian - TheNovice",
 		"76561197995322389": "Non Action Man",
 	}
-	discordbot.AddToConnectedPlayers("ThisDataDoesntMatter", "ThisDataDoesntMatter", time.Now(), players)
+	discordbot.UpdateStatusPanelPlayerConnected("ThisDataDoesntMatter", "ThisDataDoesntMatter", time.Now(), players)
 }

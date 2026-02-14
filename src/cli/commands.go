@@ -51,7 +51,7 @@ func init() {
 	RegisterCommand("listworkshophandles", WrapNoReturn(listworkshophandles), "List workshop Mod handles", true, "lwh")
 	RegisterCommand("downloadworkshopitemtest", WrapNoReturn(downloadWorkshopItemTest), "Test downloading a workshop item (ModularConsolesMod)", true, "dwmodcon")
 	RegisterCommand("dumpheapprofile", WrapNoReturn(dumpHeapProfile), "Dump a pprof heap profile for debugging", true, "dhp")
-	RegisterCommand("testconnectedplayerslistdiscord", WrapNoReturn(testConnectedPlayersListDiscord), "Send a fake player list to the Discord package to test the connected players panel", true, "tcpd")
+	RegisterCommand("testserverstatuspaneldiscord", WrapNoReturn(testServerStatusPanelDiscord), "Send a fake player list to the Discord package to test the server status panel", true, "tsspd")
 }
 
 // dashboardCommand launches the interactive terminal dashboard

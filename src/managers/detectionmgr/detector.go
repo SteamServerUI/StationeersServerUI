@@ -114,7 +114,7 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 
 				// Update connected players
 				d.connectedPlayers[steamID] = username
-				discordbot.AddToConnectedPlayers(username, steamID, time.Now(), d.connectedPlayers)
+				discordbot.UpdateStatusPanelPlayerConnected(username, steamID, time.Now(), d.connectedPlayers)
 
 				d.triggerEvent(Event{
 					Type:      EventPlayerReady,
@@ -156,7 +156,7 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 
 				// Remove from connected players
 				delete(d.connectedPlayers, steamID)
-				discordbot.RemoveFromConnectedPlayers(steamID, d.connectedPlayers)
+				discordbot.UpdateStatusPanelPlayerDisconnected(steamID, d.connectedPlayers)
 
 				d.triggerEvent(Event{
 					Type:      EventPlayerDisconnect,
