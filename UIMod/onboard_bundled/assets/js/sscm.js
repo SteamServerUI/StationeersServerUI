@@ -34,7 +34,6 @@ const availableCommands = [
     { name: "network", params: "", desc: "Shows network status" },
     { name: "networkdebug", params: "", desc: "Displays network debug window" },
     { name: "orbit", params: "[debug,view,celestials,simulate,set,timescale,makeoffset]", desc: "Controls orbital simulation" },
-    { name: "pause", params: "[true,false]", desc: "Pauses/unpauses game" },
     { name: "plant", params: "[grow <parent thing id>]", desc: "Plant debug functions" },
     { name: "prefabs", params: "[Thumbnails]", desc: "Validates source prefabs" },
     { name: "printgasinfo", params: "", desc: "Prints gas coefficients" },
