@@ -16,16 +16,16 @@ func GetControlChannelID() string {
 	return ControlChannelID
 }
 
-func GetStatusChannelID() string {
+func GetEventLogChannelID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return StatusChannelID
+	return EventLogChannelID
 }
 
-func GetConnectionListChannelID() string {
+func GetStatusPanelChannelID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ConnectionListChannelID
+	return StatusPanelChannelID
 }
 
 func GetLogChannelID() string {
@@ -34,22 +34,10 @@ func GetLogChannelID() string {
 	return LogChannelID
 }
 
-func GetSaveChannelID() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return SaveChannelID
-}
-
 func GetControlPanelChannelID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return ControlPanelChannelID
-}
-
-func GetServerInfoPanelChannelID() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return ServerInfoPanelChannelID
 }
 
 func GetDiscordCharBufferSize() int {
@@ -74,12 +62,6 @@ func GetRotateServerPassword() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return RotateServerPassword
-}
-
-func GetErrorChannelID() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return ErrorChannelID
 }
 
 func GetBackupKeepLastN() int {

@@ -33,12 +33,12 @@ func SendMessageToControlChannel(message string) {
 	}
 }
 
-func SendMessageToStatusChannel(message string) {
+func SendMessageToEventLogChannel(message string) {
 	if !config.GetIsDiscordEnabled() {
 		return
 	}
 
-	if config.GetStatusChannelID() == "" {
+	if config.GetEventLogChannelID() == "" {
 		return
 	}
 
@@ -46,50 +46,19 @@ func SendMessageToStatusChannel(message string) {
 		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 		return
 	}
-	//clearMessagesAboveLastN(config.StatusChannelID, 10)
-	_, err := config.DiscordSession.ChannelMessageSend(config.GetStatusChannelID(), message)
-	if err != nil {
-		logger.Discord.Error("Error sending message to status channel: " + err.Error())
-	}
-}
 
-func SendMessageToSavesChannel(message string) {
-	if !config.GetIsDiscordEnabled() {
-		return
-	}
-
-	if config.GetSaveChannelID() == "" {
-		return
-	}
-
-	if config.DiscordSession == nil {
-		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
-		return
-	}
-	//clearMessagesAboveLastN(config.SaveChannelID, 300)
-	_, err := config.DiscordSession.ChannelMessageSend(config.GetSaveChannelID(), message)
-	if err != nil {
-		logger.Discord.Error("Error sending message to saves channel: " + err.Error())
-	}
-}
-
-func SendUntrackedMessageToErrorChannel(message string) {
-	if !config.GetIsDiscordEnabled() {
-		return
-	}
-
-	if config.GetErrorChannelID() == "" {
-		return
-	}
-
-	if config.DiscordSession == nil {
-		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
+	if len(message) <= 2000 {
+		//clearMessagesAboveLastN(config.EventLogChannelID, 10)
+		_, err := config.DiscordSession.ChannelMessageSend(config.GetEventLogChannelID(), message)
+		if err != nil {
+			logger.Discord.Error("Error sending message to EventLog channel: " + err.Error())
+		}
 		return
 	}
 
 	maxMessageLength := 2000 // Discord's message character limit
 
-	// Function to split the message into chunks and send each one
+	// Function to split the message into chunks and send each one in case the message (primilariy exception stack traces) exceeds the Discord message limit
 	for len(message) > 0 {
 		if len(message) > maxMessageLength {
 			// Find a safe split point, for example, the last newline before the limit
@@ -99,9 +68,9 @@ func SendUntrackedMessageToErrorChannel(message string) {
 			}
 
 			// Send the chunk
-			_, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message[:splitIndex])
+			_, err := config.DiscordSession.ChannelMessageSend(config.GetEventLogChannelID(), message[:splitIndex])
 			if err != nil {
-				logger.Discord.Error("Error sending message to error channel: " + err.Error())
+				logger.Discord.Error("Error sending message to EventLog channel: " + err.Error())
 				return
 			}
 
@@ -109,65 +78,14 @@ func SendUntrackedMessageToErrorChannel(message string) {
 			message = message[splitIndex:]
 		} else {
 			// Send the remaining part of the message
-			_, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message)
+			_, err := config.DiscordSession.ChannelMessageSend(config.GetEventLogChannelID(), message)
 			if err != nil {
-				logger.Discord.Error("Error sending message to error channel: " + err.Error())
-				return // Return whatever was sent before the error
+				logger.Discord.Error("Error sending message to EventLog channel: " + err.Error())
+				return
 			}
 			break
 		}
 	}
-}
-
-// unsused (replaced with SendUntrackedMessageToErrorChannel) in 4.3, needed for having a restart button on the last exception message like in v2. Might remve this in the future, but for now let's keep it.
-func sendMessageToErrorChannel(message string) []*discordgo.Message {
-	if !config.GetIsDiscordEnabled() {
-		return nil
-	}
-	if config.DiscordSession == nil {
-		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
-		return nil
-	}
-
-	maxMessageLength := 2000 // Discord's message character limit
-	var sentMessages []*discordgo.Message
-
-	// Function to split the message into chunks and send each one
-	for len(message) > 0 {
-		if len(message) > maxMessageLength {
-			// Find a safe split point, for example, the last newline before the limit
-			splitIndex := strings.LastIndex(message[:maxMessageLength], "\n")
-			if splitIndex == -1 {
-				splitIndex = maxMessageLength // No newline found, force split at max length
-			}
-
-			// Send the chunk
-			sentMessage, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message[:splitIndex])
-			if err != nil {
-				logger.Discord.Error("Error sending message to error channel: " + err.Error())
-				return sentMessages // Return whatever was sent before the error
-			}
-
-			// Add sent message to the list
-			sentMessages = append(sentMessages, sentMessage)
-
-			// Remove the sent chunk from the message
-			message = message[splitIndex:]
-		} else {
-			// Send the remaining part of the message
-			sentMessage, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message)
-			if err != nil {
-				logger.Discord.Error("Error sending message to error channel: " + err.Error())
-				return sentMessages // Return whatever was sent before the error
-			}
-
-			// Add the final sent message to the list
-			sentMessages = append(sentMessages, sentMessage)
-			break
-		}
-	}
-
-	return sentMessages
 }
 
 // This function is used to clear messages above the last N messages in a channel. If you call this with 5, it will clear all messages in the channel besides the most recent 5.

@@ -519,12 +519,12 @@ func SetControlChannelID(value string) error {
 	return safeSaveConfig()
 }
 
-// SetStatusChannelID sets the StatusChannelID
-func SetStatusChannelID(value string) error {
+// SetEventLogChannelID sets the EventLogChannelID
+func SetEventLogChannelID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	StatusChannelID = value
+	EventLogChannelID = value
 	return safeSaveConfig()
 }
 
@@ -537,30 +537,12 @@ func SetLogChannelID(value string) error {
 	return safeSaveConfig()
 }
 
-// SetErrorChannelID sets the ErrorChannelID
-func SetErrorChannelID(value string) error {
+// SetStatusPanelChannelID sets the StatusPanelChannelID
+func SetStatusPanelChannelID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ErrorChannelID = value
-	return safeSaveConfig()
-}
-
-// SetConnectionListChannelID sets the ConnectionListChannelID
-func SetConnectionListChannelID(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	ConnectionListChannelID = value
-	return safeSaveConfig()
-}
-
-// SetSaveChannelID sets the SaveChannelID
-func SetSaveChannelID(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	SaveChannelID = value
+	StatusPanelChannelID = value
 	return safeSaveConfig()
 }
 

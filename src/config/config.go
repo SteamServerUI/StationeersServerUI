@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.12.3"
+	Version = "5.13.1"
 	Branch  = "release"
 )
 
@@ -89,19 +89,19 @@ type JsonConfig struct {
 	IsStationeersLaunchPadAutoUpdatesEnabled *bool `json:"IsStationeersLaunchPadAutoUpdatesEnabled"`
 
 	// Discord Settings
-	DiscordToken             string `json:"discordToken"`
-	ControlChannelID         string `json:"controlChannelID"`
-	StatusChannelID          string `json:"statusChannelID"`
-	ConnectionListChannelID  string `json:"connectionListChannelID"`
-	LogChannelID             string `json:"logChannelID"`
-	SaveChannelID            string `json:"saveChannelID"`
-	ControlPanelChannelID    string `json:"controlPanelChannelID"`
-	ServerInfoPanelChannelID string `json:"serverInfoPanelChannelID"`
-	DiscordCharBufferSize    int    `json:"DiscordCharBufferSize"`
-	BlackListFilePath        string `json:"blackListFilePath"`
-	IsDiscordEnabled         *bool  `json:"isDiscordEnabled"`
-	RotateServerPassword     *bool  `json:"rotateServerPassword"`
-	ErrorChannelID           string `json:"errorChannelID"`
+	DiscordToken            string `json:"discordToken"`
+	ControlChannelID        string `json:"controlChannelID"`
+	EventLogChannelID       string `json:"eventLogChannelID"`
+	StatusChannelID         string `json:"statusChannelID,omitempty"`         // deprecated, migrated to EventLogChannelID
+	ConnectionListChannelID string `json:"connectionListChannelID,omitempty"` // deprecated, migrated to StatusPanelChannelID
+	StatusPanelChannelID    string `json:"statusPanelChannelID"`              // replaces ConnectionListChannelID and ServerInfoPanelChannelID
+	LogChannelID            string `json:"logChannelID"`
+	SaveChannelID           string `json:"saveChannelID,omitempty"` // deprecated, merged into EventLogChannelID
+	ControlPanelChannelID   string `json:"controlPanelChannelID"`
+	DiscordCharBufferSize   int    `json:"DiscordCharBufferSize"`
+	BlackListFilePath       string `json:"blackListFilePath"`
+	IsDiscordEnabled        *bool  `json:"isDiscordEnabled"`
+	RotateServerPassword    *bool  `json:"rotateServerPassword"`
 
 	//Backup Settings
 	BackupKeepLastN       int   `json:"backupKeepLastN"`       // Number of most recent backups to keep (default: 2000)
@@ -145,12 +145,10 @@ func applyConfig(cfg *JsonConfig) {
 	// Apply values with hierarchy
 	DiscordToken = getString(cfg.DiscordToken, "DISCORD_TOKEN", "")
 	ControlChannelID = getString(cfg.ControlChannelID, "CONTROL_CHANNEL_ID", "")
-	StatusChannelID = getString(cfg.StatusChannelID, "STATUS_CHANNEL_ID", "")
-	ConnectionListChannelID = getString(cfg.ConnectionListChannelID, "CONNECTION_LIST_CHANNEL_ID", "")
+	EventLogChannelID = getString(cfg.EventLogChannelID, "GAME_EVENT_LOG_CHANNEL_ID", "")
+	StatusPanelChannelID = getString(cfg.StatusPanelChannelID, "STATUS_PANEL_CHANNEL_ID", "")
 	LogChannelID = getString(cfg.LogChannelID, "LOG_CHANNEL_ID", "")
-	SaveChannelID = getString(cfg.SaveChannelID, "SAVE_CHANNEL_ID", "")
 	ControlPanelChannelID = getString(cfg.ControlPanelChannelID, "CONTROL_PANEL_CHANNEL_ID", "")
-	ServerInfoPanelChannelID = getString(cfg.ServerInfoPanelChannelID, "SERVER_INFO_PANEL_CHANNEL_ID", "")
 	DiscordCharBufferSize = getInt(cfg.DiscordCharBufferSize, "DISCORD_CHAR_BUFFER_SIZE", 1000)
 	BlackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "./Blacklist.txt")
 
@@ -162,7 +160,6 @@ func applyConfig(cfg *JsonConfig) {
 	RotateServerPassword = rotateServerPasswordVal
 	cfg.RotateServerPassword = &rotateServerPasswordVal
 
-	ErrorChannelID = getString(cfg.ErrorChannelID, "ERROR_CHANNEL_ID", "")
 	BackupKeepLastN = getInt(cfg.BackupKeepLastN, "BACKUP_KEEP_LAST_N", 2000)
 
 	isCleanupEnabledVal := getBool(cfg.IsCleanupEnabled, "IS_CLEANUP_ENABLED", false)
@@ -300,6 +297,8 @@ func applyConfig(cfg *JsonConfig) {
 	ShowExpertSettings = showExpertSettingsVal
 	cfg.ShowExpertSettings = &showExpertSettingsVal
 
+	// START MIGRATIONS AND BACKWARDS COMPATIBILITY
+
 	// Process SaveInfo to maintain backwards compatibility with pre-5.6.6 SaveInfo field (deprecated)
 	if SaveInfo != "" {
 		parts := strings.Split(SaveInfo, " ")
@@ -313,6 +312,27 @@ func applyConfig(cfg *JsonConfig) {
 		}
 		cfg.SaveInfo = ""
 	}
+
+	// Migrate ConnectionListChannelID -> StatusPanelChannelID (pre-5.13.0)
+	if cfg.ConnectionListChannelID != "" && StatusPanelChannelID == "" {
+		StatusPanelChannelID = cfg.ConnectionListChannelID
+		fmt.Println("Migrated ConnectionListChannelID to StatusPanelChannelID: " + StatusPanelChannelID)
+		cfg.ConnectionListChannelID = ""
+	}
+
+	// Migrate StatusChannelID -> EventLogChannelID (pre-5.14.0)
+	if cfg.StatusChannelID != "" && EventLogChannelID == "" {
+		EventLogChannelID = cfg.StatusChannelID
+		fmt.Println("Migrated StatusChannelID to EventLogChannelID: " + EventLogChannelID)
+		cfg.StatusChannelID = ""
+	}
+
+	// Migrate SaveChannelID -> EventLogChannelID (pre-5.14.0, save events now go to game event log)
+	if cfg.SaveChannelID != "" {
+		fmt.Println("SaveChannelID is deprecated and has been removed. Save events now go to the Game Event Log Channel. Dropping SaveChannelID value: " + cfg.SaveChannelID)
+	}
+
+	// END MIGRATIONS AND BACKWARDS COMPATIBILITY
 
 	if GameBranch != "public" && GameBranch != "beta" && GameBranch != "multiplayersafe" {
 		IsNewTerrainAndSaveSystem = false
@@ -357,17 +377,14 @@ func safeSaveConfig() error {
 	cfg := JsonConfig{
 		DiscordToken:                             DiscordToken,
 		ControlChannelID:                         ControlChannelID,
-		StatusChannelID:                          StatusChannelID,
-		ConnectionListChannelID:                  ConnectionListChannelID,
+		EventLogChannelID:                        EventLogChannelID,
+		StatusPanelChannelID:                     StatusPanelChannelID,
 		LogChannelID:                             LogChannelID,
-		SaveChannelID:                            SaveChannelID,
 		ControlPanelChannelID:                    ControlPanelChannelID,
-		ServerInfoPanelChannelID:                 ServerInfoPanelChannelID,
 		DiscordCharBufferSize:                    DiscordCharBufferSize,
 		BlackListFilePath:                        BlackListFilePath,
 		IsDiscordEnabled:                         &IsDiscordEnabled,
 		RotateServerPassword:                     &RotateServerPassword,
-		ErrorChannelID:                           ErrorChannelID,
 		BackupKeepLastN:                          BackupKeepLastN,
 		IsCleanupEnabled:                         &IsCleanupEnabled,
 		BackupKeepDailyFor:                       int(BackupKeepDailyFor / time.Hour),    // Convert to hours

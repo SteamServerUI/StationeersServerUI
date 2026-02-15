@@ -262,7 +262,7 @@ function pollRecurringTasks() {
         fetch('/api/v2/server/status')
             .then(response => response.json())
             .then(data => {
-                updateStatusIndicator(data.isRunning);
+                updateStatusIndicator(data.isRunning, false, data.uptime);
                 if (data.uuid) {
                     localStorage.setItem('gameserverrunID', data.uuid);
                 }
@@ -290,13 +290,15 @@ function pollRecurringTasks() {
     }, 30000);
 }
 
-function updateStatusIndicator(isRunning, isError = false) {
+function updateStatusIndicator(isRunning, isError = false, uptime = '') {
     const indicator = document.getElementById('status-indicator');
+    const uptimeDisplay = document.getElementById('uptime-display');
     
     if (isError) {
         indicator.className = 'status-indicator error';
         indicator.title = 'Error fetching server status';
         window.gamserverstate = false;
+        if (uptimeDisplay) uptimeDisplay.style.display = 'none';
         return;
     }
     
@@ -308,5 +310,15 @@ function updateStatusIndicator(isRunning, isError = false) {
         indicator.className = 'status-indicator offline';
         indicator.title = 'Server is offline';
         window.gamserverstate = false;
+    }
+
+    // Show uptime only when server is running and uptime is not "0s"
+    if (uptimeDisplay) {
+        if (isRunning && uptime && uptime !== '0s') {
+            uptimeDisplay.textContent = uptime;
+            uptimeDisplay.style.display = 'inline-block';
+        } else {
+            uptimeDisplay.style.display = 'none';
+        }
     }
 }

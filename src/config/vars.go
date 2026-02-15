@@ -32,7 +32,7 @@ var (
 	AdditionalParams string
 	UPNPEnabled      bool
 	StartLocalHost   bool
-	SaveInfo         string
+	SaveInfo         string // deprecated, replaced by SaveName and WorldID
 	SaveName         string
 	WorldID          string
 	SaveInterval     string
@@ -82,21 +82,18 @@ var (
 
 // Discord integration
 var (
-	DiscordToken             string
-	DiscordSession           *discordgo.Session
-	IsDiscordEnabled         bool
-	RotateServerPassword     bool
-	ControlChannelID         string
-	StatusChannelID          string
-	LogChannelID             string
-	ErrorChannelID           string
-	ConnectionListChannelID  string
-	SaveChannelID            string
-	ControlPanelChannelID    string
-	ServerInfoPanelChannelID string
-	DiscordCharBufferSize    int
-	ExceptionMessageID       string
-	BlackListFilePath        string
+	DiscordToken          string
+	DiscordSession        *discordgo.Session
+	IsDiscordEnabled      bool
+	RotateServerPassword  bool
+	ControlChannelID      string
+	EventLogChannelID     string
+	LogChannelID          string
+	StatusPanelChannelID  string
+	ControlPanelChannelID string
+	DiscordCharBufferSize int
+	ExceptionMessageID    string
+	BlackListFilePath     string
 )
 
 // Backup and cleanup settings

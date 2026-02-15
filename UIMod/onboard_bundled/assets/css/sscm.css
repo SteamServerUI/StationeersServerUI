@@ -39,7 +39,7 @@
 
 #sscm-command-input:disabled {
     background: rgba(255, 255, 255, 0.1);
-    color: var(--text-bright, #ffffff);
+    color: var(--text-bright);
     opacity: 0.7;
     cursor: not-allowed;
 }
@@ -56,7 +56,7 @@
     right: 10px;
     max-height: 250px;
     overflow-y: auto;
-    background: var(--bg-dark, #2d333b);
+    background: var(--bg-dark);
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     z-index: 1000;
@@ -68,7 +68,7 @@
     display: flex;
     align-items: flex-start;
     padding: 10px 14px;
-    color: var(--text-bright, #ffffff);
+    color: var(--text-bright);
     cursor: pointer;
     transition: all 0.2s ease;
     gap: 10px;
@@ -76,8 +76,8 @@
 
 .sscm-suggestion-item:hover,
 .sscm-suggestion-item.highlighted {
-    background: var(--primary-glow, #3b82f6);
-    color: #ffffff;
+    background: var(--primary-glow);
+    color: var(--text-header);
 }
 
 .sscm-suggestion-name {
@@ -87,7 +87,7 @@
 }
 
 .sscm-suggestion-params {
-    color: var(--text-muted, #d1d5db);
+    color: var(--text-bright);
     flex: 0 0 250px;
     overflow-wrap: break-word;
     line-height: 1.3;
@@ -96,7 +96,7 @@
 }
 
 .sscm-suggestion-desc {
-    color: var(--text-dim, #9ca3af);
+    color: var(--text-dim);
     flex: 1;
     overflow-wrap: break-word;
     hyphens: auto;

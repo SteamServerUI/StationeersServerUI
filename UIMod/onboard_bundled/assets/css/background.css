@@ -16,8 +16,8 @@ header {
     position: absolute;
     inset: 0;
     background: 
-      linear-gradient(rgba(0, 255, 171, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 255, 171, 0.05) 1px, transparent 1px);
+      linear-gradient(color-mix(in srgb, var(--primary) 5%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--primary) 5%, transparent) 1px, transparent 1px);
     background-size: 20px 20px;
     background-position: center center;
     z-index: 0;
@@ -29,7 +29,7 @@ header {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(ellipse at bottom, #1b2735 0%, var(--bg-dark) 100%);
+    background: radial-gradient(ellipse at bottom, color-mix(in srgb, var(--bg-dark) 70%, var(--bg-panel)) 0%, var(--bg-dark) 100%);
     z-index: -2;
     will-change: transform;
     overflow: hidden;
@@ -106,7 +106,7 @@ header {
       radial-gradient(1px 1px at 102px 64px, var(--text-bright), transparent),
       radial-gradient(1px 1px at 127px 187px, var(--text-header), transparent),
       radial-gradient(700px 500px at 65% 75%, var(--primary-glow), transparent),
-      radial-gradient(500px 400px at 20% 25%, rgba(0, 132, 255, 0.15), transparent);
+      radial-gradient(500px 400px at 20% 25%, color-mix(in srgb, var(--accent) 15%, transparent), transparent);
     background-size: 250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
                      250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
                      100% 100%, 100% 100%;

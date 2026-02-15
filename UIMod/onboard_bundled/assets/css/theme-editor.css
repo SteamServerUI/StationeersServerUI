@@ -1,0 +1,242 @@
+@import '/static/css/variables.css';
+
+
+.theme-editor {
+    padding: 20px;
+}
+
+.theme-editor-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: var(--form-bg);
+    border-radius: 8px;
+    border: 1px solid var(--primary-dim);
+}
+
+.theme-editor-section h3 {
+    margin: 0 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-dim);
+    color: var(--text-bright);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+.theme-color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.theme-color-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.theme-color-item label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--text-bright);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-color-item .color-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-color-item input[type="color"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 42px;
+    height: 42px;
+    border: 2px solid var(--primary-dim);
+    border-radius: 6px;
+    cursor: pointer;
+    background: transparent;
+    padding: 2px;
+    transition: border-color var(--transition-fast);
+}
+
+.theme-color-item input[type="color"]:hover {
+    border-color: var(--primary);
+}
+
+.theme-color-item input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.theme-color-item input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 3px;
+}
+
+.theme-color-item input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: 3px;
+}
+
+.theme-color-item input[type="text"].color-hex-input {
+    width: 100px;
+    padding: 8px 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    background: var(--input-bg);
+    color: var(--primary);
+    border: 2px solid var(--primary-dim);
+    border-radius: 4px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.theme-color-item input[type="text"].color-hex-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 8px var(--primary-glow);
+    outline: none;
+}
+
+.theme-color-item .color-description {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-style: italic;
+}
+
+/* Preset Themes */
+.theme-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.theme-preset-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--tab-bg);
+    border: 2px solid var(--primary-dim);
+    border-radius: 8px;
+    color: var(--text-bright);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+    transition: all var(--transition-normal);
+}
+
+.theme-preset-btn:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.theme-preset-btn.active {
+    background: var(--primary-bg-medium);
+    border-color: var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.theme-preset-colors {
+    display: flex;
+    gap: 3px;
+}
+
+.theme-preset-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Theme Actions */
+.theme-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.theme-actions button {
+    padding: 10px 20px;
+    font-size: 0.85rem;
+}
+
+/* Live Preview */
+.theme-preview-strip {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: var(--bg-dark);
+    border-radius: 8px;
+    border: 1px solid var(--primary-dim);
+    margin-top: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.preview-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+    transition: transform var(--transition-fast);
+}
+
+.preview-swatch:hover {
+    transform: scale(1.15);
+}
+
+.preview-swatch-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-align: center;
+    margin-top: 2px;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.preview-swatch-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Import/Export */
+.theme-import-export {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.theme-import-export textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    background: var(--input-bg);
+    color: var(--primary);
+    border: 2px solid var(--primary-dim);
+    border-radius: 6px;
+    resize: vertical;
+}
+
+.theme-import-export textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 8px var(--primary-glow);
+    outline: none;
+}
+
+/* Notification info type (not in detectionmanager.css) */
+.notification-info {
+    background-color: var(--accent);
+    color: var(--text-header);
+}

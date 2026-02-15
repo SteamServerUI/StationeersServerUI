@@ -38,44 +38,44 @@
 .popup-content button {
     margin-top: 15px;
     padding: 10px 20px;
-    color: white;
+    color: var(--text-header);
     border: none;
     border-radius: 3px;
     cursor: pointer;
 }
 
 .popup.error .popup-content {
-    border-left: 2px solid #ff4d4d;
+    border-left: 2px solid var(--danger);
 }
 
 .popup.error button {
-    background-color: #ff4d4d;
+    background-color: var(--danger);
 }
 
 .popup.error button:hover {
-    background-color: #e60000;
+    background-color: color-mix(in srgb, var(--danger) 80%, black);
 }
 
 .popup.success .popup-content {
-    border-left: 2px solid #28a745;
+    border-left: 2px solid var(--success);
 }
 
 .popup.success button {
-    background-color: #28a745;
+    background-color: var(--success);
 }
 
 .popup.success button:hover {
-    background-color: #218838;
+    background-color: color-mix(in srgb, var(--success) 80%, black);
 }
 
 .popup.info .popup-content {
-    border-left: 2px solid #17a2b8;
+    border-left: 2px solid var(--accent);
 }
 
 .popup.info button {
-    background-color: #17a2b8;
+    background-color: var(--accent);
 }
 
 .popup.info button:hover {
-    background-color: #138496;
+    background-color: color-mix(in srgb, var(--accent) 80%, black);
 }

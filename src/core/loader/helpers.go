@@ -76,16 +76,14 @@ func PrintConfigDetails(logLevel ...string) {
 
 	// Discord Configuration
 	discord := map[string]string{
-		"IsDiscordEnabled":        fmt.Sprintf("%v", config.GetIsDiscordEnabled()),
-		"ControlChannelID":        config.GetControlChannelID(),
-		"StatusChannelID":         config.GetStatusChannelID(),
-		"ConnectionListChannelID": config.GetConnectionListChannelID(),
-		"LogChannelID":            config.GetLogChannelID(),
-		"SaveChannelID":           config.GetSaveChannelID(),
-		"ControlPanelChannelID":   config.GetControlPanelChannelID(),
-		"ErrorChannelID":          config.GetErrorChannelID(),
-		"DiscordCharBufferSize":   fmt.Sprintf("%d", config.GetDiscordCharBufferSize()),
-		"BlackListFilePath":       config.GetBlackListFilePath(),
+		"IsDiscordEnabled":      fmt.Sprintf("%v", config.GetIsDiscordEnabled()),
+		"ControlChannelID":      config.GetControlChannelID(),
+		"EventLogChannelID":     config.GetEventLogChannelID(),
+		"StatusPanelChannelID":  config.GetStatusPanelChannelID(),
+		"LogChannelID":          config.GetLogChannelID(),
+		"ControlPanelChannelID": config.GetControlPanelChannelID(),
+		"DiscordCharBufferSize": fmt.Sprintf("%d", config.GetDiscordCharBufferSize()),
+		"BlackListFilePath":     config.GetBlackListFilePath(),
 	}
 	printSection("Discord Configuration", discord)
 

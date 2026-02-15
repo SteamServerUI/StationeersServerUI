@@ -3,6 +3,7 @@ package detectionmgr
 
 import (
 	"fmt"
+	"maps"
 	"regexp"
 	"strings"
 	"time"
@@ -114,7 +115,7 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 
 				// Update connected players
 				d.connectedPlayers[steamID] = username
-				discordbot.AddToConnectedPlayers(username, steamID, time.Now(), d.connectedPlayers)
+				discordbot.UpdateStatusPanelPlayerConnected(username, steamID, time.Now(), d.connectedPlayers)
 
 				d.triggerEvent(Event{
 					Type:      EventPlayerReady,
@@ -156,7 +157,7 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 
 				// Remove from connected players
 				delete(d.connectedPlayers, steamID)
-				discordbot.RemoveFromConnectedPlayers(steamID, d.connectedPlayers)
+				discordbot.UpdateStatusPanelPlayerDisconnected(steamID, d.connectedPlayers)
 
 				d.triggerEvent(Event{
 					Type:      EventPlayerDisconnect,
@@ -197,7 +198,7 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 				})
 			},
 		},
-		{
+		{ // Setting changed pattern
 			pattern: regexp.MustCompile(`\d{2}:\d{2}:\d{2}: Changed setting '(.+?)' from '(.+?)' to '(.+?)'`),
 			handler: func(matches []string, logMessage string) {
 				settingName := matches[1]
@@ -211,20 +212,21 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 				})
 			},
 		},
-		{
-			pattern: regexp.MustCompile(`RocketNet Succesfully hosted with Address: (.+?) Port: (\d+)`),
+		{ //RakNet hosted pattern
+			pattern: regexp.MustCompile(`(RocketNet|RakNet) Succesfully hosted with Address: (.+?) Port: (\d+)`),
 			handler: func(matches []string, logMessage string) {
-				address := matches[1]
-				port := matches[2]
+				raknetType := matches[1] // purely cosmetic
+				address := matches[2]
+				port := matches[3]
 				d.triggerEvent(Event{
 					Type:      EventServerHosted,
-					Message:   fmt.Sprintf("RocketNet Server hosted at %s:%s", address, port),
+					Message:   fmt.Sprintf("%s Server hosted at %s:%s", raknetType, address, port),
 					RawLog:    logMessage,
 					Timestamp: time.Now().Format(time.RFC3339),
 				})
 			},
 		},
-		{
+		{ // New game started pattern
 			pattern: regexp.MustCompile(`Started new game in world (.+)`),
 			handler: func(matches []string, logMessage string) {
 				worldName := matches[1]
@@ -236,7 +238,7 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 				})
 			},
 		},
-		{
+		{ // Version extracted pattern
 			pattern: regexp.MustCompile(`Version\s*:\s*(\d+\.\d+\.\d+\.\d+)`),
 			handler: func(matches []string, logMessage string) {
 				version := matches[1]
@@ -270,9 +272,7 @@ func (d *Detector) triggerEvent(event Event) {
 // GetConnectedPlayers returns a copy of the connected players map
 func (d *Detector) GetConnectedPlayers() map[string]string {
 	players := make(map[string]string)
-	for k, v := range d.connectedPlayers {
-		players[k] = v
-	}
+	maps.Copy(players, d.connectedPlayers)
 	return players
 }
 
