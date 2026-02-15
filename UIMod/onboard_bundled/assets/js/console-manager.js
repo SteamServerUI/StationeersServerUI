@@ -104,6 +104,7 @@ function handleConsole() {
         "Welcome home, Sir!"
     ];
 
+    const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
     const addMessage = (text, color, style = 'normal') => {
         const div = document.createElement('div');
         div.textContent = text;
@@ -162,13 +163,13 @@ function handleConsole() {
     typeTextWithCallback(consoleElement, bootTitle, 30, () => {
         // Show two funny messages while connecting
         const messageIndex1 = Math.floor(Math.random() * funMessages.length);
-        addMessage(funMessages[messageIndex1], '#0af', 'italic');
+        addMessage(funMessages[messageIndex1], cssVar('--console-info'), 'italic');
 
         let messageIndex2;
         do {
             messageIndex2 = Math.floor(Math.random() * funMessages.length);
         } while (messageIndex2 === messageIndex1);
-        addMessage(funMessages[messageIndex2], '#0af', 'italic');
+        addMessage(funMessages[messageIndex2], cssVar('--console-info'), 'italic');
 
         // Set up the persistent console stream
         outputEventSource = new EventSource('/console');
@@ -191,7 +192,7 @@ function handleConsole() {
             console.error("Console stream disconnected");
             outputEventSource.close();
             outputEventSource = null;
-            addMessage("Warning: Console stream unavailable. Retrying...", '#ff0');
+            addMessage("Warning: Console stream unavailable. Retrying...", cssVar('--console-warning'));
             if (window.location.pathname === '/') {
                 setTimeout(() => {
                     if (!outputEventSource) {
@@ -206,9 +207,9 @@ function handleConsole() {
 
     function finishInitialization() {
         if (bugChance < 0.05) {
-            addMessage(bugMessage, 'red');
+            addMessage(bugMessage, cssVar('--console-error'));
             setTimeout(() => {
-                addMessage("Repair complete. Continuing initialization...", 'green');
+                addMessage("Repair complete. Continuing initialization...", cssVar('--console-success'));
                 completeBoot();
             }, 1000);
         } else {
@@ -219,7 +220,7 @@ function handleConsole() {
     function completeBoot() {
         setTimeout(() => {
             createCommandInput(); // Add input after boot
-            addMessage(bootCompleteMessage, '#0f0');
+            addMessage(bootCompleteMessage, cssVar('--console-success'));
             //addMessage("StationeersServerUI is becoming SteamServerUI!", '#ff4500');
             //addMessage("Please mind the New Terrain System warning below", '#ff4500');
             consoleElement.scrollTop = consoleElement.scrollHeight;

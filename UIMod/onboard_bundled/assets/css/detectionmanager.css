@@ -1,13 +1,13 @@
 @import '/static/css/variables.css';
 
 #detection-list-container {
-    background: rgba(114, 137, 218, 0.1);
+    background: var(--discord-bg);
 }
 
 /* Detection list */
 .detection-list {
     margin-top: 2rem;
-    border: 1px solid #ccc;
+    border: 1px solid var(--text-dim);
     border-radius: 4px;
     overflow: hidden;
 }
@@ -18,7 +18,7 @@
     display: grid;
     grid-template-columns: 100px 2fr 2fr 120px;
     gap: 1rem;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid var(--text-dim);
 }
 
 .detection-item {
@@ -26,7 +26,7 @@
     display: grid;
     grid-template-columns: 100px 2fr 2fr 120px;
     gap: 1rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--text-dim);
     align-items: center;
 }
 
@@ -87,7 +87,7 @@
     bottom: 4px;
     transition: .4s;
     border-radius: 50%;
-    background-color: white;
+    background-color: var(--text-header);
 }
 
 input:checked+.slider {
@@ -109,25 +109,25 @@ input:checked+.slider:before {
 
 .type-keyword {
     background-color: var(--primary);
-    color: #0066cc;
+    color: var(--bg-dark);
 }
 
 .type-regex {
     background-color: var(--primary);
-    color: #fd7e14;
+    color: var(--bg-dark);
 }
 
 .empty-list {
     padding: 2rem;
     text-align: center;
-    color: #666;
+    color: var(--text-dim);
     font-style: italic;
 }
 
 /* Loading spinner */
 .loader {
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #0066cc;
+    border: 5px solid var(--surface-dark);
+    border-top: 5px solid var(--accent);
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -153,7 +153,7 @@ input:checked+.slider:before {
     right: 20px;
     padding: 1rem;
     border-radius: 4px;
-    color: white;
+    color: var(--text-header);
     font-weight: bold;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: none;
@@ -168,14 +168,14 @@ input:checked+.slider:before {
 }
 
 .notification-error {
-    background-color: #dc3546;
+    background-color: var(--danger);
 }
 
 .form-group input,
 .form-group textarea {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid #ccc;
+    border: 1px solid var(--text-dim);
     border-radius: 4px;
     box-sizing: border-box;
     background: var(--bg-dark);

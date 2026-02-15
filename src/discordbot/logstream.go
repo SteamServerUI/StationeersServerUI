@@ -34,9 +34,11 @@ func flushLogBufferToDiscord() {
 
 	for len(message) > 0 {
 		// Determine how much of the message we can send
-		chunkSize := discordMaxMessageLength
-		if len(message) < discordMaxMessageLength {
-			chunkSize = len(message)
+		chunkSize := min(len(message), discordMaxMessageLength)
+
+		// if the message is empty len 0, break to avoid infinite loop
+		if chunkSize == 0 {
+			break
 		}
 
 		// Send the chunk to Discord

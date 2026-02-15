@@ -15,7 +15,7 @@
   text-align: center;
   line-height: 2;
   padding: 10px;
-  background-color: rgba(0, 255, 171, 0.05);
+  background-color: var(--primary-bg-subtle);
   border-radius: 5px;
   border-left: 3px solid var(--primary);
   transition: opacity var(--transition-fast);
@@ -27,8 +27,8 @@
   top: 22px;
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.75);
-  background-color: rgba(0, 0, 0, 0.35);
+  color: var(--text-dim);
+  background-color: var(--overlay-bg);
   padding: 2px 8px;
   border-radius: 4px;
   letter-spacing: 0.5px;
@@ -48,14 +48,14 @@
 }
 
 .status-indicator.online {
-  background-color: #4CAF50;
+  background-color: var(--success);
   animation: pulse 2s ease-in-out infinite;
-  box-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--success) 70%, transparent);
 }
 
 .status-indicator.offline {
-  background-color: #F44336;
-  box-shadow: 0 0 10px rgba(244, 67, 54, 0.7);
+  background-color: var(--danger);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--danger) 70%, transparent);
 }
 
 .status-indicator.offline::before,
@@ -66,7 +66,7 @@
   left: 50%;
   width: 10px;
   height: 2px;
-  background-color: #FFFFFF;
+  background-color: var(--text-header);
 }
 
 .status-indicator.offline::before {
@@ -78,25 +78,25 @@
 }
 
 .status-indicator.error {
-  background-color: #FFC107;
-  box-shadow: 0 0 10px rgba(255, 193, 7, 0.7);
+  background-color: var(--warning);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--warning) 70%, transparent);
   animation: shake 0.5s ease-in-out infinite;
 }
 
 @keyframes pulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--success) 70%, transparent);
   }
 
   50% {
     transform: scale(1.2);
-    box-shadow: 0 0 14px rgba(76, 175, 80, 0.9);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--success) 90%, transparent);
   }
 
   100% {
     transform: scale(1);
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--success) 70%, transparent);
   }
 }
 
@@ -123,7 +123,7 @@
   padding: 20px;
   height: 400px;
   overflow-y: auto;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: var(--overlay-bg-heavy);
   color: var(--primary);
   margin-bottom: 30px;
   border-radius: 8px;
@@ -131,7 +131,7 @@
   font-family: 'Share Tech Mono', 'Courier New', monospace;
   position: relative;
   scrollbar-width: thin;
-  scrollbar-color: var(--primary) #000;
+  scrollbar-color: var(--primary) var(--bg-dark);
   display: flex;
   flex-direction: column;
 }
@@ -145,7 +145,7 @@
 #console::-webkit-scrollbar-track,
 #detection-console::-webkit-scrollbar-track,
 #backendlog-console::-webkit-scrollbar-track {
-  background: #000;
+  background: var(--bg-dark);
   border-radius: 4px;
 }
 
@@ -170,7 +170,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(transparent 50%, rgba(0, 255, 171, 0.03) 50%);
+  background: linear-gradient(transparent 50%, var(--primary-bg-subtle) 50%);
   background-size: 100% 4px;
   pointer-events: none;
   opacity: 0.3;
@@ -181,7 +181,7 @@
   margin: 10px 0;
   border-radius: 4px;
   border-left: 3px solid var(--primary);
-  background-color: rgba(0, 255, 171, 0.05);
+  background-color: var(--primary-bg-subtle);
   transition: all var(--transition-normal);
   word-wrap: break-word;
 }
@@ -191,7 +191,7 @@
   margin: 5px 0;
   border-radius: 4px;
   border-left: 3px solid var(--primary);
-  background-color: rgba(0, 255, 171, 0.05);
+  background-color: var(--primary-bg-subtle);
   transition: all var(--transition-normal);
   word-wrap: break-word;
 }
@@ -205,12 +205,12 @@
 }
 
 .detection-event:hover {
-  background-color: rgba(0, 255, 171, 0.1);
+  background-color: var(--primary-glow-soft);
   transform: translateX(3px);
 }
 
 .event-timestamp {
-  color: #888;
+  color: var(--text-muted);
   font-size: 0.9em;
   margin-right: 5px;
 }
@@ -237,26 +237,26 @@
 }
 
 .event-player-disconnect {
-  border-left-color: #FF7700;
+  border-left-color: var(--warning);
 }
 
 .event-world-saved {
-  border-left-color: #00FFFF;
+  border-left-color: var(--accent);
 }
 
 .event-exception {
   border-left-color: var(--danger);
-  background-color: rgba(255, 0, 0, 0.1);
+  background-color: color-mix(in srgb, var(--danger) 10%, transparent);
 }
 
 /* Backups */
 #backups {
   position: relative;
   margin-top: 40px;
-  background-color: rgba(0, 255, 171, 0.05);
+  background-color: var(--primary-bg-subtle);
   padding: 20px;
   border-radius: 8px;
-  border: 1px solid rgba(0, 255, 171, 0.3);
+  border: 1px solid var(--primary-glow);
   transition: transform var(--transition-normal);
 }
 
@@ -268,10 +268,10 @@
 #players {
   position: relative;
   margin-top: 40px;
-  background-color: rgba(0, 255, 171, 0.05);
+  background-color: var(--primary-bg-subtle);
   padding: 20px;
   border-radius: 8px;
-  border: 1px solid rgba(0, 255, 171, 0.3);
+  border: 1px solid var(--primary-glow);
   transition: transform var(--transition-normal);
 }
 
@@ -293,21 +293,21 @@
 }
 
 .player-item {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--nav-bg);
   padding: 15px;
   margin-bottom: 15px;
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 2px solid rgba(0, 255, 171, 0.5);
+  border: 2px solid var(--primary-glow-strong);
   transition: all var(--transition-normal);
   line-height: 1.6;
 }
 
 .player-item:hover,
 .player-item.animate-in:hover {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: var(--nav-bg-hover);
   border-color: var(--primary);
   transform: translateX(5px);
 }
@@ -338,7 +338,7 @@
 
 .player-name {
   font-size: 1.1rem;
-  color: #fff;
+  color: var(--text-header);
 }
 
 /* Backups */
@@ -371,23 +371,23 @@
 
 #backupLimit {
   padding: 8px 12px;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: var(--input-bg);
   color: var(--text-bright);
-  border: 1px solid rgba(0, 255, 171, 0.5);
+  border: 1px solid var(--primary-glow-strong);
   border-radius: 4px;
   font-family: 'Press Start 2P', cursive;
   font-size: 0.7rem;
 }
 
 .backup-item {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--nav-bg);
   padding: 20px;
   margin-bottom: 15px;
   border-radius: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 2px solid rgba(0, 255, 171, 0.3);
+  border: 2px solid var(--primary-glow);
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
@@ -399,7 +399,7 @@
 
 .backup-item:hover,
 .backup-item.animate-in:hover {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: var(--nav-bg-hover);
   border-color: var(--primary);
   transform: translateX(5px);
 }
@@ -430,15 +430,15 @@
 }
 
 .backup-type.preterrain-trio {
-  background-color: rgba(255, 165, 0, 0.2);
-  color: #ffa500;
-  border: 1px solid rgba(255, 165, 0, 0.4);
+  background-color: color-mix(in srgb, var(--warning) 20%, transparent);
+  color: var(--warning);
+  border: 1px solid color-mix(in srgb, var(--warning) 40%, transparent);
 }
 
 .backup-type.dotsave {
-  background-color: rgba(0, 255, 171, 0.2);
+  background-color: var(--primary-bg-medium);
   color: var(--primary);
-  border: 1px solid rgba(0, 255, 171, 0.4);
+  border: 1px solid var(--primary-glow-medium);
 }
 
 .backup-date {
@@ -456,7 +456,7 @@
 .restore-btn,
 .download-btn {
   padding: 10px 18px;
-  background-color: rgba(0, 255, 171, 0.1);
+  background-color: var(--primary-glow-soft);
   color: var(--text-bright);
   border: 2px solid var(--primary);
   border-radius: 8px;
@@ -470,7 +470,7 @@
 .restore-btn:hover,
 .download-btn:hover {
   background-color: var(--primary);
-  color: #000;
+  color: var(--bg-dark);
 }
 
 .no-backups,
@@ -479,9 +479,9 @@
   padding: 40px;
   color: var(--text-dim);
   font-style: italic;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: var(--form-bg);
   border-radius: 8px;
-  border: 1px dashed rgba(0, 255, 171, 0.3);
+  border: 1px dashed var(--primary-glow);
 }
 
 @keyframes slideIn {
@@ -504,13 +504,13 @@
   left: 20px;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #ff6b6b, #ff4444);
+  background: linear-gradient(135deg, var(--danger), color-mix(in srgb, var(--danger) 80%, black));
   border-radius: 50%;
   cursor: pointer;
   display: none;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(255, 68, 68, 0.5);
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--danger) 50%, transparent);
   z-index: 9999;
   animation: bounce 2s ease-in-out infinite;
   transition: transform 0.2s ease;
@@ -523,7 +523,7 @@
 #update-indicator-float::before {
   content: "↑";
   font-size: 32px;
-  color: white;
+  color: var(--text-header);
   font-weight: bold;
   animation: pulse-icon 1.5s ease-in-out infinite;
 }
@@ -535,7 +535,7 @@
   right: -5px;
   width: 20px;
   height: 20px;
-  background: #fff;
+  background: var(--text-header);
   border-radius: 50%;
   animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
@@ -585,7 +585,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--overlay-bg-heavy);
   z-index: 10000;
   align-items: center;
   justify-content: center;
@@ -596,13 +596,13 @@
 }
 
 .update-modal-content {
-  background: linear-gradient(135deg, #2d2d44, #1a1a2e);
-  border: 3px solid #ff4444;
+  background: linear-gradient(135deg, var(--surface-hover), var(--bg-dark));
+  border: 3px solid var(--danger);
   border-radius: 16px;
   padding: 40px;
   max-width: 500px;
   width: 90%;
-  box-shadow: 0 8px 40px rgba(255, 68, 68, 0.3);
+  box-shadow: 0 8px 40px color-mix(in srgb, var(--danger) 30%, transparent);
   position: relative;
   animation: modalSlideIn 0.3s ease-out;
 }
@@ -625,7 +625,7 @@
   right: 15px;
   background: transparent;
   border: none;
-  color: #888;
+  color: var(--text-muted);
   font-size: 28px;
   cursor: pointer;
   width: 35px;
@@ -639,38 +639,38 @@
 
 .update-modal-close:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  color: var(--text-header);
 }
 
 .update-modal-icon {
   width: 80px;
   height: 80px;
   margin: 0 auto 20px;
-  background: linear-gradient(135deg, #ff6b6b, #ff4444);
+  background: linear-gradient(135deg, var(--danger), color-mix(in srgb, var(--danger) 80%, black));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 48px;
-  color: white;
+  color: var(--text-header);
 }
 
 .update-modal-content h2 {
-  color: #fff;
+  color: var(--text-header);
   margin: 0 0 15px 0;
   text-align: center;
   font-size: 24px;
 }
 
 .update-modal-content p {
-  color: #ccc;
+  color: var(--text-dim);
   text-align: center;
   margin: 0 0 10px 0;
   line-height: 1.6;
 }
 
 .update-version {
-  color: #ff6b6b;
+  color: var(--danger);
   font-weight: bold;
   font-size: 20px;
   text-align: center;
@@ -695,24 +695,24 @@
 }
 
 #update-now-btn {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
-  color: white;
+  background: linear-gradient(135deg, var(--success), color-mix(in srgb, var(--success) 90%, black));
+  color: var(--text-header);
 }
 
 #update-now-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+  box-shadow: 0 4px 15px color-mix(in srgb, var(--success) 40%, transparent);
 }
 
 #update-later-btn {
   background: rgba(255, 255, 255, 0.1);
-  color: #ccc;
+  color: var(--text-dim);
   border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 #update-later-btn:hover {
   background: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  color: var(--text-header);
 }
 
 /* Update Status Messages in Modal */
@@ -727,23 +727,23 @@
 
 .update-status-message.running {
   display: block;
-  background: rgba(33, 150, 243, 0.2);
-  border: 2px solid #2196F3;
-  color: #2196F3;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  border: 2px solid var(--accent);
+  color: var(--accent);
 }
 
 .update-status-message.success {
   display: block;
-  background: rgba(76, 175, 80, 0.2);
-  border: 2px solid #4CAF50;
-  color: #4CAF50;
+  background: color-mix(in srgb, var(--success) 20%, transparent);
+  border: 2px solid var(--success);
+  color: var(--success);
 }
 
 .update-status-message.failed {
   display: block;
-  background: rgba(255, 68, 68, 0.2);
-  border: 2px solid #ff4444;
-  color: #ff4444;
+  background: color-mix(in srgb, var(--danger) 20%, transparent);
+  border: 2px solid var(--danger);
+  color: var(--danger);
 }
 
 #update-button {
@@ -766,7 +766,7 @@
     display: none;
     margin-top: 20px;
     font-weight: bold;
-    color: #fff;
+    color: var(--text-header);
 }
 
 .update-status-message.running {
@@ -780,8 +780,8 @@
   right: 45px;
   width: 32px;
   height: 32px;
-  background: #F44336;
-  box-shadow: 0 0 10px rgba(244, 67, 54, 0.7);
+  background: var(--danger);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--danger) 70%, transparent);
   border: none;
   cursor: pointer;
   padding: 0;
@@ -792,6 +792,6 @@
 }
 
 .update-icon:hover {
-  background: #F44336;
+  background: var(--danger);
   transform: scale(1.1);
 }

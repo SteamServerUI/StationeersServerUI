@@ -185,7 +185,7 @@ function updateFileDisplay() {
         uploadZone.innerHTML = '<span class="upload-icon">✓</span>' +
                               '<div class="upload-text">File Selected</div>' +
                               '<div class="upload-subtext">' + selectedModFile.name + '</div>' +
-                              '<div class="upload-subtext" style="margin-top: 5px; color: #00d4ff;">' + (selectedModFile.size / 1024 / 1024).toFixed(2) + ' MB</div>';
+                              '<div class="upload-subtext" style="margin-top: 5px; color: var(--accent);">' + (selectedModFile.size / 1024 / 1024).toFixed(2) + ' MB</div>';
         uploadBtn.disabled = false;
         uploadBtn.style.opacity = '1';
     } else {

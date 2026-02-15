@@ -1,59 +1,91 @@
 :root {
-    /* Colors */
-    --primary:
-        #00FFAB;
-    --primary-dim: rgba(0, 255, 171, 0.7);
-    --primary-glow: rgba(0, 255, 171, 0.3);
-    --bg-dark:
-        #0a0a14;
-    --bg-panel: #1b1b2f8f;
-    --accent:
-        #0084ff;
-    --text-bright:
-        #e0ffe9;
-    --text-header:
-        #ffffff;
-    --danger:
-        #ff3860;
-    --success:
-        #48c774;
-    --warning:
-        #ffdd57;
+    /* ═══════════════════════════════════════════
+       SSUI Theme Variables
+       These are the user-customizable theme values.
+       Override via localStorage theme system.
+       ═══════════════════════════════════════════ 
 
-    /* Transitions */
+       ── Core Colors ── */
+    --primary: #00FFAB;           /* Main accent / brand color */
+    --bg-dark: #0a0a14;           /* Page background */
+    --bg-panel: #1b1b2f8f;       /* Panel/card backgrounds */
+    --accent: #0084ff;            /* Secondary accent (links, badges) */
+    --danger: #ff3860;            /* Errors, destructive actions */
+    --success: #48c774;           /* Success states */
+    --warning: #ffdd57;           /* Warnings */
+
+    /* ── Text Colors ── */
+    --text-header: #ffffff;       /* Headings, bright text */
+    --text-bright: #e0ffe9;       /* Primary readable text */
+    --text-dim: #aaaaaa;          /* Subdued text, hints, descriptions */
+    --text-muted: #888888;        /* Timestamps, least-important text */
+
+    /* ── Surface Colors ── */
+    --surface-dark: #232338;      /* Button backgrounds, elevated surfaces */
+    --surface-hover: #333350;     /* Hover state for surfaces */
+    --surface-overlay: #1b1b2f;   /* Dropdowns, overlays */
+
+    /* ── Discord (brand, not themeable) ── */
+    --discord-accent: #7289da;
+
+    /* ── Transitions ── */
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
-    /* v5.9+ Variables */
-    --button-bg:
-        #232338;
-    --button-bg-hover:
-        #333350;
-    --button-glow: rgba(0, 255, 171, 0.4);
-    --button-glow-strong: rgba(0, 255, 171, 0.7);
-    --button-glow-soft: rgba(0, 255, 171, 0.1);
-    --button-glow-stronger: rgba(0, 255, 171, 0.5);
+
+    /* ═══════════════════════════════════════════
+       Derived Variables (computed from core colors)
+       Users don't set these directly — they auto-derive.
+       ═══════════════════════════════════════════ */
+
+    /* Primary alpha variants */
+    --primary-dim: color-mix(in srgb, var(--primary) 70%, transparent);
+    --primary-glow: color-mix(in srgb, var(--primary) 30%, transparent);
+    --primary-glow-strong: color-mix(in srgb, var(--primary) 50%, transparent);
+    --primary-glow-soft: color-mix(in srgb, var(--primary) 10%, transparent);
+    --primary-glow-medium: color-mix(in srgb, var(--primary) 40%, transparent);
+    --primary-glow-intense: color-mix(in srgb, var(--primary) 70%, transparent);
+    --primary-bg-subtle: color-mix(in srgb, var(--primary) 5%, transparent);
+    --primary-bg-light: color-mix(in srgb, var(--primary) 15%, transparent);
+    --primary-bg-medium: color-mix(in srgb, var(--primary) 20%, transparent);
+
+    /* Surface with transparency */
     --input-bg: rgba(0, 0, 0, 0.6);
-    --submit-bg: rgba(0, 255, 171, 0.2);
-    --submit-hover-text: #000;
     --tab-bg: rgba(0, 0, 0, 0.3);
-    --tab-hover-bg: rgba(0, 255, 171, 0.1);
-    --tab-active-bg: rgba(0, 255, 171, 0.2);
-    --tab-active-glow: rgba(0, 255, 171, 0.5);
-    /* v5.9+ Variables config page*/
-    --wizard-bg: rgba(0, 255, 171, 0.15);
-    --wizard-glow: rgba(0, 255, 171, 0.3);
-    --wizard-glow-strong: rgba(0, 255, 171, 0.6);
+    --form-bg: rgba(0, 0, 0, 0.2);
     --nav-bg: rgba(0, 0, 0, 0.4);
     --nav-bg-hover: rgba(0, 0, 0, 0.6);
-    --nav-border: rgba(0, 255, 171, 0.5);
-    --form-bg: rgba(0, 0, 0, 0.2);
-    --discord-accent: #7289da;
-    /* Discord brand colour */
-    --discord-bg: rgba(114, 137, 218, 0.1);
-    /* rgba version of Discord blue */
-    --discord-border: rgba(114, 137, 218, 0.5);
-    --discord-glow: rgba(114, 137, 218, 0.3);
-    --select-bg-hover: rgba(0, 0, 0, 0.8);
-    --option-bg: #1b1b2f;
+    --overlay-bg: rgba(0, 0, 0, 0.3);
+    --overlay-bg-heavy: rgba(0, 0, 0, 0.8);
+
+    /* Discord derived */
+    --discord-bg: color-mix(in srgb, var(--discord-accent) 10%, transparent);
+    --discord-border: color-mix(in srgb, var(--discord-accent) 50%, transparent);
+    --discord-glow: color-mix(in srgb, var(--discord-accent) 30%, transparent);
+
+    /* ── Legacy aliases (mapped to new vars for compatibility) ── */
+    --button-bg: var(--surface-dark);
+    --button-bg-hover: var(--surface-hover);
+    --button-glow: var(--primary-glow-medium);
+    --button-glow-strong: var(--primary-glow-intense);
+    --button-glow-soft: var(--primary-glow-soft);
+    --button-glow-stronger: var(--primary-glow-strong);
+    --submit-bg: var(--primary-bg-medium);
+    --submit-hover-text: #000;
+    --tab-hover-bg: var(--primary-glow-soft);
+    --tab-active-bg: var(--primary-bg-medium);
+    --tab-active-glow: var(--primary-glow-strong);
+    --wizard-bg: var(--primary-bg-light);
+    --wizard-glow: var(--primary-glow);
+    --wizard-glow-strong: color-mix(in srgb, var(--primary) 60%, transparent);
+    --nav-border: var(--primary-glow-strong);
+    --select-bg-hover: var(--overlay-bg-heavy);
+    --option-bg: var(--surface-overlay);
+
+    /* Console colors (used by JS) */
+    --console-info: #0af;
+    --console-warning: #ff0;
+    --console-error: #ff3333;
+    --console-success: #0f0;
+    --console-boot: #0f0;
 }
