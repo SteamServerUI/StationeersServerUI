@@ -537,15 +537,6 @@ func SetLogChannelID(value string) error {
 	return safeSaveConfig()
 }
 
-// SetErrorChannelID sets the ErrorChannelID
-func SetErrorChannelID(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	ErrorChannelID = value
-	return safeSaveConfig()
-}
-
 // SetStatusPanelChannelID sets the StatusPanelChannelID
 func SetStatusPanelChannelID(value string) error {
 	ConfigMu.Lock()

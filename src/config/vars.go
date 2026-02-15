@@ -89,7 +89,6 @@ var (
 	ControlChannelID      string
 	EventLogChannelID     string
 	LogChannelID          string
-	ErrorChannelID        string
 	StatusPanelChannelID  string
 	ControlPanelChannelID string
 	DiscordCharBufferSize int

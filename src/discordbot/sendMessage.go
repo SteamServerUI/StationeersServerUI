@@ -46,30 +46,19 @@ func SendMessageToEventLogChannel(message string) {
 		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
 		return
 	}
-	//clearMessagesAboveLastN(config.EventLogChannelID, 10)
-	_, err := config.DiscordSession.ChannelMessageSend(config.GetEventLogChannelID(), message)
-	if err != nil {
-		logger.Discord.Error("Error sending message to game event log channel: " + err.Error())
-	}
-}
 
-func SendMessageToErrorChannel(message string) {
-	if !config.GetIsDiscordEnabled() {
-		return
-	}
-
-	if config.GetErrorChannelID() == "" {
-		return
-	}
-
-	if config.DiscordSession == nil {
-		logger.Discord.Error("Discord Error: Discord is enabled but session is not initialized")
+	if len(message) <= 2000 {
+		//clearMessagesAboveLastN(config.EventLogChannelID, 10)
+		_, err := config.DiscordSession.ChannelMessageSend(config.GetEventLogChannelID(), message)
+		if err != nil {
+			logger.Discord.Error("Error sending message to EventLog channel: " + err.Error())
+		}
 		return
 	}
 
 	maxMessageLength := 2000 // Discord's message character limit
 
-	// Function to split the message into chunks and send each one
+	// Function to split the message into chunks and send each one in case the message (primilariy exception stack traces) exceeds the Discord message limit
 	for len(message) > 0 {
 		if len(message) > maxMessageLength {
 			// Find a safe split point, for example, the last newline before the limit
@@ -79,9 +68,9 @@ func SendMessageToErrorChannel(message string) {
 			}
 
 			// Send the chunk
-			_, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message[:splitIndex])
+			_, err := config.DiscordSession.ChannelMessageSend(config.GetEventLogChannelID(), message[:splitIndex])
 			if err != nil {
-				logger.Discord.Error("Error sending message to error channel: " + err.Error())
+				logger.Discord.Error("Error sending message to EventLog channel: " + err.Error())
 				return
 			}
 
@@ -89,10 +78,10 @@ func SendMessageToErrorChannel(message string) {
 			message = message[splitIndex:]
 		} else {
 			// Send the remaining part of the message
-			_, err := config.DiscordSession.ChannelMessageSend(config.GetErrorChannelID(), message)
+			_, err := config.DiscordSession.ChannelMessageSend(config.GetEventLogChannelID(), message)
 			if err != nil {
-				logger.Discord.Error("Error sending message to error channel: " + err.Error())
-				return // Return whatever was sent before the error
+				logger.Discord.Error("Error sending message to EventLog channel: " + err.Error())
+				return
 			}
 			break
 		}

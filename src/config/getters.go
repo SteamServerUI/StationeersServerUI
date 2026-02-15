@@ -64,12 +64,6 @@ func GetRotateServerPassword() bool {
 	return RotateServerPassword
 }
 
-func GetErrorChannelID() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return ErrorChannelID
-}
-
 func GetBackupKeepLastN() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()

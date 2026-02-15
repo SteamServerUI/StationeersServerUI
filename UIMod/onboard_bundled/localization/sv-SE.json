@@ -128,8 +128,6 @@
                 "UIText_StatusPanelChannelInfo": "Valfri kanal för serverstatuspanelen som visar serverinfo och anslutna spelare. Om ett serverlösenord är inställt visas även en knapp för att hämta lösenordet här. Om tom, hoppas detta beteende över.",
                 "UIText_LogChannel": "Loggkanal",
                 "UIText_LogChannelInfo": "Valfri kanal som visar fullständig spelserverloggutdata. Om tom, hoppas detta beteende över.",
-                "UIText_ErrorChannel": "Felkanal",
-                "UIText_ErrorChannelInfo": "Valfri kanal som visar serverfel (Exceptions) när ett uppstår. Om tom, hoppas detta beteende över.",
                 "UIText_BannedPlayersListPath": "Sökväg till bannlysta spelare",
                 "UIText_BannedPlayersListPathInfo": "Filsökväg till listan över bannlysta spelare",
                 "UIText_DiscordIntegrationBenefits": "Fördelar med Discord-integration",

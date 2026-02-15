@@ -126,12 +126,14 @@ func DefaultHandlers() map[EventType]Handler {
 			ssestream.BroadcastDetectionEvent(message)
 			discordbot.SendMessageToEventLogChannel(message)
 		},
+
+		// not sure if this Detector still works, so I changed this to SendMessageToEventLogChannel instead of SendMessageToErrorChannel.
 		EventException: func(event Event) {
 			// Initial alert message
 			alertMessage := "🎮 [Gameserver] 🚨 Exception detected!"
 			logger.Detection.Info(alertMessage)
 			ssestream.BroadcastDetectionEvent(alertMessage)
-			discordbot.SendMessageToErrorChannel(alertMessage)
+			discordbot.SendMessageToEventLogChannel(alertMessage)
 
 			if event.ExceptionInfo != nil && len(event.ExceptionInfo.StackTrace) > 0 {
 				// Format stack trace as a single-line string for SSE compatibility
@@ -140,7 +142,7 @@ func DefaultHandlers() map[EventType]Handler {
 
 				logger.Detection.Info(message)
 				ssestream.BroadcastDetectionEvent(message)
-				discordbot.SendMessageToErrorChannel(message)
+				discordbot.SendMessageToEventLogChannel(message)
 			}
 		},
 	}

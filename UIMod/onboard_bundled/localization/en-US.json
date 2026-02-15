@@ -134,8 +134,6 @@
                 "UIText_StatusPanelChannelInfo": "Optional Channel for the server status panel showing server info and connected players. If a server password is set, a button to get the password will also be displayed here. If empty, this behaviour is skipped.",
                 "UIText_LogChannel": "Log Channel",
                 "UIText_LogChannelInfo": "Optional channel that displays the full Gameserver log output. If empty, this behaviour is skipped.",
-                "UIText_ErrorChannel": "Error Channel",
-                "UIText_ErrorChannelInfo": "Optional channel that displays Server Errors (Exceptions) when one occurs. If empty, this behaviour is skipped.",
                 "UIText_BannedPlayersListPath": "Banned Players List Path",
                 "UIText_BannedPlayersListPathInfo": "File path to banned players list",
                 "UIText_DiscordIntegrationBenefits": "Discord Integration Benefits",

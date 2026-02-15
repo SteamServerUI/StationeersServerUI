@@ -102,7 +102,6 @@ type JsonConfig struct {
 	BlackListFilePath       string `json:"blackListFilePath"`
 	IsDiscordEnabled        *bool  `json:"isDiscordEnabled"`
 	RotateServerPassword    *bool  `json:"rotateServerPassword"`
-	ErrorChannelID          string `json:"errorChannelID"`
 
 	//Backup Settings
 	BackupKeepLastN       int   `json:"backupKeepLastN"`       // Number of most recent backups to keep (default: 2000)
@@ -161,7 +160,6 @@ func applyConfig(cfg *JsonConfig) {
 	RotateServerPassword = rotateServerPasswordVal
 	cfg.RotateServerPassword = &rotateServerPasswordVal
 
-	ErrorChannelID = getString(cfg.ErrorChannelID, "ERROR_CHANNEL_ID", "")
 	BackupKeepLastN = getInt(cfg.BackupKeepLastN, "BACKUP_KEEP_LAST_N", 2000)
 
 	isCleanupEnabledVal := getBool(cfg.IsCleanupEnabled, "IS_CLEANUP_ENABLED", false)
@@ -387,7 +385,6 @@ func safeSaveConfig() error {
 		BlackListFilePath:                        BlackListFilePath,
 		IsDiscordEnabled:                         &IsDiscordEnabled,
 		RotateServerPassword:                     &RotateServerPassword,
-		ErrorChannelID:                           ErrorChannelID,
 		BackupKeepLastN:                          BackupKeepLastN,
 		IsCleanupEnabled:                         &IsCleanupEnabled,
 		BackupKeepDailyFor:                       int(BackupKeepDailyFor / time.Hour),    // Convert to hours

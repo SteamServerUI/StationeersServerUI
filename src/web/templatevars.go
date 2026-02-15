@@ -35,7 +35,6 @@ type ConfigTemplateData struct {
 	LogChannelID                            string
 	ControlPanelChannelID                   string
 	BlackListFilePath                       string
-	ErrorChannelID                          string
 	IsDiscordEnabled                        string
 	IsDiscordEnabledTrueSelected            string
 	IsDiscordEnabledFalseSelected           string
@@ -192,8 +191,6 @@ type ConfigTemplateData struct {
 	UIText_StatusPanelChannelInfo     string
 	UIText_LogChannel                 string
 	UIText_LogChannelInfo             string
-	UIText_ErrorChannel               string
-	UIText_ErrorChannelInfo           string
 	UIText_BannedPlayersListPath      string
 	UIText_BannedPlayersListPathInfo  string
 	UIText_DiscordIntegrationBenefits string
