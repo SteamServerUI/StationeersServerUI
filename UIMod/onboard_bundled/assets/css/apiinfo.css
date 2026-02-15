@@ -16,17 +16,17 @@
 
 .version-tag {
     background-color: var(--accent);
-    color: white;
+    color: var(--text-header);
 }
 
 .status-tag {
     background-color: var(--success);
-    color: white;
+    color: var(--text-header);
 }
 
 .api-overview {
     margin-bottom: 30px;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--form-bg);
     padding: 20px;
     border-radius: 8px;
     border-left: 4px solid var(--accent);
@@ -46,16 +46,16 @@
 }
 
 .endpoint {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--form-bg);
     padding: 15px;
     border-radius: 8px;
-    border: 1px solid rgba(0, 255, 171, 0.3);
+    border: 1px solid var(--primary-glow);
     transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .endpoint:hover {
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 255, 171, 0.2);
+    box-shadow: 0 5px 15px var(--primary-bg-medium);
 }
 
 .api-list {
@@ -66,7 +66,7 @@
 .api-list li {
     margin-bottom: 15px;
     padding: 10px;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: var(--nav-bg);
     border-radius: 4px;
     display: flex;
     flex-wrap: wrap;
@@ -76,7 +76,7 @@
 }
 
 .api-list li:hover {
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: var(--nav-bg-hover);
 }
 
 .method {
@@ -84,15 +84,15 @@
     border-radius: 4px;
     font-size: 0.7rem;
     font-weight: bold;
-    color: white;
+    color: var(--text-header);
 }
 
 .method.get {
-    background-color: #61affe;
+    background-color: var(--accent);
 }
 
 .method.post {
-    background-color: #49cc90;
+    background-color: var(--success);
 }
 
 .endpoint-link {
@@ -107,7 +107,7 @@ a.endpoint-link:hover {
 
 .endpoint-desc {
     font-size: 0.85rem;
-    color: #aaa;
+    color: var(--text-dim);
     width: 100%;
     margin-top: 5px;
 }
@@ -117,7 +117,7 @@ a.endpoint-link:hover {
 }
 
 .code-block {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: var(--nav-bg);
     padding: 20px;
     border-radius: 8px;
     border-left: 4px solid var(--accent);
@@ -125,6 +125,6 @@ a.endpoint-link:hover {
 }
 
 .hint {
-    color: #aaa;
+    color: var(--text-dim);
     font-style: italic;
 }
