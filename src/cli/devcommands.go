@@ -64,19 +64,19 @@ func dumpHeapProfile() {
 	runtime.GC()
 	if _, err := os.Stat("heap.pprof"); err == nil {
 		if err := os.Remove("heap.pprof"); err != nil {
-			logger.Main.Errorf("could not remove old heap profile", "err", err)
+			logger.Main.Errorf("could not remove old heap profile: %v", err)
 			return
 		}
 	}
 	f, err := os.Create("heap.pprof")
 	if err != nil {
-		logger.Main.Errorf("could not create heap profile file", "err", err)
+		logger.Main.Errorf("could not create heap profile file: %v", err)
 		return
 	}
 	defer f.Close()
 
 	if err := pprof.WriteHeapProfile(f); err != nil {
-		logger.Main.Errorf("could not write heap profile", "err", err)
+		logger.Main.Errorf("could not write heap profile: %v", err)
 		return
 	}
 
