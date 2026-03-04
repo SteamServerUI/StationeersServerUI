@@ -20,6 +20,7 @@ func startAutoRestart(schedule string, done chan struct{}) {
 	// Try parsing as a time in HH:MM format
 	if t, err := time.Parse("15:04", schedule); err == nil {
 		// Valid HH:MM format, schedule daily restart
+		setNextDailyRestartTime(t)
 		go scheduleDailyRestart(t, done)
 		return
 	}
@@ -27,6 +28,7 @@ func startAutoRestart(schedule string, done chan struct{}) {
 	// Try parsing as a time in HH:MMAM/PM format
 	if t, err := time.Parse("03:04PM", schedule); err == nil {
 		// Valid HH:MMAM/PM format, schedule daily restart
+		setNextDailyRestartTime(t)
 		go scheduleDailyRestart(t, done)
 		return
 	}
@@ -41,6 +43,8 @@ func startAutoRestart(schedule string, done chan struct{}) {
 		logger.Core.Error("AutoRestartServerTimer must be a positive number of minutes or valid HH:MM or HH:MMAM/PM time")
 		return
 	}
+
+	config.SetNextAutoRestartTime(time.Now().Add(time.Duration(minutesInt) * time.Minute))
 
 	ticker := time.NewTicker(time.Duration(minutesInt) * time.Minute)
 	defer ticker.Stop()
@@ -88,6 +92,7 @@ func startAutoRestart(schedule string, done chan struct{}) {
 				return
 			}
 		case <-done:
+			config.SetNextAutoRestartTime(time.Time{})
 			return
 		}
 	}
@@ -115,6 +120,8 @@ func scheduleDailyRestart(t time.Time, done chan struct{}) {
 			if !internalIsServerRunningNoLock() {
 				mu.Unlock()
 				logger.Core.Info("Auto-restart skipped: server is not running")
+				// Schedule next day
+				setNextDailyRestartTime(t)
 				continue
 			}
 			mu.Unlock()
@@ -133,6 +140,8 @@ func scheduleDailyRestart(t time.Time, done chan struct{}) {
 			logger.Core.Info("Daily auto-restart triggered: stopping server")
 			if err := InternalStopServer(); err != nil {
 				logger.Core.Error("Daily auto-restart failed to stop server: " + err.Error())
+				// Schedule next day
+				setNextDailyRestartTime(t)
 				continue
 			}
 
@@ -146,7 +155,19 @@ func scheduleDailyRestart(t time.Time, done chan struct{}) {
 			}
 		case <-done:
 			timer.Stop()
+			config.SetNextAutoRestartTime(time.Time{})
 			return
 		}
 	}
+}
+
+// setNextDailyRestartTime calculates and stores the next daily restart time.
+func setNextDailyRestartTime(t time.Time) {
+	hour, min := t.Hour(), t.Minute()
+	now := time.Now()
+	next := time.Date(now.Year(), now.Month(), now.Day(), hour, min, 0, 0, now.Location())
+	if now.After(next) || now.Equal(next) {
+		next = next.Add(24 * time.Hour)
+	}
+	config.SetNextAutoRestartTime(next)
 }
