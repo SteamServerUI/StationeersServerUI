@@ -44,5 +44,14 @@
     "authorRole": "Lead Developer",
     "validFrom": "2026-01-28T00:00:00Z",
     "validUntil": "2026-02-04T23:59:59Z"
+},
+{
+    "headline": "[MODS] SLP Broken - Reinstall Required - Hotfix coming",
+    "shortDescription": "If you use StationeersLaunchPad, your server will fail to start. For now, the simplest solution is to go the settings page -> SLP -> uninstall then reinstall",
+    "bodyHtml": "THIS DELETES YOUR MODS! Make sure to either backup the Mods folder and modconfig.xml, or reupload a mod package. Do NOT start the server while you don't have your mods installed, else you may have data loss / corrupted saves. Working on a hotfix for SSUI that adds a 'fix SLP' button - ETA one to two hours",
+    "author": "JacksonTheMaster",
+    "authorRole": "Lead Developer",
+    "validFrom": "2026-03-03T00:00:00Z",
+    "validUntil": "2026-003-10T23:59:59Z"
 }
 ]
