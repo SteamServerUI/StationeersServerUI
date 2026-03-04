@@ -11,6 +11,7 @@ import (
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 )
 
 // runAndExit launches the new executable and terminates the current process
@@ -61,7 +62,13 @@ func runAndExitLinux(newExe string) error {
 	return nil
 }
 
-func RestartMySelf() {
+func RestartMySelf() { // Stop the game server before restarting to prevent detached processes
+	if config.GetIsGameServerRunning() {
+		logger.Install.Info("🛑 Stopping game server before restart...")
+		if err := gamemgr.InternalStopServer(); err != nil {
+			logger.Install.Warn(fmt.Sprintf("⚠️ Failed to stop game server before restart: %v. Proceeding anyway.", err))
+		}
+	}
 	currentExe, err := os.Executable()
 	if err != nil {
 		logger.Install.Warn(fmt.Sprintf("⚠️ Restart failed: couldn’t get current executable path: %v. Keeping version %s.", err, config.GetVersion()))
