@@ -413,6 +413,14 @@ func SetAutoRestartServerTimer(value string) error {
 	return safeSaveConfig()
 }
 
+func SetNextAutoRestartTime(value time.Time) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	NextAutoRestartTime = value
+	return nil
+}
+
 // Backup Settings
 func SetBackupKeepLastN(value int) error {
 	ConfigMu.Lock()

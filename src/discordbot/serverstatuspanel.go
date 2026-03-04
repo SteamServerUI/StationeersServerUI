@@ -14,6 +14,8 @@ import (
 // Button custom IDs for the server & players panel
 const (
 	ButtonGetPassword       = "ssui_get_password"
+	ButtonGetGameVersion    = "ssui_get_game_version"
+	ButtonGetNextRestart    = "ssui_get_next_restart"
 	ButtonDownloadBackupPfx = "ssui_download_backup_" // Prefix for download backup button
 )
 
@@ -119,19 +121,37 @@ func buildStatusPanelEmbed(players map[string]string) *discordgo.MessageEmbed {
 
 // buildPanelComponents returns the action row with interactive buttons
 func buildPanelComponents() []discordgo.MessageComponent {
+	var buttons []discordgo.MessageComponent
 
-	if config.GetServerPassword() == "" {
+	if config.GetServerPassword() != "" {
+		buttons = append(buttons, discordgo.Button{
+			Label:    "🔑 Get Server Password",
+			Style:    discordgo.PrimaryButton,
+			CustomID: ButtonGetPassword,
+		})
+	}
+
+	buttons = append(buttons, discordgo.Button{
+		Label:    "🎮 Get Game Version",
+		Style:    discordgo.SecondaryButton,
+		CustomID: ButtonGetGameVersion,
+	})
+
+	if config.GetAutoRestartServerTimer() != "0" && config.GetAutoRestartServerTimer() != "" {
+		buttons = append(buttons, discordgo.Button{
+			Label:    "🔄 Next Auto Restart",
+			Style:    discordgo.SecondaryButton,
+			CustomID: ButtonGetNextRestart,
+		})
+	}
+
+	if len(buttons) == 0 {
 		return nil
 	}
+
 	return []discordgo.MessageComponent{
 		discordgo.ActionsRow{
-			Components: []discordgo.MessageComponent{
-				discordgo.Button{
-					Label:    "🔑 Get Server Password",
-					Style:    discordgo.PrimaryButton,
-					CustomID: ButtonGetPassword,
-				},
-			},
+			Components: buttons,
 		},
 	}
 }
@@ -191,6 +211,10 @@ func handlePanelButtonInteraction(s *discordgo.Session, i *discordgo.Interaction
 	switch customID {
 	case ButtonGetPassword:
 		handleGetPasswordButton(s, i)
+	case ButtonGetGameVersion:
+		handleGetGameVersionButton(s, i)
+	case ButtonGetNextRestart:
+		handleGetNextRestartButton(s, i)
 	default:
 		return
 	}
@@ -248,4 +272,87 @@ func handleGetPasswordButton(s *discordgo.Session, i *discordgo.InteractionCreat
 			logger.Discord.Debug("Could not delete ephemeral password message: " + err.Error())
 		}
 	}()
+}
+
+// handleGetGameVersionButton sends the current game server version as an ephemeral message
+func handleGetGameVersionButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	version := config.GetExtractedGameVersion()
+
+	var embed *discordgo.MessageEmbed
+	if version == "" {
+		embed = &discordgo.MessageEmbed{
+			Title:       "🎮 Game Version Unknown",
+			Description: "The game server version has not been detected yet.",
+			Color:       0xFFA500,
+		}
+	} else {
+		embed = &discordgo.MessageEmbed{
+			Title: "🎮 Game Server Version",
+			Color: 0x5865F2,
+			Fields: []*discordgo.MessageEmbedField{
+				{
+					Name:   "Version",
+					Value:  "```" + version + "```",
+					Inline: false,
+				},
+			},
+			Timestamp: time.Now().Format(time.RFC3339),
+		}
+	}
+
+	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{embed},
+			Flags:  discordgo.MessageFlagsEphemeral,
+		},
+	})
+	if err != nil {
+		logger.Discord.Error("Error responding to game version button: " + err.Error())
+	}
+}
+
+// handleGetNextRestartButton sends the next scheduled auto-restart time as an ephemeral message
+func handleGetNextRestartButton(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	nextRestart := config.GetNextAutoRestartTime()
+
+	var embed *discordgo.MessageEmbed
+	if nextRestart.IsZero() {
+		embed = &discordgo.MessageEmbed{
+			Title:       "🔄 No Restart Scheduled",
+			Description: "No auto-restart is currently scheduled.",
+			Color:       0xFFA500,
+		}
+	} else {
+		unixTS := nextRestart.Unix()
+		embed = &discordgo.MessageEmbed{
+			Title:       "🔄 Next Auto Restart",
+			Description: "Times below are shown in your local (Discord) timezone.",
+			Color:       0x5865F2,
+			Fields: []*discordgo.MessageEmbedField{
+				{
+					Name:   "Scheduled Time",
+					Value:  fmt.Sprintf("<t:%d>", unixTS),
+					Inline: true,
+				},
+				{
+					Name:   "Countdown",
+					Value:  fmt.Sprintf("<t:%d:R>", unixTS),
+					Inline: true,
+				},
+			},
+			Timestamp: time.Now().Format(time.RFC3339),
+		}
+	}
+
+	err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{embed},
+			Flags:  discordgo.MessageFlagsEphemeral,
+		},
+	})
+	if err != nil {
+		logger.Discord.Error("Error responding to next restart button: " + err.Error())
+	}
 }

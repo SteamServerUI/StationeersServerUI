@@ -110,6 +110,31 @@ function uninstallSLP() {
         });
 }
 
+function reinstallSLP() {
+    if (!confirm('Are you sure you want to reinstall SLP? This will re-download and reinstall the SLP plugin. Your mods and modconfig will be preserved.')) {
+        return;
+    }
+    setButtonLoading('reinstallSLPBtn', true);
+    showPopup('info', 'Reinstalling Stationeers Launch Pad...\n\nThis will re-download the latest version while keeping your mods intact.');
+
+    fetch('/api/v2/slp/reinstall')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showPopup('success', 'Stationeers Launch Pad reinstalled successfully!' + (data.version ? ' (Version: ' + data.version + ')' : '') + ' The page will refresh automatically.');
+                setButtonLoading('reinstallSLPBtn', false);
+                setTimeout(() => window.location.reload(), 3000);
+            } else {
+                showPopup('error', 'Failed to reinstall SLP:\n\n' + (data.error || 'Unknown error'));
+                setButtonLoading('reinstallSLPBtn', false);
+            }
+        })
+        .catch(error => {
+            showPopup('error', 'Failed to reinstall SLP:\n\n' + (error.message || 'Network error'));
+            setButtonLoading('reinstallSLPBtn', false);
+        });
+}
+
 function updateWorkshopMods() {
     setButtonLoading('updateWorkshopModsBtn', true);
     showPopup('info', 'Updating workshop mods...\n\nThis may take some time depending on the number of mods. Please wait.');

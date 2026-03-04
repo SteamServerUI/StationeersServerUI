@@ -9,6 +9,7 @@ import (
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 )
 
 // githubRelease represents the structure of a GitHub release response
@@ -109,6 +110,14 @@ func Update(isInUpdateableState bool) (err error, newVersion string) {
 		if err := os.Chmod(expectedExe, 0755); err != nil {
 			logger.Install.Warn(fmt.Sprintf("⚠️ Update failed: couldn’t make %s executable: %v. Keeping version %s.", expectedExe, err, config.GetVersion()))
 			return err, ""
+		}
+	}
+
+	// Stop the game server before launching the new version to prevent detached processes
+	if config.GetIsGameServerRunning() {
+		logger.Install.Info("🛑 Stopping game server before applying update...")
+		if err := gamemgr.InternalStopServer(); err != nil {
+			logger.Install.Warn(fmt.Sprintf("⚠️ Failed to stop game server before update: %v. Proceeding anyway.", err))
 		}
 	}
 

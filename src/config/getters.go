@@ -358,6 +358,12 @@ func GetAutoRestartServerTimer() string {
 	return AutoRestartServerTimer
 }
 
+func GetNextAutoRestartTime() time.Time {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return NextAutoRestartTime
+}
+
 func GetAllowPrereleaseUpdates() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
