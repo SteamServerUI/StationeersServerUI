@@ -599,6 +599,7 @@ select option {
 }
 
 .manage-left,
+.manage-center,
 .manage-right {
     flex: 1;
     display: flex;
@@ -610,6 +611,7 @@ select option {
 }
 
 .manage-left p,
+.manage-center p,
 .manage-right p {
     flex: 1;
     margin-bottom: 15px;
@@ -617,6 +619,7 @@ select option {
 }
 
 .manage-left .slp-button,
+.manage-center .slp-button,
 .manage-right .slp-button {
     width: 100%;
     margin-top: auto;

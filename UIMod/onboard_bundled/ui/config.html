@@ -630,6 +630,10 @@
                         <p style="color: var(--danger);">⚠️ {{.UIText_SLP_UninstallWarning}}</p>
                         <button id="uninstallSLPBtn" class="slp-button slp-button-small danger" onclick="uninstallSLP()">🗑️ {{.UIText_SLP_UninstallButton}}</button>
                     </div>
+                    <div class="manage-center">
+                        <p>Re-download and reinstall SLP without removing your mods.</p>
+                        <button id="reinstallSLPBtn" class="slp-button slp-button-small" onclick="reinstallSLP()">🔄 Reinstall SLP</button>
+                    </div>
                     <div class="manage-right">
                         <p>{{.UIText_SLP_UpdateWorkshopModsDesc}}</p>
                         <button id="updateWorkshopModsBtn" class="slp-button" onclick="updateWorkshopMods()">🔄 {{.UIText_SLP_UpdateButton}}</button>

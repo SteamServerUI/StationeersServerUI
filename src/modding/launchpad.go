@@ -172,6 +172,27 @@ func UninstallSLP() (string, error) {
 	return "success", nil
 }
 
+// ReinstallSLP removes only the SLP plugin directory (preserving mods and modconfig.xml),
+// then downloads and installs the latest version.
+// Returns: (installed version tag or "", error)
+func ReinstallSLP() (string, error) {
+	pluginsDir := "BepInEx/plugins"
+	slpDir := filepath.Join(pluginsDir, "StationeersLaunchPad")
+
+	// Remove only the SLP plugin directory, keep mods & modconfig.xml
+	if _, err := os.Stat(slpDir); err == nil {
+		logger.Install.Info("🔄 Removing existing SLP installation for reinstall...")
+		if err := os.RemoveAll(slpDir); err != nil {
+			return "", fmt.Errorf("failed to remove SLP folder for reinstall: %w", err)
+		}
+	} else {
+		logger.Install.Info("SLP not currently installed; proceeding with fresh install")
+	}
+
+	// Now install fresh
+	return InstallSLP()
+}
+
 func downloadFile(destPath, url string) error {
 	resp, err := http.Get(url)
 	if err != nil {
