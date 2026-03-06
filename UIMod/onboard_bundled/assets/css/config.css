@@ -576,6 +576,39 @@ select option {
     font-size: 0.75rem;
 }
 
+.mod-update-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    padding: 5px 12px;
+    background: transparent;
+    border: 1px solid var(--primary-dim);
+    color: var(--primary);
+    border-radius: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+.mod-update-button:hover:not(:disabled) {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 10%, transparent);
+    box-shadow: 0 0 8px var(--button-glow-soft);
+}
+
+.mod-update-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.mod-update-button.loading {
+    opacity: 0.6;
+    cursor: wait;
+}
+
 .slp-button.danger {
     background-color: var(--danger);
     border-color: var(--danger);

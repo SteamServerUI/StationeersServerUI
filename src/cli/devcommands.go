@@ -17,12 +17,19 @@ import (
 
 // COMMAND HANDLERS WITH COMMANDS USEFUL FOR DEVELOPMENT AND DEBUGGING
 
-func downloadWorkshopItemTest() {
-	workshopHandles := []string{"3505169479"}
+func downloadWorkshopItem(args []string) error {
+	var workshopHandles []string
+	if len(args) == 0 {
+		workshopHandles = []string{"3672138641"} // blueprint mod
+	} else {
+		workshopHandles = args
+	}
+	logger.Core.Info(fmt.Sprintf("Downloading workshop items: %v", workshopHandles))
 	_, err := steamcmd.DownloadWorkshopItems(workshopHandles)
 	if err != nil {
 		logger.Core.Error("Error downloading workshop items: " + err.Error())
 	}
+	return nil
 }
 
 func listworkshophandles() {

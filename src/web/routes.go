@@ -96,6 +96,7 @@ func SetupRoutes() (*http.ServeMux, *http.ServeMux) {
 	protectedMux.HandleFunc("/api/v2/slp/upload", UploadModPackageHandler)
 	protectedMux.HandleFunc("/api/v2/slp/mods", GetInstalledModDetailsHandler)
 	protectedMux.HandleFunc("/api/v2/steamcmd/updatemods", UpdateWorkshopModsHandler)
+	protectedMux.HandleFunc("/api/v2/steamcmd/updatemod", UpdateSingleWorkshopModHandler)
 
 	return mux, protectedMux
 }
