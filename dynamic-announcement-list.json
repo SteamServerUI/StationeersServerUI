@@ -62,5 +62,14 @@
     "authorRole": "Lead Developer",
     "validFrom": "2026-03-03T00:00:00Z",
     "validUntil": "2026-03-10T23:59:59Z"
+},
+{
+    "headline": "[ONLY MODS] SLP Update Required - Booster Networking v2",
+    "shortDescription": "Dedicated servers must update StationeersLaunchPad if using mods with Booster.",
+    "bodyHtml": "StationeersLaunchPad (SLP) released an Update to Multiplayer Networking (Booster Networking v2). Dedicated servers running mods that use LaunchPadBooster will be required to update SLP to remain functional. If versions are mismatched, the server will fail gracefully and display an error message.",
+    "author": "JacksonTheMaster",
+    "authorRole": "Lead Developer",
+    "validFrom": "2026-04-12T00:00:00Z",
+    "validUntil": "2026-04-20T23:59:59Z"
 }
 ]
