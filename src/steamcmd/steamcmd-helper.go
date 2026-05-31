@@ -419,11 +419,12 @@ func installRequiredLibrariesRHEL() error {
 
 		// Library is not installed, attempt to install it
 		logger.Install.Debug("🔄 Installing library: " + lib + "\n")
-		installCmd := exec.Command("sudo", "dnf", "install", "-y", lib)
+		installCmd := exec.Command("sudo", "-n", "dnf", "install", "-y", lib)
 		installCmd.Stdout = os.Stdout
 		installCmd.Stderr = os.Stderr
 		if err := installCmd.Run(); err != nil {
 			return fmt.Errorf("failed to install library %s: %w", lib, err)
+		}
 		}
 		logger.Install.Debug("✅ Installed library: " + lib + "\n")
 	}
