@@ -138,7 +138,8 @@ function reinstallSLP() {
 function updateSingleMod(workshopHandle, index) {
     const btnId = 'update-mod-btn-' + index;
     setButtonLoading(btnId, true);
-    showPopup('info', 'Updating workshop mod ' + escapeHtml(String(workshopHandle)) + '...\n\nPlease wait.');
+    showPopup('info', 'Updating workshop mod ' + workshopHandle + '...\n\nPlease wait.');
+
     fetch('/api/v2/steamcmd/updatemod', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -451,7 +452,7 @@ function createModCard(mod, index) {
     
     let updateButtonHtml = '';
     if (mod.WorkshopHandle) {
-        updateButtonHtml = `<button class="mod-update-button" id="update-mod-btn-${index}" onclick='updateSingleMod(${JSON.stringify(String(mod.WorkshopHandle))}, ${index})'>🔄 Update</button>`;
+        updateButtonHtml = `<button class="mod-update-button" id="update-mod-btn-${index}" onclick="updateSingleMod('${escapeHtml(mod.WorkshopHandle)}', ${index})">🔄 Update</button>`;
     }
 
     card.innerHTML = `

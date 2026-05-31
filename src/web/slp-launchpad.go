@@ -144,16 +144,6 @@ func UpdateSingleWorkshopModHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	for _, ch := range req.WorkshopHandle {
-		if ch < '0' || ch > '9' {
-			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(map[string]interface{}{
-				"success": false,
-				"error":   "workshopHandle must be a numeric Steam Workshop ID",
-			})
-			return
-		}
-	}
 
 	logs, err := steamcmd.DownloadWorkshopItems([]string{req.WorkshopHandle})
 	if err != nil {
