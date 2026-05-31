@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"time"
 
@@ -293,9 +294,64 @@ func untarWrapper(r io.ReaderAt, _ int64, dest string) error {
 	return untar(dest, io.NewSectionReader(r, 0, 1<<63-1)) // Use a large size for the section reader
 }
 
+type distroFamily int
+
+const (
+	distroUnknown distroFamily = iota
+	distroDebian
+	distroRHEL
+)
+
+// parseOSRelease parses a /etc/os-release file into a key-value map.
+func parseOSRelease(content string) map[string]string {
+	fields := make(map[string]string)
+	for _, line := range strings.Split(content, "\n") {
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		fields[parts[0]] = strings.Trim(parts[1], `"`)
+	}
+	return fields
+}
+
+// detectDistroFamily reads /etc/os-release and returns the distro family.
+// ID is checked first (single value); ID_LIKE is the fallback (space-separated list).
+func detectDistroFamily() distroFamily {
+	data, err := os.ReadFile("/etc/os-release")
+	if err != nil {
+		return distroUnknown
+	}
+
+	debianIDs := []string{"ubuntu", "debian", "linuxmint", "pop", "elementary", "raspbian"}
+	rhelIDs := []string{"rhel", "centos", "fedora", "rocky", "almalinux", "ol"}
+
+	fields := parseOSRelease(string(data))
+
+	// Check ID first — it's a single value identifying the primary distro.
+	id := strings.ToLower(fields["ID"])
+	if slices.Contains(debianIDs, id) {
+		return distroDebian
+	}
+	if slices.Contains(rhelIDs, id) {
+		return distroRHEL
+	}
+
+	// Fall back to ID_LIKE — a space-separated list of closely related distros.
+	for _, like := range strings.Fields(strings.ToLower(fields["ID_LIKE"])) {
+		if slices.Contains(debianIDs, like) {
+			return distroDebian
+		}
+		if slices.Contains(rhelIDs, like) {
+			return distroRHEL
+		}
+	}
+
+	return distroUnknown
+}
+
 // installRequiredLibraries installs the required libraries for SteamCMD if they are not already installed.
 func installRequiredLibraries() error {
-	// Check if the system is Debian-based
 	if runtime.GOOS != "linux" {
 		return nil // Only Linux systems need this
 	}
@@ -306,8 +362,19 @@ func installRequiredLibraries() error {
 		return nil
 	}
 
-	// According to https://developer.valvesoftware.com/wiki/SteamCMD#Manually only lib32gcc-s1 is needed
-	// List of required libraries
+	switch detectDistroFamily() {
+	case distroDebian:
+		return installRequiredLibrariesDebian()
+	case distroRHEL:
+		return installRequiredLibrariesRHEL()
+	default:
+		return fmt.Errorf("unsupported Linux distribution: only Ubuntu/Debian and RHEL-based distros are supported")
+	}
+}
+
+// installRequiredLibrariesDebian installs SteamCMD dependencies on Ubuntu/Debian using apt-get.
+// According to https://developer.valvesoftware.com/wiki/SteamCMD#Manually only lib32gcc-s1 is needed.
+func installRequiredLibrariesDebian() error {
 	requiredLibs := []string{
 		"lib32gcc-s1",
 		//"lib32stdc++6",
@@ -316,10 +383,9 @@ func installRequiredLibraries() error {
 	// Check and install each library
 	for _, lib := range requiredLibs {
 		// Check if the library is already installed
-		cmd := exec.Command("dpkg", "-s", lib)
-		if err := cmd.Run(); err == nil {
+		if err := exec.Command("dpkg", "-s", lib).Run(); err == nil {
 			logger.Install.Debug("✅ Library already installed: " + lib + "\n")
-			continue // Library is already installed, skip to the next one
+			continue
 		}
 
 		// Library is not installed, attempt to install it
@@ -327,12 +393,39 @@ func installRequiredLibraries() error {
 		installCmd := exec.Command("sudo", "apt-get", "install", "-y", lib)
 		installCmd.Stdout = os.Stdout
 		installCmd.Stderr = os.Stderr
-
 		if err := installCmd.Run(); err != nil {
 			return fmt.Errorf("failed to install library %s: %w", lib, err)
 		}
 		logger.Install.Debug("✅ Installed library: " + lib + "\n")
 	}
+	return nil
+}
 
+// installRequiredLibrariesRHEL installs SteamCMD dependencies on RHEL-based distros using dnf.
+// libgcc.i686 is the RHEL equivalent of lib32gcc-s1 on Debian-based distros.
+func installRequiredLibrariesRHEL() error {
+	requiredLibs := []string{
+		"libgcc.i686",
+		"libstdc++.i686",
+	}
+
+	// Check and install each library
+	for _, lib := range requiredLibs {
+		// Check if the library is already installed
+		if err := exec.Command("rpm", "-q", lib).Run(); err == nil {
+			logger.Install.Debug("✅ Library already installed: " + lib + "\n")
+			continue
+		}
+
+		// Library is not installed, attempt to install it
+		logger.Install.Debug("🔄 Installing library: " + lib + "\n")
+		installCmd := exec.Command("sudo", "dnf", "install", "-y", lib)
+		installCmd.Stdout = os.Stdout
+		installCmd.Stderr = os.Stderr
+		if err := installCmd.Run(); err != nil {
+			return fmt.Errorf("failed to install library %s: %w", lib, err)
+		}
+		logger.Install.Debug("✅ Installed library: " + lib + "\n")
+	}
 	return nil
 }

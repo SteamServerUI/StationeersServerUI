@@ -21,8 +21,7 @@
         "vscode": {
             "extensions": [
                 "golang.go",
-                "svelte.svelte-vscode",
-                "eamodio.gitlens"
+                "svelte.svelte-vscode"
             ],
             "settings": {
                 "go.toolsManagement.autoUpdate": true,
@@ -30,5 +29,5 @@
             }
         }
     },
-    "postCreateCommand": "go mod tidy && cd frontend && npm install && npm install @sveltejs/vite-plugin-svelte"
+    "postCreateCommand": "go mod tidy && cd frontend && npm install && npm install @sveltejs/vite-plugin-svelte && npm audit fix"
 }
