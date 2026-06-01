@@ -310,7 +310,7 @@ func parseOSRelease(content string) map[string]string {
 		if len(parts) != 2 {
 			continue
 		}
-		fields[parts[0]] = strings.Trim(parts[1], `"`)
+		fields[parts[0]] = strings.Trim(parts[1], "\"'")
 	}
 	return fields
 }
