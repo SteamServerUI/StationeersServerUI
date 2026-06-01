@@ -24,8 +24,7 @@ RUN mkdir -p /go/bin && chown -R vscode:vscode /go
 
 # Install Node.js 22.15.0
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install -g npm@latest
+    apt-get install -y nodejs
 
 # Set up non-root user and workspace
 USER vscode
