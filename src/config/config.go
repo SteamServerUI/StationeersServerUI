@@ -176,7 +176,7 @@ func applyConfig(cfg *JsonConfig) {
 	IsNewTerrainAndSaveSystem = isNewTerrainAndSaveSystemVal
 	cfg.IsNewTerrainAndSaveSystem = &isNewTerrainAndSaveSystemVal
 
-	GameBranch = getString(cfg.GameBranch, "GAME_BRANCH", "public")
+	GameBranch = getString(strings.ToLower(cfg.GameBranch), "GAME_BRANCH", "public")
 	Difficulty = getString(cfg.Difficulty, "DIFFICULTY", "")
 	StartCondition = getString(cfg.StartCondition, "START_CONDITION", "")
 	StartLocation = getString(cfg.StartLocation, "START_LOCATION", "")
