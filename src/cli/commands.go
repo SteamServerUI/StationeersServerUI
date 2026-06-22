@@ -89,6 +89,10 @@ func stopServer() {
 func exitfromcli() {
 	// send signal to the main process to exit
 	logger.Core.Info("I have to go...")
+	err := gamemgr.InternalStopServer()
+	if err != nil {
+		logger.Core.Error("Error stopping server:" + err.Error())
+	}
 	os.Exit(0)
 }
 
