@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordrpc"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
@@ -26,7 +25,6 @@ func AfterStartComplete() {
 	}
 	// deactivated for now, as we are working on a new way to handle this
 	//setup.SetupAutostartScripts()
-	discordrpc.StartDiscordRPC()
 
 	time.Sleep(500 * time.Millisecond)
 	printStartupMessage()
