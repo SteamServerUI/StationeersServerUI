@@ -358,6 +358,12 @@ func GetAutoRestartServerTimer() string {
 	return AutoRestartServerTimer
 }
 
+func GetAutoRestartCountdown() string {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return AutoRestartCountdown
+}
+
 func GetNextAutoRestartTime() time.Time {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()

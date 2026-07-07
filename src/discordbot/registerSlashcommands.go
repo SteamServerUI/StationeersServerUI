@@ -45,6 +45,18 @@ func registerSlashCommands(s *discordgo.Session) {
 			},
 		},
 		{
+			Name:        "announce",
+			Description: "Send an announcement message to all in-game players)",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "message",
+					Description: "The announcement text to broadcast to players",
+					Required:    true,
+				},
+			},
+		},
+		{
 			Name:        "restore",
 			Description: "Restore a backup at the specified index",
 			Options: []*discordgo.ApplicationCommandOption{

@@ -3,6 +3,7 @@ package steamcmd
 import (
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -30,6 +31,37 @@ const (
 	SteamCMDLinuxDir   = "./steamcmd"
 	SteamCMDWindowsDir = "C:\\SteamCMD"
 )
+
+// isIPv6Enabled returns a heuristic whether the system has non-loopback IPv6 addresses configured.
+// Used for diagnostic warning on SteamCMD exit 2 (0x2).
+func isIPv6Enabled() bool {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return false
+	}
+	for _, iface := range ifaces {
+		if iface.Flags&net.FlagUp == 0 || iface.Flags&net.FlagLoopback != 0 {
+			continue
+		}
+		addrs, err := iface.Addrs()
+		if err != nil {
+			continue
+		}
+		for _, a := range addrs {
+			var ip net.IP
+			switch v := a.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
+			}
+			if ip != nil && ip.To4() == nil && !ip.IsLoopback() {
+				return true
+			}
+		}
+	}
+	return false
+}
 
 // InstallAndRunSteamCMD installs and runs SteamCMD based on the platform (Windows/Linux).
 // It returns the exit status of the SteamCMD execution and any error encountered.
@@ -185,6 +217,11 @@ func runSteamCMD(steamCMDDir string) (int, error) {
 			// If we get here: either not exit 8, or it was exit 8 on the second attempt
 			if exitCode == 8 {
 				logger.Install.Error("   ⚠️ Exit status 8 persisted after retry. Please restart SSUI and try again. If the issue persists, feel free to ask for help on the SSUI Discord server or GitHub issues page.")
+			}
+
+			// #131: specific diagnostic for exit 2 / 0x2 + IPv6
+			if exitCode == 2 && isIPv6Enabled() {
+				logger.Install.Warn("⚠️ SteamCMD failed with exit code 2 (0x2) and IPv6 is detected as enabled on this host. IPv6 is a frequent root cause for Steam exit code 0x2. Consider disabling IPv6 (temporarily) for the affected network interface, or configure the system to prefer IPv4 for SteamCMD.")
 			}
 		} else {
 			// Not an ExitError (e.g., command not found, permission denied, etc.)

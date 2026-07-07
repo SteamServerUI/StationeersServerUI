@@ -156,21 +156,20 @@ func getAppInfo() error {
 			if config.GetAllowAutoGameServerUpdates() {
 				logger.Install.Info("🔍 Updating gameserver via SteamCMD...")
 				if gamemgr.InternalIsServerRunning() {
-					commandmgr.WriteCommand("say Update found, stopping server in 60 seconds...")
+					commandmgr.WriteCommand("announce Update found, stopping server in 60 seconds...")
 					logger.Install.Info("❗Stopping server in 60 seconds...")
+					time.Sleep(20 * time.Second)
+					commandmgr.WriteCommand("announce Update found, stopping server in 40 seconds...")
 					time.Sleep(10 * time.Second)
-					commandmgr.WriteCommand("say Update found, stopping server in 50 seconds...")
+					commandmgr.WriteCommand("announce Update found, stopping server in 30 seconds...")
 					time.Sleep(10 * time.Second)
-					commandmgr.WriteCommand("say Update found, stopping server in 40 seconds...")
-					time.Sleep(10 * time.Second)
-					commandmgr.WriteCommand("say Update found, stopping server in 30 seconds...")
-					time.Sleep(3 * time.Second)
+					commandmgr.WriteCommand("announce Update found, saving and stopping server in 20 seconds...")
+					time.Sleep(20 * time.Second)
+
 					commandmgr.WriteCommand("SAVE")
-					time.Sleep(7 * time.Second)
-					commandmgr.WriteCommand("say Update found, stopping server in 20 seconds. World was Saved. ")
-					time.Sleep(10 * time.Second)
-					commandmgr.WriteCommand("say Update found, stopping server in 10 seconds...")
-					time.Sleep(10 * time.Second)
+					time.Sleep(5 * time.Second)
+					commandmgr.WriteCommand("announce Update found, STOPPING SERVER NOW. World was Saved. ")
+					time.Sleep(5 * time.Second)
 					gamemgr.InternalStopServer()
 					wasRunning = true
 				}

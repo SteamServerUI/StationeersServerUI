@@ -82,10 +82,9 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 	var gameBranchOptions = []struct{ Display, Value string }{
 		{Display: "Stable branch (default)", Value: "public"},
 		{Display: "Beta branch", Value: "beta"},
-		{Display: "Pre-terrain rework update", Value: "preterrain"},
-		{Display: "Pre-rocket refactor update", Value: "prerocket"},
-		{Display: "Version before the latest update", Value: "previous"},
-		{Display: "A slightly rolled back Multiplayer-Safe version", Value: "multiplayersafe"},
+		{Display: "Previous", Value: "previous"},
+		// Legacy terrain branches (preterrain, prerocket, prephasechange, multiplayersafe) removed per #172.
+		// Using them now triggers hard error at startup.
 	}
 
 	var worldOptions = []struct{ Display, Value string }{

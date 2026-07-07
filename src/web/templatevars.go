@@ -77,6 +77,7 @@ type ConfigTemplateData struct {
 	ExePath                                 string
 	AdditionalParams                        string
 	AutoRestartServerTimer                  string
+	AutoRestartCountdown                    string
 	IsNewTerrainAndSaveSystem               string
 	IsNewTerrainAndSaveSystemTrueSelected   string
 	IsNewTerrainAndSaveSystemFalseSelected  string
@@ -153,6 +154,8 @@ type ConfigTemplateData struct {
 	UIText_ShowExpertSettingsInfo         string
 	UIText_AutoRestartServerTimer         string
 	UIText_AutoRestartServerTimerInfo     string
+	UIText_AutoRestartCountdown         string
+	UIText_AutoRestartCountdownInfo     string
 	UIText_GameBranch                     string
 	UIText_GameBranchInfo                 string
 	UIText_TerrainSettingsHeader          string
