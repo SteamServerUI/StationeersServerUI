@@ -9,246 +9,165 @@ import (
 	"strings"
 	"time"
 
+	"github.com/SteamServerUI/SteamServerUI/v7/src/api/middleware"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/core/security"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/steamserverui/runfile"
 )
 
-// FileRequest represents the JSON body for file operations
+const maxEditableFileBytes = 10 << 20
+
 type FileRequest struct {
 	Filename string `json:"filename"`
-	Content  string `json:"content,omitempty"` // Used for save operations
+	Content  string `json:"content"`
 }
 
-// FileResponse represents the JSON response structure
-type FileResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message,omitempty"`
-	Data    any    `json:"data,omitempty"`
-}
-
-// FileInfo represents the file information returned by GetFileList
 type FileInfo struct {
 	Filename    string `json:"filename"`
 	Type        string `json:"type"`
 	Description string `json:"description"`
 }
 
-// GetFileList handles GET requests to list all available files with their details
 func GetFileList(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		sendFileError(w, http.StatusMethodNotAllowed, "only GET requests are allowed")
+		fileError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Only GET requests are allowed")
 		return
 	}
-
 	files := runfile.GetFiles()
 	if files == nil {
-		sendFileError(w, http.StatusNotFound, "No runfile is loaded or the loaded runfile does not define any editable files")
+		fileError(w, http.StatusNotFound, "runfile_missing", "No runfile is loaded or it has no editable files")
 		return
 	}
-
-	fileInfos := make([]FileInfo, 0, len(files))
+	items := make([]FileInfo, 0, len(files))
 	for _, file := range files {
-		// if filename is inside the SSUI subdirectory, dont add file to the list
-		if strings.HasPrefix(file.Filepath, "./SSUI") {
+		if protectedFile(file.Filepath) {
 			continue
 		}
-
-		// if file does not exist, dont add it to the list
-		if _, err := os.Stat(file.Filepath); os.IsNotExist(err) {
+		if _, err := os.Stat(file.Filepath); err != nil {
 			continue
 		}
-
-		fileInfos = append(fileInfos, FileInfo{
-			Filename:    file.Filename,
-			Type:        file.Type,
-			Description: file.Description,
-		})
+		items = append(items, FileInfo{Filename: file.Filename, Type: file.Type, Description: file.Description})
 	}
-
-	sendFileResponse(w, http.StatusOK, FileResponse{
-		Success: true,
-		Data:    fileInfos,
-	})
+	writeFileJSON(w, http.StatusOK, map[string]any{"data": map[string]any{"files": items}})
 }
 
-// GetFile handles GET requests to retrieve a specific file's contents
-func GetFile(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		sendFileError(w, http.StatusMethodNotAllowed, "only POST requests are allowed")
+func HandleFileContent(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		if !hasFilePermission(r, security.PermissionFilesRead) {
+			fileError(w, http.StatusForbidden, "forbidden", "Permission denied")
+			return
+		}
+		readFile(w, r.URL.Query().Get("filename"))
+	case http.MethodPut:
+		if !hasFilePermission(r, security.PermissionFilesWrite) {
+			fileError(w, http.StatusForbidden, "forbidden", "Permission denied")
+			return
+		}
+		r.Body = http.MaxBytesReader(w, r.Body, maxEditableFileBytes)
+		var request FileRequest
+		decoder := json.NewDecoder(r.Body)
+		if err := decoder.Decode(&request); err != nil {
+			fileError(w, http.StatusBadRequest, "invalid_json", "A filename and textual content are required")
+			return
+		}
+		saveFile(w, request)
+	default:
+		fileError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Only GET and PUT requests are allowed")
+	}
+}
+
+func readFile(w http.ResponseWriter, filename string) {
+	target, ok := editableFile(filename)
+	if !ok {
+		fileError(w, http.StatusNotFound, "file_not_found", "The requested file is not available in this runfile")
 		return
 	}
-
-	var req FileRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		sendFileError(w, http.StatusBadRequest, fmt.Sprintf("failed to parse request JSON body: %v", err))
+	reader, err := os.Open(target.Filepath)
+	if err != nil {
+		fileError(w, http.StatusNotFound, "file_unavailable", "The requested file could not be opened")
 		return
 	}
-
-	if req.Filename == "" {
-		sendFileError(w, http.StatusBadRequest, "filename is required")
+	defer reader.Close()
+	content, err := io.ReadAll(io.LimitReader(reader, maxEditableFileBytes+1))
+	if err != nil {
+		fileError(w, http.StatusInternalServerError, "file_read_failed", "The requested file could not be read")
 		return
 	}
+	if len(content) > maxEditableFileBytes {
+		fileError(w, http.StatusRequestEntityTooLarge, "file_too_large", "The file is too large for the web editor")
+		return
+	}
+	writeFileJSON(w, http.StatusOK, map[string]any{"data": map[string]any{
+		"filename": target.Filename,
+		"type":     target.Type,
+		"content":  string(content),
+	}})
+}
 
-	// Find the file in runfile
-	files := runfile.GetFiles()
-	var targetFile *runfile.File
-	for _, file := range files {
-		if file.Filename == req.Filename {
-			targetFile = &file
+func saveFile(w http.ResponseWriter, request FileRequest) {
+	target, ok := editableFile(request.Filename)
+	if !ok {
+		fileError(w, http.StatusNotFound, "file_not_found", "The requested file is not available in this runfile")
+		return
+	}
+	if len(request.Content) > maxEditableFileBytes {
+		fileError(w, http.StatusRequestEntityTooLarge, "file_too_large", "The file is too large for the web editor")
+		return
+	}
+	if info, err := os.Stat(target.Filepath); err == nil && info.Mode().Perm()&0222 == 0 {
+		fileError(w, http.StatusForbidden, "file_read_only", "The requested file is read-only")
+		return
+	} else if err != nil && !os.IsNotExist(err) {
+		fileError(w, http.StatusInternalServerError, "file_stat_failed", "The requested file could not be inspected")
+		return
+	}
+	var err error
+	for attempt := 1; attempt <= 3; attempt++ {
+		err = os.WriteFile(target.Filepath, []byte(request.Content), 0644)
+		if err == nil {
 			break
 		}
+		time.Sleep(100 * time.Millisecond)
 	}
-
-	if targetFile == nil {
-		sendFileError(w, http.StatusNotFound, fmt.Sprintf("file %s not found in runfile", req.Filename))
-		return
-	}
-
-	// Check if file is in SSUI subdirectory
-	if strings.HasPrefix(targetFile.Filepath, "./SSUI") {
-		sendFileError(w, http.StatusForbidden, fmt.Sprintf("access to a file %s in the SSUI subdirectory is forbidden", req.Filename))
-		return
-	}
-
-	// Stat the file
-	fileInfo, err := os.Stat(targetFile.Filepath)
 	if err != nil {
-		if os.IsNotExist(err) {
-			sendFileError(w, http.StatusNotFound, fmt.Sprintf("file %s does not exist at %s", req.Filename, targetFile.Filepath))
-		} else {
-			sendFileError(w, http.StatusInternalServerError, fmt.Sprintf("failed to stat file %s: %v", req.Filename, err))
-		}
+		logger.Runfile.Warn(fmt.Sprintf("failed to write editable file %s: %v", request.Filename, err))
+		fileError(w, http.StatusInternalServerError, "file_save_failed", "The file could not be saved")
 		return
 	}
-
-	// Check if file is writable
-	if fileInfo.Mode().Perm()&0222 == 0 {
-		sendFileError(w, http.StatusForbidden, fmt.Sprintf("file %s is not writable", req.Filename))
-		return
-	}
-
-	// Read file contents
-	content, err := os.ReadFile(targetFile.Filepath)
-	if err != nil {
-		sendFileError(w, http.StatusInternalServerError, fmt.Sprintf("failed to read file %s: %v", req.Filename, err))
-		return
-	}
-
-	// Set content type based on file type
-	contentType := "text/plain"
-	switch strings.ToLower(targetFile.Type) {
-	case "json":
-		contentType = "application/json"
-	case "xml":
-		contentType = "application/xml"
-	case "yaml":
-		contentType = "application/yaml"
-	case "ini":
-		contentType = "text/plain"
-	}
-
-	// Send file contents directly
-	w.Header().Set("Content-Type", contentType)
-	w.WriteHeader(http.StatusOK)
-	if _, err := w.Write(content); err != nil {
-		logger.Runfile.Error(fmt.Sprintf("failed to write file response for %s: %v", req.Filename, err))
-	}
+	writeFileJSON(w, http.StatusOK, map[string]any{"data": map[string]any{"filename": target.Filename, "saved": true}})
 }
 
-// SaveFile handles POST requests to save an edited file
-func SaveFile(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		sendFileError(w, http.StatusMethodNotAllowed, "only POST requests are allowed")
-		return
+func editableFile(filename string) (*runfile.File, bool) {
+	if strings.TrimSpace(filename) == "" {
+		return nil, false
 	}
-
-	// Get filename from query parameter
-	filename := r.URL.Query().Get("filename")
-	if filename == "" {
-		sendFileError(w, http.StatusBadRequest, "filename query parameter is required")
-		return
-	}
-
-	// Read raw content from request body
-	content, err := io.ReadAll(r.Body)
-	if err != nil {
-		sendFileError(w, http.StatusBadRequest, fmt.Sprintf("failed to read request body: %v", err))
-		return
-	}
-	if len(content) == 0 {
-		sendFileError(w, http.StatusBadRequest, "content is required")
-		return
-	}
-
-	// Find the file in runfile
-	files := runfile.GetFiles()
-	var targetFile *runfile.File
-	for _, file := range files {
-		if file.Filename == filename {
-			targetFile = &file
-			break
+	for _, file := range runfile.GetFiles() {
+		if file.Filename == filename && !protectedFile(file.Filepath) {
+			copy := file
+			return &copy, true
 		}
 	}
-
-	if targetFile == nil {
-		sendFileError(w, http.StatusNotFound, fmt.Sprintf("file %s not found in runfile", filename))
-		return
-	}
-
-	// Check if file is in SSUI subdirectory
-	if strings.HasPrefix(targetFile.Filepath, "./SSUI") {
-		sendFileError(w, http.StatusForbidden, fmt.Sprintf("saving file %s in the SSUI subdirectory is forbidden", filename))
-		return
-	}
-
-	// Stat the file
-	fileInfo, err := os.Stat(targetFile.Filepath)
-	if err != nil && !os.IsNotExist(err) {
-		sendFileError(w, http.StatusInternalServerError, fmt.Sprintf("failed to stat file %s: %v", filename, err))
-		return
-	}
-
-	// Check if file is writable (or would be writable if it exists)
-	if fileInfo != nil && fileInfo.Mode().Perm()&0222 == 0 {
-		sendFileError(w, http.StatusForbidden, fmt.Sprintf("file %s is not writable", filename))
-		return
-	}
-
-	// Write file with retries
-	const maxRetries = 3
-	for attempt := 1; attempt <= maxRetries; attempt++ {
-		if err := os.WriteFile(targetFile.Filepath, content, 0644); err != nil {
-			logger.Runfile.Warn(fmt.Sprintf("failed to write file %s: attempt=%d, error=%v", filename, attempt, err))
-			if attempt == maxRetries {
-				sendFileError(w, http.StatusInternalServerError, fmt.Sprintf("failed to write file %s after %d attempts: %v", filename, maxRetries, err))
-				return
-			}
-			time.Sleep(100 * time.Millisecond)
-			continue
-		}
-		break
-	}
-
-	sendFileResponse(w, http.StatusOK, FileResponse{
-		Success: true,
-		Message: fmt.Sprintf("file %s saved successfully", filename),
-	})
+	return nil, false
 }
 
-// sendFileResponse sends a JSON response
-func sendFileResponse(w http.ResponseWriter, status int, resp FileResponse) {
+func protectedFile(path string) bool {
+	normalized := strings.TrimPrefix(strings.ReplaceAll(path, "\\", "/"), "./")
+	return normalized == "SSUI" || strings.HasPrefix(normalized, "SSUI/")
+}
+
+func hasFilePermission(r *http.Request, permission string) bool {
+	principal, ok := middleware.PrincipalFromContext(r.Context())
+	return ok && principal.Permissions[permission]
+}
+
+func fileError(w http.ResponseWriter, status int, code, message string) {
+	logger.API.Debug(message)
+	writeFileJSON(w, status, map[string]any{"error": map[string]string{"code": code, "message": message}})
+}
+
+func writeFileJSON(w http.ResponseWriter, status int, value any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		logger.Runfile.Error(fmt.Sprintf("failed to encode response: %v", err))
-	}
-}
-
-// sendFileError sends an error response as JSON
-func sendFileError(w http.ResponseWriter, status int, message string) {
-	logger.API.Debug(message)
-	sendFileResponse(w, status, FileResponse{
-		Success: false,
-		Message: message,
-	})
+	_ = json.NewEncoder(w).Encode(value)
 }

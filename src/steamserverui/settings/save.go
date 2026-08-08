@@ -3,8 +3,8 @@ package settings
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
@@ -293,72 +293,57 @@ var setterMap = map[string]setterFunc{
 	},
 }
 
-// SaveSetting handles RESTful requests to update a single configuration setting
+type updateSettingRequest struct {
+	Key   string      `json:"key"`
+	Value interface{} `json:"value"`
+}
+
 func HandleSaveSetting(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	if r.Method != http.MethodPatch {
+		writeSettingError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Only PATCH requests are allowed")
 		return
 	}
-
-	// Read request body
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error reading request body: %v", err), http.StatusInternalServerError)
+	r.Body = http.MaxBytesReader(w, r.Body, 64<<10)
+	decoder := json.NewDecoder(r.Body)
+	var request updateSettingRequest
+	if err := decoder.Decode(&request); err != nil {
+		writeSettingError(w, http.StatusBadRequest, "invalid_json", "A setting key and value are required")
 		return
 	}
-	defer r.Body.Close()
-
-	// Parse JSON into a map
-	var requestData map[string]interface{}
-	if err := json.Unmarshal(body, &requestData); err != nil {
-		http.Error(w, fmt.Sprintf("Error parsing JSON: %v", err), http.StatusBadRequest)
-		return
-	}
-
-	// Ensure exactly one key-value pair
-	if len(requestData) != 1 {
-		http.Error(w, "Request must contain exactly one key-value pair", http.StatusBadRequest)
-		return
-	}
-
-	// Get the single key and value
-	var key string
-	var value interface{}
-	for k, v := range requestData {
-		key = k
-		value = v
-		break
-	}
-
-	// Look up the setter
-	setter, exists := setterMap[key]
+	request.Key = strings.TrimSpace(request.Key)
+	setter, exists := setterMap[request.Key]
 	if !exists {
-		http.Error(w, fmt.Sprintf("Unknown configuration key: %s", key), http.StatusBadRequest)
+		writeSettingError(w, http.StatusBadRequest, "unknown_setting", "The requested setting does not exist")
 		return
 	}
-
-	// Call the setter
-	if err := setter(value); err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{
-			"status":  "error",
-			"message": err.Error(),
-		})
+	if err := setter(request.Value); err != nil {
+		writeSettingError(w, http.StatusBadRequest, "invalid_setting_value", err.Error())
 		return
 	}
-
-	// Success response
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{
-		"status":  "success",
-		"message": "Configuration updated successfully",
-	})
+	_ = json.NewEncoder(w).Encode(map[string]any{"data": map[string]any{
+		"key":     request.Key,
+		"value":   request.Value,
+		"effects": settingEffects(request.Key),
+	}})
+}
+
+func settingEffects(key string) []string {
+	if strings.Contains(key, "Port") || strings.Contains(key, "CLI") ||
+		strings.Contains(key, "BackupsStore") || strings.Contains(key, "BackupLoop") ||
+		strings.Contains(key, "GameLog") {
+		return []string{"backend.reload"}
+	}
+	return []string{"immediate"}
+}
+
+func writeSettingError(w http.ResponseWriter, status int, code, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(map[string]any{"error": map[string]string{"code": code, "message": message}})
 }
 
 func setLanguageSetting(value string) error {
 	defer loader.ReloadBackend()
-
 	return config.SetLanguageSetting(value)
 }

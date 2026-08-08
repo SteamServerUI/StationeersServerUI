@@ -22,6 +22,7 @@ type ConfigSetting struct {
 	Required    bool        `json:"required"`
 	Sensitive   bool        `json:"sensitive,omitempty"`
 	HasValue    bool        `json:"hasValue,omitempty"`
+	Effects     []string    `json:effects`
 }
 
 // ConfigSettingsResponse represents the API response
@@ -292,6 +293,10 @@ func HandleRetrieveSettings(w http.ResponseWriter, r *http.Request) {
 			Description: "Not implemented: Enable automatic backups based on the BackupLoopInterval. If disabled, you can still manually trigger backups from the Web UI.",
 			Value:       config.GetBackupLoopActive(),
 		},
+	}
+
+	for index := range settings {
+		settings[index].Effects = settingEffects(settings[index].Name)
 	}
 
 	response := ConfigSettingsResponse{

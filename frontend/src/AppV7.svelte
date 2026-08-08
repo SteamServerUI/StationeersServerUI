@@ -8,6 +8,8 @@
   import AuthGuardV7 from './AuthGuardV7.svelte';
   import ScreenNotSupported from './components/resuables/ScreenNotSupported.svelte';
   import { authState } from './services/api-v7';
+  import { initializeActivity, closeActivity } from './services/activity';
+  import { loadCapabilities } from './services/product';
   import { activeRoute, initializeRouter, navigate } from './services/router';
   import themeService from './themes/theme';
   import './themes/theme.css';
@@ -16,6 +18,7 @@
   let serverError = $state(null);
   let forceShowApp = $state(false);
   let screenSupported = $state(true);
+  let productLoadedFor = $state(null);
 
   const definitions = [
     { id:'home', name:'Home', icon:'home', group:'Home', permissions:['server.view'] },
@@ -43,11 +46,25 @@
     const resize = () => screenSupported = window.innerWidth >= 768 && window.innerHeight >= 500;
     resize();
     window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    return () => {
+      window.removeEventListener('resize', resize);
+      closeActivity();
+    };
   });
 
   $effect(() => {
-    if ($authState.isAuthenticated && views.length && !views.some(view => view.id === $activeRoute)) navigate(views[0].id, true);
+    if (!$authState.isAuthenticated) {
+      productLoadedFor = null;
+      closeActivity();
+      return;
+    }
+    if (views.length && !views.some(view => view.id === $activeRoute)) navigate(views[0].id, true);
+    const identity = $authState.user?.id || $authState.user?.username || 'session';
+    if (productLoadedFor !== identity) {
+      productLoadedFor = identity;
+      loadCapabilities().catch(error => console.warn('Could not load backend capabilities', error));
+      initializeActivity();
+    }
   });
 
   function handleStatusChange(value) {

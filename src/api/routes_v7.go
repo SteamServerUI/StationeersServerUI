@@ -4,7 +4,9 @@ import (
 	"io/fs"
 	"net/http"
 	"path/filepath"
+	"strings"
 
+	"github.com/SteamServerUI/SteamServerUI/v7/src/api/activityapi"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/api/backupapi"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/api/httpauth"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/api/legacyapi"
@@ -82,6 +84,9 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 	protected.HandleFunc("/api/v3/auth/sessions", httpauth.SessionsHandler)
 	protected.HandleFunc("/api/v3/auth/sessions/", httpauth.SessionHandler)
 	protect(protected, "/api/v3/auth/audit", security.PermissionAuditView, httpauth.AuditHandler)
+	protected.HandleFunc("/api/v3/capabilities", v3JSONBoundary(HandleCapabilities))
+	protected.HandleFunc("/api/v3/activity", v3JSONBoundary(activityapi.List))
+	protected.HandleFunc("/api/v3/streams/activity", activityapi.Stream)
 
 	protect(protected, "/api/v3/runfile/groups", security.PermissionRunfilesView, runfileapi.HandleRunfileGroups)
 	protect(protected, "/api/v3/runfile/args", security.PermissionRunfilesView, runfileapi.HandleRunfileArgs)
@@ -92,8 +97,7 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 	protect(protected, "/api/v3/runfile/hardreset", security.PermissionRunfilesManage, runfileapi.HandleSetRunfileGame)
 	protect(protected, "/api/v3/loader/reloadrunfile", security.PermissionRunfilesManage, runfileapi.HandleReloadRunfile)
 
-	protect(protected, "/api/v3/settings", security.PermissionSettingsView, settings.HandleRetrieveSettings)
-	protect(protected, "/api/v3/settings/save", security.PermissionSettingsManage, settings.HandleSaveSetting)
+	protected.HandleFunc("/api/v3/settings", settingsResource)
 	protect(protected, "/api/v3/settings/files/upload", security.PermissionFilesWrite, settingsapi.HandleFileUpload)
 	protect(protected, "/api/v3/settings/files/background/upload", security.PermissionSettingsManage, settingsapi.HandleBackgroundUpload)
 	protect(protected, "/api/v3/settings/files/tls/upload", security.PermissionSecurityManage, settingsapi.HandleTLSCertUpload)
@@ -103,8 +107,7 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 	protect(protected, "/api/v3/gallery", security.PermissionRunfilesView, runfileapi.GalleryHandler)
 	protect(protected, "/api/v3/gallery/select", security.PermissionRunfilesManage, runfileapi.GallerySelectHandler)
 	protect(protected, "/api/v3/files", security.PermissionFilesRead, runfileapi.GetFileList)
-	protect(protected, "/api/v3/files/get", security.PermissionFilesRead, runfileapi.GetFile)
-	protect(protected, "/api/v3/files/save", security.PermissionFilesWrite, runfileapi.SaveFile)
+	protected.HandleFunc("/api/v3/files/content", v3JSONBoundary(runfileapi.HandleFileContent))
 	if config.GetPluginsEnabled() {
 		protect(protected, "/api/v3/plugingallery", security.PermissionPluginsView, pluginsapi.PluginGalleryHandler)
 		protect(protected, "/api/v3/plugingallery/select", security.PermissionPluginsManage, pluginsapi.PluginSelectHandler)
@@ -126,7 +129,22 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 }
 
 func protect(mux *http.ServeMux, path, permission string, handler http.HandlerFunc) {
-	mux.HandleFunc(path, middleware.RequirePermission(permission, handler))
+	if strings.HasPrefix(path, "/api/v3/streams/") {
+		mux.HandleFunc(path, middleware.RequirePermission(permission, handler))
+		return
+	}
+	mux.HandleFunc(path, middleware.RequirePermission(permission, v3JSONBoundary(handler)))
+}
+
+func settingsResource(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		middleware.RequirePermission(security.PermissionSettingsView, v3JSONBoundary(settings.HandleRetrieveSettings))(w, r)
+	case http.MethodPatch:
+		middleware.RequirePermission(security.PermissionSettingsManage, v3JSONBoundary(settings.HandleSaveSetting))(w, r)
+	default:
+		middleware.WriteJSONError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Only GET and PATCH requests are allowed")
+	}
 }
 
 func pluginsDisabled(w http.ResponseWriter, _ *http.Request) {

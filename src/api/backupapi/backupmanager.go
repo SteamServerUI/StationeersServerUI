@@ -3,30 +3,23 @@ package backupapi
 import (
 	"encoding/json"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
+	"time"
 
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/managers/backupmgr"
 )
 
-type BackupResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
-}
-
-type BackupListResponse struct {
-	Success bool     `json:"success"`
-	Message string   `json:"message"`
-	Backups []string `json:"backups"`
-}
-
-type BackupStatusResponse struct {
-	Success       bool   `json:"success"`
-	Message       string `json:"message"`
-	SystemReady   bool   `json:"systemReady"`
-	IsLoopRunning bool   `json:"isLoopRunning"`
-	IsRunning     bool   `json:"isRunning"`
+type BackupItem struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"createdAt"`
+	SizeBytes int64     `json:"sizeBytes"`
+	SizeKnown bool      `json:"sizeKnown"`
+	Format    string    `json:"format"`
 }
 
 type RestoreRequest struct {
@@ -39,168 +32,106 @@ type BackupCreateRequest struct {
 }
 
 func HandleBackupCreate(w http.ResponseWriter, r *http.Request) {
-	logger.Web.Debug("API: Create backup requested")
-
-	//accept only POST requests
-	if r.Method != http.MethodPost && r.Method != http.MethodGet {
-		respondBackupError(w, "Method not allowed", http.StatusMethodNotAllowed)
+	if r.Method != http.MethodPost {
+		backupError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Only POST requests are allowed")
 		return
 	}
-
-	// Parse request body
-	var req BackupCreateRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		logger.Web.Error("API: Failed to parse backup create request: " + err.Error())
-		respondBackupError(w, "Invalid request body", http.StatusBadRequest)
+	var request BackupCreateRequest
+	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 4096)).Decode(&request); err != nil {
+		backupError(w, http.StatusBadRequest, "invalid_json", "A backup mode is required")
 		return
 	}
-
-	logger.Web.Info("API: Creating backup with mode: " + req.Mode)
-
-	// Trigger backup creation
-	err := backupmgr.CreateBackup(req.Mode)
-	if err != nil {
+	if request.Mode != "copy" && request.Mode != "tar" {
+		backupError(w, http.StatusBadRequest, "invalid_backup_mode", "Backup mode must be copy or tar")
+		return
+	}
+	if err := backupmgr.CreateBackup(request.Mode); err != nil {
 		logger.Web.Error("API: Failed to create backup: " + err.Error())
-		respondBackupError(w, "Failed to create backup: "+err.Error(), http.StatusInternalServerError)
+		backupError(w, http.StatusConflict, "backup_failed", err.Error())
 		return
 	}
-
-	logger.Web.Info("API: Backup triggered successfully")
-	respondBackupSuccess(w, "Backup triggered successfully", nil)
+	writeBackupJSON(w, http.StatusAccepted, map[string]any{"data": map[string]any{"accepted": true, "mode": request.Mode}})
 }
 
 func HandleBackupList(w http.ResponseWriter, r *http.Request) {
-	logger.Web.Debug("API: Backup list requested")
-
 	if r.Method != http.MethodGet {
-		respondBackupError(w, "Method not allowed", http.StatusMethodNotAllowed)
+		backupError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Only GET requests are allowed")
 		return
 	}
-
-	// Get list of backups
-	backups, err := backupmgr.GetBackupList()
+	names, err := backupmgr.GetBackupList()
 	if err != nil {
-		logger.Web.Error("API: Failed to get backup list: " + err.Error())
-		respondBackupError(w, "Failed to get backup list: "+err.Error(), http.StatusInternalServerError)
+		backupError(w, http.StatusInternalServerError, "backup_list_failed", "The restore points could not be listed")
 		return
 	}
-
-	logger.Web.Debug("API: Retrieved backup list successfully")
-	respondBackupList(w, "Backup list retrieved successfully", backups)
+	backups := make([]BackupItem, 0, len(names))
+	for _, name := range names {
+		item := BackupItem{ID: name, Name: name, Format: backupFormat(name)}
+		if info, statErr := os.Stat(filepath.Join(config.GetBackupsStoreDir(), name)); statErr == nil {
+			item.CreatedAt = info.ModTime().UTC()
+			if !info.IsDir() {
+				item.SizeBytes = info.Size()
+				item.SizeKnown = true
+			}
+		}
+		backups = append(backups, item)
+	}
+	writeBackupJSON(w, http.StatusOK, map[string]any{"data": map[string]any{"backups": backups}})
 }
 
 func HandleBackupRestore(w http.ResponseWriter, r *http.Request) {
-	logger.Web.Debug("API: Backup restore requested")
-
 	if r.Method != http.MethodPost {
-		respondBackupError(w, "Method not allowed", http.StatusMethodNotAllowed)
+		backupError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Only POST requests are allowed")
 		return
 	}
-
-	// Parse request body
-	var req RestoreRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		logger.Web.Error("API: Failed to parse restore request: " + err.Error())
-		respondBackupError(w, "Invalid request body", http.StatusBadRequest)
+	var request RestoreRequest
+	if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 4096)).Decode(&request); err != nil {
+		backupError(w, http.StatusBadRequest, "invalid_json", "A restore point is required")
 		return
 	}
-
-	// Validate backup name
-	if strings.TrimSpace(req.BackupName) == "" {
-		respondBackupError(w, "Backup name is required", http.StatusBadRequest)
+	request.BackupName = strings.TrimSpace(request.BackupName)
+	if request.BackupName == "" || strings.Contains(request.BackupName, "..") || strings.ContainsAny(request.BackupName, "/\\") {
+		backupError(w, http.StatusBadRequest, "invalid_backup_name", "The restore point name is invalid")
 		return
 	}
-
-	// Validate backup name format (basic security check)
-	if strings.Contains(req.BackupName, "..") || strings.Contains(req.BackupName, "/") || strings.Contains(req.BackupName, "\\") {
-		respondBackupError(w, "Invalid backup name", http.StatusBadRequest)
-		return
-	}
-
-	logger.Web.Info("API: Restoring backup: " + req.BackupName)
-	if req.SkipPreBackup {
-		logger.Web.Info("API: Skipping pre-restore backup")
-	}
-
-	// Perform restore
-	err := backupmgr.RestoreBackup(req.BackupName, req.SkipPreBackup)
-	if err != nil {
+	if err := backupmgr.RestoreBackup(request.BackupName, request.SkipPreBackup); err != nil {
 		logger.Web.Error("API: Failed to restore backup: " + err.Error())
-		respondBackupError(w, "Failed to restore backup: "+err.Error(), http.StatusInternalServerError)
+		backupError(w, http.StatusConflict, "restore_failed", err.Error())
 		return
 	}
-
-	logger.Web.Info("API: Backup restored successfully: " + req.BackupName)
-	respondBackupSuccess(w, "Backup restored successfully: "+req.BackupName, nil)
+	writeBackupJSON(w, http.StatusOK, map[string]any{"data": map[string]any{"restored": true, "backupName": request.BackupName}})
 }
 
 func HandleBackupStatus(w http.ResponseWriter, r *http.Request) {
-	logger.Web.Debug("API: Backup status requested")
-
 	if r.Method != http.MethodGet {
-		respondBackupError(w, "Method not allowed", http.StatusMethodNotAllowed)
+		backupError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Only GET requests are allowed")
 		return
 	}
-
-	// Get backup manager status
-	isLoopRunning := backupmgr.IsLoopRunning()
-	isBackupRunning := backupmgr.IsBackupRunning()
-	isSystemReady := backupmgr.IsSystemReady()
-
-	logger.Web.Debug("API: Backup status retrieved successfully")
-	respondBackupStatus(w, "Backup status retrieved", isLoopRunning, isBackupRunning, isSystemReady)
+	writeBackupJSON(w, http.StatusOK, map[string]any{"data": map[string]any{
+		"systemReady":   backupmgr.IsSystemReady(),
+		"isLoopRunning": backupmgr.IsLoopRunning(),
+		"isRunning":     backupmgr.IsBackupRunning(),
+	}})
 }
 
-// Helper functions for consistent API responses
-func respondBackupSuccess(w http.ResponseWriter, message string, data any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	response := BackupResponse{
-		Success: true,
-		Message: message,
-		Data:    data,
+func backupFormat(name string) string {
+	switch {
+	case strings.HasSuffix(name, ".tar.gz"):
+		return "tar.gz"
+	case strings.HasSuffix(name, ".tar"):
+		return "tar"
+	case strings.HasPrefix(name, "snapshot_"):
+		return "snapshot"
+	default:
+		return "copy"
 	}
-
-	json.NewEncoder(w).Encode(response)
 }
 
-func respondBackupError(w http.ResponseWriter, message string, statusCode int) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-
-	response := BackupResponse{
-		Success: false,
-		Message: message,
-	}
-
-	json.NewEncoder(w).Encode(response)
+func backupError(w http.ResponseWriter, status int, code, message string) {
+	writeBackupJSON(w, status, map[string]any{"error": map[string]string{"code": code, "message": message}})
 }
 
-func respondBackupList(w http.ResponseWriter, message string, backups []string) {
+func writeBackupJSON(w http.ResponseWriter, status int, value any) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	response := BackupListResponse{
-		Success: true,
-		Message: message,
-		Backups: backups,
-	}
-
-	json.NewEncoder(w).Encode(response)
-}
-
-func respondBackupStatus(w http.ResponseWriter, message string, isLoopRunning bool, isBackupRunning bool, backupSystemReady bool) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	response := BackupStatusResponse{
-		Success:       true,
-		Message:       message,
-		SystemReady:   backupSystemReady,
-		IsLoopRunning: isLoopRunning,
-		IsRunning:     isBackupRunning,
-	}
-
-	json.NewEncoder(w).Encode(response)
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(value)
 }

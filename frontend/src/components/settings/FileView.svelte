@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { apiFetch, hasPermission } from '../../services/api-v7';
+  import { apiJson, hasPermission } from '../../services/api-v7';
   import { notify } from '../../services/activity';
 
   let files=$state([]), selected=$state(null), content=$state(''), original=$state(''), loading=$state(true), saving=$state(false), query=$state('');
@@ -8,16 +8,33 @@
   let dirty=$derived(content!==original);
 
   onMount(loadFiles);
-  async function json(path,options){const response=await apiFetch(path,options);const body=await response.json().catch(()=>null);if(!response.ok)throw new Error(body?.error?.message||body?.message||`Request failed (${response.status})`);return body;}
-  async function loadFiles(){loading=true;try{const body=await json('/api/v3/files');files=body.data||[];if(files.length&&!selected)await open(files[0]);}catch(error){notify('Could not load editable files','error',error.message);}finally{loading=false;}}
+  async function loadFiles(){
+    loading=true;
+    try{
+      const body=await apiJson('/api/v3/files');
+      files=body.data?.files||[];
+      if(files.length&&!selected)await open(files[0]);
+    }catch(error){notify('Could not load editable files','error',error.message);}
+    finally{loading=false;}
+  }
   async function open(file){
     if(dirty&&!window.confirm('Discard unsaved file changes?'))return;
     selected=file;loading=true;
-    try{const response=await apiFetch('/api/v3/files/get',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({filename:file.filename})});if(!response.ok)throw new Error(`Request failed (${response.status})`);const type=response.headers.get('content-type')||'';if(type.includes('json')){const body=await response.json();content=body.data?.content??JSON.stringify(body,null,2);}else content=await response.text();original=content;}catch(error){notify('Could not open file','error',error.message);}finally{loading=false;}
+    try{
+      const body=await apiJson(`/api/v3/files/content?filename=${encodeURIComponent(file.filename)}`);
+      content=body.data.content;
+      original=content;
+    }catch(error){notify('Could not open file','error',error.message);}
+    finally{loading=false;}
   }
   async function save(){
     if(!selected||!dirty)return;saving=true;
-    try{const response=await apiFetch(`/api/v3/files/save?filename=${encodeURIComponent(selected.filename)}`,{method:'POST',headers:{'Content-Type':'text/plain'},body:content});const body=await response.json().catch(()=>({}));if(!response.ok||body.success===false)throw new Error(body?.error?.message||body.message||'Save failed');original=content;notify('File saved','success',selected.filename);}catch(error){notify('Could not save file','error',error.message);}finally{saving=false;}
+    try{
+      await apiJson('/api/v3/files/content',{method:'PUT',body:JSON.stringify({filename:selected.filename,content})});
+      original=content;
+      notify('File saved','success',selected.filename);
+    }catch(error){notify('Could not save file','error',error.message);}
+    finally{saving=false;}
   }
   function reset(){content=original;}
 </script>
@@ -25,7 +42,7 @@
 <section class="file-workspace surface">
   <aside><header><span class="eyebrow">Runfile files</span><input bind:value={query} placeholder="Filter files"></header><div class="file-list">{#each filtered as file (file.filename)}<button class:active={selected?.filename===file.filename} onclick={()=>open(file)}><span class="file-type">{(file.type||'txt').slice(0,4).toUpperCase()}</span><span><strong>{file.filename}</strong><small>{file.description||'Editable game file'}</small></span></button>{/each}{#if !filtered.length&&!loading}<div class="no-files">No matching files</div>{/if}</div></aside>
   <div class="editor">
-    {#if selected}<header><div><span class="eyebrow">{selected.type||'Text'} editor</span><h3>{selected.filename}</h3></div><div class="editor-state"><span class:dirty>{dirty? 'Unsaved changes':'Saved'}</span><button onclick={reset} disabled={!dirty}>Revert</button>{#if hasPermission('files.write')}<button class="save" onclick={save} disabled={!dirty||saving}>{saving?'Saving…':'Save file'}</button>{/if}</div></header><textarea bind:value={content} spellcheck="false" disabled={loading} aria-label="File content"></textarea><footer><span>{content.split('\n').length} lines</span><span>{content.length.toLocaleString()} characters</span></footer>{:else}<div class="empty-state"><span class="eyebrow">Files</span><h2>No editable file selected</h2><p>The active runfile decides which game files are safe to edit.</p></div>{/if}
+    {#if selected}<header><div><span class="eyebrow">{selected.type||'Text'} editor</span><h3>{selected.filename}</h3></div><div class="editor-state"><span class:dirty>{dirty? 'Unsaved changes':'Saved'}</span><button onclick={reset} disabled={!dirty}>Revert</button>{#if hasPermission('files.write')}<button class="save" onclick={save} disabled={!dirty||saving}>{saving?'Saving&':'Save file'}</button>{/if}</div></header><textarea bind:value={content} spellcheck="false" disabled={loading} aria-label="File content"></textarea><footer><span>{content.split('\n').length} lines</span><span>{content.length.toLocaleString()} characters</span></footer>{:else}<div class="empty-state"><span class="eyebrow">Files</span><h2>No editable file selected</h2><p>The active runfile decides which game files are safe to edit.</p></div>{/if}
   </div>
 </section>
 

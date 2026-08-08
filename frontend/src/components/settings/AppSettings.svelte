@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { apiFetch } from '../../services/api-v7';
+  import { apiJson } from '../../services/api-v7';
   import { notify } from '../../services/activity';
 
   let settings=$state([]), category=$state(''), query=$state(''), loading=$state(true);
@@ -22,9 +22,7 @@
   onMount(load);
   async function load(){
     try{
-      const response=await apiFetch('/api/v3/settings');
-      const body=await response.json();
-      if(!response.ok||body.error)throw new Error(body?.error?.message||body.error||'Settings unavailable');
+      const body=await apiJson('/api/v3/settings');
       settings=body.data||[];
     }catch(error){notify('Could not load settings','error',error.message);}
     finally{loading=false;}
@@ -35,12 +33,10 @@
     settings=[...settings];
     saving=new Set([...saving,item.name]);
     try{
-      const response=await apiFetch('/api/v3/settings/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({[item.name]:value})});
-      const body=await response.json().catch(()=>({}));
-      if(!response.ok||body.status==='error')throw new Error(body?.error?.message||body.message||'The backend rejected this value');
+      const body=await apiJson('/api/v3/settings',{method:'PATCH',body:JSON.stringify({key:item.name,value})});
       saved=new Set([...saved,item.name]);
       setTimeout(()=>{const next=new Set(saved);next.delete(item.name);saved=next;},2200);
-      notify(`${label(item.name)} saved`,'success',effect(item));
+      notify(`${label(item.name)} saved`,'success',(body.data?.effects||item.effects||[]).includes('backend.reload')?'A backend reload may be required.':'Applied immediately.');
     }catch(error){
       item.value=previous;settings=[...settings];
       notify(`Could not save ${label(item.name)}`,'error',error.message);
@@ -78,7 +74,7 @@
       <header><div><span class="eyebrow">{category||'Search results'}</span><h2>{category||`${visible.length} matching settings`}</h2></div></header>
       {#each visible as item (item.name)}
         <article class="setting-row">
-          <div class="setting-copy"><strong>{label(item.name)}</strong><p>{item.description}</p>{#if /Port|CLI|BackupsStore|BackupLoop|GameLog/.test(item.name)}<small>Backend reload may be required</small>{/if}</div>
+          <div class="setting-copy"><strong>{label(item.name)}</strong><p>{item.description}</p>{#if item.effects?.includes('backend.reload')}<small>Backend reload may be required</small>{/if}</div>
           <div class="setting-control" class:saving={saving.has(item.name)}>
             {#if item.type==='bool'}
               <label class="toggle"><input type="checkbox" checked={item.value===true} disabled={saving.has(item.name)} onchange={event=>save(item,inputValue(item,event))}><span></span></label>
