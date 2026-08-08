@@ -24,7 +24,7 @@ func (cl *APIServerLogger) Write(p []byte) (n int, err error) {
 func StartWebServer(wg *sync.WaitGroup) {
 
 	logger.Web.Info("Starting API services...")
-	mux, protectedMux := SetupAPIRoutes()
+	mux, protectedMux := SetupV7APIRoutes()
 
 	// if debug mode, add socket only routes to http api for easy testing
 	if config.IsDebugMode {

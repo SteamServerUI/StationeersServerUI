@@ -28,7 +28,7 @@ func StartSocketServer(wg *sync.WaitGroup) {
 	}
 
 	// Set up routes
-	mux, APIMux := api.SetupAPIRoutes()
+	mux, APIMux := api.SetupV7APIRoutes()
 	api.SetupSocketAPIRoutes(APIMux)
 	mux.Handle("/", APIMux)
 

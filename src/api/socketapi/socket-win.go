@@ -26,7 +26,7 @@ func StartSocketServer(wg *sync.WaitGroup) {
 	logger.Socket.Info("Starting named pipe server...")
 
 	// Set up routes
-	mux, httpAPIMux := api.SetupAPIRoutes()
+	mux, httpAPIMux := api.SetupV7APIRoutes()
 	api.SetupSocketAPIRoutes(httpAPIMux)
 	mux.Handle("/", httpAPIMux)
 
