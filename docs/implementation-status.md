@@ -9,6 +9,7 @@ The identity, browser session, authorization and desktop credential foundation i
 ## Present now
 
 - Local users with Argon2id password hashes, immutable Owner access and additive custom groups
+- Shared browser/desktop login throttling with uniform-cost checks for unknown and disabled users
 - Backend permission enforcement across the v7 HTTP API
 - Persistent opaque browser sessions with secure cookies, idle and absolute expiry, CSRF and origin checks
 - Named bearer tokens with explicit scopes, expiry, last-use tracking and revocation

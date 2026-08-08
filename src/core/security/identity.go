@@ -117,16 +117,17 @@ func BootstrapOwner(setupSecret, username, password string, now time.Time) (conf
 func AuthenticateUser(username, password string) (config.IdentityUser, error) {
 	identity := config.GetIdentityConfig()
 	normalized := NormalizeUsername(username)
+	var candidate config.IdentityUser
 	for _, user := range identity.Users {
-		if user.Normalized != normalized || !user.Enabled {
-			continue
-		}
-		if !VerifyIdentityPassword(user.PasswordHash, password) {
+		if user.Normalized == normalized {
+			candidate = user
 			break
 		}
-		return user, nil
 	}
-	return config.IdentityUser{}, errors.New("invalid credentials")
+	if !VerifyIdentityPasswordOrDummy(candidate.PasswordHash, password) || !candidate.Enabled {
+		return config.IdentityUser{}, errors.New("invalid credentials")
+	}
+	return candidate, nil
 }
 
 func ResolvePermissions(user config.IdentityUser, identity config.IdentityConfig) map[string]bool {

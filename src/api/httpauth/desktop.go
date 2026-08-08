@@ -23,9 +23,8 @@ func DesktopLoginHandler(w http.ResponseWriter, r *http.Request) {
 		middleware.WriteJSONError(w, http.StatusBadRequest, "invalid_request", err.Error())
 		return
 	}
-	user, err := security.AuthenticateUser(request.Username, request.Password)
-	if err != nil {
-		middleware.WriteJSONError(w, http.StatusUnauthorized, "invalid_credentials", "Invalid username or password")
+	user, ok := authenticateIdentityRequest(w, r, request)
+	if !ok {
 		return
 	}
 	identity := config.GetIdentityConfig()

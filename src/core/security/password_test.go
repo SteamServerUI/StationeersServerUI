@@ -20,3 +20,9 @@ func TestIdentityPasswordRejectsShortValue(t *testing.T) {
 		t.Fatal("short password was accepted")
 	}
 }
+
+func TestDummyPasswordNeverVerifies(t *testing.T) {
+	if VerifyIdentityPasswordOrDummy("", "some attempted password") {
+		t.Fatal("dummy password verification succeeded")
+	}
+}

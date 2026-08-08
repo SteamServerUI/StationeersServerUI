@@ -62,3 +62,12 @@ func VerifyIdentityPassword(encoded, password string) bool {
 	actual := argon2.IDKey([]byte(password), salt, iterations, memory, parallelism, uint32(len(expected)))
 	return subtle.ConstantTimeCompare(actual, expected) == 1
 }
+
+func VerifyIdentityPasswordOrDummy(encoded, password string) bool {
+	if encoded != "" {
+		return VerifyIdentityPassword(encoded, password)
+	}
+	salt := []byte("s7ui-login-dummy")
+	actual := argon2.IDKey([]byte(password), salt, argonIterations, argonMemory, argonParallelism, argonKeyLength)
+	return subtle.ConstantTimeCompare(actual, make([]byte, argonKeyLength)) == 1
+}
