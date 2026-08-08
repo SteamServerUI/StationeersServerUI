@@ -1,5 +1,5 @@
 <script>
-  import { getCurrentBackendUrl } from '../../services/api';
+  import { getCurrentBackendUrl } from '../../services/api-v7';
   import { onMount } from 'svelte';
   
   let iframeRef;

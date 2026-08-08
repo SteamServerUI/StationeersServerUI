@@ -1,6 +1,6 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { apiSSE } from '../../services/api'; // Import the apiSSE function
+  import { apiSSE } from '../../services/api-v7'; // Import the apiSSE function
   
   // State variables
   let consoleElement = $state();

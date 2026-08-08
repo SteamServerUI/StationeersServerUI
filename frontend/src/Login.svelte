@@ -1,7 +1,7 @@
 <script>
 
   import { onMount } from 'svelte';
-  import { authState, backendConfig, login, getCurrentBackendUrl, setActiveBackend, setBackend } from './services/api';
+  import { authState, backendConfig, login, getCurrentBackendUrl, setActiveBackend, setBackend } from './services/api-v7';
   import { get } from 'svelte/store';
   
   // Form data

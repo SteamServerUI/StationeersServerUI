@@ -30,6 +30,9 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 	public.HandleFunc("/auth/logout", httpauth.SessionLogoutHandler)
 	public.HandleFunc("/api/v2/auth/setup/status", httpauth.SetupStatusHandler)
 	public.HandleFunc("/api/v2/auth/setup/bootstrap", httpauth.BootstrapOwnerHandler)
+	publicAssets, _ := fs.Sub(config.GetV1UIFS(), "SSUI/onboard_bundled/v2/assets")
+	public.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.FS(publicAssets))))
+	public.HandleFunc("GET /{$}", pages.ServeSvelteUI)
 
 	protected := http.NewServeMux()
 	GlobalWebProtectedMux = protected

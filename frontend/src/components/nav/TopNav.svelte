@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { backendConfig, setActiveBackend, apiFetch } from '../../services/api';
-  import { userInfo, initUserInfo, getUserInitials, formatAccessLevel, clearUserInfo } from '../../services/whoami';
+  import { backendConfig, setActiveBackend, apiFetch, logout } from '../../services/api-v7';
+  import { userInfo, initUserInfo, getUserInitials, formatAccessLevel, clearUserInfo } from '../../services/whoami-v7';
   import themeService from '../../themes/theme';
   import UserSettings from '../settings/UserSettings.svelte';
   
@@ -248,22 +248,15 @@
   }
 
   async function handleLogout() {
-      try {
-        // Clear user info from the store
-        clearUserInfo();
-        
-        // Clear any stored auth tokens or session data if needed
-        localStorage.removeItem('ssui-backend-config');
-        document.cookie = 'AuthToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-        
-        // Redirect to login page or home page
-        window.location.href = '/login'; // Adjust the redirect URL as needed
-      } catch (error) {
-        console.error('Logout failed:', error);
-        showUserMenu = false;
-        showUserSettings = false;
-        // Optionally show an error message to the user
-      }
+    try {
+      await logout();
+      clearUserInfo();
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Logout failed:', error);
+      showUserMenu = false;
+      showUserSettings = false;
+    }
   }
 
   async function handleUserSettings() {

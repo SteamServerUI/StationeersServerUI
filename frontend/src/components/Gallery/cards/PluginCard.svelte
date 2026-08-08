@@ -1,5 +1,5 @@
 <script lang="js">
-  import { apiFetch } from '../../../services/api';
+  import { apiFetch } from '../../../services/api-v7';
   import ErrorPopup from './ErrorPopup.svelte';
 
   // Props using $props in runes mode

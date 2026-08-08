@@ -1,7 +1,7 @@
 <!-- BackendSettings.svelte -->
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { backendConfig, setBackend, setActiveBackend, initializeApiService, apiFetch } from '../../services/api';
+  import { backendConfig, setBackend, setActiveBackend, initializeApiService, apiFetch } from '../../services/api-v7';
   
   let currentConfig = $state();
   let newBackendId = $state('');

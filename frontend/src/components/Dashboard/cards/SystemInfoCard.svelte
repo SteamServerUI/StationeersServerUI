@@ -1,5 +1,5 @@
 <script>
-    import { apiFetch } from "../../../services/api";
+    import { apiFetch } from "../../../services/api-v7";
   
     let systemInfo = $state(null);
     let error = $state(null);

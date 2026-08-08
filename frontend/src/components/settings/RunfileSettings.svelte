@@ -1,7 +1,7 @@
 <!-- RunfileSettings.svelte -->
 <script>
     import { onMount } from 'svelte';
-    import { apiFetch } from '../../services/api';
+    import { apiFetch } from '../../services/api-v7';
     
     // State management
     let runfileGroups = $state([]);

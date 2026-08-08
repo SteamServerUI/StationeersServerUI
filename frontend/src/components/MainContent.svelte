@@ -1,7 +1,7 @@
 <script>
   import { fade } from 'svelte/transition';
   import DashboardView from './Dashboard/DashboardView.svelte';
-  import SettingsView from './settings/SettingsView.svelte';
+  import SettingsView from './settings/SettingsViewV7.svelte';
   import LogsView from './views/LogsView.svelte';
   import ConsoleView from './views/ConsoleView.svelte';
   import PluginsView from './plugins/PluginsView.svelte';

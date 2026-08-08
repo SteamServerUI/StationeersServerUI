@@ -3,7 +3,7 @@
     import SystemInfoCard from './cards/SystemInfoCard.svelte';
     import LogsCard from './cards/LogsCard.svelte';
     import QuickActionsCardAlternative from './cards/QuickActionsCardAlternative.svelte';
-    import { apiFetch } from '../../services/api';
+    import { apiFetch } from '../../services/api-v7';
     import { onMount, onDestroy } from 'svelte';
 
     let backgroundImageUrl = '';

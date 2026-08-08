@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { initializeApiService, syncAuthState, apiFetch, authState } from './services/api';
+  import { initializeApiService, syncAuthState, apiFetch, authState } from './services/api-v7';
   import InitializingView from './components/resuables/InitializingView.svelte';
   
   /**

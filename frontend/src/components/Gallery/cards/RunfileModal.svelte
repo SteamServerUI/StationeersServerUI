@@ -1,5 +1,5 @@
 <script lang="js">
-  import { apiFetch } from '../../../services/api';
+  import { apiFetch } from '../../../services/api-v7';
   import SteamCMDWait from './SteamCMDWait.svelte';
 
   const { runfile, onClose } = $props();

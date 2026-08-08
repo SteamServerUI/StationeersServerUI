@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { apiFetch } from '../../../services/api';
+  import { apiFetch } from '../../../services/api-v7';
   import ToggleServer from '../../resuables/ToggleServer.svelte';
   import Loaders from '../../resuables/Loaders.svelte';
 

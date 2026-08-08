@@ -2,9 +2,9 @@
   import TopNav from './components/nav/TopNav.svelte';
   import Sidebar from './components/nav/Sidebar.svelte';
   import MainContent from './components/MainContent.svelte';
-  import BackendInitializer from './BackendInitializer.svelte';
-  import AuthGuard from './AuthGuard.svelte';
-  import { apiFetch } from './services/api';
+  import BackendInitializer from './BackendInitializerV7.svelte';
+  import AuthGuard from './AuthGuardV7.svelte';
+  import { apiFetch } from './services/api-v7';
   import { pluginsList } from './services/plugins';
   import './themes/theme.css';
   import ScreenNotSupported from './components/resuables/ScreenNotSupported.svelte';

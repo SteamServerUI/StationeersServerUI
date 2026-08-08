@@ -1,6 +1,6 @@
 <!-- UserSettings.svelte -->
 <script>
-    import { apiFetch } from '../../services/api';
+    import { apiFetch } from '../../services/api-v7';
         
     // State management
     let statusMessage = $state('');

@@ -1,6 +1,6 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { authState, syncAuthState } from './services/api';
+  import { authState, syncAuthState } from './services/api-v7';
   import Login from './Login.svelte';
   import InitializingView from './components/resuables/InitializingView.svelte';
   

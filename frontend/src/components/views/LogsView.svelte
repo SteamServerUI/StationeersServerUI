@@ -1,6 +1,6 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { apiSSE } from '../../services/api';
+  import { apiSSE } from '../../services/api-v7';
 
   // Main state
   let { hideTimeRange = false } = $props();
