@@ -1,101 +1,33 @@
-<script lang="js">
-  import { fade } from 'svelte/transition';
-    import RunfileGalleryView from '../Gallery/RunfileGalleryView.svelte';
-    import PluginGalleryView from '../Gallery/PluginGalleryView.svelte';
+<script>
+  import { onMount } from 'svelte';
+  import { apiFetch, hasPermission, authState } from '../../services/api-v7';
+  import { notify } from '../../services/activity';
 
-  // Reactive state for current view
-  let currentView = $state('runfile'); // Default to Runfile Gallery
+  let kind=$state('runfiles'), items=$state([]), loading=$state(true), query=$state(''), selected=$state(null), installing=$state('');
+  let pluginsEnabled=$derived($authState.features.plugins&&hasPermission('plugins.view'));
+  let visible=$derived(items.filter(item=>!query||(`${item.name} ${item.version} ${item.supported_os}`).toLowerCase().includes(query.toLowerCase())));
 
-  // Switch view and update URL
-  function switchView(view) {
-    currentView = view;
+  onMount(load);
+  async function request(path,options){const response=await apiFetch(path,options);const body=await response.json().catch(()=>({}));if(!response.ok||body.error)throw new Error(body?.error?.message||body.error||`Request failed (${response.status})`);return body.data??body;}
+  async function load(force=false){loading=true;selected=null;try{items=await request(`${kind==='runfiles'?'/api/v3/gallery':'/api/v3/plugingallery'}${force?'?forceUpdate=true':''}`);}catch(error){items=[];notify('Gallery unavailable','error',error.message);}finally{loading=false;}}
+  async function switchKind(value){kind=value;await load();}
+  async function install(item,redownload=false){
+    const identifier=item.filename||item.name;installing=identifier;
+    try{const path=kind==='runfiles'?'/api/v3/gallery/select':'/api/v3/plugingallery/select';const body=kind==='runfiles'?{identifier:identifier.replace(/^run|\.ssui$/g,''),redownload}:{name:item.name,redownload};await request(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});notify(`${item.name} installed`,'success',kind==='runfiles'?'The backend reloaded the selected game definition.':'Unsafe plugin downloaded and registered.');selected=null;}
+    catch(error){if(!redownload&&/exist|conflict/i.test(error.message)&&window.confirm('This item already exists. Replace it?'))return install(item,true);notify('Install failed','error',error.message);}finally{installing='';}
   }
-
-  // Handle browser back/forward navigation
-  $effect(() => {
-    function handlePopstate() {
-      const path = window.location.pathname.split('/').pop() || 'runfile';
-      currentView = path === 'plugin' ? 'plugin' : 'runfile';
-    }
-    window.addEventListener('popstate', handlePopstate);
-    return () => window.removeEventListener('popstate', handlePopstate);
-  });
 </script>
 
-<div class="gallery-container">
-  <!-- Toggle Buttons -->
-  <div class="gallery-toggle">
-    <button
-      class="toggle-button"
-      class:active={currentView === 'runfile'}
-      onclick={() => switchView('runfile')}
-      aria-label="Show Runfile Gallery"
-    >
-      Runfile Gallery
-    </button>
-    <button
-      class="toggle-button"
-      class:active={currentView === 'plugin'}
-      onclick={() => switchView('plugin')}
-      aria-label="Show Plugin Gallery"
-    >
-      Plugin Gallery
-    </button>
-  </div>
+<section class="gallery-workspace">
+  <div class="gallery-toolbar surface"><div class="segmented"><button class:active={kind==='runfiles'} onclick={()=>switchKind('runfiles')}>Game definitions</button>{#if pluginsEnabled}<button class:active={kind==='plugins'} onclick={()=>switchKind('plugins')}>Unsafe plugins</button>{/if}</div><input bind:value={query} placeholder="Search gallery"><button onclick={()=>load(true)} disabled={loading}>Refresh manifest</button></div>
+  {#if kind==='plugins'}<div class="gallery-warning">Plugins execute as trusted native code with the same operating-system access as SSUI. Only install code you have audited.</div>{/if}
+  {#if loading}<div class="empty-state surface"><span class="eyebrow">Gallery</span><h2>Loading compatible items…</h2></div>
+  {:else if !visible.length}<div class="empty-state surface"><span class="eyebrow">Nothing here</span><h2>No compatible items found</h2><p>Refresh the manifest or broaden your search.</p></div>
+  {:else}<div class="gallery-grid">{#each visible as item (item.filename||item.name)}<button class="gallery-card surface" onclick={()=>selected=item} style={item.background_url?`--art:url("${item.background_url}")`:''}><div class="art"></div><div class="card-copy"><span class="eyebrow">{item.supported_os||'All platforms'}</span><h3>{item.name}</h3><p>Version {item.version||'unspecified'}</p><span>View details →</span></div></button>{/each}</div>{/if}
+</section>
 
-  <!-- Conditional Rendering of Galleries with Transitions -->
-  {#if currentView === 'runfile'}
-    <div transition:fade={{ duration: 250 }} class="gallery-wrapper">
-      <RunfileGalleryView />
-    </div>
-  {:else if currentView === 'plugin'}
-    <div transition:fade={{ duration: 250 }} class="gallery-wrapper">
-      <PluginGalleryView />
-    </div>
-  {/if}
-</div>
+{#if selected}<div class="modal-backdrop" role="presentation" onclick={event=>{if(event.target===event.currentTarget)selected=null}}><article class="gallery-modal surface"><div class="modal-art" style={selected.background_url?`background-image:url("${selected.background_url}")`:''}></div><div class="modal-copy"><button class="close" onclick={()=>selected=null}>×</button><span class="eyebrow">{kind==='runfiles'?'Game definition':'Unsafe native plugin'}</span><h2>{selected.name}</h2><div class="facts"><span><small>Version</small><strong>{selected.version||'Unknown'}</strong></span><span><small>Platform</small><strong>{selected.supported_os||'All'}</strong></span><span><small>Minimum SSUI</small><strong>{selected.min_version||'Current'}</strong></span></div>{#if selected.recommended_settings?.length}<h3>Recommended setup</h3><p>{selected.recommended_settings.length} settings will be offered by this runfile.</p>{/if}{#if selected.recommended_plugins?.length}<h3>Recommended plugins</h3><p>{selected.recommended_plugins.map(plugin=>plugin.name).join(', ')}</p>{/if}<button class="install" onclick={()=>install(selected)} disabled={!!installing||!(kind==='runfiles'?hasPermission('runfiles.manage'):hasPermission('plugins.manage'))}>{installing?'Installing…':kind==='runfiles'?'Install and use':'Download unsafe plugin'}</button></div></article></div>{/if}
 
 <style>
-  .gallery-container {
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 1rem;
-  }
-  .gallery-toggle {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    justify-content: center;
-  }
-  .toggle-button {
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 0.75rem 1.5rem;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all var(--transition-speed, 0.3s) ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: var(--shadow-light, 0 4px 8px rgba(0,0,0,0.1));
-  }
-  .toggle-button:hover:not(.active) {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-medium, 0 8px 16px rgba(0,0,0,0.15));
-  }
-  .toggle-button.active {
-    background: linear-gradient(135deg, var(--accent-primary, #1F4A33), var(--accent-secondary, #3267B2));
-    transform: translateY(0);
-    box-shadow: var(--shadow-medium, 0 8px 16px rgba(0,0,0,0.15));
-    cursor: default;
-  }
-  .toggle-button:not(.active) {
-    opacity: 0.85;
-  }
-  .gallery-wrapper {
-    position: relative;
-  }
+  .gallery-workspace{display:grid;gap:16px}.gallery-toolbar{display:flex;align-items:center;gap:10px;padding:12px}.segmented{display:flex;gap:4px}.segmented button{background:transparent;border:0}.segmented button.active{background:var(--bg-active);color:var(--text-accent)}.gallery-toolbar input{margin-left:auto;width:250px}.gallery-warning{padding:14px 17px;border-radius:var(--radius-md);border:1px solid color-mix(in srgb,var(--text-warning) 38%,transparent);background:color-mix(in srgb,var(--text-warning) 8%,transparent);color:var(--text-warning)}.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}.gallery-card{padding:0;overflow:hidden;text-align:left;min-height:300px}.gallery-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-medium)}.art{height:180px;background-image:linear-gradient(180deg,transparent,rgba(5,8,13,.35)),var(--art,linear-gradient(135deg,var(--canvas-glow),var(--material-solid)));background-size:cover;background-position:center}.card-copy{padding:18px}.card-copy h3{font-size:1.25rem;margin:5px 0}.card-copy p{color:var(--text-secondary);margin:0 0 18px}.card-copy>span:last-child{color:var(--text-accent);font-size:.75rem}.modal-backdrop{position:fixed;inset:0;z-index:500;display:grid;place-items:center;background:rgba(3,5,9,.68);backdrop-filter:blur(16px);padding:24px}.gallery-modal{width:min(880px,94vw);max-height:90vh;overflow:auto;display:grid;grid-template-columns:42% 1fr}.modal-art{min-height:520px;background:linear-gradient(135deg,var(--canvas-glow),var(--material-solid));background-size:cover;background-position:center}.modal-copy{position:relative;padding:34px}.modal-copy .close{position:absolute;right:18px;top:18px;width:36px;height:36px;padding:0;border-radius:50%;font-size:1.3rem}.modal-copy h2{font-size:2.4rem;letter-spacing:-.05em;margin:7px 0 25px}.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px}.facts span{padding:12px;border-radius:12px;background:var(--bg-secondary)}.facts small,.facts strong{display:block}.facts small{color:var(--text-muted);font-size:.67rem}.facts strong{margin-top:4px}.modal-copy h3{margin:20px 0 4px}.modal-copy p{color:var(--text-secondary)}.install{width:100%;margin-top:25px;padding:13px;background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));color:#07101d;border:0;font-weight:850}@media(max-width:900px){.gallery-toolbar{flex-wrap:wrap}.gallery-toolbar input{order:3;width:100%}.gallery-modal{grid-template-columns:1fr}.modal-art{min-height:220px}.facts{grid-template-columns:1fr}}
 </style>
