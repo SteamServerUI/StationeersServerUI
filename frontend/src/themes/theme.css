@@ -16,3 +16,20 @@ button,input,select,textarea{color:inherit}button{border:1px solid var(--border-
 .activity-view{padding:12px}.activity-list{display:grid}.activity-row{display:grid;grid-template-columns:10px 1fr auto;gap:14px;align-items:start;padding:16px;border-bottom:1px solid var(--border-color)}.activity-row:last-child{border-bottom:0}.activity-marker{width:8px;height:8px;margin-top:7px;border-radius:50%;background:var(--accent-primary)}.activity-row.error .activity-marker{background:var(--text-danger)}.activity-row p{color:var(--text-secondary);margin:3px 0 0}.activity-row time{color:var(--text-muted);font-size:.78rem}
 ::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(143,158,184,.27);border-radius:10px;border:2px solid transparent;background-clip:padding-box}
 @media(prefers-reduced-transparency:reduce){.surface,.toast{backdrop-filter:none;background:var(--material-solid)}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+/* Shared treatment for the retained feature engines */
+.backup-container,.console-view,.logs-container,.identity,.backend-settings,.file-browser,.gallery-container,.settings-container{
+  background:var(--material)!important;border:1px solid var(--border-color)!important;border-top-color:var(--glass-highlight)!important;border-radius:var(--radius-lg)!important;box-shadow:var(--shadow-light)!important;backdrop-filter:blur(20px) saturate(130%);overflow:hidden
+}
+.backup-section,.identity .panel,.backend-item,.add-backend,.file-list,.editor-container,.gallery-page .card-container{
+  background:var(--bg-secondary)!important;border-color:var(--border-color)!important;border-radius:var(--radius-md)!important;box-shadow:none!important
+}
+.console-view,.logs-container{min-height:620px}.console,.detection-console,.logs-viewer,.file-content{
+  background:#080b11!important;border-color:rgba(255,255,255,.08)!important;color:#dbe6f7!important
+}
+.console-controls,.logs-header,.backup-header,.file-header,.section-header{
+  background:transparent!important;border-color:var(--border-color)!important
+}
+.gallery-page{padding:4px!important}.gallery-page .card-container{transition:transform var(--transition-speed),border-color var(--transition-speed)!important}.gallery-page .card-container:hover{transform:translateY(-3px)!important;border-color:color-mix(in srgb,var(--accent-primary) 40%,transparent)!important}
+.modal-backdrop{backdrop-filter:blur(16px)!important;background:rgba(3,5,9,.66)!important}.modal-content{background:var(--material-solid)!important;border:1px solid var(--border-color)!important;border-radius:var(--radius-lg)!important;box-shadow:var(--shadow-medium)!important}
+@media(max-width:900px){.identity,.backend-settings,.file-browser{border-radius:var(--radius-md)!important}}

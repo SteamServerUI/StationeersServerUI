@@ -21,17 +21,16 @@
     return response.json();
   }
   async function refresh(){
-    const results=await Promise.allSettled([
-      json('/api/v3/server/status'),json('/api/v3/osstats'),
-      json('/api/v3/server/status/connectedplayers'),json('/api/v3/backup/status')
-    ]);
-    if(results[0].status==='fulfilled')status=results[0].value;
-    if(results[1].status==='fulfilled')stats=results[1].value;
-    if(results[2].status==='fulfilled')players=Array.isArray(results[2].value)?results[2].value:[];
-    if(results[3].status==='fulfilled')backup=results[3].value;
-    loading=false;
+    try{
+      const snapshot=await json("/api/v3/overview");
+      const data=snapshot.data||snapshot;
+      status=data.server;stats=data.system;players=data.players||[];backup=data.backup;
+    }catch(error){
+      notify("Overview is temporarily unavailable","error",error.message);
+    }finally{loading=false;}
   }
   async function serverAction(action){
+    if(action!=='start' && !window.confirm(action==='restart'?'Restart the game server?':'Stop the game server?'))return;
     acting=action;
     try{
       const response=await apiFetch(`/api/v3/server/${action}`,{method:'POST'});
@@ -57,7 +56,7 @@
     }catch(error){notify('Background upload failed','error',error.message);}
     finally{event.target.value='';}
   }
-  function playerName(player){const value=Object.values(player||{})[0];return value?.username||'Unknown player';}
+  function playerName(player){if(player?.name)return player.name;const value=Object.values(player||{})[0];return value?.username||'Unknown player';}
   let memory=$derived(typeof stats?.memoryUsage==='number'?`${(stats.memoryUsage/1024).toFixed(1)} GB`:'—');
   let disk=$derived(typeof stats?.diskUsage==='number'?`${(100-stats.diskUsage).toFixed(0)}% free`:'—');
 </script>
@@ -73,7 +72,7 @@
         <div class="hero-actions">
           {#if status?.isRunning}
             <button class="secondary" disabled={!!acting} onclick={()=>serverAction('stop')}>{acting==='stop'?'Stopping…':'Stop'}</button>
-            <button class="primary" disabled={!!acting} onclick={()=>serverAction('stop')}>Restart</button>
+            <button class="primary" disabled={!!acting} onclick={()=>serverAction('restart')}>Restart</button>
           {:else}
             <button class="primary" disabled={!!acting} onclick={()=>serverAction('start')}>{acting==='start'?'Starting…':'Start server'}</button>
           {/if}

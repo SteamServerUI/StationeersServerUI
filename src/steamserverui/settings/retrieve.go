@@ -20,6 +20,8 @@ type ConfigSetting struct {
 	Min         *int        `json:"min,omitempty"`
 	Max         *int        `json:"max,omitempty"`
 	Required    bool        `json:"required"`
+	Sensitive   bool        `json:"sensitive,omitempty"`
+	HasValue    bool        `json:"hasValue,omitempty"`
 }
 
 // ConfigSettingsResponse represents the API response
@@ -182,7 +184,8 @@ func HandleRetrieveSettings(w http.ResponseWriter, r *http.Request) {
 			Type:        "string",
 			Group:       "Discord Settings",
 			Description: "Discord bot token",
-			Value:       config.GetDiscordToken(),
+			Sensitive:   true,
+			HasValue:    config.GetDiscordToken() != "",
 		},
 		{
 			Name:        "ControlChannelID",

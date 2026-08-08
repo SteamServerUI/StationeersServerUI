@@ -1,512 +1,100 @@
-<!-- AppSettings.svelte -->
 <script>
-    import { onMount } from 'svelte';
-    import { apiFetch } from '../../services/api-v7';
-    
-    
-  /**
-   * @typedef {Object} Props
-   * @property {any} activeSidebarTab - Props
-   */
+  import { onMount } from 'svelte';
+  import { apiFetch } from '../../services/api-v7';
+  import { notify } from '../../services/activity';
 
-  /** @type {Props} */
-  let { activeSidebarTab } = $props();
-    
-    // State management
-    let settingsData = $state([]);
-    let settingsGroups = $state([]);
-    let activeSettingsGroup = $state('');
-    let statusMessage = $state('');
-    let isError = $state(false);
-    let statusTimeout;
-    
-    // apiFetch settings data on component mount
-    onMount(async () => {
-      await fetchSettings();
-    });
-    
-    async function fetchSettings() {
-      try {
-        const response = await apiFetch('/api/v3/settings');
-        const { data, error } = await response.json();
-        
-        if (error) {
-          showStatus(`Failed to load settings: ${error}`, true);
-          return;
-        }
-        
-        settingsData = data;
-        // Extract unique groups
-        settingsGroups = [...new Set(settingsData.map(s => s.group))];
-        
-        if (settingsGroups.length > 0) {
-          activeSettingsGroup = settingsGroups[0];
-        }
-      } catch (e) {
-        showStatus(`Error fetching settings: ${e.message}`, true);
-      }
-    }
-    
-    // Handle settings group selection
-    function selectSettingsGroup(group) {
-      activeSettingsGroup = group;
-    }
-    
-    // Update a setting
-    async function updateSetting(name, value) {
-      try {
-        const response = await apiFetch('/api/v3/settings/save', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ [name]: value })
-        });
-      
-        // Check if the response is OK (status code 200)
-        if (!response.ok) {
-          const { error, message } = await response.json();
-          showStatus(`Failed to update ${name}: ${error || message || response.statusText}`, true);
-          return;
-        }
-      
-        const { status, message } = await response.json();
-        if (status === 'error') {
-          showStatus(`Failed to update ${name}: ${message}`, true);
-          return;
-        }
-      
-        showStatus(`Updated ${name} successfully`, false);
-      } catch (e) {
-        showStatus(`Error updating ${name}: ${e.message}`, true);
-      }
-    }
-    
-    // Handle various input types
-    function handleInputChange(setting, event) {
-      const target = event.target;
-      let value;
-      
-      if (setting.type === 'bool') {
-        value = target.checked;
-      } else if (setting.type === 'int') {
-        value = target.value ? parseInt(target.value) : null;
-        if (setting.required && !value) {
-          showStatus(`Value for ${setting.name} is required`, true);
-          return;
-        }
-      } else if (setting.type === 'array') {
-        value = target.value ? target.value.split(',').map(s => s.trim()) : [];
-      } else if (setting.type === 'map') {
-        try {
-          value = JSON.parse(target.value);
-        } catch (e) {
-          showStatus(`Invalid JSON for ${setting.name}: ${e.message}`, true);
-          return;
-        }
-      } else {
-        value = target.value;
-      }
-      
-      updateSetting(setting.name, value);
-    }
-    
-    // Show status message
-    function showStatus(message, error) {
-      statusMessage = message;
-      isError = error;
-      
-      // Clear any existing timeout
-      if (statusTimeout) clearTimeout(statusTimeout);
-      
-      // Auto-hide after 30 seconds
-      statusTimeout = setTimeout(() => {
-        statusMessage = '';
-      }, 30000);
-    }
-  </script>
-  
-  {#if activeSidebarTab === 'General' || activeSidebarTab === 'SSUI Settings'}
-  <div class="settings-container">
-    <h2>SSUI Settings</h2>
-    
-    <p class="settings-intro">
-      Configure general application settings. Most changes will be applied immediately.
-    </p>
-    
-    {#if settingsGroups.length > 0}
-      <div class="settings-group-nav">
-        {#each settingsGroups as group}
-          <button 
-            class="section-nav-button {activeSettingsGroup === group ? 'active' : ''}" 
-            onclick={() => selectSettingsGroup(group)}>
-            {group}
-          </button>
-        {/each}
-      </div>
-      
-      {#each settingsGroups as group}
-        {#if activeSettingsGroup === group}
-          <div class="settings-group">
-            <h3>{group}</h3>
-            <div class="settings-grid">
-              {#each settingsData.filter(s => s.group === group) as setting}
-                <div class="setting-card">
-                  <div class="setting-info">
-                    <h4>{setting.name}</h4>
-                    {#if setting.description}
-                      <p class="description">{setting.description}</p>
-                    {/if}
-                  </div>
-                  
-                  <div class="setting-control">
-                    {#if setting.type === 'bool'}
-                      <label class="switch">
-                        <input 
-                          type="checkbox" 
-                          checked={setting.value === true} 
-                          onchange={(e) => handleInputChange(setting, e)} 
-                        />
-                        <span class="slider"></span>
-                      </label>
-                    {:else if setting.type === 'int'}
-                      <input 
-                        type="number" 
-                        value={setting.value ?? ''} 
-                        min={setting.min} 
-                        max={setting.max} 
-                        required={setting.required} 
-                        onchange={(e) => handleInputChange(setting, e)} 
-                        class="number-input"
-                      />
-                    {:else if setting.type === 'array'}
-                      <textarea 
-                        value={setting.value?.join(', ') || ''} 
-                        onchange={(e) => handleInputChange(setting, e)} 
-                        class="text-area"
-                        placeholder="Enter comma-separated values"
-                      ></textarea>
-                    {:else if setting.type === 'map'}
-                      <textarea 
-                        value={JSON.stringify(setting.value, null, 2) || '{}'} 
-                        onchange={(e) => handleInputChange(setting, e)} 
-                        class="code-area"
-                        placeholder="Enter valid JSON"
-                      ></textarea>
-                    {:else}
-                      <input 
-                        type="text" 
-                        value={setting.value || ''} 
-                        required={setting.required} 
-                        onchange={(e) => handleInputChange(setting, e)} 
-                        class="text-input"
-                      />
-                    {/if}
-                  </div>
-                </div>
-              {/each}
-            </div>
-          </div>
-        {/if}
-      {/each}
-      
-      {#if statusMessage}
-        <div class="status-message" class:error={isError}>
-          <span class="status-icon">{isError ? '⚠️' : '✓'}</span>
-          <span>{statusMessage}</span>
-          <button class="close-status" onclick={() => statusMessage = ''}>×</button>
-        </div>
-      {/if}
-    {:else}
-      <div class="loading-container">
-        <div class="loading-spinner"></div>
-        <p>Loading settings...</p>
-      </div>
-    {/if}
+  let settings=$state([]), category=$state(''), query=$state(''), loading=$state(true);
+  let saving=$state(new Set()), saved=$state(new Set());
+
+  const descriptions={
+    'System Settings':'Backend identity, network and runtime behaviour.',
+    'Logging Settings':'What SSUI records and how much detail it keeps.',
+    'Gameserver Settings':'Startup, updates and game process behaviour.',
+    'Security Settings':'Authentication and session-related controls.',
+    'Modding Settings':'Optional hooks and mod-loader integration.',
+    'Update Settings':'Choose how SSUI and the game receive updates.',
+    'Discord Settings':'Bot connectivity and channel destinations.',
+    'Backup Settings':'Storage, scheduling and backup behaviour.'
+  };
+  let categories=$derived([...new Set(settings.map(item=>item.group))]);
+  let visible=$derived(settings.filter(item=>(!category||item.group===category)&&(!query||(`${item.name} ${item.description} ${item.group}`).toLowerCase().includes(query.toLowerCase()))));
+
+  onMount(load);
+  async function load(){
+    try{
+      const response=await apiFetch('/api/v3/settings');
+      const body=await response.json();
+      if(!response.ok||body.error)throw new Error(body?.error?.message||body.error||'Settings unavailable');
+      settings=body.data||[];
+    }catch(error){notify('Could not load settings','error',error.message);}
+    finally{loading=false;}
+  }
+  async function save(item,value){
+    const previous=item.value;
+    item.value=value;
+    settings=[...settings];
+    saving=new Set([...saving,item.name]);
+    try{
+      const response=await apiFetch('/api/v3/settings/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({[item.name]:value})});
+      const body=await response.json().catch(()=>({}));
+      if(!response.ok||body.status==='error')throw new Error(body?.error?.message||body.message||'The backend rejected this value');
+      saved=new Set([...saved,item.name]);
+      setTimeout(()=>{const next=new Set(saved);next.delete(item.name);saved=next;},2200);
+      notify(`${label(item.name)} saved`,'success',effect(item));
+    }catch(error){
+      item.value=previous;settings=[...settings];
+      notify(`Could not save ${label(item.name)}`,'error',error.message);
+    }finally{const next=new Set(saving);next.delete(item.name);saving=next;}
+  }
+  function inputValue(item,event){
+    if(item.type==='bool')return event.currentTarget.checked;
+    if(item.type==='int')return event.currentTarget.value===''?null:Number(event.currentTarget.value);
+    return event.currentTarget.value;
+  }
+  function label(name){return name.replace(/([a-z0-9])([A-Z])/g,'$1 $2').replace(/^Is /,'').replace(/^Allow /,'Allow ');}
+  function effect(item){return /Port|CLI|BackupsStore|BackupLoop|GameLog/.test(item.name)?'A backend reload may be required.':'Applied immediately.';}
+</script>
+
+<section class="settings-hub">
+  <div class="settings-toolbar surface">
+    {#if category}<button class="back" onclick={()=>category=''}>← All settings</button>{/if}
+    <label class="search"><span>Search settings</span><input bind:value={query} placeholder="Try “backup”, “updates” or “Discord”…"></label>
   </div>
-{/if}
-  
-  <style>
-    h2 {
-      margin-top: 0;
-      margin-bottom: 1.5rem;
-      font-size: 1.5rem;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-    
-    .settings-container {
-      background-color: var(--bg-tertiary);
-      border-radius: 8px;
-      padding: 1.5rem;
-      box-shadow: var(--shadow-light);
-    }
-    
-    .settings-intro {
-      margin-bottom: 2rem;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-    
-    .settings-group {
-      margin-bottom: 2rem;
-      animation: fadeIn 0.3s ease;
-    }
-    
-    .settings-group h3 {
-      font-size: 1.1rem;
-      font-weight: 500;
-      margin-bottom: 1.5rem;
-      color: var(--text-accent);
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 0.5rem;
-    }
-    
-    .settings-group-nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-    }
-    
-    .section-nav-button {
-      padding: 0.5rem 1rem;
-      background-color: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all var(--transition-speed) ease;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-    
-    .section-nav-button:hover {
-      background-color: var(--bg-hover);
-    }
-    
-    .section-nav-button.active {
-      background-color: var(--accent-primary);
-      color: white;
-      border-color: var(--accent-primary);
-    }
-    
-    .settings-grid {
-      display: grid;
-      gap: 1.25rem;
-      grid-template-columns: 1fr;
-    }
-    
-    @media (min-width: 1024px) {
-      .settings-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    
-    .setting-card {
-      background-color: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 1.25rem;
-      transition: all var(--transition-speed) ease;
-    }
-    
-    .setting-card:hover {
-      border-color: var(--accent-primary);
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    }
-    
-    .setting-info {
-      margin-bottom: 1rem;
-    }
-    
-    .setting-info h4 {
-      margin: 0 0 0.5rem 0;
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    
-    .description {
-      margin: 0;
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      line-height: 1.4;
-    }
-    
-    .setting-control {
-      width: 100%;
-    }
-    
-    /* Switch Toggle for Boolean */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 24px;
-    }
-    
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-    
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: 0.3s;
-      border-radius: 24px;
-    }
-    
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: 0.3s;
-      border-radius: 50%;
-    }
-    
-    input:checked + .slider {
-      background-color: var(--accent-primary);
-    }
-    
-    input:checked + .slider:before {
-      transform: translateX(26px);
-    }
-    
-    /* Input Styles */
-    .text-input,
-    .number-input {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      background-color: var(--bg-tertiary);
-      color: var(--text-primary);
-      font-size: 0.9rem;
-      transition: all var(--transition-speed) ease;
-    }
-    
-    .text-area,
-    .code-area {
-      width: 100%;
-      min-height: 80px;
-      padding: 0.75rem;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      background-color: var(--bg-tertiary);
-      color: var(--text-primary);
-      font-size: 0.9rem;
-      line-height: 1.4;
-      resize: vertical;
-      transition: all var(--transition-speed) ease;
-    }
-    
-    .code-area {
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-      font-size: 0.85rem;
-      min-height: 100px;
-    }
-    
-    .text-input:focus,
-    .number-input:focus,
-    .text-area:focus,
-    .code-area:focus {
-      border-color: var(--accent-primary);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(106, 153, 85, 0.1);
-    }
-    
-    .status-message {
-      margin-top: 1.5rem;
-      padding: 1rem;
-      display: flex;
-      align-items: center;
-      border-radius: 6px;
-      background-color: rgba(106, 153, 85, 0.1);
-      color: var(--accent-primary);
-      animation: slideIn 0.3s ease;
-      position: relative;
-    }
-    
-    .status-message.error {
-      background-color: rgba(206, 145, 120, 0.1);
-      color: var(--text-warning);
-    }
-    
-    .status-icon {
-      margin-right: 0.75rem;
-      font-size: 1.2rem;
-    }
-    
-    .close-status {
-      position: absolute;
-      right: 1rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2rem;
-      color: currentColor;
-      opacity: 0.6;
-    }
-    
-    .close-status:hover {
-      opacity: 1;
-    }
-    
-    .loading-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem 0;
-      color: var(--text-secondary);
-    }
-    
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(106, 153, 85, 0.3);
-      border-radius: 50%;
-      border-top-color: var(--accent-primary);
-      animation: spin 1s ease-in-out infinite;
-      margin-bottom: 1rem;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    
-    @keyframes slideIn {
-      from { 
-        transform: translateY(-10px);
-        opacity: 0;
-      }
-      to { 
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    @media (max-width: 768px) {
-      .settings-container {
-        padding: 1rem;
-      }
-      
-      .setting-card {
-        padding: 1rem;
-      }
-    }
-  </style>
+
+  {#if loading}
+    <div class="empty-state surface"><span class="eyebrow">Settings</span><h2>Loading configuration…</h2></div>
+  {:else if !category && !query}
+    <div class="category-grid">
+      {#each categories as group}
+        <button class="category-card surface" onclick={()=>category=group}>
+          <span class="category-count">{settings.filter(item=>item.group===group).length}</span>
+          <span><strong>{group}</strong><small>{descriptions[group]||'Configure this part of SteamServerUI.'}</small></span>
+          <span class="arrow">→</span>
+        </button>
+      {/each}
+    </div>
+  {:else}
+    <div class="settings-list surface">
+      <header><div><span class="eyebrow">{category||'Search results'}</span><h2>{category||`${visible.length} matching settings`}</h2></div></header>
+      {#each visible as item (item.name)}
+        <article class="setting-row">
+          <div class="setting-copy"><strong>{label(item.name)}</strong><p>{item.description}</p>{#if /Port|CLI|BackupsStore|BackupLoop|GameLog/.test(item.name)}<small>Backend reload may be required</small>{/if}</div>
+          <div class="setting-control" class:saving={saving.has(item.name)}>
+            {#if item.type==='bool'}
+              <label class="toggle"><input type="checkbox" checked={item.value===true} disabled={saving.has(item.name)} onchange={event=>save(item,inputValue(item,event))}><span></span></label>
+            {:else}
+              <input type={item.sensitive?'password':item.type==='int'?'number':'text'} value={item.sensitive?'':item.value??''} min={item.min} max={item.max} required={item.required} placeholder={item.sensitive&&item.hasValue?'Configured — enter to replace':''} disabled={saving.has(item.name)} onchange={event=>{const value=inputValue(item,event);if(!item.sensitive||value)save(item,value)}}>
+            {/if}
+            <span class="save-state">{saving.has(item.name)?'Saving…':saved.has(item.name)?'Saved':''}</span>
+          </div>
+        </article>
+      {:else}
+        <div class="empty-state"><span class="eyebrow">No match</span><h2>Nothing found</h2><p>Try a broader search.</p></div>
+      {/each}
+    </div>
+  {/if}
+</section>
+
+<style>
+  .settings-hub{display:grid;gap:16px}.settings-toolbar{display:flex;align-items:end;gap:14px;padding:16px}.back{background:transparent;white-space:nowrap}.search{display:grid;gap:6px;flex:1;color:var(--text-secondary);font-size:.75rem}.search input{width:100%}.category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.category-card{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:14px;padding:22px;text-align:left;min-height:126px}.category-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-medium)}.category-count{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:var(--bg-active);color:var(--text-accent);font-weight:800}.category-card strong,.category-card small{display:block}.category-card strong{font-size:1.08rem}.category-card small{color:var(--text-secondary);font-weight:400;margin-top:5px;line-height:1.4}.arrow{font-size:1.3rem;color:var(--text-muted)}.settings-list{padding:12px 20px}.settings-list>header{padding:16px 6px}.settings-list h2{margin:4px 0}.setting-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,36%);align-items:center;gap:30px;padding:19px 6px;border-top:1px solid var(--border-color)}.setting-copy p{color:var(--text-secondary);font-size:.86rem;margin:5px 0 0;max-width:720px}.setting-copy small{display:block;color:var(--text-warning);font-size:.7rem;margin-top:6px}.setting-control{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px}.save-state{min-width:48px;color:var(--text-success);font-size:.72rem}.toggle input{position:absolute;opacity:0}.toggle span{display:block;width:46px;height:26px;padding:3px;border-radius:20px;background:var(--bg-hover);border:1px solid var(--border-color);transition:.18s}.toggle span::after{content:'';display:block;width:18px;height:18px;border-radius:50%;background:var(--text-secondary);transition:.18s}.toggle input:checked+span{background:color-mix(in srgb,var(--accent-primary) 42%,transparent);border-color:var(--accent-primary)}.toggle input:checked+span::after{transform:translateX(19px);background:var(--accent-primary);box-shadow:0 0 12px color-mix(in srgb,var(--accent-primary) 55%,transparent)}@media(max-width:950px){.category-grid{grid-template-columns:1fr}.setting-row{grid-template-columns:1fr;gap:13px}}
+</style>

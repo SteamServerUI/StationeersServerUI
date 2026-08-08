@@ -60,6 +60,7 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 
 	protect(protected, "/api/v3/server/start", security.PermissionServerControl, legacyapi.StartServer)
 	protect(protected, "/api/v3/server/stop", security.PermissionServerControl, legacyapi.StopServer)
+	protect(protected, "/api/v3/server/restart", security.PermissionServerControl, legacyapi.RestartServer)
 	protect(protected, "/api/v3/server/status", security.PermissionServerView, GetGameServerRunState)
 	protect(protected, "/api/v3/server/status/connectedplayers", security.PermissionServerView, legacyapi.HandleConnectedPlayersList)
 
@@ -120,6 +121,7 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 	protect(protected, "/api/v3/backup/list", security.PermissionBackupsView, backupapi.HandleBackupList)
 	protect(protected, "/api/v3/backup/restore", security.PermissionBackupsRestore, backupapi.HandleBackupRestore)
 	protect(protected, "/api/v3/backup/status", security.PermissionBackupsView, backupapi.HandleBackupStatus)
+	protected.HandleFunc("/api/", apiNotFound)
 	return public, protected
 }
 
@@ -129,4 +131,8 @@ func protect(mux *http.ServeMux, path, permission string, handler http.HandlerFu
 
 func pluginsDisabled(w http.ResponseWriter, _ *http.Request) {
 	middleware.WriteJSONError(w, http.StatusServiceUnavailable, "plugins_disabled", "Plugins are disabled on this backend")
+}
+
+func apiNotFound(w http.ResponseWriter, _ *http.Request) {
+	middleware.WriteJSONError(w, http.StatusNotFound, "api_not_found", "This API route does not exist")
 }
