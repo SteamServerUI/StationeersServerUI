@@ -7,7 +7,8 @@ directories:
   buildResources: resources
 files:
   - "package.json"
-  - "main.cjs"
+  - "main-v7.cjs"
+  - "preload.cjs"
 extraResources:
   - from: "../SSUI/onboard_bundled/v2/"
     to: "SSUI/onboard_bundled/v2/"

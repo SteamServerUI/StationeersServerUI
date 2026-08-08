@@ -38,6 +38,12 @@ export function initializeApiService() {
   backendConfig.subscribe(value => {
     localStorage.setItem(storageKey, JSON.stringify(value));
   });
+  window.ssuiDesktop?.onCertificateError(async certificate => {
+    const accepted = window.confirm(`Trust the certificate for ${certificate.origin}?\n\nFingerprint: ${certificate.fingerprint}`);
+    if (!accepted) return;
+    await window.ssuiDesktop.trustCertificate(certificate);
+    syncAuthState();
+  });
 }
 
 export function getCurrentBackend() {
@@ -118,11 +124,14 @@ export async function apiText(endpoint, options = {}) {
 export async function login(username, password) {
   authState.update(value => ({ ...value, isAuthenticating: true, authError: null }));
   try {
-    const data = await apiJson('/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
+    const backendUrl = getCurrentBackendUrl();
+    const data = window.ssuiDesktop && backendUrl
+      ? await window.ssuiDesktop.login({ backendUrl, username, password })
+      : await apiJson('/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
     applySession(data);
     return true;
   } catch (error) {
@@ -132,18 +141,26 @@ export async function login(username, password) {
 }
 
 export async function bootstrapOwner(setupSecret, username, password) {
-  const data = await apiJson('/api/v2/auth/setup/bootstrap', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ setupSecret, username, password })
-  });
+  const backendUrl = getCurrentBackendUrl();
+  const data = window.ssuiDesktop && backendUrl
+    ? await window.ssuiDesktop.bootstrap({ backendUrl, setupSecret, username, password })
+    : await apiJson('/api/v2/auth/setup/bootstrap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ setupSecret, username, password })
+      });
   applySession(data);
   return data;
 }
 
 export async function logout() {
   try {
-    await apiFetch('/auth/logout', { method: 'POST' });
+    const backendUrl = getCurrentBackendUrl();
+    if (window.ssuiDesktop && backendUrl) {
+      await window.ssuiDesktop.logout({ backendUrl });
+    } else {
+      await apiFetch('/auth/logout', { method: 'POST' });
+    }
   } finally {
     resetSessionState();
   }

@@ -27,6 +27,7 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 	twoBoxAssets, _ := fs.Sub(config.GetV1UIFS(), "SSUI/onboard_bundled/twoboxform")
 	public.Handle("/twoboxform/", http.StripPrefix("/twoboxform/", http.FileServer(http.FS(twoBoxAssets))))
 	public.HandleFunc("/auth/login", httpauth.SessionLoginHandler)
+	public.HandleFunc("/auth/desktop/login", httpauth.DesktopLoginHandler)
 	public.HandleFunc("/auth/logout", httpauth.SessionLogoutHandler)
 	public.HandleFunc("/api/v2/auth/setup/status", httpauth.SetupStatusHandler)
 	public.HandleFunc("/api/v2/auth/setup/bootstrap", httpauth.BootstrapOwnerHandler)
@@ -70,6 +71,7 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 	protect(protected, "/api/v2/custom-detections/delete/", security.PermissionSettingsManage, detectionmgr.HandleDeleteCustomDetection)
 
 	protected.HandleFunc("/api/v2/auth/session", httpauth.SessionInfoHandler)
+	protected.HandleFunc("/api/v2/auth/desktop/logout", httpauth.DesktopLogoutHandler)
 	protected.HandleFunc("/api/v2/auth/whoami", httpauth.SessionInfoHandler)
 	protect(protected, "/api/v2/auth/users", security.PermissionUsersManage, httpauth.UsersHandler)
 	protect(protected, "/api/v2/auth/users/", security.PermissionUsersManage, httpauth.UserHandler)
