@@ -12,7 +12,7 @@
   const unsubscribe=backendConfig.subscribe(value=>config=value);
 
   onMount(()=>{ check(); const timer=setInterval(check,15000); return()=>{clearInterval(timer);unsubscribe();}; });
-  async function check(){ checking=true; try{const response=await apiFetch('/api/v3/server/status');online=response.ok;}catch{online=false;}finally{checking=false;} }
+  async function check(){ checking=true; try{const response=await apiFetch('/api/v3/capabilities');online=response.ok;}catch{online=false;}finally{checking=false;} }
   async function choose(id){showBackends=false;if(id!==config.active){await setActiveBackend(id);notify('Workspace changed','info',id);}}
   async function signOut(){await logout();window.location.href='/';}
   function cycleTheme(){const id=themeService.nextTheme();notify('Appearance changed','success',themeService.getThemes().find(theme=>theme.id===id)?.name||id);}

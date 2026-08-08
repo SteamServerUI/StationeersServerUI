@@ -13,6 +13,8 @@ import (
 
 const maxEvents = 500
 
+var pathForStore = defaultStorePath
+
 type Event struct {
 	ID        string    `json:"id"`
 	Type      string    `json:"type"`
@@ -91,7 +93,7 @@ func loadLocked() {
 		return
 	}
 	store.loaded = true
-	data, err := os.ReadFile(storePath())
+	data, err := os.ReadFile(pathForStore())
 	if err != nil {
 		return
 	}
@@ -102,7 +104,7 @@ func loadLocked() {
 }
 
 func persistLocked() {
-	path := storePath()
+	path := pathForStore()
 	if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
 		return
 	}
@@ -116,6 +118,6 @@ func persistLocked() {
 	}
 }
 
-func storePath() string {
+func defaultStorePath() string {
 	return filepath.Join(config.GetSSUIFolder(), "config", "activity-v3.json")
 }

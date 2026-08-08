@@ -27,6 +27,8 @@ This phase deliberately comes before a visual redesign. The UI needs stable sess
 
 ## Phase 2: application shell
 
+Implementation status: **Implemented on v7-nightly. Visual and packaged-app validation remains in Phase 4.**
+
 - Replace duplicated frontend auth state with one session and backend client.
 - Separate connection setup, certificate trust and login.
 - Add routing, deep links and dependable browser history.
@@ -35,6 +37,8 @@ This phase deliberately comes before a visual redesign. The UI needs stable sess
 - Define a small component and styling system before redesigning individual screens.
 
 ## Phase 3: core workflows
+
+Implementation status: **The redesigned workflow surfaces and supporting v3 resources are implemented. Real-game and destructive-workflow validation remains in Phase 4.**
 
 Improve the workflows in this order:
 

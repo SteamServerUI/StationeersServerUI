@@ -13,17 +13,24 @@ import (
 )
 
 type bufferedResponse struct {
-	header http.Header
-	body   bytes.Buffer
-	status int
+	header      http.Header
+	body        bytes.Buffer
+	status      int
+	wroteHeader bool
 }
 
 func newBufferedResponse() *bufferedResponse {
 	return &bufferedResponse{header: make(http.Header), status: http.StatusOK}
 }
 
-func (response *bufferedResponse) Header() http.Header            { return response.header }
-func (response *bufferedResponse) WriteHeader(status int)         { response.status = status }
+func (response *bufferedResponse) Header() http.Header { return response.header }
+func (response *bufferedResponse) WriteHeader(status int) {
+	if response.wroteHeader {
+		return
+	}
+	response.status = status
+	response.wroteHeader = true
+}
 func (response *bufferedResponse) Write(data []byte) (int, error) { return response.body.Write(data) }
 
 func v3JSONBoundary(next http.HandlerFunc) http.HandlerFunc {
@@ -104,10 +111,10 @@ func activityLabel(method, path string) string {
 		"/api/v3/server/start":         "Server start requested",
 		"/api/v3/server/stop":          "Server stop requested",
 		"/api/v3/server/restart":       "Server restart requested",
-		"/api/v3/backup/create":        "Backup created",
+		"/api/v3/backup/create":        "Backup creation accepted",
 		"/api/v3/backup/restore":       "Backup restore requested",
 		"/api/v3/settings":             "Setting updated",
-		"/api/v3/files/save":           "File saved",
+		"/api/v3/files/content":        "File saved",
 		"/api/v3/runfile/args/update":  "Game setting updated",
 		"/api/v3/runfile/save":         "Game configuration saved",
 		"/api/v3/gallery/select":       "Game definition installed",

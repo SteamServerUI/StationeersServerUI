@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
-  import { backendConfig, setBackend, setActiveBackend, apiFetch } from '../../services/api-v7';
+  import { backendConfig, setBackend, setActiveBackend } from '../../services/api-v7';
+  import { loadCapabilities, productState } from '../../services/product';
   import { notify } from '../../services/activity';
 
   let config=$state({active:'default',backends:{default:{url:'/'}}}), name=$state(''), url=$state(''), checking=$state(false), online=$state(null);
@@ -9,7 +10,7 @@
 
   async function check(){
     checking=true;
-    try{const response=await apiFetch('/api/v3/server/status');online=response.ok;if(!response.ok)throw new Error(`Backend returned ${response.status}`);}
+    try{await loadCapabilities();online=true;}
     catch(error){online=false;notify('Backend check failed','error',error.message);}
     finally{checking=false;}
   }
@@ -34,7 +35,7 @@
 
 <section class="backend-page">
   <article class="connection-hero surface">
-    <div><span class="eyebrow">Active workspace</span><h2>{config.active}</h2><p>{config.backends[config.active]?.url||'This SSUI backend'}</p></div>
+    <div><span class="eyebrow">Active workspace</span><h2>{config.active}</h2><p>{config.backends[config.active]?.url||'This SSUI backend'}{#if $productState.backend?.version} / SSUI {$productState.backend.version} / API {$productState.apiVersion}{/if}</p></div>
     <div class="connection-state"><span class:online></span><strong>{checking?'Checking…':online?'Connected':'Unavailable'}</strong><button onclick={check} disabled={checking}>Check now</button></div>
   </article>
 
