@@ -86,6 +86,7 @@ var (
 	JwtKey              string
 	AuthTokenLifetime   int
 	Users               map[string]string
+	Identity            IdentityConfig
 	BackendEndpointPort string
 )
 

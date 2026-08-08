@@ -40,6 +40,7 @@ type JsonConfig struct {
 	AuthEnabled       *bool             `json:"authEnabled"` // Toggle for enabling/disabling auth
 	JwtKey            string            `json:"JwtKey"`
 	AuthTokenLifetime int               `json:"AuthTokenLifetime"`
+	Identity          IdentityConfig    `json:"identity"`
 
 	// SSUI Settings
 	LogClutterToConsole      *bool             `json:"LogClutterToConsole"`
@@ -133,6 +134,7 @@ func applyConfig(cfg *JsonConfig) {
 	BackendEndpointPort = getString(cfg.BackendEndpointPort, "BACKNED_ENDPOINT_PORT", "8443")
 
 	Users = getUsers(cfg.Users, "SSUI_USERS", map[string]string{})
+	Identity = normalizeIdentityConfig(cfg.Identity)
 	RegisteredPlugins = getPlugins(cfg.RegisteredPlugins, "SSUI_REGISTERED_PLUGINS", map[string]string{})
 
 	authEnabledVal := getBool(cfg.AuthEnabled, "SSUI_AUTH_ENABLED", false)
@@ -229,6 +231,7 @@ func buildCurrentJsonConfig() JsonConfig {
 		AuthEnabled:                &AuthEnabled,
 		JwtKey:                     JwtKey,
 		AuthTokenLifetime:          AuthTokenLifetime,
+		Identity:                   Identity,
 		Debug:                      &IsDebugMode,
 		CreateSSUILogFile:          &CreateSSUILogFile,
 		LogLevel:                   LogLevel,
