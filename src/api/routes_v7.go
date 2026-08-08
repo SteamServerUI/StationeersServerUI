@@ -38,7 +38,8 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 	protected := http.NewServeMux()
 	GlobalWebProtectedMux = protected
 
-	protected.Handle("/files/", http.StripPrefix("/files/", http.FileServer(http.Dir(filepath.Join(config.GetSSUIFolder(), "config", "files")))))
+	files := http.StripPrefix("/files/", http.FileServer(http.Dir(filepath.Join(config.GetSSUIFolder(), "config", "files"))))
+	protected.Handle("/files/", middleware.RequirePermission(security.PermissionFilesRead, files.ServeHTTP))
 	legacyAssets, _ := fs.Sub(config.GetV1UIFS(), "SSUI/onboard_bundled/assets")
 	protected.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.FS(legacyAssets))))
 	svelteAssets, _ := fs.Sub(config.GetV1UIFS(), "SSUI/onboard_bundled/v2/assets")
