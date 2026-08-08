@@ -7,6 +7,7 @@
   let permissions = $state([]);
   let tokens = $state([]);
   let sessions = $state([]);
+  let events = $state([]);
   let active = $state('users');
   let busy = $state(false);
   let message = $state('');
@@ -20,8 +21,14 @@
   let canManageUsers = $derived(hasPermission('users.manage'));
   let canManageGroups = $derived(hasPermission('groups.manage'));
   let canManageTokens = $derived(hasPermission('tokens.own.manage'));
+  let canViewAudit = $derived(hasPermission('audit.view'));
 
-  onMount(loadAll);
+  onMount(() => {
+    if (!canManageUsers) {
+      active = canManageGroups ? 'groups' : canManageTokens ? 'tokens' : 'sessions';
+    }
+    loadAll();
+  });
 
   async function loadAll() {
     busy = true;
@@ -34,6 +41,7 @@
         permissions = data.permissions;
       }));
       if (canManageTokens) requests.push(apiJson('/api/v2/auth/tokens').then(data => tokens = data.tokens));
+      if (canViewAudit) requests.push(apiJson('/api/v2/auth/audit').then(data => events = data.events));
       requests.push(apiJson('/api/v2/auth/sessions').then(data => sessions = data.sessions));
       await Promise.all(requests);
     } catch (reason) {
@@ -170,6 +178,7 @@
     {#if canManageGroups}<button class:active={active === 'groups'} onclick={() => active = 'groups'}>Groups</button>{/if}
     {#if canManageTokens}<button class:active={active === 'tokens'} onclick={() => active = 'tokens'}>API tokens</button>{/if}
     <button class:active={active === 'sessions'} onclick={() => active = 'sessions'}>Sessions</button>
+    {#if canViewAudit}<button class:active={active === 'audit'} onclick={() => active = 'audit'}>Audit</button>{/if}
   </nav>
 
   {#if error}<p class="notice error">{error}</p>{/if}
@@ -242,6 +251,12 @@
     <div class="list">
       {#each sessions as session}
         <article><div><strong>{session.id === $authState.credentialId ? 'Current session' : 'Browser session'}</strong><small>Last used {new Date(session.lastUsedAt).toLocaleString()} · expires {new Date(session.absoluteExpiresAt).toLocaleDateString()}</small></div><button class="danger" onclick={() => revokeSession(session)}>Revoke</button></article>
+      {/each}
+    </div>
+  {:else if active === 'audit' && canViewAudit}
+    <div class="list">
+      {#each events as event}
+        <article><div><strong>{event.action}</strong><small>{event.actorName} · {event.targetType}{event.targetId ? ` ${event.targetId}` : ''} · {new Date(event.createdAt).toLocaleString()}</small></div></article>
       {/each}
     </div>
   {/if}

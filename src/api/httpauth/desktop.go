@@ -63,7 +63,7 @@ func DesktopLogoutHandler(w http.ResponseWriter, r *http.Request) {
 		middleware.WriteJSONError(w, http.StatusBadRequest, "invalid_credential", "A desktop token is required")
 		return
 	}
-	if err := security.RevokeToken(principal.CredentialID, time.Now()); err != nil {
+	if err := security.RevokeTokenAs(principal.CredentialID, principal.UserID, principal.Username, time.Now()); err != nil {
 		middleware.WriteJSONError(w, http.StatusInternalServerError, "revoke_failed", "Could not revoke desktop token")
 		return
 	}

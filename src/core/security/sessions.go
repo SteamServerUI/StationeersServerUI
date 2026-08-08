@@ -108,8 +108,19 @@ func deriveCSRF(sessionSecret string) string {
 }
 
 func RevokeSession(id string) error {
+	return revokeSessionAs(id, "", "", time.Now())
+}
+
+func RevokeSessionAs(id, actorID, actorName string, now time.Time) error {
+	return revokeSessionAs(id, actorID, actorName, now)
+}
+
+func revokeSessionAs(id, actorID, actorName string, now time.Time) error {
 	return config.MutateIdentityConfig(func(identity *config.IdentityConfig) error {
 		delete(identity.Sessions, id)
+		if actorName != "" {
+			AppendAudit(identity, actorID, actorName, "session.revoke", "session", id, now)
+		}
 		return nil
 	})
 }

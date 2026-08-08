@@ -54,6 +54,7 @@ func CreateNamedToken(ownerID, name string, scopes []string, expiresAt *time.Tim
 	}
 	if err := config.MutateIdentityConfig(func(value *config.IdentityConfig) error {
 		value.Tokens[token.ID] = token
+		AppendAudit(value, owner.ID, owner.Username, "token.create", "token", token.ID, now)
 		return nil
 	}); err != nil {
 		return config.IdentityToken{}, "", err
@@ -108,6 +109,10 @@ func AuthenticateToken(value string, now time.Time) (Principal, config.IdentityT
 }
 
 func RevokeToken(id string, now time.Time) error {
+	return RevokeTokenAs(id, "", "", now)
+}
+
+func RevokeTokenAs(id, actorID, actorName string, now time.Time) error {
 	return config.MutateIdentityConfig(func(identity *config.IdentityConfig) error {
 		token, ok := identity.Tokens[id]
 		if !ok {
@@ -115,6 +120,9 @@ func RevokeToken(id string, now time.Time) error {
 		}
 		token.RevokedAt = &now
 		identity.Tokens[id] = token
+		if actorName != "" {
+			AppendAudit(identity, actorID, actorName, "token.revoke", "token", id, now)
+		}
 		return nil
 	})
 }

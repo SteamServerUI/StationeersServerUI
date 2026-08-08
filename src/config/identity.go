@@ -13,6 +13,7 @@ type IdentityConfig struct {
 	Groups          map[string]IdentityGroup   `json:"groups"`
 	Sessions        map[string]IdentitySession `json:"sessions"`
 	Tokens          map[string]IdentityToken   `json:"tokens"`
+	Audit           []IdentityAuditEvent       `json:"audit"`
 }
 
 type IdentityUser struct {
@@ -59,6 +60,16 @@ type IdentityToken struct {
 	RevokedAt  *time.Time `json:"revokedAt,omitempty"`
 }
 
+type IdentityAuditEvent struct {
+	ID         string    `json:"id"`
+	ActorID    string    `json:"actorId,omitempty"`
+	ActorName  string    `json:"actorName"`
+	Action     string    `json:"action"`
+	TargetType string    `json:"targetType"`
+	TargetID   string    `json:"targetId,omitempty"`
+	CreatedAt  time.Time `json:"createdAt"`
+}
+
 func NewIdentityConfig() IdentityConfig {
 	return IdentityConfig{
 		SchemaVersion: IdentitySchemaVersion,
@@ -67,6 +78,7 @@ func NewIdentityConfig() IdentityConfig {
 		Groups:        make(map[string]IdentityGroup),
 		Sessions:      make(map[string]IdentitySession),
 		Tokens:        make(map[string]IdentityToken),
+		Audit:         make([]IdentityAuditEvent, 0),
 	}
 }
 
@@ -85,6 +97,9 @@ func normalizeIdentityConfig(value IdentityConfig) IdentityConfig {
 	}
 	if value.Tokens == nil {
 		value.Tokens = make(map[string]IdentityToken)
+	}
+	if value.Audit == nil {
+		value.Audit = make([]IdentityAuditEvent, 0)
 	}
 	return value
 }
@@ -135,5 +150,6 @@ func cloneIdentityConfig(value IdentityConfig) IdentityConfig {
 		token.Scopes = append([]string(nil), token.Scopes...)
 		clone.Tokens[id] = token
 	}
+	clone.Audit = append([]IdentityAuditEvent(nil), value.Audit...)
 	return clone
 }

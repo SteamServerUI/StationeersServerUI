@@ -111,6 +111,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 		if request.Password != nil || !updated.Enabled {
 			removeUserCredentials(value, id)
 		}
+		security.AppendAudit(value, principal.UserID, principal.Username, "user.update", "user", id, updated.UpdatedAt)
 		return nil
 	}); err != nil {
 		middleware.WriteJSONError(w, http.StatusInternalServerError, "save_failed", "Could not save user")
@@ -152,6 +153,7 @@ func GroupHandler(w http.ResponseWriter, r *http.Request) {
 		middleware.WriteJSONError(w, http.StatusConflict, "system_group", "System groups cannot be changed")
 		return
 	}
+	principal, _ := middleware.PrincipalFromContext(r.Context())
 	switch r.Method {
 	case http.MethodPut:
 		var request struct {
@@ -163,7 +165,6 @@ func GroupHandler(w http.ResponseWriter, r *http.Request) {
 			middleware.WriteJSONError(w, http.StatusBadRequest, "invalid_request", err.Error())
 			return
 		}
-		principal, _ := middleware.PrincipalFromContext(r.Context())
 		permissions, err := validatePermissionGrant(principal, request.Permissions)
 		if err != nil {
 			middleware.WriteJSONError(w, http.StatusForbidden, "invalid_permissions", err.Error())
@@ -180,6 +181,7 @@ func GroupHandler(w http.ResponseWriter, r *http.Request) {
 		group.UpdatedAt = time.Now()
 		if err := config.MutateIdentityConfig(func(value *config.IdentityConfig) error {
 			value.Groups[id] = group
+			security.AppendAudit(value, principal.UserID, principal.Username, "group.update", "group", id, group.UpdatedAt)
 			return nil
 		}); err != nil {
 			middleware.WriteJSONError(w, http.StatusInternalServerError, "save_failed", "Could not save group")
@@ -193,6 +195,7 @@ func GroupHandler(w http.ResponseWriter, r *http.Request) {
 				user.GroupIDs = withoutValue(user.GroupIDs, id)
 				value.Users[userID] = user
 			}
+			security.AppendAudit(value, principal.UserID, principal.Username, "group.delete", "group", id, time.Now())
 			return nil
 		}); err != nil {
 			middleware.WriteJSONError(w, http.StatusInternalServerError, "save_failed", "Could not delete group")
@@ -255,7 +258,7 @@ func TokenHandler(w http.ResponseWriter, r *http.Request) {
 		middleware.WriteJSONError(w, http.StatusForbidden, "forbidden", "Permission denied")
 		return
 	}
-	if err := security.RevokeToken(id, time.Now()); err != nil {
+	if err := security.RevokeTokenAs(id, principal.UserID, principal.Username, time.Now()); err != nil {
 		middleware.WriteJSONError(w, http.StatusInternalServerError, "save_failed", "Could not revoke token")
 		return
 	}
@@ -296,7 +299,7 @@ func SessionHandler(w http.ResponseWriter, r *http.Request) {
 		middleware.WriteJSONError(w, http.StatusForbidden, "forbidden", "Permission denied")
 		return
 	}
-	if err := security.RevokeSession(id); err != nil {
+	if err := security.RevokeSessionAs(id, principal.UserID, principal.Username, time.Now()); err != nil {
 		middleware.WriteJSONError(w, http.StatusInternalServerError, "save_failed", "Could not revoke session")
 		return
 	}
@@ -364,6 +367,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := config.MutateIdentityConfig(func(value *config.IdentityConfig) error {
 		value.Users[user.ID] = user
+		security.AppendAudit(value, principal.UserID, principal.Username, "user.create", "user", user.ID, now)
 		return nil
 	}); err != nil {
 		middleware.WriteJSONError(w, http.StatusInternalServerError, "save_failed", "Could not save user")
@@ -405,6 +409,7 @@ func createGroup(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := config.MutateIdentityConfig(func(value *config.IdentityConfig) error {
 		value.Groups[group.ID] = group
+		security.AppendAudit(value, principal.UserID, principal.Username, "group.create", "group", group.ID, now)
 		return nil
 	}); err != nil {
 		middleware.WriteJSONError(w, http.StatusInternalServerError, "save_failed", "Could not save group")

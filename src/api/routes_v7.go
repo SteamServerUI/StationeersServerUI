@@ -81,6 +81,7 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 	protect(protected, "/api/v2/auth/tokens/", security.PermissionOwnTokensManage, httpauth.TokenHandler)
 	protected.HandleFunc("/api/v2/auth/sessions", httpauth.SessionsHandler)
 	protected.HandleFunc("/api/v2/auth/sessions/", httpauth.SessionHandler)
+	protect(protected, "/api/v2/auth/audit", security.PermissionAuditView, httpauth.AuditHandler)
 
 	protect(protected, "/api/v2/runfile/groups", security.PermissionRunfilesView, runfileapi.HandleRunfileGroups)
 	protect(protected, "/api/v2/runfile/args", security.PermissionRunfilesView, runfileapi.HandleRunfileArgs)

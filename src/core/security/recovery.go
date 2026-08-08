@@ -66,6 +66,7 @@ func RecoverOwner(username, password string, now time.Time) (config.IdentityUser
 		identity.SetupRequired = false
 		identity.SetupSecretHash = ""
 		identity.SetupExpiresAt = time.Time{}
+		AppendAudit(identity, "", "local-cli", "owner.recover", "user", recovered.ID, now)
 		return nil
 	})
 	return recovered, err

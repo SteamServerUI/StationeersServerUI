@@ -108,6 +108,7 @@ func BootstrapOwner(setupSecret, username, password string, now time.Time) (conf
 		identity.SetupRequired = false
 		identity.SetupSecretHash = ""
 		identity.SetupExpiresAt = time.Time{}
+		AppendAudit(identity, owner.ID, owner.Username, "setup.bootstrap", "user", owner.ID, now)
 		return nil
 	})
 	return owner, err
