@@ -3,6 +3,7 @@ package loader
 import (
 	"flag"
 	"fmt"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -18,7 +19,7 @@ var gameBranchFlag string
 var logLevelFlag int
 var isDebugModeFlag bool
 var createSSUILogFileFlag bool
-var recoveryPasswordFlag string
+var recoverOwnerFlag bool
 var devModeFlag bool
 var skipSteamCMDFlag bool
 var sanityCheckFlag bool
@@ -30,8 +31,8 @@ func ParseFlags() {
 	flag.StringVar(&backendEndpointPortFlag, "p", "", "(Alias) Override the backend endpoint port (e.g., 8080)")
 	flag.StringVar(&gameBranchFlag, "GameBranch", "", "Override the game branch (e.g., beta)")
 	flag.StringVar(&gameBranchFlag, "b", "", "(Alias) Override the game branch (e.g., beta)")
-	flag.StringVar(&recoveryPasswordFlag, "RecoveryPassword", "", "Reset or create the recovery owner (expects password as argument)")
-	flag.StringVar(&recoveryPasswordFlag, "r", "", "(Alias) Reset or create the recovery owner")
+	flag.BoolVar(&recoverOwnerFlag, "RecoverOwner", false, "Reset or create the recovery owner using SSUI_RECOVERY_PASSWORD")
+	flag.BoolVar(&recoverOwnerFlag, "r", false, "(Alias) Reset or create the recovery owner")
 	flag.BoolVar(&devModeFlag, "dev", false, "Enable development owner and CLI console. For development only.")
 	flag.IntVar(&logLevelFlag, "LogLevel", 0, "Override the log level (e.g., 10)")
 	flag.IntVar(&logLevelFlag, "ll", 0, "(Alias) Override the log level (e.g., 10)")
@@ -78,15 +79,17 @@ func HandleFlags(wg *sync.WaitGroup) {
 		logger.Main.Info(fmt.Sprintf("Overriding GameBranch from command line: Before=%s, Now=%s", oldBranch, gameBranchFlag))
 	}
 
-	if recoveryPasswordFlag != "" {
-		recoveryPasswordFlag = strings.TrimSpace(recoveryPasswordFlag)
-		if recoveryPasswordFlag == "" {
-			logger.Main.Error("Recovery flag provided but password is empty")
+	if recoverOwnerFlag {
+		recoveryPassword := strings.TrimSpace(os.Getenv("SSUI_RECOVERY_PASSWORD"))
+		_ = os.Unsetenv("SSUI_RECOVERY_PASSWORD")
+		if recoveryPassword == "" {
+			logger.Main.Error("Recovery requested but SSUI_RECOVERY_PASSWORD is empty")
 		} else {
-			if _, err := security.RecoverOwner("recovery", recoveryPasswordFlag, time.Now()); err != nil {
+			if _, err := security.RecoverOwner("recovery", recoveryPassword, time.Now()); err != nil {
 				logger.Main.Error("Failed to create recovery owner: " + err.Error())
 				return
 			}
+			recoveryPassword = ""
 			logger.Main.Warn("Recovery owner created; all existing sessions and API tokens were revoked")
 		}
 	}

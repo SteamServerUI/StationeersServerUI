@@ -14,6 +14,7 @@ export const authState = writable({
   setupRequired: false,
   user: null,
   permissions: [],
+  features: { plugins: false },
   csrf: null,
   expiresAt: null
 });
@@ -178,6 +179,7 @@ export async function syncAuthState() {
         setupRequired: true,
         user: null,
         permissions: [],
+        features: { plugins: false },
         csrf: null,
         expiresAt: null
       });
@@ -195,6 +197,7 @@ export async function syncAuthState() {
       authError: error.message,
       user: null,
       permissions: [],
+      features: { plugins: false },
       csrf: null
     }));
     return false;
@@ -229,6 +232,7 @@ function applySession(data) {
     setupRequired: false,
     user: data.user,
     permissions: data.permissions || [],
+    features: data.features || { plugins: false },
     csrf: data.csrf || null,
     expiresAt: data.expiresAt || null
   });
@@ -242,6 +246,7 @@ function resetSessionState() {
     setupRequired: false,
     user: null,
     permissions: [],
+    features: { plugins: false },
     csrf: null,
     expiresAt: null
   });

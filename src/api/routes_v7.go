@@ -101,14 +101,20 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 
 	protect(protected, "/api/v2/gallery", security.PermissionRunfilesView, runfileapi.GalleryHandler)
 	protect(protected, "/api/v2/gallery/select", security.PermissionRunfilesManage, runfileapi.GallerySelectHandler)
-	protect(protected, "/api/v2/plugingallery", security.PermissionPluginsView, pluginsapi.PluginGalleryHandler)
-	protect(protected, "/api/v2/plugingallery/select", security.PermissionPluginsManage, pluginsapi.PluginSelectHandler)
 	protect(protected, "/api/v2/files", security.PermissionFilesRead, runfileapi.GetFileList)
 	protect(protected, "/api/v2/files/get", security.PermissionFilesRead, runfileapi.GetFile)
 	protect(protected, "/api/v2/files/save", security.PermissionFilesWrite, runfileapi.SaveFile)
-	protect(protected, "/api/v2/plugins/list/apiroutes", security.PermissionPluginsView, pluginsapi.HandleListPluginAPIRoutes)
-	protect(protected, "/api/v2/plugins/list/names", security.PermissionPluginsView, pluginsapi.HandleListPluginNames)
-	protect(protected, "/api/v2/plugins/stop", security.PermissionPluginsManage, pluginsapi.HandleStopPlugin)
+	if config.GetPluginsEnabled() {
+		protect(protected, "/api/v2/plugingallery", security.PermissionPluginsView, pluginsapi.PluginGalleryHandler)
+		protect(protected, "/api/v2/plugingallery/select", security.PermissionPluginsManage, pluginsapi.PluginSelectHandler)
+		protect(protected, "/api/v2/plugins/list/apiroutes", security.PermissionPluginsView, pluginsapi.HandleListPluginAPIRoutes)
+		protect(protected, "/api/v2/plugins/list/names", security.PermissionPluginsView, pluginsapi.HandleListPluginNames)
+		protect(protected, "/api/v2/plugins/stop", security.PermissionPluginsManage, pluginsapi.HandleStopPlugin)
+	} else {
+		protected.HandleFunc("/api/v2/plugingallery", pluginsDisabled)
+		protected.HandleFunc("/api/v2/plugingallery/select", pluginsDisabled)
+		protected.HandleFunc("/api/v2/plugins/", pluginsDisabled)
+	}
 
 	protect(protected, "/api/v2/backup/create", security.PermissionBackupsCreate, backupapi.HandleBackupCreate)
 	protect(protected, "/api/v2/backup/list", security.PermissionBackupsView, backupapi.HandleBackupList)
@@ -119,4 +125,8 @@ func SetupV7APIRoutes() (*http.ServeMux, *http.ServeMux) {
 
 func protect(mux *http.ServeMux, path, permission string, handler http.HandlerFunc) {
 	mux.HandleFunc(path, middleware.RequirePermission(permission, handler))
+}
+
+func pluginsDisabled(w http.ResponseWriter, _ *http.Request) {
+	middleware.WriteJSONError(w, http.StatusServiceUnavailable, "plugins_disabled", "Plugins are disabled on this backend")
 }

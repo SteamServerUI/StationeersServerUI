@@ -28,6 +28,7 @@ import (
 	"github.com/SteamServerUI/SteamServerUI/v7/src/api"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/api/socketapi"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/cli"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/core/loader"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/core/security"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
@@ -66,8 +67,12 @@ func main() {
 	logger.Main.Debug("Initializing after start tasks...")
 	loader.AfterStartComplete(&wg)
 	wg.Wait()
-	logger.Main.Debug("Starting socket server...")
-	socketapi.StartSocketServer(&wg)
+	if config.GetPluginsEnabled() {
+		logger.Main.Debug("Starting plugin socket server...")
+		socketapi.StartSocketServer(&wg)
+	} else {
+		logger.Main.Debug("Plugin socket server is disabled")
+	}
 	logger.Main.Debug("Starting webserver...")
 	api.StartWebServer(&wg)
 	logger.Main.Debug("Initializing SSUICLI...")

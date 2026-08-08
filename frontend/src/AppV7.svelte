@@ -24,7 +24,7 @@
     { id: 'plugins', name: 'Plugins', icon: 'plugin', permissions: ['plugins.view'] }
   ];
 
-  let views = $derived(viewDefinitions.filter(view => !view.permissions.length || view.permissions.some(permission => $authState.permissions.includes(permission))));
+  let views = $derived(viewDefinitions.filter(view => (view.id !== 'plugins' || $authState.features.plugins) && (!view.permissions.length || view.permissions.some(permission => $authState.permissions.includes(permission)))));
 
   $effect(() => {
     const resize = () => screenSupported = window.innerWidth >= 1024 && window.innerHeight >= 600;

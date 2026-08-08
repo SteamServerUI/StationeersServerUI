@@ -28,7 +28,7 @@ func StartWebServer(wg *sync.WaitGroup) {
 	mux, protectedMux := SetupV7APIRoutes()
 
 	// if debug mode, add socket only routes to http api for easy testing
-	if config.IsDebugMode {
+	if config.IsDebugMode && config.GetPluginsEnabled() {
 		SetupSocketAPIRoutes(protectedMux)
 	}
 

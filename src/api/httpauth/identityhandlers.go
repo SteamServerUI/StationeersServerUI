@@ -164,6 +164,9 @@ func sessionResponse(user config.IdentityUser, principal security.Principal) map
 		},
 		"credentialType": principal.Credential,
 		"permissions":    permissions,
+		"features": map[string]bool{
+			"plugins": config.GetPluginsEnabled(),
+		},
 	}
 }
 
