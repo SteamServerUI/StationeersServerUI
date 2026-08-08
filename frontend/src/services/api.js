@@ -104,13 +104,13 @@ export function clearAuthentication() {
   updateAuthToken(currentBackendId, null);
   
   // Also clear the auth cookie by making a logout request
-  apiFetch('/auth/logout', { method: 'POST' })
+  apiFetch('/api/v3/auth/logout', { method: 'POST' })
     .catch(err => console.error('Error during logout:', err));
 }
 
 /**
  * Fetch wrapper that automatically adds the backend URL and handles authentication
- * @param {string} endpoint - The API endpoint (e.g., "/api/v2/whatever")
+ * @param {string} endpoint - The API endpoint (e.g., "/api/v3/whatever")
  * @param {Object} options - Fetch options
  * @returns {Promise} - The fetch promise
  */
@@ -133,7 +133,7 @@ export async function apiFetch(endpoint, options = {}) {
   
   // For non-login endpoints, manually set the AuthToken cookie as well
   // This serves as a fallback in case the HttpOnly cookie isn't being sent
-  if (token && !endpoint.includes('/auth/login')) {
+  if (token && !endpoint.includes('/api/v3/auth/login')) {
     const cookieHeader = document.cookie;
     if (!cookieHeader.includes('AuthToken=')) {
       // Only set cookie header if it's not already set by the browser
@@ -150,7 +150,7 @@ export async function apiFetch(endpoint, options = {}) {
 
 /**
  * Fetch wrapper with timeout that automatically adds the backend URL and handles authentication
- * @param {string} endpoint - The API endpoint (e.g., "/api/v2/whatever")
+ * @param {string} endpoint - The API endpoint (e.g., "/api/v3/whatever")
  * @param {Object} options - Fetch options
  * @param {number} timeoutMs - Timeout in milliseconds
  * @returns {Promise} - The fetch promise
@@ -378,7 +378,7 @@ export async function login(username, password) {
   }));
   
   try {
-    const response = await apiFetch('/auth/login', {
+    const response = await apiFetch('/api/v3/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -434,7 +434,7 @@ export async function syncAuthState() {
   
   try {
     // Make a simple request with 500ms timeout to verify authentication
-    const response = await apiFetchTimeout('/api/v2/auth/check', {
+    const response = await apiFetchTimeout('/api/v3/auth/check', {
       method: 'GET',
       headers: {
         'Accept': 'application/json'
@@ -488,7 +488,7 @@ export async function syncAuthState() {
     // Sleep for 60ms, then retry once, else continue failing
     await new Promise(resolve => setTimeout(resolve, 60));
     try {
-      const retryResponse = await apiFetchTimeout('/api/v2/auth/check', {
+      const retryResponse = await apiFetchTimeout('/api/v3/auth/check', {
       method: 'GET',
       headers: {
         'Accept': 'application/json'

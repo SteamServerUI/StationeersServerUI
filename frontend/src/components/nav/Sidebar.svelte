@@ -1,168 +1,37 @@
 <script>
-  /**
-   * @typedef {Object} Props
-   * @property {any} [views]
-   * @property {string} [activeView]
-   * @property {any} setActiveView
-   */
+  import Icon from '../resuables/Icon.svelte';
+  import { navigate } from '../../services/router';
+  let { views = [], activeView = 'home' } = $props();
+  let hovered = $state(false);
+  let pinned = $state(localStorage.getItem('ssui-rail-pinned') === 'true');
+  let expanded = $derived(hovered || pinned);
+  let groups = $derived([...new Set(views.map(view => view.group))]);
+  function togglePin(){ pinned=!pinned; localStorage.setItem('ssui-rail-pinned', String(pinned)); }
+</script>
 
-  /** @type {Props} */
-  let { views = [], activeView = 'dashboard', setActiveView } = $props();
-    
-    let isHovered = $state(false);
-    let isPinned = $state(false);
-    
-    function togglePin() {
-      isPinned = !isPinned;
-    }
-    
-    function handleMouseEnter() {
-      isHovered = true;
-    }
-    
-    function handleMouseLeave() {
-      isHovered = false;
-    }
-    
-    let isExpanded = $derived(isHovered || isPinned);
-  </script>
-  
-  <aside 
-    class="sidebar" 
-    class:expanded={isExpanded}
-    onmouseenter={handleMouseEnter}
-    onmouseleave={handleMouseLeave}
-  >
-    <div class="pin-container">
-      <button class="pin-button" class:active={isPinned} onclick={togglePin}>
-        {#if isPinned}
-          📌
-        {:else}
-          📍
-        {/if}
-      </button>
-    </div>
-    
-    <nav class="sidebar-nav">
-      {#each views as view}
-        <button 
-          class="sidebar-button" 
-          class:active={activeView === view.id}
-          onclick={() => setActiveView(view.id)}
-        >
-          <span class="sidebar-icon">
-            {#if view.icon === 'grid'}
-              📊
-            {:else if view.icon === 'settings'}
-              ⚙️
-            {:else if view.icon === 'file-text'}
-              📝
-            {:else if view.icon === 'terminal'}
-              >
-            {:else if view.icon === 'globe'}
-              🌐
-            {:else if view.icon === 'archive'}
-              📦
-            {:else if view.icon === 'plugin'}
-              🔌
-            {:else if view.id === 'archive'}
-              📦
-            {/if}
-          </span>
-          <span class="sidebar-text">{view.name}</span>
-        </button>
-      {/each}
-    </nav>
-  </aside>
-  
-  <style>
-    .sidebar {
-      width: var(--sidebar-collapsed-width);
-      height: 100%;
-      background-color: var(--bg-secondary);
-      border-right: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: width var(--transition-speed) ease;
-      z-index: 5;
-    }
-    
-    .sidebar.expanded {
-      width: var(--sidebar-width);
-    }
-    
-    .pin-container {
-      display: flex;
-      justify-content: flex-end;
-      padding: 0.5rem;
-    }
-    
-    .pin-button {
-      padding: 0.25rem;
-      width: 2rem;
-      height: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      opacity: 0.6;
-      transition: opacity var(--transition-speed) ease;
-    }
-    
-    .pin-button:hover, .pin-button.active {
-      opacity: 1;
-    }
-    
-    .sidebar-nav {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      padding: 0.5rem;
-      overflow-y: auto;
-    }
-    
-    .sidebar-button {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem;
-      border: none;
-      background-color: transparent;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all var(--transition-speed) ease;
-      justify-content: flex-start;
-      width: 100%;
-      text-align: left;
-    }
-    
-    .sidebar-button:hover {
-      background-color: var(--bg-hover);
-    }
-    
-    .sidebar-button.active {
-      background-color: var(--bg-active);
-      color: var(--accent-primary);
-    }
-    
-    .sidebar-icon {
-      font-size: 1.2rem;
-      min-width: 1.5rem;
-      display: flex;
-      justify-content: center;
-    }
-    
-    .sidebar-text {
-      white-space: nowrap;
-      opacity: 0;
-      transition: opacity var(--transition-speed) ease;
-    }
-    
-    .expanded .sidebar-text {
-      opacity: 1;
-    }
-  </style>
+<aside class="rail surface" class:expanded onmouseenter={() => hovered=true} onmouseleave={() => hovered=false}>
+  <button class="brand" onclick={() => navigate('home')} aria-label="Open Home"><span class="mark">S7</span><span class="brand-name">SteamServerUI</span></button>
+  <nav>
+    {#each groups as group}
+      <section>
+        <span class="group-name">{group}</span>
+        {#each views.filter(view => view.group === group) as view}
+          <button class="rail-link" class:active={activeView === view.id} onclick={() => navigate(view.id)} title={!expanded ? view.name : undefined}>
+            <Icon name={view.icon}/><span>{view.name}</span>
+          </button>
+        {/each}
+      </section>
+    {/each}
+  </nav>
+  <button class="pin" class:active={pinned} onclick={togglePin}><span>{pinned ? 'Unpin rail' : 'Pin rail'}</span><Icon name="chevron" size={16}/></button>
+</aside>
+
+<style>
+  .rail{width:var(--sidebar-collapsed-width);margin:10px 0 10px 10px;border-radius:22px;display:flex;flex-direction:column;overflow:hidden;transition:width var(--transition-speed);z-index:20;flex:0 0 auto}
+  .rail.expanded{width:var(--sidebar-width)}.brand{height:58px;display:flex;align-items:center;gap:11px;border:0;background:transparent;padding:10px 14px;white-space:nowrap}
+  .mark{display:grid;place-items:center;width:42px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));color:#07101d;font-weight:900;letter-spacing:-.06em;box-shadow:0 0 24px color-mix(in srgb,var(--accent-primary) 25%,transparent)}
+  .brand-name{font-weight:740;opacity:0;transition:opacity var(--transition-speed)}.expanded .brand-name{opacity:1}
+  nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:5px 9px 10px}section+section{margin-top:10px}.group-name{display:block;height:18px;padding:0 12px;color:var(--text-muted);font-size:.62rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;opacity:0}.expanded .group-name{opacity:1}
+  .rail-link{width:100%;height:42px;display:flex;align-items:center;gap:13px;border:0;background:transparent;padding:0 13px;white-space:nowrap;color:var(--text-secondary);position:relative}.rail-link span{opacity:0;transition:opacity var(--transition-speed)}.expanded .rail-link span{opacity:1}.rail-link:hover{color:var(--text-primary)}.rail-link.active{color:var(--text-primary);background:var(--bg-active)}.rail-link.active::before{content:'';position:absolute;left:2px;width:3px;height:20px;border-radius:8px;background:var(--accent-primary);box-shadow:0 0 12px var(--accent-primary)}
+  .pin{margin:8px;height:38px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:0;background:transparent;color:var(--text-muted);white-space:nowrap}.pin span{opacity:0}.expanded .pin span{opacity:1}.pin :global(svg){transition:transform var(--transition-speed)}.pin.active :global(svg){transform:rotate(180deg)}
+</style>

@@ -21,7 +21,7 @@
     async function fetchRunfileGroups() {
       isLoading = true;
       try {
-        const response = await apiFetch('/api/v2/runfile/groups');
+        const response = await apiFetch('/api/v3/runfile/groups');
         const { data, error } = await response.json();
         
         if (error) {
@@ -53,7 +53,7 @@
     // apiFetch args for selected group
     async function fetchRunfileArgs(group) {
       try {
-        const response = await apiFetch(`/api/v2/runfile/args?group=${encodeURIComponent(group)}`);
+        const response = await apiFetch(`/api/v3/runfile/args?group=${encodeURIComponent(group)}`);
         const { data, error } = await response.json();
         
         if (error) {
@@ -70,7 +70,7 @@
     // Update a runfile arg
     async function updateRunfileArg(flag, value) {
       try {
-        const response = await apiFetch('/api/v2/runfile/args/update', {
+        const response = await apiFetch('/api/v3/runfile/args/update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ flag, value })
@@ -106,7 +106,7 @@
     async function saveRunfile() {
       isSaving = true;
       try {
-        const response = await apiFetch('/api/v2/runfile/save', {
+        const response = await apiFetch('/api/v3/runfile/save', {
           method: 'POST'
         });
         

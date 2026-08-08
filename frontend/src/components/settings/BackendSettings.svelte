@@ -40,7 +40,7 @@
     
     const backendUrl = currentConfig.backends[id].url;
     try {
-      const response = await apiFetch(`/api/v2/server/status`, {
+      const response = await apiFetch(`/api/v3/server/status`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });

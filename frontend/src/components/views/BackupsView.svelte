@@ -35,7 +35,7 @@
 
   async function loadBackupStatus() {
     try {
-      const response = await apiFetch('/api/v2/backup/status');
+      const response = await apiFetch('/api/v3/backup/status');
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -69,7 +69,7 @@
   }
   
   try {
-    const response = await apiFetch('/api/v2/backup/list');
+    const response = await apiFetch('/api/v3/backup/list');
     
     // Always parse the JSON response to get detailed error messages
     const data = await response.json();
@@ -143,7 +143,7 @@
     success = null;
 
     try {
-      const response = await apiFetch('/api/v2/backup/create', {
+      const response = await apiFetch('/api/v3/backup/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -175,7 +175,7 @@
     success = null;
 
     try {
-      const response = await apiFetch('/api/v2/backup/restore', {
+      const response = await apiFetch('/api/v3/backup/restore', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

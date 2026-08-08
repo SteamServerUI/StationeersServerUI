@@ -31,7 +31,7 @@
 
     try {
       // First select the plugin
-      const response = await apiFetch('/api/v2/plugingallery/select', {
+      const response = await apiFetch('/api/v3/plugingallery/select', {
         method: 'POST',
         body: JSON.stringify({ name: plugin.name, redownload: false })
       });
@@ -41,7 +41,7 @@
         const confirmRedownload = window.confirm(`Plugin ${plugin.name} already exists. Would you like to re-download it?`);
         if (confirmRedownload) {
           // Retry with redownload: true
-          await apiFetch('/api/v2/plugingallery/select', {
+          await apiFetch('/api/v3/plugingallery/select', {
             method: 'POST',
             body: JSON.stringify({ name: plugin.name, redownload: true })
           });

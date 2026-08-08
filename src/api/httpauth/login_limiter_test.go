@@ -7,7 +7,7 @@ import (
 )
 
 func TestLoginFailuresBlockAndClear(t *testing.T) {
-	request := httptest.NewRequest("POST", "/auth/login", nil)
+	request := httptest.NewRequest("POST", "/api/v3/auth/login", nil)
 	request.RemoteAddr = "192.0.2.10:1234"
 	key := loginAttemptKey(request, " Owner ")
 	clearLoginFailures(key)
@@ -25,7 +25,7 @@ func TestLoginFailuresBlockAndClear(t *testing.T) {
 }
 
 func TestLoginAttemptKeyNormalizesUsername(t *testing.T) {
-	request := httptest.NewRequest("POST", "/auth/login", nil)
+	request := httptest.NewRequest("POST", "/api/v3/auth/login", nil)
 	request.RemoteAddr = "192.0.2.11:1234"
 	if loginAttemptKey(request, "Owner") != loginAttemptKey(request, " owner ") {
 		t.Fatal("username variants produced different login keys")
@@ -33,7 +33,7 @@ func TestLoginAttemptKeyNormalizesUsername(t *testing.T) {
 }
 
 func TestBlockedLoginReturnsRetryAfter(t *testing.T) {
-	request := httptest.NewRequest("POST", "/auth/login", nil)
+	request := httptest.NewRequest("POST", "/api/v3/auth/login", nil)
 	request.RemoteAddr = "192.0.2.12:1234"
 	credentials := identityCredentials{Username: "owner", Password: "wrong password"}
 	key := loginAttemptKey(request, credentials.Username)

@@ -81,9 +81,9 @@ func writeJSONResponse(w http.ResponseWriter, status int, data interface{}, errM
 	}
 }
 
-// HandleRunfileGroups handles GET /api/v2/runfile/groups
+// HandleRunfileGroups handles GET /api/v3/runfile/groups
 func HandleRunfileGroups(w http.ResponseWriter, r *http.Request) {
-	logger.Runfile.Debug("GET /api/v2/runfile/groups")
+	logger.Runfile.Debug("GET /api/v3/runfile/groups")
 	if runfile.CurrentRunfile == nil {
 		logger.Runfile.Error("runfile not loaded")
 		writeJSONResponse(w, http.StatusInternalServerError, nil, "runfile not loaded")
@@ -94,10 +94,10 @@ func HandleRunfileGroups(w http.ResponseWriter, r *http.Request) {
 	writeJSONResponse(w, http.StatusOK, groups, "")
 }
 
-// HandleRunfileArgs handles GET /api/v2/runfile/args
+// HandleRunfileArgs handles GET /api/v3/runfile/args
 func HandleRunfileArgs(w http.ResponseWriter, r *http.Request) {
 	group := r.URL.Query().Get("group")
-	logger.Runfile.Debug(fmt.Sprintf("GET /api/v2/runfile/args group=%s", group))
+	logger.Runfile.Debug(fmt.Sprintf("GET /api/v3/runfile/args group=%s", group))
 
 	if runfile.CurrentRunfile == nil {
 		logger.Runfile.Error("runfile not loaded")
@@ -168,9 +168,9 @@ func HandleRunfileGetArg(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(Response{Value: value, Status: "success"})
 }
 
-// HandleRunfileArgUpdate handles POST /api/v2/runfile/args/update
+// HandleRunfileArgUpdate handles POST /api/v3/runfile/args/update
 func HandleRunfileArgUpdate(w http.ResponseWriter, r *http.Request) {
-	logger.Runfile.Debug("POST /api/v2/runfile/args")
+	logger.Runfile.Debug("POST /api/v3/runfile/args")
 
 	if runfile.CurrentRunfile == nil {
 		logger.Runfile.Error("runfile not loaded")
@@ -204,9 +204,9 @@ func HandleRunfileArgUpdate(w http.ResponseWriter, r *http.Request) {
 	writeJSONResponse(w, http.StatusOK, map[string]string{"flag": req.Flag, "value": req.Value}, "")
 }
 
-// HandleRunfileSave handles POST /api/v2/runfile/save
+// HandleRunfileSave handles POST /api/v3/runfile/save
 func HandleRunfileSave(w http.ResponseWriter, r *http.Request) {
-	logger.Runfile.Debug("POST /api/v2/runfile/save")
+	logger.Runfile.Debug("POST /api/v3/runfile/save")
 
 	if runfile.CurrentRunfile == nil {
 		logger.Runfile.Error("runfile not loaded")

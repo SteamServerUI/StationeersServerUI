@@ -30,7 +30,7 @@ func TestBootstrapOwnerCreatesBrowserSession(t *testing.T) {
 		"username":    "owner",
 		"password":    "a long owner password",
 	})
-	request := httptest.NewRequest(http.MethodPost, "/api/v2/auth/setup/bootstrap", strings.NewReader(string(body)))
+	request := httptest.NewRequest(http.MethodPost, "/api/v3/auth/setup/bootstrap", strings.NewReader(string(body)))
 	request.Header.Set("Content-Type", "application/json")
 	response := httptest.NewRecorder()
 	BootstrapOwnerHandler(response, request)
@@ -63,7 +63,7 @@ func TestSessionLoginRejectsWrongPassword(t *testing.T) {
 	if _, err := security.BootstrapOwner(secret, "owner", "a long owner password", time.Now()); err != nil {
 		t.Fatal(err)
 	}
-	request := httptest.NewRequest(http.MethodPost, "/auth/login", strings.NewReader(`{"username":"owner","password":"wrong password"}`))
+	request := httptest.NewRequest(http.MethodPost, "/api/v3/auth/login", strings.NewReader(`{"username":"owner","password":"wrong password"}`))
 	request.Header.Set("Content-Type", "application/json")
 	response := httptest.NewRecorder()
 	SessionLoginHandler(response, request)

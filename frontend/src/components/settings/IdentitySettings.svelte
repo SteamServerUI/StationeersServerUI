@@ -35,14 +35,14 @@
     error = '';
     try {
       const requests = [];
-      if (canManageUsers) requests.push(apiJson('/api/v2/auth/users').then(data => users = data.users));
-      if (canManageGroups) requests.push(apiJson('/api/v2/auth/groups').then(data => {
+      if (canManageUsers) requests.push(apiJson('/api/v3/auth/users').then(data => users = data.users));
+      if (canManageGroups) requests.push(apiJson('/api/v3/auth/groups').then(data => {
         groups = data.groups;
         permissions = data.permissions;
       }));
-      if (canManageTokens) requests.push(apiJson('/api/v2/auth/tokens').then(data => tokens = data.tokens));
-      if (canViewAudit) requests.push(apiJson('/api/v2/auth/audit').then(data => events = data.events));
-      requests.push(apiJson('/api/v2/auth/sessions').then(data => sessions = data.sessions));
+      if (canManageTokens) requests.push(apiJson('/api/v3/auth/tokens').then(data => tokens = data.tokens));
+      if (canViewAudit) requests.push(apiJson('/api/v3/auth/audit').then(data => events = data.events));
+      requests.push(apiJson('/api/v3/auth/sessions').then(data => sessions = data.sessions));
       await Promise.all(requests);
     } catch (reason) {
       error = reason.message;
@@ -53,7 +53,7 @@
 
   async function createUser() {
     await run(async () => {
-      await apiJson('/api/v2/auth/users', {
+      await apiJson('/api/v3/auth/users', {
         method: 'POST',
         body: JSON.stringify(newUser)
       });
@@ -65,7 +65,7 @@
 
   async function toggleUser(user) {
     await run(async () => {
-      await apiJson(`/api/v2/auth/users/${user.id}`, {
+      await apiJson(`/api/v3/auth/users/${user.id}`, {
         method: 'PATCH',
         body: JSON.stringify({ enabled: !user.enabled })
       });
@@ -82,10 +82,10 @@
         permissions: groupDraft.permissions
       });
       if (groupDraft.id) {
-        await apiJson(`/api/v2/auth/groups/${groupDraft.id}`, { method: 'PUT', body });
+        await apiJson(`/api/v3/auth/groups/${groupDraft.id}`, { method: 'PUT', body });
         message = 'Group updated.';
       } else {
-        await apiJson('/api/v2/auth/groups', { method: 'POST', body });
+        await apiJson('/api/v3/auth/groups', { method: 'POST', body });
         message = 'Group created.';
       }
       clearGroupDraft();
@@ -105,7 +105,7 @@
   async function deleteGroup(group) {
     if (!window.confirm(`Delete ${group.name}? Users will lose this group's access.`)) return;
     await run(async () => {
-      await apiJson(`/api/v2/auth/groups/${group.id}`, { method: 'DELETE' });
+      await apiJson(`/api/v3/auth/groups/${group.id}`, { method: 'DELETE' });
       message = 'Group deleted.';
       clearGroupDraft();
       await loadAll();
@@ -114,7 +114,7 @@
 
   async function createToken() {
     await run(async () => {
-      const data = await apiJson('/api/v2/auth/tokens', {
+      const data = await apiJson('/api/v3/auth/tokens', {
         method: 'POST',
         body: JSON.stringify(tokenDraft)
       });
@@ -127,7 +127,7 @@
 
   async function revokeToken(token) {
     await run(async () => {
-      await apiJson(`/api/v2/auth/tokens/${token.id}`, { method: 'DELETE' });
+      await apiJson(`/api/v3/auth/tokens/${token.id}`, { method: 'DELETE' });
       message = 'Token revoked.';
       await loadAll();
     });
@@ -135,7 +135,7 @@
 
   async function revokeSession(session) {
     await run(async () => {
-      await apiJson(`/api/v2/auth/sessions/${session.id}`, { method: 'DELETE' });
+      await apiJson(`/api/v3/auth/sessions/${session.id}`, { method: 'DELETE' });
       message = 'Session revoked.';
       await loadAll();
     });

@@ -2,7 +2,6 @@
 package ssestream
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 	"sync"
@@ -94,7 +93,7 @@ func (m *SSEManager) CreateStreamHandler(streamType string) http.HandlerFunc {
 		m.clientsMu.Unlock()
 
 		// Send initial connection event
-		_, err := fmt.Fprintf(w, "data: %s Stream Connected\n\n", streamType)
+		err := writeSSEEvent(w, streamType, streamType+" Stream Connected")
 		if err != nil {
 			m.removeClient(client)
 			//logger.SSE.Error(" ⚠️ Failed to send initial message: " + err.Error())
@@ -122,7 +121,7 @@ func (m *SSEManager) streamMessages(
 	for {
 		select {
 		case msg := <-client.messages:
-			_, err := fmt.Fprintf(w, "data: %s\n\n", msg)
+			err := writeSSEEvent(w, "message", msg)
 			if err != nil {
 				//logger.SSE.Error(" ❌ Failed to send message: " + err.Error())
 				return

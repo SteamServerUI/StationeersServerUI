@@ -55,7 +55,7 @@
 
     try {
       // Step 1: Apply the runfile
-      const response = await apiFetch('/api/v2/gallery/select', {
+      const response = await apiFetch('/api/v3/gallery/select', {
         method: 'POST',
         body: JSON.stringify({ identifier: runfile.name, redownload: false })
       });
@@ -65,7 +65,7 @@
           `Runfile ${runfile.name} already exists. Do you want to re-download it? This will OVERWRITE custom settings.`
         );
         if (confirmRedownload) {
-          await apiFetch('/api/v2/gallery/select', {
+          await apiFetch('/api/v3/gallery/select', {
             method: 'POST',
             body: JSON.stringify({ identifier: runfile.name, redownload: true })
           });
@@ -94,7 +94,7 @@
               settingBody[setting.name] = setting.intValue;
             }
 
-            const settingResponse = await apiFetch('/api/v2/settings/save', {
+            const settingResponse = await apiFetch('/api/v3/settings/save', {
               method: 'POST',
               body: JSON.stringify(settingBody)
             });
@@ -142,7 +142,7 @@
         
         for (const plugin of filteredPlugins) {
           try {
-            const pluginResponse = await apiFetch('/api/v2/plugingallery/select', {
+            const pluginResponse = await apiFetch('/api/v3/plugingallery/select', {
               method: 'POST',
               body: JSON.stringify({ name: plugin.name, redownload: true })
             });
@@ -189,7 +189,7 @@
       //// Step 4: Reload backend to apply all changes
       //reloadingBackend = true;
       //try {
-      //  const reloadResponse = await apiFetch('/api/v2/loader/reloadbackend', {
+      //  const reloadResponse = await apiFetch('/api/v3/loader/reloadbackend', {
       //    method: 'GET'
       //  });
       //

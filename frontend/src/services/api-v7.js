@@ -128,7 +128,7 @@ export async function login(username, password) {
     const backendUrl = getCurrentBackendUrl();
     const data = window.ssuiDesktop && backendUrl
       ? await window.ssuiDesktop.login({ backendUrl, username, password })
-      : await apiJson('/auth/login', {
+      : await apiJson('/api/v3/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
@@ -145,7 +145,7 @@ export async function bootstrapOwner(setupSecret, username, password) {
   const backendUrl = getCurrentBackendUrl();
   const data = window.ssuiDesktop && backendUrl
     ? await window.ssuiDesktop.bootstrap({ backendUrl, setupSecret, username, password })
-    : await apiJson('/api/v2/auth/setup/bootstrap', {
+    : await apiJson('/api/v3/auth/setup/bootstrap', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ setupSecret, username, password })
@@ -160,7 +160,7 @@ export async function logout() {
     if (window.ssuiDesktop && backendUrl) {
       await window.ssuiDesktop.logout({ backendUrl });
     } else {
-      await apiFetch('/auth/logout', { method: 'POST' });
+      await apiFetch('/api/v3/auth/logout', { method: 'POST' });
     }
   } finally {
     resetSessionState();
@@ -170,7 +170,7 @@ export async function logout() {
 export async function syncAuthState() {
   authState.update(value => ({ ...value, isAuthenticating: true, authError: null }));
   try {
-    const setup = await apiJson('/api/v2/auth/setup/status');
+    const setup = await apiJson('/api/v3/auth/setup/status');
     if (setup.setupRequired) {
       authState.set({
         isAuthenticated: false,
@@ -185,7 +185,7 @@ export async function syncAuthState() {
       });
       return false;
     }
-    const response = await apiFetchTimeout('/api/v2/auth/session', { headers: { Accept: 'application/json' } }, 5000);
+    const response = await apiFetchTimeout('/api/v3/auth/session', { headers: { Accept: 'application/json' } }, 5000);
     if (!response.ok) throw new Error(response.status === 401 ? 'Authentication required' : `Backend returned ${response.status}`);
     applySession(await response.json());
     return true;
@@ -210,12 +210,20 @@ export function hasPermission(permission) {
 
 export function apiSSE(endpoint, onMessage, onError = console.error) {
   if (window.ssuiDesktop?.openEventStream && getCurrentBackendUrl()) {
-    return window.ssuiDesktop.openEventStream({ url: buildUrl(endpoint), onMessage, onError });
+    const handleMessage = value => {
+      try {
+        const payload = typeof value === "string" ? JSON.parse(value) : value;
+        onMessage(payload && Object.hasOwn(payload, "data") ? payload.data : payload);
+      } catch {
+        onMessage(value);
+      }
+    };
+    return window.ssuiDesktop.openEventStream({ url: buildUrl(endpoint), onMessage: handleMessage, onError });
   }
   const source = new EventSource(buildUrl(endpoint), { withCredentials: true });
   source.onmessage = event => {
     try {
-      onMessage(JSON.parse(event.data));
+      const payload = JSON.parse(event.data); onMessage(payload && Object.hasOwn(payload, 'data') ? payload.data : payload);
     } catch {
       onMessage(event.data);
     }

@@ -25,7 +25,7 @@ export async function fetchUserInfo() {
   }));
 
   try {
-    const response = await apiFetch('/api/v2/auth/whoami');
+    const response = await apiFetch('/api/v3/auth/whoami');
     
     // Parse the JSON from the response
     const data = await response.json();

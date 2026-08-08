@@ -45,7 +45,7 @@
       }
       
       try {
-        const response = await apiFetch('/api/v2/auth/adduser', {
+        const response = await apiFetch('/api/v3/auth/adduser', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 

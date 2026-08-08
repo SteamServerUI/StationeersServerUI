@@ -116,7 +116,7 @@ function handleConsole() {
     const createCommandInput = async () => {
         try {
             // Make API call to check if SSCM is enabled
-            const response = await fetch('/api/v2/SSCM/enabled', {
+            const response = await fetch('/api/v3/SSCM/enabled', {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json'

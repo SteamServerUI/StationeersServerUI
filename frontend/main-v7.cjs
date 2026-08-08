@@ -94,7 +94,7 @@ async function backendRequest(url, options = {}, token = tokenFor(url)) {
 async function desktopLogin(backendUrl, username, password) {
   if (!hasProtectedStorage()) throw new Error('OS credential encryption is unavailable');
   const origin = backendURL(backendUrl).origin;
-  const response = await backendRequest(`${origin}/auth/desktop/login`, {
+  const response = await backendRequest(`${origin}/api/v3/auth/desktop/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password })
@@ -114,7 +114,7 @@ function registerIPC() {
     assertRenderer(event);
     const target = backendURL(request.url);
     const token = tokenFor(target.toString());
-    const publicPath = ['/api/v2/auth/setup/status', '/api/v2/auth/setup/bootstrap', '/auth/desktop/login'].includes(target.pathname);
+    const publicPath = ['/api/v3/auth/setup/status', '/api/v3/auth/setup/bootstrap', '/api/v3/auth/desktop/login'].includes(target.pathname);
     if (!token && !publicPath) throw new Error('This backend needs a desktop login');
     return backendRequest(target.toString(), request.options, token);
   });
@@ -127,7 +127,7 @@ function registerIPC() {
   ipcMain.handle('ssui:bootstrap', async (event, request) => {
     assertRenderer(event);
     const origin = backendURL(request.backendUrl).origin;
-    const response = await backendRequest(`${origin}/api/v2/auth/setup/bootstrap`, {
+    const response = await backendRequest(`${origin}/api/v3/auth/setup/bootstrap`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ setupSecret: request.setupSecret, username: request.username, password: request.password })
@@ -145,7 +145,7 @@ function registerIPC() {
     const token = credentials[origin]?.token;
     if (token) {
       try {
-        await backendRequest(`${origin}/api/v2/auth/desktop/logout`, { method: 'POST' }, token);
+        await backendRequest(`${origin}/api/v3/auth/desktop/logout`, { method: 'POST' }, token);
       } finally {
         delete credentials[origin];
         saveCredentials();

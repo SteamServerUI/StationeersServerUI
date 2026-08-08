@@ -16,7 +16,7 @@ type response struct {
 	Error string      `json:"error,omitempty"`
 }
 
-// PluginGalleryHandler handles GET /api/v2/plugins
+// PluginGalleryHandler handles GET /api/v3/plugins
 func PluginGalleryHandler(w http.ResponseWriter, r *http.Request) {
 	forceUpdate := strings.ToLower(r.URL.Query().Get("forceUpdate")) == "true"
 
@@ -31,7 +31,7 @@ func PluginGalleryHandler(w http.ResponseWriter, r *http.Request) {
 	sendResponse(w, http.StatusOK, response{Data: plugins})
 }
 
-// PluginSelectHandler handles POST /api/v2/plugins/select
+// PluginSelectHandler handles POST /api/v3/plugins/select
 func PluginSelectHandler(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Name       string `json:"name"`

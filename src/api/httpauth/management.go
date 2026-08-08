@@ -38,7 +38,7 @@ func UserHandler(w http.ResponseWriter, r *http.Request) {
 		middleware.WriteJSONError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Method not allowed")
 		return
 	}
-	id := strings.TrimPrefix(r.URL.Path, "/api/v2/auth/users/")
+	id := strings.TrimPrefix(r.URL.Path, "/api/v3/auth/users/")
 	if id == "" || strings.Contains(id, "/") {
 		middleware.WriteJSONError(w, http.StatusNotFound, "not_found", "User not found")
 		return
@@ -138,7 +138,7 @@ func GroupsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GroupHandler(w http.ResponseWriter, r *http.Request) {
-	id := strings.TrimPrefix(r.URL.Path, "/api/v2/auth/groups/")
+	id := strings.TrimPrefix(r.URL.Path, "/api/v3/auth/groups/")
 	if id == "" || strings.Contains(id, "/") {
 		middleware.WriteJSONError(w, http.StatusNotFound, "not_found", "Group not found")
 		return
@@ -247,7 +247,7 @@ func TokenHandler(w http.ResponseWriter, r *http.Request) {
 		middleware.WriteJSONError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Method not allowed")
 		return
 	}
-	id := strings.TrimPrefix(r.URL.Path, "/api/v2/auth/tokens/")
+	id := strings.TrimPrefix(r.URL.Path, "/api/v3/auth/tokens/")
 	principal, _ := middleware.PrincipalFromContext(r.Context())
 	token, ok := config.GetIdentityConfig().Tokens[id]
 	if !ok {
@@ -288,7 +288,7 @@ func SessionHandler(w http.ResponseWriter, r *http.Request) {
 		middleware.WriteJSONError(w, http.StatusMethodNotAllowed, "method_not_allowed", "Method not allowed")
 		return
 	}
-	id := strings.TrimPrefix(r.URL.Path, "/api/v2/auth/sessions/")
+	id := strings.TrimPrefix(r.URL.Path, "/api/v3/auth/sessions/")
 	principal, _ := middleware.PrincipalFromContext(r.Context())
 	session, ok := config.GetIdentityConfig().Sessions[id]
 	if !ok {

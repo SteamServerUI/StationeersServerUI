@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Handle setup steps
         if (configField && step !== "admin_account") {
-            url = '/api/v2/settings/save';
+            url = '/api/v3/settings/save';
             
             // Handle boolean conversion for yes/no fields
             if (configField === "IsDiscordEnabled" || configField === "UPNPEnabled" || 
@@ -136,13 +136,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         } else if (step === "admin_account") { // User setup
-            url = '/api/v2/auth/setup/register';
+            url = '/api/v3/auth/setup/register';
             body = JSON.stringify({
                 username: document.getElementById('primary-field').value,
                 password: document.getElementById('secondary-field').value
             });
         } else { // Login or changeuser
-            url = mode === 'changeuser' ? '/api/v2/auth/adduser' : '/auth/login';
+            url = mode === 'changeuser' ? '/api/v3/auth/adduser' : '/api/v3/auth/login';
             body = JSON.stringify({
                 username: document.getElementById('primary-field').value,
                 password: document.getElementById('secondary-field').value
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target && e.target.id === 'finalize-btn') {
             try {
                 showPreloader();
-                const finalizeResponse = await fetch('/api/v2/auth/setup/finalize', {
+                const finalizeResponse = await fetch('/api/v3/auth/setup/finalize', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const lang = flag.dataset.lang;
             try {
                 showPreloader();
-                const response = await fetch('/api/v2/settings/save', {
+                const response = await fetch('/api/v3/settings/save', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ LanguageSetting: lang })

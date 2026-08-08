@@ -24,10 +24,10 @@ This is similar to how Docker uses `/var/run/docker.sock` for local API access.
 
 ### Linux: Using a Unix Socket
 
-Use `curl` with the `--unix-socket` flag to send HTTP requests to the socket. Example for the `/api/v2/settings` endpoint:
+Use `curl` with the `--unix-socket` flag to send HTTP requests to the socket. Example for the `/api/v3/settings` endpoint:
 
 ```bash
-curl --unix-socket /tmp/ssui/ssui.sock http://localhost/api/v2/settings
+curl --unix-socket /tmp/ssui/ssui.sock http://localhost/api/v3/settings
 ```
 
 **Expected Output**: JSON response from the `settings.RetrieveSettings` handler, e.g.:
@@ -47,7 +47,7 @@ Use the following PowerShell 7 script to send an HTTP request to the named pipe.
 # test_namedpipe.ps1
 
 $pipeName = "\\.\pipe\ssui"
-$endpoint = "/api/v2/server/status"
+$endpoint = "/api/v3/server/status"
 $hostHeader = "localhost"  # Dummy host for HTTP request
 
 # Create the HTTP request
@@ -96,7 +96,7 @@ Run it:
 
 **Expected Output**: HTTP response with headers and JSON body, e.g.:
 ```
-Response from \\.\pipe\ssui/api/v2/server/status:
+Response from \\.\pipe\ssui/api/v3/server/status:
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 123
@@ -106,18 +106,18 @@ Content-Length: 123
 
 ## Testing Other Endpoints
 
-All routes from `routes.go` (e.g., `/api/v2/server/start`, `/api/v2/backups`) are available. Modify the endpoint in the commands:
+All routes from `routes.go` (e.g., `/api/v3/server/start`, `/api/v3/backups`) are available. Modify the endpoint in the commands:
 
 - **Linux**:
   ```bash
-  curl --unix-socket /tmp/ssui/ssui.sock http://localhost/api/v2/backups
+  curl --unix-socket /tmp/ssui/ssui.sock http://localhost/api/v3/backups
   ```
-- **Windows**: Edit `$endpoint` in `test_namedpipe.ps1`, e.g., `$endpoint = "/api/v2/backups"`.
+- **Windows**: Edit `$endpoint` in `test_namedpipe.ps1`, e.g., `$endpoint = "/api/v3/backups"`.
 
-For POST requests (e.g., `/api/v2/server/start`), add a JSON payload:
+For POST requests (e.g., `/api/v3/server/start`), add a JSON payload:
 - **Linux**:
   ```bash
-  curl --unix-socket /tmp/ssui/ssui.sock -X POST -H "Content-Type: application/json" -d '{"action":"start"}' http://localhost/api/v2/server/start
+  curl --unix-socket /tmp/ssui/ssui.sock -X POST -H "Content-Type: application/json" -d '{"action":"start"}' http://localhost/api/v3/server/start
   ```
 - **Windows**: Update the PowerShell script’s `$request`:
   ```powershell

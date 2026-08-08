@@ -12,7 +12,7 @@
     responseMessage = '';
 
     try {
-      const response = await apiFetch('/api/v2/loader/reloadbackend', {
+      const response = await apiFetch('/api/v3/loader/reloadbackend', {
         method: 'GET'
       });
 
@@ -43,7 +43,7 @@
     responseMessage = '';
 
     try {
-      const response = await apiFetch('/api/v2/steamcmd/run', {
+      const response = await apiFetch('/api/v3/steamcmd/run', {
         method: 'GET'
       });
 

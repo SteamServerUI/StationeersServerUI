@@ -26,7 +26,7 @@ function triggerSteamCMD() {
     const status = document.getElementById('status');
     status.hidden = false;
     typeTextWithCallback(status, 'Running SteamCMD, please wait... ', 20, () => {
-        fetch('/api/v2/steamcmd/run')
+        fetch('/api/v3/steamcmd/run')
             .then(response => response.json())
             .then(data => {
                 showPopup("info", data.message);
@@ -61,7 +61,7 @@ function fetchPlayers() {
         "/static/playerimages/ronald.webp",
     ];
 
-    return fetch('/api/v2/server/status/connectedplayers')
+    return fetch('/api/v3/server/status/connectedplayers')
         .then(response => response.json())
         .then(data => {
             playerList.innerHTML = '';
@@ -133,7 +133,7 @@ function pollRecurringTasks() {
 
     // Poll server status every 3.5 seconds
     const statusInterval = setInterval(() => {
-        fetch('/api/v2/server/status')
+        fetch('/api/v3/server/status')
             .then(response => response.json())
             .then(data => {
                 updateStatusIndicator(data.isRunning);

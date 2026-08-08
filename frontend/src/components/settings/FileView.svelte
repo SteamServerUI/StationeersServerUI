@@ -35,7 +35,7 @@
     loading = true;
     error = null;
     try {
-      const response = await apiFetch('/api/v2/files');
+      const response = await apiFetch('/api/v3/files');
       const data = await response.json();
       
       if (data.success) {
@@ -72,7 +72,7 @@
     editorMode = mode;
     
     try {
-      const response = await apiFetch('/api/v2/files/get', {
+      const response = await apiFetch('/api/v3/files/get', {
         method: 'POST',
         body: JSON.stringify({ filename: file.filename })
       });
@@ -241,7 +241,7 @@
     error = null;
     
     try {
-      const response = await apiFetch(`/api/v2/files/save?filename=${selectedFile.filename}`, {
+      const response = await apiFetch(`/api/v3/files/save?filename=${selectedFile.filename}`, {
         method: 'POST',
         body: fileContent
       });

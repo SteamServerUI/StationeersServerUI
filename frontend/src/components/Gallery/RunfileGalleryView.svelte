@@ -14,7 +14,7 @@
     
     try {
       // Get the response from apiFetch
-      const response = await apiFetch(`/api/v2/gallery${forceUpdate ? '?forceUpdate=true' : ''}`);
+      const response = await apiFetch(`/api/v3/gallery${forceUpdate ? '?forceUpdate=true' : ''}`);
       
       let data;
       if (response instanceof Response) {

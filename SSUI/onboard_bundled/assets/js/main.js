@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         flag.addEventListener('click', async () => {
             const lang = flag.dataset.lang;
             try {
-                const response = await fetch('/api/v2/saveconfig', {
+                const response = await fetch('/api/v3/saveconfig', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ LanguageSetting: lang })

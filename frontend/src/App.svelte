@@ -53,7 +53,7 @@
   // Check if plugins are available
   async function checkPlugins() {
     try {
-      const response = await apiFetch('/api/v2/plugins/list/apiroutes');
+      const response = await apiFetch('/api/v3/plugins/list/apiroutes');
       const data = await response.json();
       hasPlugins = Array.isArray(data) && data.length > 0;
       

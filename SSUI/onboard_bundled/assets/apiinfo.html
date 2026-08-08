@@ -78,22 +78,22 @@
                     <ul class="api-list">
                         <li>
                             <div class="method get">GET</div>
-                            <a href="/api/v2/backups" class="endpoint-link">/api/v2/backups</a>
+                            <a href="/api/v3/backups" class="endpoint-link">/api/v3/backups</a>
                             <div class="endpoint-desc">List available save files</div>
                         </li>
                         <li>
                             <div class="method get">GET</div>
-                            <a href="/api/v2/backups?limit=5" class="endpoint-link">/api/v2/backups?limit=5</a>
+                            <a href="/api/v3/backups?limit=5" class="endpoint-link">/api/v3/backups?limit=5</a>
                             <div class="endpoint-desc">List limited number of save files</div>
                         </li>
                         <li>
                             <div class="method get">GET</div>
-                            <a href="/api/v2/backups?mode=classic" class="endpoint-link">/api/v2/backups?mode=classic</a>
+                            <a href="/api/v3/backups?mode=classic" class="endpoint-link">/api/v3/backups?mode=classic</a>
                             <div class="endpoint-desc">List saves in classic format for UI</div>
                         </li>
                         <li>
                             <div class="method get">GET</div>
-                            <span class="endpoint-link">/api/v2/backups/restore?index=123</span>
+                            <span class="endpoint-link">/api/v3/backups/restore?index=123</span>
                             <div class="endpoint-desc">Restore from specified save index</div>
                         </li>
                     </ul>
@@ -114,12 +114,12 @@
                         </li>
                         <li>
                             <div class="method get">GET</div>
-                            <a href="/api/v2/server/start" class="endpoint-link">/api/v2/server/start</a>
+                            <a href="/api/v3/server/start" class="endpoint-link">/api/v3/server/start</a>
                             <div class="endpoint-desc">The same as /start</div>
                         </li>
                         <li>
                             <div class="method get">GET</div>
-                            <a href="/api/v2/server/stop" class="endpoint-link">/api/v2/server/stop</a>
+                            <a href="/api/v3/server/stop" class="endpoint-link">/api/v3/server/stop</a>
                             <div class="endpoint-desc">The same as /stop</div>
                         </li>
                     </ul>
@@ -130,17 +130,17 @@
                     <ul class="api-list">
                         <li>
                             <div class="method post">POST</div>
-                            <a href="/auth/login" class="endpoint-link">/auth/login</a>
+                            <a href="/api/v3/auth/login" class="endpoint-link">/api/v3/auth/login</a>
                             <div class="endpoint-desc">Get authentication token (JSON body with username/password)</div>
                         </li>
                         <li>
                             <div class="method get">GET</div>
-                            <a href="/auth/logout" class="endpoint-link">/auth/logout</a>
+                            <a href="/api/v3/auth/logout" class="endpoint-link">/api/v3/auth/logout</a>
                             <div class="endpoint-desc">Logout and invalidate token</div>
                         </li>
                         <li>
                             <div class="method post">POST</div>
-                            <span class="endpoint-link">/api/v2/auth/adduser</span>
+                            <span class="endpoint-link">/api/v3/auth/adduser</span>
                             <div class="endpoint-desc">Add a new user or change password (JSON body)</div>
                         </li>
                     </ul>
@@ -151,17 +151,17 @@
                     <ul class="api-list">
                         <li>
                             <div class="method get">GET</div>
-                            <a href="/api/v2/custom-detections" class="endpoint-link">/api/v2/custom-detections</a>
+                            <a href="/api/v3/custom-detections" class="endpoint-link">/api/v3/custom-detections</a>
                             <div class="endpoint-desc">Get all custom detection rules</div>
                         </li>
                         <li>
                             <div class="method post">POST</div>
-                            <span class="endpoint-link">/api/v2/custom-detections</span>
+                            <span class="endpoint-link">/api/v3/custom-detections</span>
                             <div class="endpoint-desc">Create new detection rule (keyword or regex)</div>
                         </li>
                         <li>
                             <div class="method delete">DELETE</div>
-                            <span class="endpoint-link">/api/v2/custom-detections/delete/?id=uuid</span>
+                            <span class="endpoint-link">/api/v3/custom-detections/delete/?id=uuid</span>
                             <div class="endpoint-desc">Delete a detection rule by ID</div>
                         </li>
                     </ul>
@@ -177,7 +177,7 @@
                         </li>
                         <li>
                             <div class="method post">POST</div>
-                            <span class="endpoint-link">/api/v2/saveconfig</span>
+                            <span class="endpoint-link">/api/v3/saveconfig</span>
                             <div class="endpoint-desc">Save server configuration (JSON body)</div>
                         </li>
                     </ul>

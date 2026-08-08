@@ -27,7 +27,7 @@
     
     async function fetchSettings() {
       try {
-        const response = await apiFetch('/api/v2/settings');
+        const response = await apiFetch('/api/v3/settings');
         const { data, error } = await response.json();
         
         if (error) {
@@ -55,7 +55,7 @@
     // Update a setting
     async function updateSetting(name, value) {
       try {
-        const response = await apiFetch('/api/v2/settings/save', {
+        const response = await apiFetch('/api/v3/settings/save', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ [name]: value })

@@ -26,7 +26,7 @@ func TestAuditHandlerReturnsNewestFirst(t *testing.T) {
 	}
 
 	response := httptest.NewRecorder()
-	AuditHandler(response, httptest.NewRequest(http.MethodGet, "/api/v2/auth/audit", nil))
+	AuditHandler(response, httptest.NewRequest(http.MethodGet, "/api/v3/auth/audit", nil))
 	if response.Code != http.StatusOK {
 		t.Fatalf("status = %d", response.Code)
 	}

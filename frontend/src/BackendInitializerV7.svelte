@@ -11,7 +11,7 @@
   onMount(async () => {
     initializeApiService();
     try {
-      const response = await apiFetchTimeout('/api/v2/auth/setup/status', {}, 5000);
+      const response = await apiFetchTimeout('/api/v3/auth/setup/status', {}, 5000);
       if (!response.ok) throw new Error(`Backend returned ${response.status}`);
       status = 'online';
     } catch (error) {

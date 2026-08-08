@@ -17,7 +17,7 @@ type response struct {
 	Error string      `json:"error,omitempty"`
 }
 
-// GalleryHandler handles GET /api/v2/gallery
+// GalleryHandler handles GET /api/v3/gallery
 func GalleryHandler(w http.ResponseWriter, r *http.Request) {
 	forceUpdate := strings.ToLower(r.URL.Query().Get("forceUpdate")) == "true"
 
@@ -32,7 +32,7 @@ func GalleryHandler(w http.ResponseWriter, r *http.Request) {
 	sendResponse(w, http.StatusOK, response{Data: runfiles})
 }
 
-// GallerySelectHandler handles POST /api/v2/gallery/select
+// GallerySelectHandler handles POST /api/v3/gallery/select
 func GallerySelectHandler(w http.ResponseWriter, r *http.Request) {
 
 	var req struct {

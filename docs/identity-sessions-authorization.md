@@ -90,11 +90,11 @@ Electron treats each backend as a separate connection profile. The renderer does
 
 ## HTTP contract
 
-- `/auth/login` creates a browser session and returns session metadata.
-- `/auth/logout` revokes the current browser session.
-- `/api/v2/auth/session` reports the current principal, groups, permissions, CSRF value and expiry.
-- User, group, session and token resources use permission-protected `/api/v2/auth/...` endpoints.
-- `/api/v2/auth/audit` returns the capped privileged-change history to principals with `audit.view`.
+- `/api/v3/auth/login` creates a browser session and returns session metadata.
+- `/api/v3/auth/logout` revokes the current browser session.
+- `/api/v3/auth/session` reports the current principal, groups, permissions, CSRF value and expiry.
+- User, group, session and token resources use permission-protected `/api/v3/auth/...` endpoints.
+- `/api/v3/auth/audit` returns the capped privileged-change history to principals with `audit.view`.
 - Responses use a consistent JSON error object.
 - Handlers reject unsupported methods.
 - CORS uses an explicit origin policy and never reflects arbitrary credentialed origins.

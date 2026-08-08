@@ -8,7 +8,7 @@
   
     async function fetchSystemInfo() {
         try {
-            const response = await apiFetch('/api/v2/osstats', { raw: true });
+            const response = await apiFetch('/api/v3/osstats', { raw: true });
             const data = await response.json();
             debugInfo = JSON.stringify(
                 {

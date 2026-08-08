@@ -10,7 +10,7 @@
 
   onMount(async () => {
     try {
-      const response = await apiFetch('/api/v2/runfile/meta', {
+      const response = await apiFetch('/api/v3/runfile/meta', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
