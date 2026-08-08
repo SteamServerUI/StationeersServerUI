@@ -22,15 +22,15 @@
   }
   async function refresh(){
     try{
-      const snapshot=await json("/api/v3/overview");
+      const snapshot=await json('/api/v3/overview');
       const data=snapshot.data||snapshot;
       status=data.server;stats=data.system;players=data.players||[];backup=data.backup;
     }catch(error){
-      notify("Overview is temporarily unavailable","error",error.message);
+      notify('Overview is temporarily unavailable','error',error.message);
     }finally{loading=false;}
   }
   async function serverAction(action){
-    if(action!=='start' && !window.confirm(action==='restart'?'Restart the game server?':'Stop the game server?'))return;
+    if(action!=='start'&&!window.confirm(action==='restart'?'Restart the game server?':'Stop the game server?'))return;
     acting=action;
     try{
       const response=await apiFetch(`/api/v3/server/${action}`,{method:'POST'});
@@ -64,7 +64,11 @@
 <section class="home" style={background?`--home-image:url("${background}")`:''}>
   <div class="home-wash"></div>
   <div class="home-content">
-    <header class="welcome"><div><span class="eyebrow">Your server, at a glance</span><h1>{status?.isRunning?'Everything is running.':'Ready when you are.'}</h1><p>{status?.uuid?`Server ${status.uuid}`:'SteamServerUI is connected and waiting for server state.'}</p></div><button class="background-button" onclick={()=>input?.click()}>Change Home background</button><input bind:this={input} onchange={upload} type="file" accept="image/png,image/jpeg,image/webp" hidden></header>
+    <header class="welcome">
+      <div><span class="eyebrow">Your server, at a glance</span><h1>{status?.isRunning?'Everything is running.':'Ready when you are.'}</h1><p>{status?.uuid?`Server ${status.uuid}`:'SteamServerUI is connected and waiting for server state.'}</p></div>
+      <button class="background-button" onclick={()=>input?.click()}>Change background</button>
+      <input bind:this={input} onchange={upload} type="file" accept="image/png,image/jpeg,image/webp" hidden>
+    </header>
 
     <article class="hero surface" class:running={status?.isRunning}>
       <div class="hero-state"><span class="state-orb"></span><div><span class="eyebrow">Game server</span><h2>{loading?'Checking…':status?.isRunning?'Online':'Stopped'}</h2><p>{players.length} connected {players.length===1?'player':'players'}</p></div></div>
@@ -80,18 +84,31 @@
       {/if}
     </article>
 
-    <div class="dashboard-grid">
-      <article class="health surface"><header><div><span class="eyebrow">Host health</span><h3>{stats?.osName||'Backend host'}</h3></div><span>{stats?.uptime||'Uptime unavailable'}</span></header><div class="metrics"><div><strong>{typeof stats?.cpuUsage==='number'?`${stats.cpuUsage.toFixed(0)}%`:'—'}</strong><span>CPU</span><i style={`--value:${stats?.cpuUsage||0}%`}></i></div><div><strong>{memory}</strong><span>Memory</span><i style="--value:52%"></i></div><div><strong>{disk}</strong><span>Storage</span><i style={`--value:${100-(stats?.diskUsage||100)}%`}></i></div></div></article>
-      <article class="players surface"><header><div><span class="eyebrow">Players</span><h3>Connected now</h3></div><button onclick={()=>navigate('console')}>Open console</button></header>{#if players.length}<div class="player-list">{#each players.slice(0,5) as player}<div><span class="player-avatar">{playerName(player).slice(0,1).toUpperCase()}</span><strong>{playerName(player)}</strong><small>Online</small></div>{/each}</div>{:else}<div class="quiet"><span>No players connected</span><small>The server is yours for the moment.</small></div>{/if}</article>
-      <article class="backup surface"><span class="eyebrow">Protection</span><h3>{backup?.isRunning?'Backup in progress':backup?.systemReady?'Backup system ready':'Backup needs attention'}</h3><p>{backup?.isLoopRunning?'Automatic backup scheduling is active.':'Review the backup schedule and storage before you need it.'}</p><button onclick={()=>navigate('backups')}>Manage backups</button></article>
-      <article class="quick surface"><span class="eyebrow">Jump back in</span><div><button onclick={()=>navigate('logs')}><strong>Logs</strong><small>See what just happened</small></button><button onclick={()=>navigate('game')}><strong>Game setup</strong><small>Launch arguments and config</small></button><button onclick={()=>navigate('activity')}><strong>Activity</strong><small>Operations and failures</small></button></div></article>
+    <div class="dashboard-board surface">
+      <div class="dashboard-grid">
+        <article class="health">
+          <header><div><span class="eyebrow">Host health</span><h3>{stats?.osName||'Backend host'}</h3></div><span>{stats?.uptime||'Uptime unavailable'}</span></header>
+          <div class="metrics"><div><strong>{typeof stats?.cpuUsage==='number'?`${stats.cpuUsage.toFixed(0)}%`:'—'}</strong><span>CPU</span><i style={`--value:${stats?.cpuUsage||0}%`}></i></div><div><strong>{memory}</strong><span>Memory</span><i style="--value:52%"></i></div><div><strong>{disk}</strong><span>Storage</span><i style={`--value:${100-(stats?.diskUsage||100)}%`}></i></div></div>
+        </article>
+        <article class="players">
+          <header><div><span class="eyebrow">Players</span><h3>Connected now</h3></div><button onclick={()=>navigate('console')}>Open console</button></header>
+          {#if players.length}<div class="player-list">{#each players.slice(0,5) as player}<div><span class="player-avatar">{playerName(player).slice(0,1).toUpperCase()}</span><strong>{playerName(player)}</strong><small>Online</small></div>{/each}</div>{:else}<div class="quiet"><span>No players connected</span><small>The server is yours for the moment.</small></div>{/if}
+        </article>
+        <article class="backup">
+          <span class="eyebrow">Protection</span><h3>{backup?.isRunning?'Backup in progress':backup?.systemReady?'Backup system ready':'Backup needs attention'}</h3><p>{backup?.isLoopRunning?'Automatic backup scheduling is active.':'Review the backup schedule and storage before you need it.'}</p><button onclick={()=>navigate('backups')}>Manage backups</button>
+        </article>
+        <article class="quick">
+          <span class="eyebrow">Jump back in</span>
+          <div><button onclick={()=>navigate('logs')}><strong>Logs</strong><small>See what just happened</small></button><button onclick={()=>navigate('game')}><strong>Game setup</strong><small>Launch arguments and config</small></button><button onclick={()=>navigate('activity')}><strong>Activity</strong><small>Operations and failures</small></button></div>
+        </article>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
-  .home{position:relative;min-height:100%;border-radius:28px;overflow:hidden;background-image:var(--home-image,linear-gradient(135deg,color-mix(in srgb,var(--canvas-glow) 72%,var(--canvas)),var(--canvas) 52%,color-mix(in srgb,var(--accent-secondary) 15%,var(--canvas))));background-size:cover;background-position:center}.home-wash{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,8,14,.14),color-mix(in srgb,var(--canvas) 72%,transparent));backdrop-filter:saturate(115%)}.home-content{position:relative;padding:clamp(22px,4vw,54px);max-width:1500px;margin:auto}.welcome{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:30px}.welcome h1{font-size:clamp(2.1rem,5vw,4.4rem);letter-spacing:-.065em;line-height:.98;margin:8px 0 11px;max-width:850px}.welcome p{color:var(--text-secondary)}.background-button{background:rgba(7,12,20,.35);backdrop-filter:blur(14px)}
-  .hero{display:flex;align-items:center;justify-content:space-between;gap:25px;padding:26px 30px;margin-bottom:18px}.hero-state{display:flex;align-items:center;gap:19px}.state-orb{width:48px;height:48px;border-radius:50%;background:var(--text-muted);box-shadow:inset 0 1px 2px rgba(255,255,255,.3),0 0 28px rgba(130,140,160,.28)}.hero.running .state-orb{background:var(--text-success);box-shadow:inset 0 1px 2px rgba(255,255,255,.6),0 0 34px color-mix(in srgb,var(--text-success) 55%,transparent)}.hero h2{font-size:2rem;margin:2px 0}.hero p{color:var(--text-secondary);margin:0}.hero-actions{display:flex;gap:10px}.hero-actions .primary{background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));color:#07101d;border:0;font-weight:800;padding:.8rem 1.15rem}.hero-actions .secondary{background:transparent}
-  .dashboard-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:18px}.dashboard-grid article{padding:24px}.dashboard-grid header{display:flex;align-items:start;justify-content:space-between;gap:18px}.dashboard-grid h3{font-size:1.25rem;margin:5px 0}.dashboard-grid header>span,.backup p{color:var(--text-secondary);font-size:.84rem}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:27px}.metrics div{display:grid;gap:5px}.metrics strong{font-size:1.45rem}.metrics span{font-size:.73rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em}.metrics i{height:4px;background:var(--bg-hover);border-radius:4px;overflow:hidden}.metrics i::after{content:'';display:block;height:100%;width:var(--value);background:linear-gradient(90deg,var(--accent-primary),var(--accent-tertiary));border-radius:4px}.players header button{background:transparent}.player-list{display:grid;margin-top:15px}.player-list>div{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border-color)}.player-avatar{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:var(--bg-active);color:var(--text-accent)}.player-list small{color:var(--text-success)}.quiet{min-height:108px;display:grid;place-content:center;text-align:center;color:var(--text-secondary)}.quiet small{color:var(--text-muted);margin-top:5px}.backup button{margin-top:15px}.quick>div{display:grid;margin-top:12px}.quick button{display:flex;justify-content:space-between;align-items:center;text-align:left;background:transparent;border:0;border-top:1px solid var(--border-color);border-radius:0;padding:14px 2px}.quick button small{color:var(--text-muted)}
-  @media(max-width:1050px){.dashboard-grid{grid-template-columns:1fr}.welcome{align-items:start;flex-direction:column}.hero{align-items:flex-start;flex-direction:column}.hero-actions{width:100%}.hero-actions button{flex:1}}
+  .home{position:relative;min-height:100%;border-radius:16px;overflow:hidden;background-image:var(--home-image,linear-gradient(135deg,color-mix(in srgb,var(--canvas-glow) 58%,var(--canvas)),var(--canvas) 58%,color-mix(in srgb,var(--accent-secondary) 10%,var(--canvas))));background-size:cover;background-position:center}.home-wash{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,8,14,.08),color-mix(in srgb,var(--canvas) 78%,transparent));backdrop-filter:saturate(110%)}.home-content{position:relative;padding:clamp(26px,3.5vw,46px);max-width:1280px;margin:auto}.welcome{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:24px}.welcome h1{font-size:clamp(2rem,4vw,3.5rem);letter-spacing:-.055em;line-height:1;margin:7px 0 10px;max-width:760px}.welcome p{color:var(--text-secondary);margin:0}.background-button{background:rgba(7,12,20,.28);backdrop-filter:blur(12px)}
+  .hero{display:flex;align-items:center;justify-content:space-between;gap:25px;padding:22px 26px;margin-bottom:14px}.hero-state{display:flex;align-items:center;gap:17px}.state-orb{width:42px;height:42px;border-radius:50%;background:var(--text-muted);box-shadow:inset 0 1px 2px rgba(255,255,255,.3),0 0 22px rgba(130,140,160,.22)}.hero.running .state-orb{background:var(--text-success);box-shadow:inset 0 1px 2px rgba(255,255,255,.6),0 0 28px color-mix(in srgb,var(--text-success) 45%,transparent)}.hero h2{font-size:1.7rem;margin:2px 0}.hero p{color:var(--text-secondary);margin:0}.hero-actions{display:flex;gap:8px}.hero-actions .primary{background:var(--accent-primary);color:#07101d;border:0;font-weight:800;padding:.72rem 1.05rem}.hero-actions .secondary{background:transparent}
+  .dashboard-board{overflow:hidden}.dashboard-grid{display:grid;grid-template-columns:1.22fr .9fr}.dashboard-grid article{padding:23px 25px;min-width:0}.health{border-right:1px solid var(--border-color);border-bottom:1px solid var(--border-color)}.players{border-bottom:1px solid var(--border-color)}.backup{border-right:1px solid var(--border-color)}.dashboard-grid header{display:flex;align-items:start;justify-content:space-between;gap:18px}.dashboard-grid h3{font-size:1.16rem;margin:4px 0}.dashboard-grid header>span,.backup p{color:var(--text-secondary);font-size:.8rem}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:23px}.metrics div{display:grid;gap:4px}.metrics strong{font-size:1.3rem}.metrics span{font-size:.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em}.metrics i{height:3px;background:var(--bg-hover);border-radius:4px;overflow:hidden}.metrics i::after{content:'';display:block;height:100%;width:var(--value);background:var(--accent-primary);border-radius:4px}.players header button{background:transparent}.player-list{display:grid;margin-top:12px}.player-list>div{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border-color)}.player-avatar{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--bg-active);color:var(--text-accent)}.player-list small{color:var(--text-success)}.quiet{min-height:94px;display:grid;place-content:center;text-align:center;color:var(--text-secondary)}.quiet small{color:var(--text-muted);margin-top:4px}.backup p{max-width:520px}.backup button{margin-top:10px}.quick>div{display:grid;margin-top:8px}.quick button{display:flex;justify-content:space-between;align-items:center;text-align:left;background:transparent;border:0;border-top:1px solid var(--border-color);border-radius:0;padding:11px 2px}.quick button small{color:var(--text-muted)}
+  @media(max-width:1050px){.dashboard-grid{grid-template-columns:1fr}.dashboard-grid article{border-right:0;border-bottom:1px solid var(--border-color)}.dashboard-grid article:last-child{border-bottom:0}.welcome{align-items:start;flex-direction:column}.hero{align-items:flex-start;flex-direction:column}.hero-actions{width:100%}.hero-actions button{flex:1}}
 </style>

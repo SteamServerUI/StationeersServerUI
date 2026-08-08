@@ -77,7 +77,7 @@
   <BackendInitializerV7 onStatusChange={handleStatusChange}>
     <AuthGuardV7 {serverStatus} {serverError}>
       <div class="app-shell">
-        <TopNav />
+        <TopNav {views} activeView={$activeRoute} />
         <div class="workspace">
           <Sidebar {views} activeView={$activeRoute} />
           <MainContent activeView={$activeRoute} />
