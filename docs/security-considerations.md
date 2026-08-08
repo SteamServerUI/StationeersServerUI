@@ -1,6 +1,6 @@
 # S7UI v7 security considerations
 
-Status: **Planned**
+Status: **In progress**
 
 This is a living threat register, not a claim that every item is resolved.
 
@@ -10,11 +10,15 @@ This is a living threat register, not a claim that every item is resolved.
 
 The current plugin gallery downloads executables from URLs in a remote manifest, marks them executable and runs them as the SSUI user. Artifacts have no signature or pinned digest. Plugin UI is proxied into an unsandboxed same-origin iframe, request credentials are forwarded, and plugins can reach the privileged local socket API.
 
+Current mitigation: plugin execution, management/download endpoints, UI navigation and the registration socket are all off unless `SSUI_ENABLE_UNSAFE_PLUGINS=true`. Enabling it explicitly restores the old fully-trusted native-code boundary.
+
 Until that contract is redesigned, plugins must be disabled by default and described as fully trusted native code. A production design needs verified manifests and artifact hashes, atomic downloads, explicit permissions, credential-stripping proxies, isolated UI origins and a capability-limited backend API. OS process isolation is desirable but is not promised for the first stable v7.
 
 ### Authentication and authorization
 
 The beta implementation mixes cookies, frontend JWT storage, bearer headers and query-string tokens. Authorization is all-or-nothing. Replace it with the protocol in [identity-sessions-authorization.md](identity-sessions-authorization.md).
+
+Current mitigation: the v7 route table now uses persistent browser sessions, scoped bearer tokens, custom groups and backend permission enforcement. The beta handlers still exist in the tree but are not the active route setup.
 
 ### TLS and origins
 
@@ -22,7 +26,9 @@ The beta implementation mixes cookies, frontend JWT storage, bearer headers and 
 - Do not reflect arbitrary origins while allowing credentials.
 - Keep browser sessions same-origin.
 - Make self-signed certificate trust an explicit fingerprint decision.
-- Add HTTP read, header, write and idle timeouts.
+- Add HTTP read, header and idle limits without breaking long-lived SSE responses.
+
+Current mitigation: Electron uses per-origin fingerprints, navigation/IPC origin checks and a local CSP. HTTPS has request/header/idle limits; pprof is loopback-only.
 
 ## Important boundaries
 

@@ -11,6 +11,8 @@ The existing implementation is a substantial base, not a throwaway prototype. Se
 
 ## Phase 1: identity and trust
 
+Implementation status: **Implemented on v7-nightly. Cross-platform release validation remains in Phase 4.**
+
 Release blockers:
 
 - Replace the mixed JWT/cookie frontend authentication with a coherent browser-session protocol.
@@ -19,7 +21,7 @@ Release blockers:
 - Add revocable, named and scoped API tokens.
 - Require authentication and provide a local owner recovery command.
 - Disable the plugin system by default until its trust contract is explicit.
-- Establish integration tests around every protected boundary.
+- Establish integration tests around identity boundaries and keep broadening route coverage through release validation.
 
 This phase deliberately comes before a visual redesign. The UI needs stable session and permission APIs to build on.
 

@@ -1,6 +1,8 @@
 # Identity, sessions and authorization
 
-Status: **In progress**
+Status: **Implemented on v7-nightly**
+
+Implementation details and remaining release validation are recorded in [implementation-status.md](implementation-status.md).
 
 ## Goals
 
@@ -45,7 +47,7 @@ Permissions describe backend actions rather than UI pages. The initial catalog c
 - Audit-log viewing
 - Backend reload, update and security administration
 
-Every protected route declares one permission. Permission middleware runs after authentication and places the resolved principal and effective permissions in the request context. A missing credential returns `401`; an authenticated principal without the grant returns `403`.
+Every protected API route declares a permission or implements an explicit self-service rule for the current user's tokens and sessions. Permission middleware runs after authentication and places the resolved principal and effective permissions in the request context. A missing credential returns `401`; an authenticated principal without the grant returns `403`.
 
 ## First setup and migration
 
@@ -54,10 +56,10 @@ Existing alpha and beta users, JWTs and API keys are not migrated. On the first 
 1. Legacy authentication material becomes inactive.
 2. The backend enters restricted setup mode.
 3. A short-lived one-time setup secret is generated and printed locally.
-4. Only health and owner-bootstrap endpoints are available.
+4. Only the application shell, setup status and authentication/bootstrap entry points remain public.
 5. Bootstrap consumes the secret, creates the first Owner and invalidates the setup secret.
 
-Authentication cannot be skipped. Lost ownership is recovered through an audited local CLI command which invalidates active credentials before resetting or creating an owner.
+Authentication cannot be skipped. Lost ownership is recovered with `SSUI_RECOVERY_PASSWORD` plus `-RecoverOwner`; the audited recovery invalidates all active credentials before resetting or creating an Owner.
 
 ## Browser sessions
 
@@ -65,7 +67,7 @@ Browser login creates a random opaque session ID. The raw ID is stored only in a
 
 Sessions have idle and absolute expiration, survive backend restarts and can be revoked independently. Password changes, account disablement and owner recovery revoke affected sessions. Logout is idempotent.
 
-Successful login and session inspection return user details, group summaries, effective permissions, expiration and a CSRF value. The CSRF value lives only in frontend memory and is required in a custom header for state-changing cookie-authenticated requests. The backend also validates the request origin.
+Successful login and session inspection return user details, group IDs, effective permissions, expiration and a CSRF value. The CSRF value lives only in frontend memory and is required in a custom header for state-changing cookie-authenticated requests. The backend also validates the request origin.
 
 The browser never receives a session ID in JSON and stores no credential in local storage. Backend URLs and non-secret display preferences may remain there.
 
@@ -80,6 +82,7 @@ The token format contains a public lookup identifier and a random secret. Only t
 Electron treats each backend as a separate connection profile. The renderer does not receive bearer tokens.
 
 - The main process encrypts credentials with Electron `safeStorage` and stores them under the application data directory.
+- Linux refuses desktop login when `safeStorage` falls back to the unprotected `basic_text` backend.
 - A context-isolated preload API exposes a narrow request and authentication bridge.
 - The main process performs authenticated backend requests and returns sanitized responses.
 - Certificate validation stays enabled. Self-signed backends require an explicit fingerprint trust flow per backend.
@@ -91,16 +94,20 @@ Electron treats each backend as a separate connection profile. The renderer does
 - `/auth/logout` revokes the current browser session.
 - `/api/v2/auth/session` reports the current principal, groups, permissions, CSRF value and expiry.
 - User, group, session and token resources use permission-protected `/api/v2/auth/...` endpoints.
+- `/api/v2/auth/audit` returns the capped privileged-change history to principals with `audit.view`.
 - Responses use a consistent JSON error object.
 - Handlers reject unsupported methods.
 - CORS uses an explicit origin policy and never reflects arbitrary credentialed origins.
 
 ## Acceptance criteria
 
-- No protected endpoint lacks a declared permission and integration test.
+- Protected APIs have a declared permission or explicit current-user ownership rule.
 - Raw credentials never appear in config, logs, URLs or renderer storage.
 - Restarted backends retain valid sessions; expired and revoked sessions fail.
 - Password reset and disabled accounts invalidate their credentials.
 - Custom group changes affect authorization immediately.
 - Browser, bearer and setup credentials cannot be substituted for one another.
 - Electron supports several saved backend profiles without disabling TLS validation.
+- Core setup, session, CSRF, permission, group, token, recovery and audit boundaries have automated tests.
+
+Packaged browser/Electron end-to-end coverage and the complete legacy-handler review remain Phase 4 release work.

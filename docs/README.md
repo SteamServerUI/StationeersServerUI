@@ -7,6 +7,7 @@ This folder holds the plans and decisions for turning the current v7 alpha into 
 - [v7-roadmap.md](v7-roadmap.md) describes the path from the current beta-era implementation to a stable v7 release.
 - [identity-sessions-authorization.md](identity-sessions-authorization.md) is the implementation contract for users, access groups, sessions, API tokens and Electron authentication.
 - [security-considerations.md](security-considerations.md) tracks security boundaries that need deliberate treatment before a stable release.
+- [implementation-status.md](implementation-status.md) records what the first identity and trust implementation actually shipped and what validation remains.
 
 ## Status words
 
