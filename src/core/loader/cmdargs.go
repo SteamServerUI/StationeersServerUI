@@ -30,9 +30,9 @@ func ParseFlags() {
 	flag.StringVar(&backendEndpointPortFlag, "p", "", "(Alias) Override the backend endpoint port (e.g., 8080)")
 	flag.StringVar(&gameBranchFlag, "GameBranch", "", "Override the game branch (e.g., beta)")
 	flag.StringVar(&gameBranchFlag, "b", "", "(Alias) Override the game branch (e.g., beta)")
-	flag.StringVar(&recoveryPasswordFlag, "RecoveryPassword", "", "Adds a 'recovery' user (expects password as argument)")
-	flag.StringVar(&recoveryPasswordFlag, "r", "", "(Alias) Adds a 'recovery' user (expects password as argument)")
-	flag.BoolVar(&devModeFlag, "dev", false, "Enable dev mode: Auth, and enables cli-console. For development only.")
+	flag.StringVar(&recoveryPasswordFlag, "RecoveryPassword", "", "Reset or create the recovery owner (expects password as argument)")
+	flag.StringVar(&recoveryPasswordFlag, "r", "", "(Alias) Reset or create the recovery owner")
+	flag.BoolVar(&devModeFlag, "dev", false, "Enable development owner and CLI console. For development only.")
 	flag.IntVar(&logLevelFlag, "LogLevel", 0, "Override the log level (e.g., 10)")
 	flag.IntVar(&logLevelFlag, "ll", 0, "(Alias) Override the log level (e.g., 10)")
 	flag.BoolVar(&isDebugModeFlag, "IsDebugMode", false, "Enable debug mode")
@@ -54,11 +54,12 @@ func HandleFlags(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	if devModeFlag {
-		config.SetAuthEnabled(true)
-		config.SetIsFirstTimeSetup(false)
-		config.SetUsers(map[string]string{"admin": "$2a$10$7QQhPkNAfT.MXhJhnnodXOyn3KKE/1eu7nYb0y2O1UBoAWc0Y/fda"}) // admin:admin
+		if _, err := security.RecoverOwner("admin", "adminadmin", time.Now()); err != nil {
+			logger.Main.Error("Failed to prepare development owner: " + err.Error())
+			return
+		}
 		config.SetIsSSUICLIConsoleEnabled(true)
-		logger.Main.Info("Dev mode enabled: Auth enabled, admin user set to admin:admin:superadmin, console enabled")
+		logger.Main.Warn("Dev mode enabled: owner admin/adminadmin and CLI console are active")
 	}
 
 	if skipSteamCMDFlag {
@@ -80,15 +81,13 @@ func HandleFlags(wg *sync.WaitGroup) {
 	if recoveryPasswordFlag != "" {
 		recoveryPasswordFlag = strings.TrimSpace(recoveryPasswordFlag)
 		if recoveryPasswordFlag == "" {
-			logger.Main.Error("Recovery flag provided but password is empty. Skipping recovery user creation.")
+			logger.Main.Error("Recovery flag provided but password is empty")
 		} else {
-			hashedPassword, err := security.HashPassword(recoveryPasswordFlag)
-			if err != nil {
-				logger.Main.Error(fmt.Sprintf("Failed to hash recovery password: %v", err))
+			if _, err := security.RecoverOwner("recovery", recoveryPasswordFlag, time.Now()); err != nil {
+				logger.Main.Error("Failed to create recovery owner: " + err.Error())
 				return
 			}
-			config.SetUsers(map[string]string{"recovery": hashedPassword})
-			logger.Main.Warn(fmt.Sprintf("Recovery user added with access level superadmin. Login with username 'recovery' and password '%s'", recoveryPasswordFlag))
+			logger.Main.Warn("Recovery owner created; all existing sessions and API tokens were revoked")
 		}
 	}
 

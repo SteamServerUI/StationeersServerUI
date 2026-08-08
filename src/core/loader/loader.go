@@ -46,7 +46,9 @@ func ReloadBackend() {
 	ReloadLocalizer()
 	ReloadAppInfoPoller()
 	PrintConfigDetails()
-	plugins.ManagePlugins()
+	if config.GetPluginsEnabled() {
+		plugins.ManagePlugins()
+	}
 	logger.Core.Info("Backend reload done!")
 }
 

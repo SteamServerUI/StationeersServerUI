@@ -39,5 +39,9 @@ func AfterStartComplete(wg *sync.WaitGroup) {
 			printFirstTimeSetupMessage()
 		}
 	}()
-	plugins.ManagePlugins()
+	if config.GetPluginsEnabled() {
+		plugins.ManagePlugins()
+	} else {
+		logger.Core.Warn("Plugins are disabled; set SSUI_ENABLE_UNSAFE_PLUGINS=true only for isolated development")
+	}
 }

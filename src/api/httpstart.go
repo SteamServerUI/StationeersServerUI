@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"sync"
+	"time"
 
 	"github.com/SteamServerUI/SteamServerUI/v7/src/api/middleware"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/config"
@@ -47,9 +48,13 @@ func StartWebServer(wg *sync.WaitGroup) {
 
 		// Create an HTTP server with a custom logger
 		server := &http.Server{
-			Addr:     "0.0.0.0:" + config.GetBackendEndpointPort(),
-			Handler:  mux,
-			ErrorLog: httpLogger,
+			Addr:              "0.0.0.0:" + config.GetBackendEndpointPort(),
+			Handler:           mux,
+			ErrorLog:          httpLogger,
+			ReadHeaderTimeout: 10 * time.Second,
+			ReadTimeout:       30 * time.Second,
+			IdleTimeout:       2 * time.Minute,
+			MaxHeaderBytes:    1 << 20,
 		}
 
 		err := server.ListenAndServeTLS(config.GetTLSCertPath(), config.GetTLSKeyPath())
@@ -64,8 +69,8 @@ func StartWebServer(wg *sync.WaitGroup) {
 			pprofMux := http.NewServeMux()
 			// Register pprof handler
 			pprofMux.Handle("/debug/pprof/", http.HandlerFunc(pprof.Index))
-			logger.Web.Warn("⚠️Starting pprof server on :6060/debug/pprof")
-			err := http.ListenAndServe("0.0.0.0:6060", pprofMux)
+			logger.Web.Warn("Starting local pprof server on 127.0.0.1:6060/debug/pprof")
+			err := http.ListenAndServe("127.0.0.1:6060", pprofMux)
 			if err != nil {
 				logger.Web.Error("Error starting pprof server: " + err.Error())
 			}
