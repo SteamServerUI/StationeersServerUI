@@ -13,6 +13,7 @@ let mainWindow;
 let localOrigin;
 let credentials = {};
 let trustedCertificates = {};
+const pendingCertificates = new Map();
 
 function credentialPath() {
   return path.join(app.getPath('userData'), 'backend-credentials.bin');
@@ -22,10 +23,17 @@ function trustPath() {
   return path.join(app.getPath('userData'), 'trusted-certificates.json');
 }
 
+function hasProtectedStorage() {
+  if (!safeStorage.isEncryptionAvailable()) return false;
+  if (process.platform !== 'linux') return true;
+  const backend = safeStorage.getSelectedStorageBackend?.();
+  return Boolean(backend && backend !== 'basic_text');
+}
+
 function loadState() {
   try {
     const encrypted = fs.readFileSync(credentialPath(), 'utf8');
-    if (safeStorage.isEncryptionAvailable()) {
+    if (hasProtectedStorage()) {
       credentials = JSON.parse(safeStorage.decryptString(Buffer.from(encrypted, 'base64')));
     }
   } catch {
@@ -39,7 +47,7 @@ function loadState() {
 }
 
 function saveCredentials() {
-  if (!safeStorage.isEncryptionAvailable()) throw new Error('OS credential encryption is unavailable');
+  if (!hasProtectedStorage()) throw new Error('OS credential encryption is unavailable');
   const encrypted = safeStorage.encryptString(JSON.stringify(credentials)).toString('base64');
   fs.writeFileSync(credentialPath(), encrypted, { mode: 0o600 });
 }
@@ -49,12 +57,15 @@ function saveTrustedCertificates() {
 }
 
 function assertRenderer(event) {
-  if (!event.senderFrame.url.startsWith(localOrigin)) throw new Error('Request did not come from the SSUI renderer');
+  if (!event.senderFrame || new URL(event.senderFrame.url).origin !== localOrigin) {
+    throw new Error('Request did not come from the SSUI renderer');
+  }
 }
 
 function backendURL(value) {
   const parsed = new URL(value);
   if (parsed.protocol !== 'https:') throw new Error('Desktop backends must use HTTPS');
+  if (parsed.username || parsed.password) throw new Error('Backend URLs cannot contain credentials');
   return parsed;
 }
 
@@ -81,6 +92,7 @@ async function backendRequest(url, options = {}, token = tokenFor(url)) {
 }
 
 async function desktopLogin(backendUrl, username, password) {
+  if (!hasProtectedStorage()) throw new Error('OS credential encryption is unavailable');
   const origin = backendURL(backendUrl).origin;
   const response = await backendRequest(`${origin}/auth/desktop/login`, {
     method: 'POST',
@@ -144,7 +156,11 @@ function registerIPC() {
   ipcMain.handle('ssui:trust-certificate', (event, request) => {
     assertRenderer(event);
     const origin = backendURL(request.origin).origin;
+    if (pendingCertificates.get(origin) !== request.fingerprint) {
+      throw new Error('Certificate fingerprint is not awaiting approval');
+    }
     trustedCertificates[origin] = request.fingerprint;
+    pendingCertificates.delete(origin);
     saveTrustedCertificates();
   });
 
@@ -158,7 +174,8 @@ function registerIPC() {
     streamEvents(event.sender, request.id, target.toString(), token, controller.signal);
   });
 
-  ipcMain.on('ssui:sse-stop', (_event, id) => {
+  ipcMain.on('ssui:sse-stop', (event, id) => {
+    assertRenderer(event);
     streams.get(id)?.abort();
     streams.delete(id);
   });
@@ -194,6 +211,12 @@ function startServer() {
   const assets = path.join(process.resourcesPath, 'SSUI/onboard_bundled/v2');
   if (!fs.existsSync(assets)) throw new Error(`Could not find UI assets at ${assets}`);
   const serverApp = express();
+  serverApp.use((_request, response, next) => {
+    response.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'self'");
+    response.setHeader('X-Content-Type-Options', 'nosniff');
+    response.setHeader('Referrer-Policy', 'no-referrer');
+    next();
+  });
   serverApp.use(express.static(assets));
   serverApp.use((_request, response) => response.sendFile(path.join(assets, 'index.html')));
   server = http.createServer(serverApp);
@@ -229,6 +252,10 @@ async function createWindow() {
       sandbox: true
     }
   });
+  mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (new URL(url).origin !== localOrigin) event.preventDefault();
+  });
   await mainWindow.loadURL(localOrigin);
 }
 
@@ -237,7 +264,7 @@ function createMenu() {
     label: 'SSUI',
     submenu: [
       { label: 'Check for updates', click: () => autoUpdater.checkForUpdatesAndNotify() },
-      { label: 'Toggle developer tools', click: () => mainWindow?.webContents.toggleDevTools() },
+      ...(!app.isPackaged ? [{ label: 'Toggle developer tools', click: () => mainWindow?.webContents.toggleDevTools() }] : []),
       { type: 'separator' },
       { role: 'quit' }
     ]
@@ -253,6 +280,7 @@ app.on('certificate-error', (event, _contents, url, error, certificate, callback
     return;
   }
   callback(false);
+  pendingCertificates.set(origin, fingerprint);
   mainWindow?.webContents.send('ssui:certificate-error', { origin, fingerprint, error });
 });
 
