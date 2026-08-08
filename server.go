@@ -21,12 +21,15 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"sync"
+	"time"
 
 	"github.com/SteamServerUI/SteamServerUI/v7/src/api"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/api/socketapi"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/cli"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/core/loader"
+	"github.com/SteamServerUI/SteamServerUI/v7/src/core/security"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/logger"
 	"github.com/SteamServerUI/SteamServerUI/v7/src/setup"
 )
@@ -49,6 +52,14 @@ func main() {
 	wg.Wait()
 	setup.Install(&wg)
 	wg.Wait()
+	setupSecret, err := security.PrepareIdentitySetup(time.Now())
+	if err != nil {
+		logger.Security.Error("Failed to prepare owner setup: " + err.Error())
+		return
+	}
+	if setupSecret != "" {
+		fmt.Println("S7UI owner setup secret (valid for 30 minutes): " + setupSecret)
+	}
 	logger.Main.Debug("Initializing Backend...")
 	loader.InitBackend(&wg)
 	wg.Wait()

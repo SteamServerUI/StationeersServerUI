@@ -32,7 +32,7 @@ func StartWebServer(wg *sync.WaitGroup) {
 	}
 
 	// Apply middleware only to protected routes
-	mux.Handle("/", middleware.AuthMiddleware(protectedMux)) // Wrap protected routes under root
+	mux.Handle("/", middleware.IdentityMiddleware(protectedMux))
 
 	httpLogger := log.New(&APIServerLogger{}, "", 0)
 	// Start HTTP server

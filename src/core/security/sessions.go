@@ -1,6 +1,9 @@
 package security
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"errors"
 	"strings"
 	"time"
@@ -26,10 +29,7 @@ func CreateSession(userID string, now time.Time) (config.IdentitySession, Sessio
 	if err != nil {
 		return config.IdentitySession{}, SessionCredential{}, err
 	}
-	csrf, err := randomSecret(24)
-	if err != nil {
-		return config.IdentitySession{}, SessionCredential{}, err
-	}
+	csrf := deriveCSRF(secret)
 	session := config.IdentitySession{
 		ID:                uuid.NewString(),
 		SecretHash:        hashSecret(secret),
@@ -91,6 +91,20 @@ func AuthenticateSession(value string, now time.Time) (Principal, config.Identit
 
 func ValidateSessionCSRF(session config.IdentitySession, value string) bool {
 	return value != "" && secretMatches(session.CSRFHash, value)
+}
+
+func CSRFForSessionCredential(value string) string {
+	_, secret, ok := strings.Cut(value, ".")
+	if !ok || secret == "" {
+		return ""
+	}
+	return deriveCSRF(secret)
+}
+
+func deriveCSRF(sessionSecret string) string {
+	mac := hmac.New(sha256.New, []byte(sessionSecret))
+	_, _ = mac.Write([]byte("ssui-csrf-v1"))
+	return base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
 }
 
 func RevokeSession(id string) error {

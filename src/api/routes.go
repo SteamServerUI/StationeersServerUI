@@ -31,8 +31,10 @@ func SetupAPIRoutes() (*http.ServeMux, *http.ServeMux) {
 	// Unprotected auth routes
 	twoboxformAssetsFS, _ := fs.Sub(config.GetV1UIFS(), "SSUI/onboard_bundled/twoboxform")
 	mux.Handle("/twoboxform/", http.StripPrefix("/twoboxform/", http.FileServer(http.FS(twoboxformAssetsFS))))
-	mux.HandleFunc("/auth/login", httpauth.LoginHandler) // Token issuer
-	mux.HandleFunc("/auth/logout", httpauth.LogoutHandler)
+	mux.HandleFunc("/auth/login", httpauth.SessionLoginHandler)
+	mux.HandleFunc("/auth/logout", httpauth.SessionLogoutHandler)
+	mux.HandleFunc("/api/v2/auth/setup/status", httpauth.SetupStatusHandler)
+	mux.HandleFunc("/api/v2/auth/setup/bootstrap", httpauth.BootstrapOwnerHandler)
 	mux.HandleFunc("/login", pages.ServeTwoBoxFormTemplate)
 
 	// Protected routes (wrapped with middleware)
@@ -87,6 +89,7 @@ func SetupAPIRoutes() (*http.ServeMux, *http.ServeMux) {
 	protectedMux.HandleFunc("/api/v2/auth/adduser", httpauth.RegisterUserHandler)        // user registration and change password
 	protectedMux.HandleFunc("/api/v2/auth/setup/apikey", httpauth.RegisterAPIKeyHandler) // apikey registration and change password
 	protectedMux.HandleFunc("/api/v2/auth/whoami", httpauth.WhoAmIHandler)
+	protectedMux.HandleFunc("/api/v2/auth/session", httpauth.SessionInfoHandler)
 
 	// Setup
 	protectedMux.HandleFunc("/setup", pages.ServeTwoBoxFormTemplate)
