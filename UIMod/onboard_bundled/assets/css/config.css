@@ -413,7 +413,628 @@ select option {
     background-color: var(--nav-bg);
 }
 
+/* Main server settings workspace */
+.server-settings-shell {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    grid-template-areas:
+        "wizard wizard"
+        "navigation settings";
+    gap: 18px 24px;
+    padding: 22px;
+    background: var(--panel-surface);
+    border-color: var(--panel-frame);
+    box-shadow: inset 0 0 24px var(--primary-glow-soft), 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.server-settings-shell:hover {
+    transform: none;
+    box-shadow: inset 0 0 24px var(--primary-glow-soft), 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.server-settings-shell .wizard-button-container {
+    grid-area: wizard;
+    justify-content: flex-end;
+    margin: 0;
+}
+
+.server-settings-shell .wizard-button {
+    padding: 9px 14px;
+    border-width: 1px;
+    border-radius: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    box-shadow: none;
+}
+
+.server-settings-shell .wizard-icon {
+    width: 19px;
+    height: 19px;
+}
+
+.server-settings-shell .config-sections {
+    display: contents;
+}
+
+.server-settings-shell .section-navigation {
+    grid-area: navigation;
+    position: sticky;
+    top: 18px;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 7px;
+    margin: 0;
+    padding: 12px;
+    background: var(--panel-inset);
+    border: 1px solid var(--panel-frame);
+    border-radius: 8px;
+}
+
+.server-settings-shell .section-nav-button {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid transparent;
+    border-left: 3px solid var(--primary-glow-strong);
+    border-radius: 4px;
+    box-shadow: none;
+    text-align: left;
+    font-size: 0.82rem;
+}
+
+.server-settings-shell .section-nav-button:hover {
+    transform: translateX(2px);
+    box-shadow: none;
+}
+
+.server-settings-shell .section-nav-button.active {
+    color: var(--text-header);
+    border-color: var(--primary-glow-strong);
+    border-left-color: var(--primary);
+    box-shadow: inset 0 0 12px var(--primary-glow-soft);
+}
+
+.server-settings-shell #server-config-form {
+    grid-area: settings;
+    min-width: 0;
+}
+
+.server-settings-shell .config-section {
+    padding: 18px;
+    background: var(--panel-inset);
+    border: 1px solid var(--panel-frame);
+    border-radius: 8px;
+}
+
+.server-settings-shell .section-title {
+    margin: 0 0 18px;
+    padding: 0 0 13px;
+    text-align: left;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+}
+
+.server-settings-shell .channel-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+}
+
+.server-settings-shell .form-group {
+    min-width: 0;
+    margin: 0;
+    padding: 14px;
+    background: color-mix(in srgb, var(--panel-surface) 72%, transparent);
+    border: 1px solid var(--primary-glow);
+    border-radius: 6px;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.server-settings-shell .form-group:focus-within {
+    border-color: var(--primary);
+    background: var(--panel-surface);
+}
+
+.server-settings-shell .advertiser-setting-card {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    border-color: var(--primary-glow-strong);
+    background: linear-gradient(100deg, var(--primary-bg-subtle), var(--panel-surface));
+}
+
+.advertiser-current-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 9px;
+    padding: 4px 8px;
+    color: var(--text-muted);
+    background: var(--panel-inset);
+    border: 1px solid var(--primary-glow);
+    border-radius: 4px;
+    font-size: 0.72rem;
+    text-shadow: none;
+}
+
+.advertiser-current-value::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-muted);
+}
+
+.advertiser-current-value.is-active {
+    color: var(--success);
+}
+
+.advertiser-current-value.is-active::before {
+    background: var(--success);
+    box-shadow: 0 0 7px color-mix(in srgb, var(--success) 70%, transparent);
+}
+
+button.advertiser-configure-button {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 9px 13px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    border-width: 1px;
+    border-radius: 5px;
+    box-shadow: none;
+    text-transform: uppercase;
+}
+
+.advertiser-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10030;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.78);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 180ms ease, visibility 180ms ease;
+}
+
+.advertiser-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.advertiser-dialog {
+    width: min(760px, 100%);
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 24px;
+    box-sizing: border-box;
+    background: var(--panel-surface);
+    border: 2px solid var(--panel-frame);
+    border-radius: 12px;
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.7), 0 0 30px var(--primary-glow);
+    transform: translateY(28px) scale(0.96);
+    transition: transform 220ms cubic-bezier(.2, .8, .2, 1);
+}
+
+.advertiser-modal.show .advertiser-dialog {
+    transform: translateY(0) scale(1);
+}
+
+.advertiser-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--panel-frame);
+}
+
+.advertiser-modal-header h2 {
+    display: block;
+    margin: 5px 0 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+}
+
+.advertiser-modal-header h2::after {
+    display: none;
+}
+
+button.advertiser-modal-close {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.advertiser-explanation {
+    margin: 16px 0;
+    padding: 14px 16px;
+    color: var(--text-dim);
+    background: var(--panel-inset);
+    border-left: 3px solid var(--primary);
+    border-radius: 5px;
+    text-shadow: none;
+}
+
+.advertiser-explanation p {
+    margin: 0;
+}
+
+.advertiser-explanation p + p {
+    margin-top: 9px;
+}
+
+.advertiser-mode-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.advertiser-mode-option {
+    cursor: pointer;
+}
+
+.advertiser-mode-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.advertiser-mode-option span {
+    display: block;
+    padding: 12px;
+    color: var(--text-dim);
+    background: var(--panel-inset);
+    border: 1px solid var(--primary-glow-strong);
+    border-radius: 6px;
+    text-align: center;
+    text-shadow: none;
+    transition: border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+}
+
+.advertiser-mode-option:hover span {
+    border-color: var(--primary);
+}
+
+.advertiser-mode-option input:checked + span {
+    color: var(--text-header);
+    background: var(--primary-bg-medium);
+    border-color: var(--primary);
+    box-shadow: inset 0 0 12px var(--primary-glow-soft);
+}
+
+.advertiser-address-field {
+    margin-top: 14px;
+    padding: 14px;
+    background: var(--panel-inset);
+    border: 1px solid var(--panel-frame);
+    border-radius: 6px;
+}
+
+.advertiser-address-field.is-hidden {
+    display: none;
+}
+
+.advertiser-address-field input {
+    margin-bottom: 0;
+}
+
+.advertiser-validation {
+    min-height: 1.3em;
+    margin-top: 6px;
+    color: var(--danger);
+    font-size: 0.78rem;
+}
+
+.advertiser-restart-warning {
+    display: grid;
+    gap: 5px;
+    margin-top: 14px;
+    padding: 13px 15px;
+    color: var(--warning);
+    background: color-mix(in srgb, var(--warning) 8%, var(--panel-inset));
+    border: 1px solid color-mix(in srgb, var(--warning) 45%, transparent);
+    border-radius: 6px;
+    text-shadow: none;
+}
+
+.advertiser-restart-warning span {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+}
+
+.advertiser-restarting {
+    margin-top: 14px;
+    padding: 16px;
+    color: var(--success);
+    background: color-mix(in srgb, var(--success) 8%, var(--panel-inset));
+    border: 1px solid color-mix(in srgb, var(--success) 45%, transparent);
+    border-radius: 6px;
+    text-align: center;
+}
+
+.advertiser-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.advertiser-modal-actions button {
+    width: auto;
+    padding: 10px 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    border-width: 1px;
+    box-shadow: none;
+    text-transform: uppercase;
+}
+
+.advertiser-modal-actions .advertiser-cancel {
+    color: var(--text-dim);
+    border-color: var(--text-muted);
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+.server-settings-shell .form-group label {
+    margin-bottom: 4px;
+    color: var(--text-bright);
+    font-size: 0.85rem;
+}
+
+.server-settings-shell .form-group input,
+.server-settings-shell .form-group select {
+    margin: 6px 0;
+    box-shadow: none;
+}
+
+.server-settings-shell .input-info {
+    min-height: 2.5em;
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    font-style: normal;
+    line-height: 1.35;
+}
+
+.server-settings-shell .form-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin-top: 14px;
+    padding: 10px;
+    background: color-mix(in srgb, var(--panel-inset) 92%, transparent);
+    border: 1px solid var(--panel-frame);
+    border-radius: 7px;
+    backdrop-filter: blur(8px);
+}
+
+/* Discord integration workspace */
+#discord-config-tab {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.discord-integration-header {
+    justify-content: space-between;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    background: linear-gradient(100deg, var(--discord-bg), var(--panel-surface));
+    border: 1px solid var(--discord-border);
+    border-left: 4px solid var(--discord-accent);
+    box-shadow: inset 0 0 22px var(--discord-bg);
+}
+
+.discord-integration-header:hover {
+    transform: none;
+    box-shadow: inset 0 0 22px var(--discord-bg), 0 6px 18px var(--discord-glow);
+}
+
+.discord-integration-header.is-disabled {
+    border-left-color: var(--text-muted);
+    filter: saturate(0.55);
+}
+
+.discord-status-copy {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.discord-mark {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    background: url('/static/icons/discord.webp') center / contain no-repeat;
+    filter: drop-shadow(0 0 8px var(--discord-glow));
+}
+
+.discord-integration-header .highlight-label {
+    margin: 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.discord-integration-header select {
+    width: min(220px, 40%);
+    margin: 0;
+    box-shadow: none;
+}
+
+.discord-integration-header .feature-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+}
+
+#discord-config-tab .discord-container {
+    padding: 20px;
+    background: var(--panel-surface);
+    border-color: var(--discord-border);
+    box-shadow: inset 0 0 22px var(--discord-bg);
+}
+
+#discord-config-tab .discord-container:hover {
+    transform: none;
+}
+
+#discord-config-tab .discord-token-panel {
+    margin: 0 0 18px;
+    padding: 16px;
+    background: var(--panel-inset);
+    border: 1px solid var(--discord-border);
+    border-radius: 7px;
+}
+
+.discord-section-heading {
+    margin: 6px 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--discord-border);
+}
+
+.panel-kicker {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.62rem;
+    line-height: 1.2;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-shadow: none;
+}
+
+.discord-section-heading h2 {
+    margin: 4px 0 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+}
+
+.discord-section-heading h2::after {
+    display: none;
+}
+
+#discord-config-tab .discord-channel-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+#discord-config-tab .discord-channel-grid .form-group,
+#discord-config-tab .discord-container > .form-group:not(.discord-token-panel) {
+    margin: 0;
+    padding: 14px;
+    background: var(--panel-inset);
+    border: 1px solid var(--primary-glow);
+    border-radius: 6px;
+}
+
+#discord-config-tab .discord-channel-grid input,
+#discord-config-tab .discord-channel-grid select {
+    margin: 6px 0;
+    box-shadow: none;
+}
+
+#discord-config-tab .input-info {
+    font-style: normal;
+    line-height: 1.35;
+}
+
+#discord-config-tab .info-panel {
+    border: 1px solid var(--discord-border);
+    background: var(--panel-surface);
+}
+
+#discord-config-tab .info-panel:hover {
+    transform: none;
+}
+
 @media (max-width: 768px) {
+    .server-settings-shell {
+        display: block;
+        padding: 14px;
+    }
+
+    .server-settings-shell .wizard-button-container {
+        margin-bottom: 12px;
+    }
+
+    .server-settings-shell .section-navigation {
+        position: static;
+        flex-direction: row;
+        overflow-x: auto;
+        margin-bottom: 14px;
+    }
+
+    .server-settings-shell .section-nav-button {
+        width: auto;
+        flex: 0 0 auto;
+    }
+
+    .server-settings-shell .channel-grid,
+    #discord-config-tab .discord-channel-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .server-settings-shell .advertiser-setting-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    button.advertiser-configure-button {
+        width: 100%;
+    }
+
+    .advertiser-modal {
+        padding: 10px;
+    }
+
+    .advertiser-dialog {
+        padding: 16px;
+    }
+
+    .advertiser-mode-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .advertiser-modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .advertiser-modal-actions button {
+        width: 100%;
+    }
+
+    .discord-integration-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .discord-integration-header select {
+        width: 100%;
+    }
+
+    .discord-integration-header .feature-badge {
+        align-self: flex-start;
+    }
+
     .section-navigation {
         flex-wrap: wrap;
         justify-content: flex-start;

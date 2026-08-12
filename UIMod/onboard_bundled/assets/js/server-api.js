@@ -1,5 +1,7 @@
 // /static/server-api.js
 
+let backupFetchSequence = 0;
+
 // Server control functions
 function startServer() {
     toggleServer('/start');
@@ -41,7 +43,8 @@ function triggerSteamCMD() {
 }
 
 function fetchBackups() {
-    const limit = document.getElementById('backupLimit').value;
+    const requestSequence = ++backupFetchSequence;
+    const limit = '3';
     const url = limit ? `/api/v2/backups?limit=${limit}` : '/api/v2/backups';
     
     return fetch(url)
@@ -54,44 +57,28 @@ function fetchBackups() {
             }
         })
         .then(result => {
+            if (requestSequence !== backupFetchSequence) return;
             const backupList = document.getElementById('backupList');
             backupList.innerHTML = '';
             
             if (!result.status || result.text) {
                 backupList.innerHTML = `<li class="backuperror">${result.text || 'Failed to load backups'}</li>`;
+                updateLatestBackupDisplay(undefined);
                 return;
             }
             
             const data = result.data;
             if (!data || data.length === 0) {
                 backupList.innerHTML = '<li class="no-backups">No valid backup files found.</li>';
+                updateLatestBackupDisplay(null);
                 return;
             }
+
+            updateLatestBackupDisplay(data[0]);
             
             let animationCount = 0;
             data.forEach((backup) => {
-                const li = document.createElement('li');
-                li.className = 'backup-item';
-                
-                const backupType = "Dotsave"
-                const fileName = "Backup Index: " + backup.Index;
-                const formattedDate = "Created: " + new Date(backup.SaveTime).toLocaleString();
-                const isDotsave = backupType === "Dotsave";
-                
-                li.innerHTML = `
-                    <div class="backup-info">
-                        <div class="backup-header">
-                            <span class="backup-name">${fileName}</span>
-                            <span class="backup-type ${backupType.toLowerCase()}">${backupType}</span>
-                        </div>
-                        <div class="backup-date">${formattedDate}</div>
-                    </div>
-                    <div class="backup-actions">
-                        ${isDotsave ? `<button class="download-btn" onclick="downloadBackup(${backup.Index})">Download</button>` : ''}
-                        <button class="restore-btn" onclick="restoreBackup(${backup.Index})">Restore</button>
-                    </div>
-                `;
-                
+                const li = createBackupItem(backup, false);
                 backupList.appendChild(li);
                 
                 if (animationCount < 20) {
@@ -103,8 +90,69 @@ function fetchBackups() {
             });
         })
         .catch(err => {
+            if (requestSequence !== backupFetchSequence) return;
             console.error("Failed to fetch backups:", err);
             document.getElementById('backupList').innerHTML = '<li class="backuperror">Failed to load backups</li>';
+            updateLatestBackupDisplay(undefined);
+        });
+}
+
+function createBackupItem(backup, fullSize) {
+    const li = document.createElement('li');
+    li.className = `backup-item${fullSize ? ' full-size-backup' : ''}`;
+    const backupType = 'Dotsave';
+    li.innerHTML = `
+        <div class="backup-info">
+            <div class="backup-header">
+                <span class="backup-name">Backup Index: ${backup.Index}</span>
+                <span class="backup-type dotsave">${backupType}</span>
+            </div>
+            <div class="backup-date">Created: ${new Date(backup.SaveTime).toLocaleString()}</div>
+        </div>
+        <div class="backup-actions">
+            <button class="download-btn" onclick="downloadBackup(${backup.Index})">Download</button>
+            <button class="restore-btn" onclick="restoreBackup(${backup.Index})">Restore</button>
+        </div>
+    `;
+    return li;
+}
+
+function openBackupManager() {
+    const modal = document.getElementById('backup-manager-modal');
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    fetchModalBackups();
+}
+
+function closeBackupManager() {
+    const modal = document.getElementById('backup-manager-modal');
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+}
+
+function fetchModalBackups() {
+    const limit = document.getElementById('backupModalLimit').value;
+    const url = limit ? `/api/v2/backups?limit=${limit}` : '/api/v2/backups';
+    const list = document.getElementById('backupModalList');
+    list.innerHTML = '<li class="no-backups">Loading backups...</li>';
+
+    return fetch(url)
+        .then(response => {
+            if (!response.ok) return response.text().then(text => { throw new Error(text || 'Failed to load backups'); });
+            return response.json();
+        })
+        .then(backups => {
+            list.innerHTML = '';
+            if (!Array.isArray(backups) || backups.length === 0) {
+                list.innerHTML = '<li class="no-backups">No valid backup files found.</li>';
+                return;
+            }
+            backups.forEach(backup => list.appendChild(createBackupItem(backup, true)));
+        })
+        .catch(error => {
+            list.innerHTML = `<li class="backuperror">${error.message}</li>`;
         });
 }
 
@@ -115,6 +163,7 @@ function getBackupType(backup) {
 function fetchPlayers() {
     const playersDiv = document.getElementById('players');
     const playerList = document.getElementById('playerList');
+    const emptyState = document.getElementById('players-empty');
     
     const playerImages = [
         "/static/playerimages/anna.webp",
@@ -136,13 +185,19 @@ function fetchPlayers() {
         .then(response => response.json())
         .then(data => {
             playerList.innerHTML = '';
+            updatePlayerCount(Array.isArray(data) ? data.length : null);
             
             if (!Array.isArray(data) || data.length === 0) {
-                playersDiv.style.display = 'none';
+                playersDiv.classList.add('is-empty');
+                emptyState.textContent = emptyState.dataset.empty;
+                emptyState.style.display = 'block';
+                updateWorkspacePlayerState(false);
                 return;
             }
 
-            playersDiv.style.display = 'block';
+            playersDiv.classList.remove('is-empty');
+            emptyState.style.display = 'none';
+            updateWorkspacePlayerState(true);
             let animationCount = 0;
             data.forEach(playerObj => {
                 const player = Object.values(playerObj)[0];
@@ -189,9 +244,53 @@ function fetchPlayers() {
         })
         .catch(err => {
             console.error("Failed to fetch players:", err);
-            playersDiv.style.display = 'none';
-            playerList.textContent = 'Error loading players.';
+            playersDiv.classList.add('is-empty');
+            emptyState.textContent = emptyState.dataset.error;
+            emptyState.style.display = 'block';
+            updateWorkspacePlayerState(false);
+            updatePlayerCount(null);
         });
+}
+
+function updateWorkspacePlayerState(hasPlayers) {
+    const workspace = document.getElementById('control-panel-workspace');
+    if (!workspace) return;
+    workspace.classList.toggle('has-players', hasPlayers);
+    workspace.classList.toggle('no-players', !hasPlayers);
+}
+
+function updatePlayerCount(count) {
+    const display = document.getElementById('player-count-display');
+    if (!display) return;
+    display.textContent = Number.isInteger(count) ? count : '—';
+    display.title = Number.isInteger(count) ? `${count} connected player${count === 1 ? '' : 's'}` : 'Player count unavailable';
+}
+
+function updateLatestBackupDisplay(backup) {
+    const display = document.getElementById('latest-backup-display');
+    if (!display) return;
+
+    if (!backup || !backup.SaveTime) {
+        display.textContent = backup === null ? 'None found' : 'Unavailable';
+        display.title = '';
+        return;
+    }
+
+    const created = new Date(backup.SaveTime);
+    if (Number.isNaN(created.getTime())) {
+        display.textContent = 'Available';
+        return;
+    }
+
+    const elapsedSeconds = Math.max(0, Math.floor((Date.now() - created.getTime()) / 1000));
+    let age;
+    if (elapsedSeconds < 60) age = 'Just now';
+    else if (elapsedSeconds < 3600) age = `${Math.floor(elapsedSeconds / 60)}m ago`;
+    else if (elapsedSeconds < 86400) age = `${Math.floor(elapsedSeconds / 3600)}h ago`;
+    else age = `${Math.floor(elapsedSeconds / 86400)}d ago`;
+
+    display.textContent = age;
+    display.title = `Backup ${backup.Index} · ${created.toLocaleString()}`;
 }
 
 function extractIndex(backupText) {
@@ -257,12 +356,11 @@ function downloadBackup(index) {
 function pollRecurringTasks() {
     window.gamserverstate = false;
 
-    // Poll server status every 3.5 seconds
-    const statusInterval = setInterval(() => {
+    const fetchServerStatus = () => {
         fetch('/api/v2/server/status')
             .then(response => response.json())
             .then(data => {
-                updateStatusIndicator(data.isRunning, false, data.uptime);
+                updateStatusIndicator(data.isRunning, false, data.uptime, data.state);
                 if (data.uuid) {
                     localStorage.setItem('gameserverrunID', data.uuid);
                 }
@@ -271,7 +369,11 @@ function pollRecurringTasks() {
                 console.error("Failed to fetch server status:", err);
                 updateStatusIndicator(false, true); // Set error state
             });
-    }, 3500);
+    };
+
+    // Fetch immediately, then poll server status every 3.5 seconds
+    fetchServerStatus();
+    setInterval(fetchServerStatus, 3500);
 
     // Poll connectred players every 10 seconds
     const playersInterval = setInterval(() => {
@@ -290,35 +392,51 @@ function pollRecurringTasks() {
     }, 30000);
 }
 
-function updateStatusIndicator(isRunning, isError = false, uptime = '') {
+function updateStatusIndicator(isRunning, isError = false, uptime = '', state = 'uncertain') {
     const indicator = document.getElementById('status-indicator');
     const uptimeDisplay = document.getElementById('uptime-display');
+    const stateLabel = document.getElementById('server-state-label');
+    const startButton = document.getElementById('start-server-button');
+    const stopButton = document.getElementById('stop-server-button');
     
     if (isError) {
         indicator.className = 'status-indicator error';
-        indicator.title = 'Error fetching server status';
-        window.gamserverstate = false;
-        if (uptimeDisplay) uptimeDisplay.style.display = 'none';
+        indicator.title = 'Server status temporarily unavailable';
+        // A failed HTTP poll is not evidence that the game server state is
+        // uncertain. Keep the last lifecycle label, uptime and controls until
+        // the next successful status response.
         return;
     }
     
-    if (isRunning) {
+    const normalizedState = state || (isRunning ? 'uncertain' : 'stopped');
+    if (!isRunning || normalizedState === 'stopped') {
+        indicator.className = 'status-indicator offline';
+        indicator.title = 'Server is offline';
+        window.gamserverstate = false;
+    } else if (normalizedState === 'running') {
         indicator.className = 'status-indicator online';
         indicator.title = 'Server is running';
         window.gamserverstate = true;
     } else {
-        indicator.className = 'status-indicator offline';
-        indicator.title = 'Server is offline';
-        window.gamserverstate = false;
+        indicator.className = `status-indicator ${normalizedState === 'uncertain' ? 'uncertain' : 'starting'}`;
+        indicator.title = `Server state: ${normalizedState}`;
+        window.gamserverstate = true;
     }
+
+    if (stateLabel) {
+        const stateDataKey = normalizedState.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+        stateLabel.textContent = stateLabel.dataset[stateDataKey] || stateLabel.dataset.uncertain;
+    }
+
+    if (startButton) startButton.disabled = isRunning;
+    if (stopButton) stopButton.disabled = !isRunning;
 
     // Show uptime only when server is running and uptime is not "0s"
     if (uptimeDisplay) {
         if (isRunning && uptime && uptime !== '0s') {
             uptimeDisplay.textContent = uptime;
-            uptimeDisplay.style.display = 'inline-block';
         } else {
-            uptimeDisplay.style.display = 'none';
+            uptimeDisplay.textContent = '—';
         }
     }
 }

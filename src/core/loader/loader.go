@@ -100,6 +100,16 @@ func InitDetector() {
 	detector := detectionmgr.Start()
 	detectionmgr.RegisterDefaultHandlers(detector)
 	detectionmgr.InitCustomDetectionsManager(detector)
+	detectionmgr.SetServerStateHandler(func(eventType detectionmgr.EventType) {
+		switch eventType {
+		case detectionmgr.EventGameManagerReady:
+			gamemgr.SetServerState(gamemgr.ServerStateLoadingMap)
+		case detectionmgr.EventServerHosted, detectionmgr.EventSessionStarting:
+			gamemgr.SetServerState(gamemgr.ServerStateHostingSession)
+		case detectionmgr.EventSessionRegistered:
+			gamemgr.SetServerState(gamemgr.ServerStateRunning)
+		}
+	})
 	go detectionmgr.StreamLogs(detector)
 	logger.Detection.Info("Detector loaded successfully")
 }

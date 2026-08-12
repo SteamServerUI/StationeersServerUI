@@ -35,6 +35,7 @@ function showTab(tabId) {
     const tab = document.getElementById(tabId);
     tab.classList.add('active');
     document.querySelector(`.tab-button[onclick*="showTab('${tabId}')"]`).classList.add('active');
+    if (typeof updateStreamToolbar === 'function') updateStreamToolbar();
 }
 
 function createPlanet(container, size, orbitRadius, speed, color) {
@@ -68,19 +69,20 @@ function createPlanet(container, size, orbitRadius, speed, color) {
 
 function getEventClassName(eventText) {
     const checks = [
-        ['Server is ready', 'event-server-ready'],
-        ['Server is starting', 'event-server-starting'],
-        ['Server error', 'event-server-error'],
-        ['Player', 'connecting', 'event-player-connecting'],
-        ['Player', 'ready', 'event-player-ready'],
-        ['Player', 'disconnected', 'event-player-disconnect'],
-        ['World Saved', 'event-world-saved'],
-        ['Exception', 'event-exception']
+        { terms: ['Server is ready'], className: 'event-server-ready' },
+        { terms: ['Server is starting'], className: 'event-server-starting' },
+        { terms: ['loading map'], className: 'event-server-starting' },
+        { terms: ['Starting multiplayer session'], className: 'event-server-starting' },
+        { terms: ['server is running'], className: 'event-server-ready' },
+        { terms: ['Server error'], className: 'event-server-error' },
+        { terms: ['Player', 'connecting'], className: 'event-player-connecting' },
+        { terms: ['Player', 'ready'], className: 'event-player-ready' },
+        { terms: ['Player', 'disconnected'], className: 'event-player-disconnect' },
+        { terms: ['World Saved'], className: 'event-world-saved' },
+        { terms: ['Exception'], className: 'event-exception' }
     ];
-    
-    return checks.find(([text, , condition]) => 
-        condition ? eventText.includes(text) && eventText.includes(condition) : eventText.includes(text)
-    )?.[1] || '';
+
+    return checks.find(check => check.terms.every(term => eventText.includes(term)))?.className || '';
 }
 
 document.querySelectorAll('.info-notice h3').forEach(header => {

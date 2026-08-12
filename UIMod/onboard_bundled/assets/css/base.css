@@ -1,8 +1,8 @@
 @import '/static/css/variables.css';
 
 main {
-    max-width: 1000px;
-    width: 90%;
+    max-width: 1380px;
+    width: min(94%, 1380px);
     padding: 30px;
     box-sizing: border-box;
     background-color: var(--bg-panel);

@@ -19,6 +19,34 @@ type IndexTemplateData struct {
 	UIText_Backend_Log             string
 	UIText_Backup_Manager          string
 	UIText_Connected_PlayersHeader string
+	UIText_GameServer              string
+	UIText_Uptime                  string
+	UIText_PlayersOnline           string
+	UIText_LatestBackup            string
+	UIText_ServerOutput            string
+	UIText_ServerActivity          string
+	UIText_StreamConnected         string
+	UIText_StreamConnecting        string
+	UIText_StreamReconnecting      string
+	UIText_StreamPaused            string
+	UIText_Pause                   string
+	UIText_Resume                  string
+	UIText_Clear                   string
+	UIText_NoPlayers               string
+	UIText_PlayersUnavailable      string
+	UIText_RecentBackups           string
+	UIText_BackupHistory           string
+	UIText_ViewAllBackups          string
+	UIText_ShowRecentBackups       string
+	UIText_Refresh                 string
+	UIText_Close                   string
+	UIText_StateUncertain          string
+	UIText_StateStopped            string
+	UIText_StateStarting           string
+	UIText_StateLoadingMap         string
+	UIText_StateHostingSession     string
+	UIText_StateRunning            string
+	UIText_StateStopping           string
 	UIText_Discord_Info            string
 	UIText_API_Info                string
 	UIText_Copyright1              string
@@ -142,6 +170,21 @@ type ConfigTemplateData struct {
 	UIText_ServerVisibleInfo              string
 	UIText_UseSteamP2P                    string
 	UIText_UseSteamP2PInfo                string
+	UIText_AdvertiserTitle                string
+	UIText_AdvertiserSummary              string
+	UIText_AdvertiserConfigure            string
+	UIText_AdvertiserExplanation          string
+	UIText_AdvertiserMasterServer         string
+	UIText_AdvertiserDisabled             string
+	UIText_AdvertiserAuto                 string
+	UIText_AdvertiserIPv4                 string
+	UIText_AdvertiserDNS                  string
+	UIText_AdvertiserAddress              string
+	UIText_AdvertiserRestartWarning       string
+	UIText_AdvertiserSaveRestart          string
+	UIText_AdvertiserRestarting           string
+	UIText_Cancel                         string
+	UIText_Close                          string
 	UIText_AdvancedConfiguration          string
 	UIText_ServerAuthSecret               string
 	UIText_ServerAuthSecretInfo           string
@@ -154,8 +197,8 @@ type ConfigTemplateData struct {
 	UIText_ShowExpertSettingsInfo         string
 	UIText_AutoRestartServerTimer         string
 	UIText_AutoRestartServerTimerInfo     string
-	UIText_AutoRestartCountdown         string
-	UIText_AutoRestartCountdownInfo     string
+	UIText_AutoRestartCountdown           string
+	UIText_AutoRestartCountdownInfo       string
 	UIText_GameBranch                     string
 	UIText_GameBranchInfo                 string
 	UIText_TerrainSettingsHeader          string

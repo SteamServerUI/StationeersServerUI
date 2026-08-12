@@ -311,6 +311,11 @@ func handlePrimaryRateLimit(reset, status string) error {
 
 // downloadFile downloads a file from the given URL to the specified filepath
 func downloadFile(filepath, url string) error {
+	client := &http.Client{Timeout: 45 * time.Second}
+	return downloadFileWithClient(client, filepath, url)
+}
+
+func downloadFileWithClient(client *http.Client, filepath, url string) error {
 	// Ensure the directory exists
 	dir := fp.Dir(filepath)
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
@@ -323,9 +328,9 @@ func downloadFile(filepath, url string) error {
 	}
 	defer out.Close()
 	// Fetch the data
-	resp, err := http.Get(url)
+	resp, err := client.Get(url)
 	if err != nil {
-		return err
+		return fmt.Errorf("request failed: %w", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {

@@ -19,6 +19,61 @@
     #controls {
       grid-template-columns: 1fr;
     }
+
+    .mission-overview {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .mission-state,
+    .overview-stat {
+      border-left: 0;
+      border-bottom: 1px solid var(--primary-glow);
+    }
+
+    .mission-overview > :nth-child(even) {
+      border-left: 1px solid var(--primary-glow);
+    }
+
+    .console-workspace-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .stream-actions {
+      width: 100%;
+    }
+
+    .stream-actions .panel-button {
+      width: 50%;
+    }
+
+    .console-workspace .tab-buttons {
+      overflow-x: auto;
+    }
+
+    .console-workspace .tab-button {
+      width: auto;
+      flex: 1 0 auto;
+    }
+
+    .console-workspace #console,
+    .console-workspace #detection-console,
+    .console-workspace #backendlog-console {
+      height: 320px;
+    }
+
+    .backup-modal-list .backup-item {
+      display: block;
+    }
+
+    .backup-manager-modal {
+      padding: 10px;
+    }
+
+    .backup-manager-dialog {
+      max-height: 94vh;
+      padding: 14px;
+    }
   
     button {
       width: 100%;

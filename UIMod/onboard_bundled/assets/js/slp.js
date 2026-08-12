@@ -450,19 +450,22 @@ function createModCard(mod, index) {
         `;
     }
     
-    let updateButtonHtml = '';
-    if (mod.WorkshopHandle) {
-        updateButtonHtml = `<button class="mod-update-button" id="update-mod-btn-${index}" onclick="updateSingleMod('${escapeHtml(mod.WorkshopHandle)}', ${index})">🔄 Update</button>`;
-    }
-
     card.innerHTML = `
         ${imageHtml}
         <div class="mod-title">${escapeHtml(mod.Name || 'Unknown Mod')}</div>
         ${mod.Author ? `<div class="mod-author">By ${escapeHtml(mod.Author)}</div>` : ''}
         ${mod.Version ? `<div class="mod-version">v${escapeHtml(mod.Version)}</div>` : ''}
         ${descriptionHtml}
-        ${updateButtonHtml}
     `;
+
+    if (mod.WorkshopHandle) {
+        const updateButton = document.createElement('button');
+        updateButton.className = 'mod-update-button';
+        updateButton.id = `update-mod-btn-${index}`;
+        updateButton.textContent = '🔄 Update';
+        updateButton.addEventListener('click', () => updateSingleMod(mod.WorkshopHandle, index));
+        card.appendChild(updateButton);
+    }
     
     return card;
 }

@@ -28,6 +28,60 @@
             <button onclick="closePopup()">Close</button>
         </div>
     </div>
+    <div id="advertiser-modal" class="advertiser-modal" aria-hidden="true">
+        <div class="advertiser-dialog" role="dialog" aria-modal="true" aria-labelledby="advertiser-modal-title">
+            <div class="advertiser-modal-header">
+                <div>
+                    <span class="panel-kicker">Stationeers Master Server</span>
+                    <h2 id="advertiser-modal-title">{{.UIText_AdvertiserTitle}}</h2>
+                </div>
+                <button type="button" class="advertiser-modal-close" onclick="closeAdvertiserModal()"
+                    aria-label="{{.UIText_Close}}">×</button>
+            </div>
+
+            <div class="advertiser-explanation">
+                <p>{{.UIText_AdvertiserExplanation}}</p>
+                <p>{{.UIText_AdvertiserMasterServer}}</p>
+            </div>
+
+            <div class="advertiser-mode-grid">
+                <label class="advertiser-mode-option">
+                    <input type="radio" name="advertiserMode" value="disabled">
+                    <span>{{.UIText_AdvertiserDisabled}}</span>
+                </label>
+                <label class="advertiser-mode-option">
+                    <input type="radio" name="advertiserMode" value="auto">
+                    <span>{{.UIText_AdvertiserAuto}}</span>
+                </label>
+                <label class="advertiser-mode-option">
+                    <input type="radio" name="advertiserMode" value="ipv4">
+                    <span>{{.UIText_AdvertiserIPv4}}</span>
+                </label>
+                <label class="advertiser-mode-option">
+                    <input type="radio" name="advertiserMode" value="dns">
+                    <span>{{.UIText_AdvertiserDNS}}</span>
+                </label>
+            </div>
+
+            <div id="advertiser-address-field" class="advertiser-address-field">
+                <label for="advertiserAddress">{{.UIText_AdvertiserAddress}}</label>
+                <input type="text" id="advertiserAddress" value="{{.AdvertiserOverride}}"
+                    placeholder="203.0.113.10 / server.example.com" autocomplete="off">
+                <div id="advertiser-validation" class="advertiser-validation"></div>
+            </div>
+
+            <div class="advertiser-restart-warning">
+                <strong>Restart required</strong>
+                <span>{{.UIText_AdvertiserRestartWarning}}</span>
+            </div>
+            <div id="advertiser-restarting" class="advertiser-restarting" hidden>{{.UIText_AdvertiserRestarting}}</div>
+
+            <div class="advertiser-modal-actions">
+                <button type="button" class="advertiser-cancel" onclick="closeAdvertiserModal()">{{.UIText_Cancel}}</button>
+                <button type="button" id="advertiser-save-button" onclick="saveAdvertiserOverride()">{{.UIText_AdvertiserSaveRestart}}</button>
+            </div>
+        </div>
+    </div>
     <header>
         <img src="/static/stationeers.webp" alt="Stationeers Banner" id="banner">
         <div id="language-flags">
@@ -69,7 +123,7 @@
         </div>
 
         <div id="server-config-tab" class="tab-content active">
-            <div class="grid-container">
+            <div class="grid-container server-settings-shell">
                 <div class="wizard-button-container">
                     <button class="wizard-button" onclick="window.location.href = '/setup?step=game_branch'">
                         <span class="wizard-icon"></span>
@@ -78,7 +132,7 @@
                 </div>
                 <div class="config-sections">
                     <div class="section-navigation">
-                        <button class="section-nav-button"
+                        <button class="section-nav-button active"
                             data-section="basic-settings">{{.UIText_BasicSettings}}</button>
                         {{if eq .IsNewTerrainAndSaveSystemTrueSelected "selected"}}
                         <button class="section-nav-button"
@@ -91,13 +145,13 @@
                     </div>
 
                     <form id="server-config-form" action="/saveconfigasjson" method="post">
-                        <div id="select-prompt"
+                        <div id="select-prompt" hidden
                             style="text-align: center; margin: 30px 0; color: var(--primary); font-family: 'Share Tech Mono', monospace;">
                             <h3>{{.UIText_PleaseSelectSection}}</h3>
                             <p>{{.UIText_UseWizardAlternative}}</p>
                         </div>
 
-                        <div id="basic-settings" class="config-section">
+                        <div id="basic-settings" class="config-section active">
                             <h3 class="section-title">{{.UIText_BasicServerSettings}}</h3>
                             <div class="channel-grid">
                                 <div class="form-group">
@@ -229,6 +283,21 @@
                                         <option value="false" {{.UseSteamP2PFalseSelected}}>FALSE</option>
                                     </select>
                                     <div class="input-info">{{.UIText_UseSteamP2PInfo}}</div>
+                                </div>
+
+                                <div class="form-group advertiser-setting-card">
+                                    <div>
+                                        <label>{{.UIText_AdvertiserTitle}}</label>
+                                        <div class="input-info">{{.UIText_AdvertiserSummary}}</div>
+                                        <div id="advertiser-current-value" class="advertiser-current-value"
+                                            data-value="{{.AdvertiserOverride}}"
+                                            data-disabled="{{.UIText_AdvertiserDisabled}}"
+                                            data-auto="{{.UIText_AdvertiserAuto}}"
+                                            data-ipv4="{{.UIText_AdvertiserIPv4}}"
+                                            data-dns="{{.UIText_AdvertiserDNS}}"></div>
+                                    </div>
+                                    <button type="button" class="advertiser-configure-button"
+                                        onclick="openAdvertiserModal()">{{.UIText_AdvertiserConfigure}}</button>
                                 </div>
                             </div>
                         </div>
@@ -379,12 +448,6 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="AdvertiserOverride">Advertiser Override IP:</label>
-                                        <input type="text" id="AdvertiserOverride" name="AdvertiserOverride" value="{{.AdvertiserOverride}}">
-                                        <div class="input-info">Override the IP address advertised to Steam. Leave empty for auto-detection.</div>
-                                    </div>
-
-                                    <div class="form-group">
                                         <label for="IsUpdateEnabled">SSUI Updates:</label>
                                         <select id="IsUpdateEnabled" name="IsUpdateEnabled" required>
                                             <option value="true" {{.IsUpdateEnabledTrueSelected}}>TRUE</option>
@@ -490,24 +553,29 @@
 
         <div id="discord-config-tab" class="tab-content">
             <form id="discord-config-form" action="/saveconfigasjson" method="post">
-                <div class="integration-status">
-                    <label for="isDiscordEnabled" class="highlight-label">{{.UIText_DiscordIntegration}}:</label>
+                <div class="integration-status discord-integration-header">
+                    <div class="discord-status-copy">
+                        <span class="discord-mark" aria-hidden="true"></span>
+                        <label for="isDiscordEnabled" class="highlight-label">{{.UIText_DiscordIntegration}}</label>
+                    </div>
                     <select id="isDiscordEnabled" name="isDiscordEnabled">
                         <option value="true" {{.IsDiscordEnabledTrueSelected}}>ENABLED</option>
                         <option value="false" {{.IsDiscordEnabledFalseSelected}}>DISABLED</option>
                     </select>
                     <div class="feature-badge">RECOMMENDED</div>
                 </div>
-                </br>
                 <div class="discord-container">
-                    <div class="form-group">
+                    <div class="form-group discord-token-panel">
                         <label for="discordToken">{{.UIText_DiscordBotToken}}:</label>
                         <input type="password" id="discordToken" name="discordToken" value="{{.DiscordToken}}">
                         <div class="input-info">{{.UIText_DiscordBotTokenInfo}}</div>
                     </div>
 
-                    <h2>{{.UIText_ChannelConfiguration}}</h2>
-                    <div class="channel-grid">
+                    <div class="discord-section-heading">
+                        <span class="panel-kicker">Discord</span>
+                        <h2>{{.UIText_ChannelConfiguration}}</h2>
+                    </div>
+                    <div class="channel-grid discord-channel-grid">
                         <div class="form-group">
                             <label for="controlChannelID">{{.UIText_AdminCommandChannel}}:</label>
                             <input type="text" id="controlChannelID" name="controlChannelID"
@@ -781,18 +849,18 @@
 
         document.getElementById('isDiscordEnabled').addEventListener('change', function () {
             if (this.value === 'false') {
-                alert('You are missing out on nice features! Please consider using the Discord Integration. Info can be found on the GitHub page.');
-
-                // Toggle visual indication
                 document.querySelector('.discord-container').classList.add('disabled');
+                document.querySelector('.discord-integration-header').classList.add('is-disabled');
             } else {
                 document.querySelector('.discord-container').classList.remove('disabled');
+                document.querySelector('.discord-integration-header').classList.remove('is-disabled');
             }
         });
 
         // Set initial state
         if (document.getElementById('isDiscordEnabled').value === 'false') {
             document.querySelector('.discord-container').classList.add('disabled');
+            document.querySelector('.discord-integration-header').classList.add('is-disabled');
         }
 
         // Section navigation
@@ -834,6 +902,7 @@
     <script src="/static/js/xmas.js"></script>
     <script src="/static/js/popup.js"></script>
     <script src="/static/js/slp.js"></script>
+    <script src="/static/js/advertiser-settings.js"></script>
 </body>
 
 </html>

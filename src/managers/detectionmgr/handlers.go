@@ -80,6 +80,24 @@ func DefaultHandlers() map[EventType]Handler {
 			ssestream.BroadcastDetectionEvent(message)
 			discordbot.SendMessageToEventLogChannel(message)
 		},
+		EventGameManagerReady: func(event Event) {
+			message := "🎮 [Gameserver] 🗺️ Game manager initialized; loading map..."
+			logger.Detection.Info(message)
+			ssestream.BroadcastDetectionEvent(message)
+			discordbot.SendMessageToEventLogChannel(message)
+		},
+		EventSessionStarting: func(event Event) {
+			message := "🎮 [Gameserver] 🌐 Starting multiplayer session..."
+			logger.Detection.Info(message)
+			ssestream.BroadcastDetectionEvent(message)
+			discordbot.SendMessageToEventLogChannel(message)
+		},
+		EventSessionRegistered: func(event Event) {
+			message := "🎮 [Gameserver] ✅ Session registered; server is running."
+			logger.Detection.Info(message)
+			ssestream.BroadcastDetectionEvent(message)
+			discordbot.SendMessageToEventLogChannel(message)
+		},
 		EventPlayerConnecting: func(event Event) {
 			if event.PlayerInfo != nil {
 				message := fmt.Sprintf("🎮 [Gameserver] 🔄 Player %s (SteamID: %s) is connecting...",

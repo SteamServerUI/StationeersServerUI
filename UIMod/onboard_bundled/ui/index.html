@@ -28,6 +28,34 @@
             <button onclick="closePopup()">Close</button>
         </div>
     </div>
+
+    <div id="backup-manager-modal" class="backup-manager-modal" aria-hidden="true">
+        <div class="backup-manager-dialog" role="dialog" aria-modal="true" aria-labelledby="backup-manager-title">
+            <div class="backup-modal-header">
+                <div>
+                    <span class="panel-kicker">{{.UIText_BackupHistory}}</span>
+                    <h2 id="backup-manager-title">{{.UIText_Backup_Manager}}</h2>
+                </div>
+                <button class="backup-modal-close" onclick="closeBackupManager()" aria-label="{{.UIText_Close}}">×</button>
+            </div>
+            <div class="backup-modal-controls">
+                <select id="backupModalLimit" onchange="fetchModalBackups()">
+                    <option value="5">Last 5</option>
+                    <option value="10">Last 10</option>
+                    <option value="20">Last 20</option>
+                    <option value="30">Last 30</option>
+                    <option value="50">Last 50</option>
+                    <option value="100">Last 100</option>
+                    <option value="200">Last 200</option>
+                    <option value="1000">Last 1000</option>
+                    <option value="2000">Last 2000</option>
+                    <option value="">All backups</option>
+                </select>
+                <button class="icon-button" onclick="fetchModalBackups()" title="{{.UIText_Refresh}}">↻</button>
+            </div>
+            <ul id="backupModalList" class="backup-modal-list"></ul>
+        </div>
+    </div>
     
 
     <!-- Update Modal -->
@@ -63,65 +91,126 @@
     </header>
     <main>
 
-        <span id="uptime-display" class="uptime-display" style="display:none;"></span>
-        <div id="status-indicator" class="status-indicator offline" title="Server status unknown"></div>
         <button onclick="openUpdateModal()" id="update-button" class="update-icon" title="Update available">⭳</button>
         <h1>Stationeers Server UI v{{.Version}}{{.SSUIIdentifier}}</h1>
+
+        <section class="mission-overview" aria-label="Server overview">
+            <div class="mission-state">
+                <div id="status-indicator" class="status-indicator offline" title="Server status unknown"></div>
+                <div>
+                    <span class="overview-label">{{.UIText_GameServer}}</span>
+                    <strong id="server-state-label"
+                        data-uncertain="{{.UIText_StateUncertain}}"
+                        data-stopped="{{.UIText_StateStopped}}"
+                        data-starting="{{.UIText_StateStarting}}"
+                        data-loading-map="{{.UIText_StateLoadingMap}}"
+                        data-hosting-session="{{.UIText_StateHostingSession}}"
+                        data-running="{{.UIText_StateRunning}}"
+                        data-stopping="{{.UIText_StateStopping}}">{{.UIText_StateUncertain}}</strong>
+                </div>
+            </div>
+            <div class="overview-stat">
+                <span class="overview-label">{{.UIText_Uptime}}</span>
+                <strong id="uptime-display" class="uptime-display">—</strong>
+            </div>
+            <div class="overview-stat">
+                <span class="overview-label">{{.UIText_PlayersOnline}}</span>
+                <strong id="player-count-display">—</strong>
+            </div>
+            <div class="overview-stat">
+                <span class="overview-label">{{.UIText_LatestBackup}}</span>
+                <strong id="latest-backup-display">Checking...</strong>
+            </div>
+        </section>
+
         <div id="controls">
-            <button onclick="startServer()">{{.UIText_StartButton}}</button>
-            <button onclick="stopServer()">{{.UIText_StopButton}}</button>
+            <button id="start-server-button" class="server-action primary-action" onclick="startServer()">{{.UIText_StartButton}}</button>
+            <button id="stop-server-button" class="server-action" onclick="stopServer()">{{.UIText_StopButton}}</button>
             <button onclick="navigateTo('/config')">{{.UIText_Settings}}</button>
             <button onclick="triggerSteamCMD()">{{.UIText_Update_SteamCMD}}</button>
         </div>
         <p id="status" hidden></p>
 
-        <div class="tab-container">
-            <div class="tab-buttons">
-                <button class="tab-button active" onclick="showTab('console-tab')">{{.UIText_Console}}</button>
-                <button class="tab-button" onclick="showTab('detection-tab')">{{.UIText_Detection_Events}}</button>
-                <button class="tab-button" onclick="showTab('log-tab')">{{.UIText_Backend_Log}}</button>
-            </div>
-            <div id="console-tab" class="tab-content active">
-                <div id="console"></div>
-            </div>
-            <div id="detection-tab" class="tab-content">
-                <div id="detection-console"></div>
-            </div>
-            <div id="log-tab" class="tab-content">
-                <div id="backendlog-console"></div>
-            </div>
-        </div>
-
         <div id="dynamic-announcement-list">
             <!-- Dynamic announcements will be inserted here by JavaScript -->
         </div>
 
-        <div id="players">
-            <h2>{{.UIText_Connected_PlayersHeader}}</h2>
-            <button id="playerListRefreshButton" onclick="fetchPlayers()">↻</button>
-            <ul id="playerList"></ul>
-        </div>
-
-        <div id="backups">
-            <h2>{{.UIText_Backup_Manager}}</h2>
-            <p> </p>
-            <div class="backup-controls">
-                <select id="backupLimit" onchange="fetchBackups()">
-                    <option value="5">Last 5</option>
-                    <option value="10">Last 10</option>
-                    <option value="20">Last 20</option>
-                    <option value="30">Last 30</option>
-                    <option value="50">Last 50</option>
-                    <option value="100">Last 100</option>
-                    <option value="200">Last 200</option>
-                    <option value="1000">Last 1000</option>
-                    <option value="2000">Last 2000</option>
-                    <option value="">All backups</option>
-                </select>
-                <button id="backupRefreshButton" onclick="fetchBackups()">↻</button>
+        <section id="control-panel-workspace" class="control-panel-workspace no-players">
+            <div class="tab-container console-workspace">
+                <div class="console-workspace-header">
+                    <div>
+                        <span class="panel-kicker">{{.UIText_ServerOutput}}</span>
+                        <div class="stream-readout">
+                            <span id="stream-status-lamp" class="stream-status-lamp connecting"></span>
+                            <span id="stream-status-text"
+                                data-connected="{{.UIText_StreamConnected}}"
+                                data-connecting="{{.UIText_StreamConnecting}}"
+                                data-reconnecting="{{.UIText_StreamReconnecting}}"
+                                data-paused="{{.UIText_StreamPaused}}">{{.UIText_StreamConnecting}}</span>
+                        </div>
+                    </div>
+                    <div class="stream-actions">
+                        <button id="stream-pause-button" class="panel-button" onclick="toggleActiveStreamPause()"
+                            data-pause="{{.UIText_Pause}}" data-resume="{{.UIText_Resume}}">{{.UIText_Pause}}</button>
+                        <button id="stream-clear-button" class="panel-button" onclick="clearActiveStream()">{{.UIText_Clear}}</button>
+                    </div>
+                </div>
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab-id="console-tab" onclick="showTab('console-tab')">{{.UIText_Console}}</button>
+                    <button class="tab-button" data-tab-id="detection-tab" onclick="showTab('detection-tab')">{{.UIText_Detection_Events}}</button>
+                    <button class="tab-button" data-tab-id="log-tab" onclick="showTab('log-tab')">{{.UIText_Backend_Log}}</button>
+                </div>
+                <div id="console-tab" class="tab-content active">
+                    <div id="console"></div>
+                </div>
+                <div id="detection-tab" class="tab-content">
+                    <div id="detection-console"></div>
+                </div>
+                <div id="log-tab" class="tab-content">
+                    <div id="backendlog-console"></div>
+                </div>
             </div>
-            <ul id="backupList"></ul>
-        </div>
+
+            <div id="players" class="side-panel">
+                <div class="side-panel-header">
+                    <div>
+                        <span class="panel-kicker">{{.UIText_ServerActivity}}</span>
+                        <h2>{{.UIText_Connected_PlayersHeader}}</h2>
+                    </div>
+                    <button id="playerListRefreshButton" class="icon-button" onclick="fetchPlayers()" title="{{.UIText_Refresh}}">↻</button>
+                </div>
+                <div id="players-empty" class="panel-empty"
+                    data-empty="{{.UIText_NoPlayers}}" data-error="{{.UIText_PlayersUnavailable}}">{{.UIText_NoPlayers}}</div>
+                <ul id="playerList"></ul>
+            </div>
+
+            <div id="backups" class="side-panel compact-backups">
+                <div class="side-panel-header">
+                    <div>
+                        <span id="backup-panel-kicker" class="panel-kicker"
+                            data-compact="{{.UIText_RecentBackups}}" data-expanded="{{.UIText_BackupHistory}}">{{.UIText_RecentBackups}}</span>
+                        <h2>{{.UIText_Backup_Manager}}</h2>
+                    </div>
+                    <button id="backupRefreshButton" class="icon-button" onclick="fetchBackups()" title="{{.UIText_Refresh}}">↻</button>
+                </div>
+                <div class="backup-controls">
+                    <select id="backupLimit" onchange="fetchBackups()">
+                        <option value="5">Last 5</option>
+                        <option value="10">Last 10</option>
+                        <option value="20">Last 20</option>
+                        <option value="30">Last 30</option>
+                        <option value="50">Last 50</option>
+                        <option value="100">Last 100</option>
+                        <option value="200">Last 200</option>
+                        <option value="1000">Last 1000</option>
+                        <option value="2000">Last 2000</option>
+                        <option value="">All backups</option>
+                    </select>
+                </div>
+                <ul id="backupList"></ul>
+                <button id="backup-view-toggle" class="panel-link-button" onclick="openBackupManager()">{{.UIText_ViewAllBackups}}</button>
+            </div>
+        </section>
         <div class="info-notice" style="display: none;">
             <h3>
                 <span class="notice-icon">ℹ️</span>

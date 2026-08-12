@@ -2,9 +2,11 @@ package setup
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"runtime"
 	"sync"
+	"time"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
@@ -74,7 +76,7 @@ func CheckAndDownloadSSCM() {
 	}
 }
 
-func CheckAndInstallBepInEx() {
+func CheckAndInstallBepInEx() error {
 	// Ensure thread safety
 	installMutex.Lock()
 	defer installMutex.Unlock()
@@ -84,7 +86,7 @@ func CheckAndInstallBepInEx() {
 	// Check if BepInEx is already installed
 	if _, err := os.Stat("BepInEx"); err == nil {
 		logger.Install.Info("BepInEx folder already exists, skipping installation")
-		return
+		return nil
 	}
 
 	// Determine the URL based on platform
@@ -100,9 +102,11 @@ func CheckAndInstallBepInEx() {
 	// Download and install BepInEx
 	if err := downloadAndInstallBepInEx(url); err != nil {
 		logger.Install.Error(fmt.Sprintf("❌Failed to install BepInEx: %v", err))
-	} else {
-		logger.Install.Info("✅BepInEx installed successfully")
+		return err
 	}
+
+	logger.Install.Info("✅BepInEx installed successfully")
+	return nil
 }
 
 // downloadAndInstallBepInEx downloads the BepInEx zip and extracts it to the current directory
@@ -116,7 +120,8 @@ func downloadAndInstallBepInEx(url string) error {
 
 	// Download the BepInEx zip file
 	logger.Install.Info("📥Downloading BepInEx from: " + url)
-	err = downloadFile(tempFile.Name(), url)
+	client := &http.Client{Timeout: 45 * time.Second}
+	err = downloadFileWithClient(client, tempFile.Name(), url)
 	if err != nil {
 		return fmt.Errorf("failed to download BepInEx: %w", err)
 	}
@@ -165,7 +170,11 @@ func downloadAndInstallBepInEx(url string) error {
 func InstallSSCM() {
 	logger.Install.Info("🕑Installing SSCM...")
 
-	CheckAndInstallBepInEx()
+	if err := CheckAndInstallBepInEx(); err != nil {
+		config.SetIsSSCMEnabled(false)
+		logger.Install.Warn("⚠️SSCM was disabled because BepInEx could not be installed. SSUI will continue without SSCM.")
+		return
+	}
 	CheckAndDownloadSSCM()
 
 	// Enable SSCM

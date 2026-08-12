@@ -52,6 +52,7 @@ func GetGameServerRunState(w http.ResponseWriter, r *http.Request) {
 	runState := config.GetIsGameServerRunning()
 	response := map[string]any{
 		"isRunning": runState,
+		"state":     gamemgr.GetServerState(),
 		"uptime":    prettyUptime(gamemgr.GetServerUptime()),
 		"uuid":      gamemgr.GameServerUUID.String(),
 	}

@@ -49,6 +49,9 @@ func (d *Detector) ProcessLogMessage(logMessage string) {
 		"Unloading 1 Unused Serialized files": EventServerStarting,
 		"EXCEPTION":                           EventServerError,
 		"Initialize engine version":           EventServerRunning,
+		"game manager initialized":            EventGameManagerReady,
+		"StartSession. config: {":             EventSessionStarting,
+		"registered with session #":           EventSessionRegistered,
 	}
 
 	for keyword, eventType := range keywordPatterns {
@@ -212,8 +215,8 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 				})
 			},
 		},
-		{ //RakNet hosted pattern
-			pattern: regexp.MustCompile(`(RocketNet|RakNet) Succesfully hosted with Address: (.+?) Port: (\d+)`),
+		{ // RakNet hosted pattern; support historical and current log formats.
+			pattern: regexp.MustCompile(`(?i)(RocketNet|RakNet)\s+Succes{1,2}fully hosted with Address:\s*(.+?)(?::|\s+Port:\s*)(\d+)`),
 			handler: func(matches []string, logMessage string) {
 				raknetType := matches[1] // purely cosmetic
 				address := matches[2]
@@ -262,6 +265,7 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 
 // triggerEvent calls all registered handlers for an event type
 func (d *Detector) triggerEvent(event Event) {
+	handleServerStateEvent(event.Type)
 	if handlers, ok := d.handlers[event.Type]; ok {
 		for _, handler := range handlers {
 			handler(event)

@@ -26,6 +26,10 @@ const SSUITheme = (() => {
         { variable: '--surface-dark',    label: 'Surface',       description: 'Button / elevated backgrounds', group: 'Surfaces' },
         { variable: '--surface-hover',   label: 'Surface Hover', description: 'Hover state for surfaces',     group: 'Surfaces' },
         { variable: '--surface-overlay', label: 'Overlay',       description: 'Dropdowns, overlays',          group: 'Surfaces' },
+        { variable: '--panel-frame',     label: 'Panel Frame',   description: 'Control panel edges',          group: 'Control Panel' },
+        { variable: '--panel-surface',   label: 'Panel Surface', description: 'Control panel modules',        group: 'Control Panel' },
+        { variable: '--panel-inset',     label: 'Panel Inset',   description: 'Inset console background',     group: 'Control Panel' },
+        { variable: '--panel-lamp',      label: 'Status Lamp',   description: 'Connected stream indicator',   group: 'Control Panel' },
         // Console
         { variable: '--console-info',    label: 'Info',    description: 'Informational console messages',  group: 'Console Colors' },
         { variable: '--console-warning', label: 'Warning', description: 'Warning console messages',        group: 'Console Colors' },
@@ -444,6 +448,9 @@ const SSUITheme = (() => {
     function applyTheme(themeObj) {
         if (!themeObj) return;
         const root = document.documentElement;
+        // Reset known overrides first so older presets/custom themes naturally
+        // inherit defaults for variables introduced in newer SSUI versions.
+        THEME_VARS.forEach(v => root.style.removeProperty(v.variable));
         Object.entries(themeObj).forEach(([varName, value]) => {
             if (value) root.style.setProperty(varName, value);
         });

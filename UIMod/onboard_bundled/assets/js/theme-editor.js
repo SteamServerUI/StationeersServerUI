@@ -135,6 +135,29 @@
             return `#${r}${g}${b}`;
         }
 
+        // Modern browsers may serialize color-mix() results as color(srgb ...).
+        const srgbMatch = colorStr.match(/color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)/i);
+        if (srgbMatch) {
+            const channels = srgbMatch.slice(1, 4).map(channel =>
+                Math.max(0, Math.min(255, Math.round(parseFloat(channel) * 255)))
+                    .toString(16).padStart(2, '0')
+            );
+            return `#${channels.join('')}`;
+        }
+
+        // Resolve color-mix(), var(), and other supported CSS colors in document context.
+        try {
+            const resolver = document.createElement('span');
+            resolver.style.color = colorStr;
+            resolver.style.display = 'none';
+            document.body.appendChild(resolver);
+            const resolved = getComputedStyle(resolver).color;
+            resolver.remove();
+            if (resolved && resolved !== colorStr) return toHex(resolved);
+        } catch {
+            // Fall through to the canvas/named-color resolver.
+        }
+
         // Named colors — use a canvas to resolve
         try {
             const ctx = document.createElement('canvas').getContext('2d');

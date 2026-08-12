@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/modding"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
@@ -136,11 +137,11 @@ func UpdateSingleWorkshopModHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.WorkshopHandle == "" {
+	if _, err := strconv.ParseUint(req.WorkshopHandle, 10, 64); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"success": false,
-			"error":   "workshopHandle is required",
+			"error":   "workshopHandle must be a numeric Steam Workshop ID",
 		})
 		return
 	}
