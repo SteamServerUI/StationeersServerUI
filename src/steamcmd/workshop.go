@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
@@ -32,6 +33,16 @@ func UpdateWorkshopItems() ([]string, error) {
 
 func DownloadWorkshopItems(workshopHandles []string) ([]string, error) {
 	var logs []string
+	validatedHandles := make([]string, 0, len(workshopHandles))
+	for _, handle := range workshopHandles {
+		workshopID, err := strconv.ParseUint(handle, 10, 64)
+		if err != nil || workshopID == 0 {
+			return logs, fmt.Errorf("invalid Steam Workshop ID %q: must be a positive integer", handle)
+		}
+		validatedHandles = append(validatedHandles, strconv.FormatUint(workshopID, 10))
+	}
+	workshopHandles = validatedHandles
+
 	logger.Install.Infof("🔄 Downloading %d workshop items...", len(workshopHandles))
 	logs = append(logs, fmt.Sprintf("Downloading %d workshop items...", len(workshopHandles)))
 
