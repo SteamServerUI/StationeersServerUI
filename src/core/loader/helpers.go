@@ -117,6 +117,7 @@ func PrintConfigDetails(logLevel ...string) {
 		"AllowPrereleaseUpdates": fmt.Sprintf("%v", config.GetAllowPrereleaseUpdates()),
 		"AllowMajorUpdates":      fmt.Sprintf("%v", config.GetAllowMajorUpdates()),
 		"AutoRestartServerTimer": config.GetAutoRestartServerTimer(),
+		"AutoRestartCountdown":   config.GetAutoRestartCountdown(),
 		"AutoGameServerUpdates":  fmt.Sprintf("%v", config.GetAllowAutoGameServerUpdates()),
 		"CurrentBranchBuildID":   config.GetCurrentBranchBuildID(),
 	}

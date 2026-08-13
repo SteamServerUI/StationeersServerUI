@@ -20,6 +20,22 @@ import (
 const defaultLogFolderMode = 0755
 const defaultLogFileMode = 0644
 
+var (
+	gameServerLogFileFolder string
+	gameServerLogFilePath   string
+)
+
+func setGameServerLogFilePath(serverUUID uuid.UUID) {
+	gameServerLogFileFolder = config.GetLogFolder()
+	logFileName := fmt.Sprintf("serverlog_%s_%s.log", time.Now().Format("200601021504"), serverUUID.String())
+	gameServerLogFilePath = path.Join(gameServerLogFileFolder, logFileName)
+}
+
+func clearGameServerLogFilePath() {
+	gameServerLogFileFolder = ""
+	gameServerLogFilePath = ""
+}
+
 // readPipe for Windows
 func readPipe(pipe io.ReadCloser) {
 	scanner := bufio.NewScanner(pipe)
@@ -117,7 +133,10 @@ func tailLogFile(logFilePath string) {
 
 func logToFile(message string) {
 	if config.GetCreateGameServerLogFile() {
-		logFileFolder := config.GetLogFolder()
+		logFileFolder := gameServerLogFileFolder
+		if logFileFolder == "" {
+			logFileFolder = config.GetLogFolder()
+		}
 		// Check if the log folder exists, if not create it
 		_, err := os.Stat(logFileFolder)
 		if os.IsNotExist(err) {
@@ -132,11 +151,8 @@ func logToFile(message string) {
 		}
 
 		if GameServerUUID != uuid.Nil {
-			logFileName := fmt.Sprintf("serverlog_%s_%s.log", time.Now().Format("200601021504"), GameServerUUID.String())
-			logFilePath := path.Join(logFileFolder, logFileName)
-
 			// append the log file to the log folder
-			file, err := os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, defaultLogFileMode)
+			file, err := os.OpenFile(gameServerLogFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, defaultLogFileMode)
 			if err != nil {
 				logger.Core.Error("Error opening log file: " + err.Error())
 				return

@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/modding"
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
@@ -108,6 +109,58 @@ func UpdateWorkshopModsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"success": true,
 		"message": "Workshop mods updated successfully",
+		"logs":    logs,
+	})
+}
+
+func UpdateSingleWorkshopModHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"error":   "method not allowed",
+		})
+		return
+	}
+
+	var req struct {
+		WorkshopHandle string `json:"workshopHandle"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"error":   "invalid request body",
+		})
+		return
+	}
+
+	if _, err := strconv.ParseUint(req.WorkshopHandle, 10, 64); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"error":   "workshopHandle must be a numeric Steam Workshop ID",
+		})
+		return
+	}
+
+	logs, err := steamcmd.DownloadWorkshopItems([]string{req.WorkshopHandle})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"error":   err.Error(),
+			"logs":    logs,
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Workshop mod updated successfully",
 		"logs":    logs,
 	})
 }

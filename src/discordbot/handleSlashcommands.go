@@ -33,6 +33,7 @@ var handlers = map[string]commandHandler{
 	"unbansteamid": handleUnban,
 	"update":       handleUpdate,
 	"command":      handleCommand,
+	"announce":     handleAnnounce,
 }
 
 // Check channel and handle initial validation
@@ -152,6 +153,7 @@ func handleHelp(s *discordgo.Session, i *discordgo.InteractionCreate, data Embed
 		{Name: "/bansteamid <SteamID>", Value: "Bans a player"},
 		{Name: "/unbansteamid <SteamID>", Value: "Unbans a player"},
 		{Name: "/command <command>", Value: "Sends a command to the gameserver console"},
+		{Name: "/announce <message>", Value: "Broadcasts an announcement to all in-game players (via announce cmd)"},
 		{Name: "/help", Value: "Shows this help"},
 	}
 	return respond(s, i, data)
@@ -338,23 +340,76 @@ func handleBanUnban(s *discordgo.Session, i *discordgo.InteractionCreate, data E
 }
 
 func handleCommand(s *discordgo.Session, i *discordgo.InteractionCreate, data EmbedData) error {
+	cmd := ""
+	if len(i.ApplicationCommandData().Options) > 0 {
+		cmd = i.ApplicationCommandData().Options[0].StringValue()
+	}
 	data.Title, data.Description, data.Color = "Server Control", "Sending a command to the gameserver console...", 0x00FF00
-	data.Fields = []EmbedField{{Name: "Status", Value: "❌ Failed, is the server running and SSCM enabled?", Inline: true}}
+	data.Fields = []EmbedField{
+		{Name: "Command", Value: "`" + cmd + "`", Inline: false},
+		{Name: "Status", Value: "❌ Failed, is the server running and SSCM enabled?", Inline: true},
+	}
 	data.Color = 0xFF0000
 	if gamemgr.InternalIsServerRunning() {
 		data.Color = 0x00FF00
-		err := commandmgr.WriteCommand(i.ApplicationCommandData().Options[0].StringValue())
+		err := commandmgr.WriteCommand(cmd)
 		if err != nil {
-			data.Fields = []EmbedField{{Name: "Error", Value: err.Error(), Inline: true}}
+			data.Fields = []EmbedField{
+				{Name: "Command", Value: "`" + cmd + "`", Inline: false},
+				{Name: "Error", Value: err.Error(), Inline: true},
+			}
 			return respond(s, i, data)
 		}
-		data.Fields = []EmbedField{{Name: "Status", Value: "✅ Gameserver recieved command", Inline: true}}
+		data.Fields = []EmbedField{
+			{Name: "Command", Value: "`" + cmd + "`", Inline: false},
+			{Name: "Status", Value: "✅ Gameserver received command", Inline: true},
+		}
 	}
 
 	if err := respond(s, i, data); err != nil {
 		return err
 	}
 	return nil
+}
+
+func handleAnnounce(s *discordgo.Session, i *discordgo.InteractionCreate, data EmbedData) error {
+	cmdData := i.ApplicationCommandData()
+	msg := ""
+	if len(cmdData.Options) > 0 {
+		msg = cmdData.Options[0].StringValue()
+	}
+	fullCmd := "announce " + msg
+
+	data.Title = "📢 Server Announcement"
+	data.Description = "Broadcasting message to connected players via the game announce command."
+	data.Color = 0x1E90FF
+	data.Fields = []EmbedField{
+		{Name: "Command Sent", Value: "`" + fullCmd + "`", Inline: false},
+		{Name: "Status", Value: "🕛 Received", Inline: true},
+	}
+
+	if !gamemgr.InternalIsServerRunning() {
+		data.Color = 0xFF0000
+		data.Fields = append(data.Fields, EmbedField{Name: "Warning", Value: "Server not running - command may have no effect", Inline: true})
+	} else if !config.GetIsSSCMEnabled() {
+		data.Color = 0xFFA500
+		data.Fields = append(data.Fields, EmbedField{Name: "Warning", Value: "SSCM is not enabled - announcement not delivered", Inline: true})
+	} else {
+		if err := commandmgr.WriteCommand(fullCmd); err != nil {
+			data.Color = 0xFF0000
+			data.Fields = []EmbedField{
+				{Name: "Command Sent", Value: "`" + fullCmd + "`", Inline: false},
+				{Name: "Error", Value: err.Error(), Inline: true},
+			}
+			return respond(s, i, data)
+		}
+		data.Fields = []EmbedField{
+			{Name: "Command Sent", Value: "`" + fullCmd + "`", Inline: false},
+			{Name: "Status", Value: "✅ Announcement sent to players", Inline: true},
+		}
+	}
+
+	return respond(s, i, data)
 }
 
 // handleDownloadButtonInteraction handles button interactions for downloading backups

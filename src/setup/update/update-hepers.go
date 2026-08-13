@@ -78,14 +78,6 @@ func getLatestRelease() (*githubRelease, error) {
 			continue
 		}
 		if i == 0 || isReleaseNewerVersion(version, latestVersion) {
-			currentVersion, err := parseVersion(config.GetVersion())
-			if err == nil && isReleaseNewerVersion(currentVersion, version) {
-				if release.Prerelease {
-					logger.Install.Warn("Found a prerelease, but it is older than the running version. Skipping...")
-					continue
-				}
-				continue
-			}
 			latestVersion = version
 			latestRelease = &releases[i]
 		}

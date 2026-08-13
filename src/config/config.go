@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.13.2"
+	Version = "5.14.0"
 	Branch  = "release"
 )
 
@@ -70,6 +70,7 @@ type JsonConfig struct {
 	LogClutterToConsole       *bool  `json:"LogClutterToConsole"`
 	IsSSCMEnabled             *bool  `json:"IsSSCMEnabled"`
 	AutoRestartServerTimer    string `json:"AutoRestartServerTimer"`
+	AutoRestartCountdown      string `json:"AutoRestartCountdown"`
 	IsConsoleEnabled          *bool  `json:"IsConsoleEnabled"`
 	IsCLIDashboardEnabled     *bool  `json:"IsCLIDashboardEnabled"`
 	LanguageSetting           string `json:"LanguageSetting"`
@@ -176,7 +177,7 @@ func applyConfig(cfg *JsonConfig) {
 	IsNewTerrainAndSaveSystem = isNewTerrainAndSaveSystemVal
 	cfg.IsNewTerrainAndSaveSystem = &isNewTerrainAndSaveSystemVal
 
-	GameBranch = getString(cfg.GameBranch, "GAME_BRANCH", "public")
+	GameBranch = getString(strings.ToLower(cfg.GameBranch), "GAME_BRANCH", "public")
 	Difficulty = getString(cfg.Difficulty, "DIFFICULTY", "")
 	StartCondition = getString(cfg.StartCondition, "START_CONDITION", "")
 	StartLocation = getString(cfg.StartLocation, "START_LOCATION", "")
@@ -273,6 +274,7 @@ func applyConfig(cfg *JsonConfig) {
 
 	SubsystemFilters = getStringSlice(cfg.SubsystemFilters, "SUBSYSTEM_FILTERS", []string{})
 	AutoRestartServerTimer = getString(cfg.AutoRestartServerTimer, "AUTO_RESTART_SERVER_TIMER", "0")
+	AutoRestartCountdown = getString(cfg.AutoRestartCountdown, "AUTO_RESTART_COUNTDOWN", "65")
 	isSSCMEnabledVal := getBool(cfg.IsSSCMEnabled, "IS_SSCM_ENABLED", true)
 	IsSSCMEnabled = isSSCMEnabledVal
 	cfg.IsSSCMEnabled = &isSSCMEnabledVal
@@ -334,26 +336,26 @@ func applyConfig(cfg *JsonConfig) {
 
 	// END MIGRATIONS AND BACKWARDS COMPATIBILITY
 
-	if GameBranch != "public" && GameBranch != "beta" && GameBranch != "multiplayersafe" {
-		IsNewTerrainAndSaveSystem = false
-		fmt.Println("The old terrain system and save format are no longer fully supported by SSUI. Please switch to the new terrain and save system if you wish to continue to use SSUI with all features. Please switch to the new Terrain system if you wish to continue to use new SSUI features. Alternatively, you can continue to use the old system by using an older version of SSUI, disabling auto-updates via the config.json file")
-		fmt.Println("Sleeping for 10 seconds to allow you to read and understand the above message...")
-		time.Sleep(3 * time.Second)
-		fmt.Println("Continuing with the old terrain and save system in 7 seconds...")
-		time.Sleep(2 * time.Second)
-		fmt.Println("Continuing with the old terrain and save system in 5 seconds...")
-		time.Sleep(2 * time.Second)
-		fmt.Println("Continuing with the old terrain and save system in 3 seconds...")
-		time.Sleep(1 * time.Second)
-		fmt.Println("Continuing with the old terrain and save system in 2 seconds...")
-		time.Sleep(1 * time.Second)
-		fmt.Println("Continuing with the old terrain and save system in 1 second...")
-		time.Sleep(1 * time.Second)
-		fmt.Println("Continuing with the old terrain and save system...")
-
-	} else {
-		IsNewTerrainAndSaveSystem = true
+	// Enforce branch compatibility (#172): hard error on legacy terrain branches.
+	// Only modern branches (public, beta, others new) supported in current SSUI.
+	// Legacy preterrain etc require old SSUI ~5.12.x .
+	legacyBranches := map[string]bool{
+		"preterrain":      true,
+		"prerocket":       true,
+		"prephasechange":  true,
+		"multiplayersafe": true,
 	}
+	normBranch := strings.ToLower(GameBranch)
+	if legacyBranches[normBranch] {
+		fmt.Println("❌ FATAL: Legacy terrain/save branch '" + GameBranch + "' is no longer supported.")
+		fmt.Println("This version of SSUI has removed legacy terrain system checks and support.")
+		fmt.Println("Recommendation: switch your GameBranch to 'public' (or 'beta'), or use an older SSUI release (e.g. 5.12.x series) that retains preterrain backup manager support.")
+		fmt.Println("Exiting now.")
+		os.Exit(1)
+	}
+
+	// New terrain and save system is now always enforced for supported branches.
+	IsNewTerrainAndSaveSystem = true
 
 	// Set backup paths for old or new style saves
 	if IsNewTerrainAndSaveSystem {
@@ -429,6 +431,7 @@ func safeSaveConfig() error {
 		IsUpdateEnabled:                          &IsUpdateEnabled,
 		IsSSCMEnabled:                            &IsSSCMEnabled,
 		AutoRestartServerTimer:                   AutoRestartServerTimer,
+		AutoRestartCountdown:                     AutoRestartCountdown,
 		AllowPrereleaseUpdates:                   &AllowPrereleaseUpdates,
 		AllowMajorUpdates:                        &AllowMajorUpdates,
 		AllowAutoGameServerUpdates:               &AllowAutoGameServerUpdates,

@@ -131,6 +131,7 @@ func InternalStartServer() error {
 		go tailLogFile("./debug.log")
 	}
 	// create a UUID for this specific run
+	SetServerState(ServerStateStarting)
 	createGameServerUUID()
 	setServerStartTime()
 	config.SetIsGameServerRunning(true)
@@ -153,8 +154,10 @@ func InternalStopServer() error {
 	defer mu.Unlock()
 
 	if !internalIsServerRunningNoLock() {
+		SetServerState(ServerStateStopped)
 		return fmt.Errorf("server not running")
 	}
+	SetServerState(ServerStateStopping)
 
 	// Stop auto-restart goroutine
 	if autoRestartDone != nil {
@@ -223,6 +226,7 @@ func InternalStopServer() error {
 	// Process is confirmed stopped, clear cmd
 	cmd = nil
 	config.SetIsGameServerRunning(false)
+	SetServerState(ServerStateStopped)
 	clearServerStartTime()
 	clearGameServerUUID()
 	return nil

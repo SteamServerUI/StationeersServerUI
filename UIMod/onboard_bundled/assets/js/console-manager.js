@@ -1,9 +1,114 @@
 // /static/console-manager.js
 
+const STREAM_MESSAGE_LIMIT = 500;
+const streamPanels = new Map();
+
+function registerStreamPanel(tabId, consoleId, expectedConnections = 1) {
+    const existing = streamPanels.get(tabId);
+    const state = existing || {
+        tabId,
+        consoleId,
+        paused: false,
+        queue: [],
+        connections: new Map(),
+    };
+    state.consoleId = consoleId;
+    state.expectedConnections = expectedConnections;
+    streamPanels.set(tabId, state);
+    updateStreamToolbar();
+    return state;
+}
+
+function getActiveStreamPanel() {
+    const activeTab = document.querySelector('.tab-content.active');
+    return activeTab ? streamPanels.get(activeTab.id) : null;
+}
+
+function trimStreamMessages(state) {
+    const consoleElement = document.getElementById(state.consoleId);
+    if (!consoleElement) return;
+    const messages = Array.from(consoleElement.children)
+        .filter(child => !child.classList.contains('sscm-command-container'));
+    messages.slice(0, Math.max(0, messages.length - STREAM_MESSAGE_LIMIT)).forEach(message => message.remove());
+}
+
+function insertStreamMessage(state, message) {
+    const consoleElement = document.getElementById(state.consoleId);
+    if (!consoleElement) return;
+    const commandInput = consoleElement.querySelector('.sscm-command-container');
+    consoleElement.insertBefore(message, commandInput);
+    trimStreamMessages(state);
+    consoleElement.scrollTop = consoleElement.scrollHeight;
+}
+
+function appendStreamMessage(tabId, message) {
+    const state = streamPanels.get(tabId);
+    if (!state) return;
+    if (state.paused) {
+        state.queue.push(message);
+        if (state.queue.length > STREAM_MESSAGE_LIMIT) state.queue.shift();
+    } else {
+        insertStreamMessage(state, message);
+    }
+    updateStreamToolbar();
+}
+
+function setStreamConnection(tabId, connectionId, status) {
+    const state = streamPanels.get(tabId);
+    if (!state) return;
+    state.connections.set(connectionId, status);
+    updateStreamToolbar();
+}
+
+function getStreamConnectionState(state) {
+    const statuses = Array.from(state.connections.values());
+    if (statuses.length === 0) return 'connecting';
+    if (statuses.some(status => status === 'reconnecting')) return 'reconnecting';
+    if (statuses.length >= state.expectedConnections && statuses.every(status => status === 'connected')) return 'connected';
+    return 'connecting';
+}
+
+function updateStreamToolbar() {
+    const state = getActiveStreamPanel();
+    const text = document.getElementById('stream-status-text');
+    const lamp = document.getElementById('stream-status-lamp');
+    const pauseButton = document.getElementById('stream-pause-button');
+    if (!state || !text || !lamp || !pauseButton) return;
+
+    const connectionState = getStreamConnectionState(state);
+    const displayState = state.paused ? 'paused' : connectionState;
+    text.textContent = text.dataset[displayState];
+    lamp.className = `stream-status-lamp ${displayState}`;
+    pauseButton.textContent = state.paused ? pauseButton.dataset.resume : pauseButton.dataset.pause;
+    pauseButton.classList.toggle('is-active', state.paused);
+}
+
+function toggleActiveStreamPause() {
+    const state = getActiveStreamPanel();
+    if (!state) return;
+    state.paused = !state.paused;
+    if (!state.paused && state.queue.length) {
+        const queuedMessages = state.queue.splice(0);
+        queuedMessages.forEach(message => insertStreamMessage(state, message));
+    }
+    updateStreamToolbar();
+}
+
+function clearActiveStream() {
+    const state = getActiveStreamPanel();
+    if (!state) return;
+    const consoleElement = document.getElementById(state.consoleId);
+    if (!consoleElement) return;
+    Array.from(consoleElement.children)
+        .filter(child => !child.classList.contains('sscm-command-container'))
+        .forEach(child => child.remove());
+    state.queue = [];
+    updateStreamToolbar();
+}
+
 // Detection events streaming
 function fetchDetectionEvents() {
-    const maxMessages = 500;
-    const detectionConsole = document.getElementById('detection-console');
+    registerStreamPanel('detection-tab', 'detection-console');
     
     const connect = () => {
         detectionEventSource = new EventSource('/events');
@@ -20,12 +125,7 @@ function fetchDetectionEvents() {
             content.textContent = event.data;
             
             message.append(timestamp, content);
-            detectionConsole.appendChild(message);
-            
-            while (detectionConsole.childElementCount > maxMessages) {
-                detectionConsole.firstChild.remove();
-            }
-            detectionConsole.scrollTop = detectionConsole.scrollHeight;
+            appendStreamMessage('detection-tab', message);
             
             const detectionTab = document.getElementById('detection-tab');
             if (!detectionTab.classList.contains('active')) {
@@ -35,12 +135,16 @@ function fetchDetectionEvents() {
             }
         };
         
-        detectionEventSource.onopen = () => console.log("Detection events stream connected");
+        detectionEventSource.onopen = () => {
+            setStreamConnection('detection-tab', '/events', 'connected');
+            console.log("Detection events stream connected");
+        };
         
         detectionEventSource.onerror = () => {
             console.error("Detection events stream disconnected");
             detectionEventSource.close();
             detectionEventSource = null;
+            setStreamConnection('detection-tab', '/events', 'reconnecting');
             if (window.location.pathname === '/') {
                 setTimeout(connect, 2000);
             }
@@ -53,6 +157,8 @@ function fetchDetectionEvents() {
 function handleConsole() {
     const consoleElement = document.getElementById('console');
     consoleElement.innerHTML = '';
+    const streamState = registerStreamPanel('console-tab', 'console');
+    streamState.queue = [];
     const bootTitle = "Interface initializing...";
     const bootCompleteMessage = "Interface ready.🎮 Happy gaming! 🎮";
     const bugChance = Math.random();
@@ -110,8 +216,7 @@ function handleConsole() {
         div.textContent = text;
         div.style.color = color;
         div.style.fontStyle = style;
-        consoleElement.appendChild(div);
-        consoleElement.scrollTop = consoleElement.scrollHeight;
+        appendStreamMessage('console-tab', div);
     };
 
     // Dynamically create SSCM command input
@@ -160,7 +265,9 @@ function handleConsole() {
     };
 
     // Start with initializing message
-    typeTextWithCallback(consoleElement, bootTitle, 30, () => {
+    const bootLine = document.createElement('div');
+    appendStreamMessage('console-tab', bootLine);
+    typeTextWithCallback(bootLine, bootTitle, 30, () => {
         // Show two funny messages while connecting
         const messageIndex1 = Math.floor(Math.random() * funMessages.length);
         addMessage(funMessages[messageIndex1], cssVar('--console-info'), 'italic');
@@ -173,17 +280,17 @@ function handleConsole() {
 
         // Set up the persistent console stream
         outputEventSource = new EventSource('/console');
+        setStreamConnection('console-tab', '/console', 'connecting');
         
         // Persistent message handler
         outputEventSource.onmessage = event => {
             const message = document.createElement('div');
             message.textContent = event.data;
-            consoleElement.insertBefore(message, consoleElement.querySelector('.sscm-command-container')); // Insert before input
-            // Auto-scroll
-            consoleElement.scrollTop = consoleElement.scrollHeight;
+            appendStreamMessage('console-tab', message);
         };
 
         outputEventSource.onopen = () => {
+            setStreamConnection('console-tab', '/console', 'connected');
             console.log("Console stream connected");
             finishInitialization();
         };
@@ -192,6 +299,7 @@ function handleConsole() {
             console.error("Console stream disconnected");
             outputEventSource.close();
             outputEventSource = null;
+            setStreamConnection('console-tab', '/console', 'reconnecting');
             addMessage("Warning: Console stream unavailable. Retrying...", cssVar('--console-warning'));
             if (window.location.pathname === '/') {
                 setTimeout(() => {
@@ -237,6 +345,7 @@ function setupLogStreams({ consoleId, streamUrls, maxMessages, messageClass }) {
 
     // Clear the console initially
     consoleElement.innerHTML = '';
+    registerStreamPanel('log-tab', consoleId, streamUrls.length);
 
     const connectStream = (streamUrl) => {
         const eventSource = new EventSource(streamUrl);
@@ -260,24 +369,18 @@ function setupLogStreams({ consoleId, streamUrls, maxMessages, messageClass }) {
             content.textContent = event.data;
 
             message.append(content);
-            consoleElement.appendChild(message);
-
-            // Limit the number of messages
-            while (consoleElement.childElementCount > maxMessages) {
-                consoleElement.firstChild.remove();
-            }
-
-            // Auto-scroll to the bottom
-            consoleElement.scrollTop = consoleElement.scrollHeight;
+            appendStreamMessage('log-tab', message);
         };
 
         eventSource.onopen = () => {
+            setStreamConnection('log-tab', streamUrl, 'connected');
             console.log(`Stream ${streamUrl} connected for console ${consoleId}`);
         };
 
         eventSource.onerror = () => {
             console.error(`Stream ${streamUrl} disconnected for console ${consoleId}`);
             eventSource.close();
+            setStreamConnection('log-tab', streamUrl, 'reconnecting');
             if (window.location.pathname === '/') {
                 setTimeout(() => connectStream(streamUrl), 5000); // Reconnect after 5 seconds
             }

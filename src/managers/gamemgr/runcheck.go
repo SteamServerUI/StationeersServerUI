@@ -16,6 +16,7 @@ func StartIsGameServerRunningCheck() {
 				config.SetIsGameServerRunning(true)
 			} else {
 				config.SetIsGameServerRunning(false)
+				SetServerState(ServerStateStopped)
 			}
 			time.Sleep(4 * time.Second)
 		}

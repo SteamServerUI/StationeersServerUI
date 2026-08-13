@@ -48,6 +48,7 @@ func buildConfigItems() []ConfigItem {
 		// ─────────────────────────────────────────────────────────────────────
 		{Key: "AutoStartServerOnStartup", Label: "Auto-Start Server", Value: boolToStr(config.GetAutoStartServerOnStartup()), Type: "bool", Section: ConfigSectionAdvanced, Description: "Start game server when SSUI starts"},
 		{Key: "AutoRestartServerTimer", Label: "Auto-Restart Timer", Value: config.GetAutoRestartServerTimer(), Type: "string", Section: ConfigSectionAdvanced, Description: "Auto-restart interval (0 = disabled)"},
+		{Key: "AutoRestartCountdown", Label: "Auto-Restart Countdown (s)", Value: config.GetAutoRestartCountdown(), Type: "string", Section: ConfigSectionAdvanced, Description: "Warning seconds before auto-restart (uses announce cmd, default 65)"},
 		{Key: "AutoPauseServer", Label: "Auto-Pause", Value: boolToStr(config.GetAutoPauseServer()), Type: "bool", Section: ConfigSectionAdvanced, Description: "Pause when no players"},
 		{Key: "IsSSCMEnabled", Label: "SSCM/BepInEx", Value: boolToStr(config.GetIsSSCMEnabled()), Type: "bool", Section: ConfigSectionAdvanced, Description: "Enable mod support"},
 		{Key: "Branch", Label: "Game Branch", Value: config.GetGameBranch(), Type: "string", Section: ConfigSectionAdvanced, Description: "Steam branch (public, beta, etc.)"},
@@ -105,6 +106,8 @@ func saveConfigItem(item ConfigItem) error {
 		return config.SetAutoStartServerOnStartup(strToBool(item.Value))
 	case "AutoRestartServerTimer":
 		return config.SetAutoRestartServerTimer(item.Value)
+	case "AutoRestartCountdown":
+		return config.SetAutoRestartCountdown(item.Value)
 	case "AutoPauseServer":
 		return config.SetAutoPauseServer(strToBool(item.Value))
 	case "IsSSCMEnabled":

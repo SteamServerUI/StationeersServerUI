@@ -53,7 +53,7 @@ function setButtonLoading(buttonId, isLoading) {
     if (isLoading) {
         button.disabled = true;
         button.dataset.originalText = button.textContent;
-        button.textContent = '⏳ Please wait...';
+        button.textContent = button.classList.contains('mod-update-button') ? '⏳' : '⏳ Please wait...';
         button.classList.add('loading');
     } else {
         button.disabled = false;
@@ -132,6 +132,32 @@ function reinstallSLP() {
         .catch(error => {
             showPopup('error', 'Failed to reinstall SLP:\n\n' + (error.message || 'Network error'));
             setButtonLoading('reinstallSLPBtn', false);
+        });
+}
+
+function updateSingleMod(workshopHandle, index) {
+    const btnId = 'update-mod-btn-' + index;
+    setButtonLoading(btnId, true);
+    showPopup('info', 'Updating workshop mod ' + workshopHandle + '...\n\nPlease wait.');
+
+    fetch('/api/v2/steamcmd/updatemod', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workshopHandle: workshopHandle })
+    })
+        .then(response => response.json())
+        .then(data => {
+            setButtonLoading(btnId, false);
+            if (data.success) {
+                showPopup('success', 'Workshop mod updated successfully!\n\nReloading mod list...');
+                loadInstalledMods();
+            } else {
+                showPopup('error', 'Failed to update mod:\n\n' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            showPopup('error', 'Failed to update mod:\n\n' + (error.message || 'Network error'));
+            setButtonLoading(btnId, false);
         });
 }
 
@@ -431,6 +457,15 @@ function createModCard(mod, index) {
         ${mod.Version ? `<div class="mod-version">v${escapeHtml(mod.Version)}</div>` : ''}
         ${descriptionHtml}
     `;
+
+    if (mod.WorkshopHandle) {
+        const updateButton = document.createElement('button');
+        updateButton.className = 'mod-update-button';
+        updateButton.id = `update-mod-btn-${index}`;
+        updateButton.textContent = '🔄 Update';
+        updateButton.addEventListener('click', () => updateSingleMod(mod.WorkshopHandle, index));
+        card.appendChild(updateButton);
+    }
     
     return card;
 }

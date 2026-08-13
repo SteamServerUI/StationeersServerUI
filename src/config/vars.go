@@ -57,6 +57,7 @@ var (
 	GameBranch                               string
 	SubsystemFilters                         []string
 	AutoRestartServerTimer                   string
+	AutoRestartCountdown                     string
 	IsConsoleEnabled                         bool
 	IsCLIDashboardEnabled                    bool
 	LogClutterToConsole                      bool // surpresses clutter mono logs from the gameserver

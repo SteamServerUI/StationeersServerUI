@@ -49,7 +49,7 @@ func init() {
 	RegisterCommand("printconfig", WrapNoReturn(printConfig), "Print the current SSUI configuration", true, "pc")
 	RegisterCommand("listmods", WrapNoReturn(listmods), "List installed SLP mods", true, "lm")
 	RegisterCommand("listworkshophandles", WrapNoReturn(listworkshophandles), "List workshop Mod handles", true, "lwh")
-	RegisterCommand("downloadworkshopitemtest", WrapNoReturn(downloadWorkshopItemTest), "Test downloading a workshop item (ModularConsolesMod)", true, "dwmodcon")
+	RegisterCommand("downloadworkshopitem", downloadWorkshopItem, "Download a workshop item. When no arguments are provided, 3672138641/BlueprintMod is downloaded. Can be called like downloadworkshopitem 3505169479 or downloadworkshopitem 3505169479 3505115682 3505169479 ", true, "dwi")
 	RegisterCommand("dumpheapprofile", WrapNoReturn(dumpHeapProfile), "Dump a pprof heap profile for debugging", true, "dhp")
 	RegisterCommand("testserverstatuspaneldiscord", WrapNoReturn(testServerStatusPanelDiscord), "Send a fake player list to the Discord package to test the server status panel", true, "tsspd")
 }
@@ -89,6 +89,10 @@ func stopServer() {
 func exitfromcli() {
 	// send signal to the main process to exit
 	logger.Core.Info("I have to go...")
+	err := gamemgr.InternalStopServer()
+	if err != nil {
+		logger.Core.Error("Error stopping server:" + err.Error())
+	}
 	os.Exit(0)
 }
 

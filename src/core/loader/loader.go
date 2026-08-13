@@ -20,6 +20,10 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
 )
 
+var reloadDiscordBotFunc = func() {
+	ReloadDiscordBot()
+}
+
 // only call this once at startup
 func InitBackend() {
 	ReloadConfig()
@@ -44,6 +48,7 @@ func ReloadBackend() {
 	ReloadBackupManager()
 	ReloadLocalizer()
 	ReloadAppInfoPoller()
+	reloadDiscordBotFunc()
 	PrintConfigDetails()
 	logger.Core.Info("Backend reload done!")
 }
@@ -72,10 +77,22 @@ func ReloadBackupManager() {
 }
 
 func ReloadDiscordBot() {
-	if config.GetIsDiscordEnabled() {
-		go discordbot.InitializeDiscordBot()
-		logger.Discord.Info("Discord bot reloaded successfully")
+	if !config.GetIsDiscordEnabled() {
+		if config.DiscordSession != nil {
+			logger.Discord.Info("Discord integration disabled, closing existing session")
+			config.DiscordSession.Close()
+			config.DiscordSession = nil
+		}
+		return
 	}
+
+	if config.GetDiscordToken() == "" {
+		logger.Discord.Warn("Discord is enabled but no token is configured")
+		return
+	}
+
+	go discordbot.InitializeDiscordBot()
+	logger.Discord.Info("Discord bot reload requested")
 }
 
 // The detector should NOT be reloaded, as it is a singleton. Instead, dynamic changes come in via the custom detections manager.
@@ -83,6 +100,16 @@ func InitDetector() {
 	detector := detectionmgr.Start()
 	detectionmgr.RegisterDefaultHandlers(detector)
 	detectionmgr.InitCustomDetectionsManager(detector)
+	detectionmgr.SetServerStateHandler(func(eventType detectionmgr.EventType) {
+		switch eventType {
+		case detectionmgr.EventGameManagerReady:
+			gamemgr.SetServerState(gamemgr.ServerStateLoadingMap)
+		case detectionmgr.EventServerHosted, detectionmgr.EventSessionStarting:
+			gamemgr.SetServerState(gamemgr.ServerStateHostingSession)
+		case detectionmgr.EventSessionRegistered:
+			gamemgr.SetServerState(gamemgr.ServerStateRunning)
+		}
+	})
 	go detectionmgr.StreamLogs(detector)
 	logger.Detection.Info("Detector loaded successfully")
 }

@@ -1,6 +1,7 @@
 package gamemgr
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -13,6 +14,44 @@ var (
 	autoRestartDone chan struct{}
 	// other local vars are defined in processmanagement.go
 )
+
+// sendAutoRestartWarnings sends in-game restart warnings via the `announce` command (SSCM).
+// Duration is controlled by AutoRestartCountdown config (default 60s). Addresses #171 + announce integration.
+func sendAutoRestartWarnings() {
+	if !config.GetIsSSCMEnabled() {
+		return
+	}
+	countStr := config.GetAutoRestartCountdown()
+	lead, err := strconv.Atoi(countStr)
+	if err != nil || lead < 5 {
+		lead = 60
+	}
+
+	// Initial warning
+	commandmgr.WriteCommand(fmt.Sprintf("announce Attention, server is restarting in %d seconds!", lead))
+
+	// Step down ~every 10s
+	remaining := lead
+	for remaining > 10 {
+		sleep := 10
+		if remaining-10 < 10 && remaining-10 > 0 {
+			sleep = remaining - 10
+		}
+		time.Sleep(time.Duration(sleep) * time.Second)
+		remaining -= sleep
+		if remaining > 0 {
+			commandmgr.WriteCommand(fmt.Sprintf("announce Attention, server is restarting in %d seconds!", remaining))
+		}
+	}
+
+	// Final save + short countdown (approx lands near 10s/5s)
+	time.Sleep(5 * time.Second)
+	commandmgr.WriteCommand("announce Attention, server is restarting in 10 seconds, saving world now!")
+	commandmgr.WriteCommand("save")
+	time.Sleep(5 * time.Second)
+	commandmgr.WriteCommand("announce Attention, server is restarting in 5 seconds!")
+	time.Sleep(5 * time.Second)
+}
 
 // startAutoRestart runs a goroutine that restarts the server either after a specified duration in minutes
 // or at a specific time of day (HH:MM) every day.
@@ -60,23 +99,7 @@ func startAutoRestart(schedule string, done chan struct{}) {
 			}
 			mu.Unlock()
 
-			if config.GetIsSSCMEnabled() {
-				commandmgr.WriteCommand("say Attention, server is restarting in 60 seconds!")
-				time.Sleep(10 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 50 seconds!")
-				time.Sleep(10 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 40 seconds!")
-				time.Sleep(10 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 30 seconds!")
-				time.Sleep(10 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 20 seconds!")
-				time.Sleep(10 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 10 seconds, saving world now!")
-				commandmgr.WriteCommand("save")
-				time.Sleep(5 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 5 seconds!")
-				time.Sleep(5 * time.Second)
-			}
+			sendAutoRestartWarnings()
 			logger.Core.Info("Auto-restart triggered: stopping server")
 			if err := InternalStopServer(); err != nil {
 				logger.Core.Error("Auto-restart failed to stop server: " + err.Error())
@@ -126,17 +149,7 @@ func scheduleDailyRestart(t time.Time, done chan struct{}) {
 			}
 			mu.Unlock()
 
-			if config.GetIsSSCMEnabled() {
-				commandmgr.WriteCommand("say Attention, server is restarting in 30 seconds!")
-				time.Sleep(10 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 20 seconds!")
-				time.Sleep(10 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 10 seconds, saving world now!")
-				commandmgr.WriteCommand("save")
-				time.Sleep(5 * time.Second)
-				commandmgr.WriteCommand("say Attention, server is restarting in 5 seconds!")
-				time.Sleep(5 * time.Second)
-			}
+			sendAutoRestartWarnings()
 			logger.Core.Info("Daily auto-restart triggered: stopping server")
 			if err := InternalStopServer(); err != nil {
 				logger.Core.Error("Daily auto-restart failed to stop server: " + err.Error())

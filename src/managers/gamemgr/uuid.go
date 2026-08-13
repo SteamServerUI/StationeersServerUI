@@ -9,9 +9,11 @@ var GameServerUUID uuid.UUID
 
 func clearGameServerUUID() {
 	GameServerUUID = uuid.Nil
+	clearGameServerLogFilePath()
 }
 
 func createGameServerUUID() {
 	GameServerUUID = uuid.New()
+	setGameServerLogFilePath(GameServerUUID)
 	logger.Core.Debug("Created Game Server with internal UUID: " + GameServerUUID.String())
 }

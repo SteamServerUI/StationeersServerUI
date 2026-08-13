@@ -25,6 +25,12 @@
     --surface-hover: #333350;     /* Hover state for surfaces */
     --surface-overlay: #1b1b2f;   /* Dropdowns, overlays */
 
+    /* ── Control Panel ── */
+    --panel-frame: color-mix(in srgb, var(--primary) 45%, var(--surface-dark));
+    --panel-surface: color-mix(in srgb, var(--surface-overlay) 88%, transparent);
+    --panel-inset: color-mix(in srgb, var(--bg-dark) 88%, black);
+    --panel-lamp: var(--success);
+
     /* ── Discord (brand, not themeable) ── */
     --discord-accent: #7289da;
 
