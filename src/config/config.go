@@ -11,7 +11,7 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.13.3"
+	Version = "5.14.0"
 	Branch  = "release"
 )
 
@@ -340,9 +340,9 @@ func applyConfig(cfg *JsonConfig) {
 	// Only modern branches (public, beta, others new) supported in current SSUI.
 	// Legacy preterrain etc require old SSUI ~5.12.x .
 	legacyBranches := map[string]bool{
-		"preterrain":    true,
-		"prerocket":     true,
-		"prephasechange": true,
+		"preterrain":      true,
+		"prerocket":       true,
+		"prephasechange":  true,
 		"multiplayersafe": true,
 	}
 	normBranch := strings.ToLower(GameBranch)
