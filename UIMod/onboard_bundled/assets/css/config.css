@@ -793,6 +793,35 @@ body.modal-open {
     overflow: hidden;
 }
 
+.tls-upload-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.tls-file-field {
+    display: grid;
+    gap: 9px;
+    padding: 14px;
+    color: var(--text-bright);
+    background: var(--panel-inset);
+    border: 1px solid var(--panel-frame);
+    border-radius: 6px;
+}
+
+.tls-file-field input[type="file"] {
+    width: 100%;
+    margin: 0;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--text-dim);
+}
+
+@media (max-width: 640px) {
+    .tls-upload-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .server-settings-shell .form-group label {
     margin-bottom: 4px;
     color: var(--text-bright);

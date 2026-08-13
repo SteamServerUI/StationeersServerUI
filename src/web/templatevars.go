@@ -186,6 +186,17 @@ type ConfigTemplateData struct {
 	UIText_Cancel                         string
 	UIText_Close                          string
 	UIText_AdvancedConfiguration          string
+	UIText_TLSCertificateTitle            string
+	UIText_TLSCertificateSummary          string
+	UIText_TLSConfigure                   string
+	UIText_TLSCertificateExplanation      string
+	UIText_TLSCertificateFormats          string
+	UIText_TLSCertificateFile             string
+	UIText_TLSPrivateKeyFile              string
+	UIText_TLSRestartRequired             string
+	UIText_TLSRestartWarning              string
+	UIText_TLSSaveRestart                 string
+	UIText_TLSRestarting                  string
 	UIText_ServerAuthSecret               string
 	UIText_ServerAuthSecretInfo           string
 	UIText_ServerExePath                  string

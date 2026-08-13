@@ -82,6 +82,29 @@
             </div>
         </div>
     </div>
+    <div id="tls-modal" class="advertiser-modal" aria-hidden="true">
+        <div class="advertiser-dialog" role="dialog" aria-modal="true" aria-labelledby="tls-modal-title">
+            <div class="advertiser-modal-header">
+                <div><span class="panel-kicker">HTTPS</span><h2 id="tls-modal-title">{{.UIText_TLSCertificateTitle}}</h2></div>
+                <button type="button" class="advertiser-modal-close" onclick="closeTLSModal()" aria-label="{{.UIText_Close}}">×</button>
+            </div>
+            <div class="advertiser-explanation">
+                <p>{{.UIText_TLSCertificateExplanation}}</p>
+                <p>{{.UIText_TLSCertificateFormats}}</p>
+            </div>
+            <div class="tls-upload-grid">
+                <label class="tls-file-field"><span>{{.UIText_TLSCertificateFile}}</span><input type="file" id="tls-certificate-file" accept=".pem,.crt,.cer,.der,application/x-x509-ca-cert"></label>
+                <label class="tls-file-field"><span>{{.UIText_TLSPrivateKeyFile}}</span><input type="file" id="tls-private-key-file" accept=".pem,.key,.der"></label>
+            </div>
+            <div id="tls-validation" class="advertiser-validation"></div>
+            <div class="advertiser-restart-warning"><strong>{{.UIText_TLSRestartRequired}}</strong><span>{{.UIText_TLSRestartWarning}}</span></div>
+            <div id="tls-restarting" class="advertiser-restarting" hidden>{{.UIText_TLSRestarting}}</div>
+            <div class="advertiser-modal-actions" id="tls-modal-actions">
+                <button type="button" class="advertiser-cancel" onclick="closeTLSModal()">{{.UIText_Cancel}}</button>
+                <button type="button" id="tls-save-button" onclick="saveTLSCertificate()">{{.UIText_TLSSaveRestart}}</button>
+            </div>
+        </div>
+    </div>
     <header>
         <img src="/static/stationeers.webp" alt="Stationeers Banner" id="banner">
         <div id="language-flags">
@@ -305,6 +328,14 @@
                         <div id="advanced-settings" class="config-section">
                             <h3 class="section-title">{{.UIText_AdvancedConfiguration}}</h3>
                             <div class="channel-grid">
+
+                                <div class="form-group advertiser-setting-card">
+                                    <div class="advertiser-setting-copy">
+                                        <label>{{.UIText_TLSCertificateTitle}}</label>
+                                        <div class="input-info">{{.UIText_TLSCertificateSummary}}</div>
+                                    </div>
+                                    <button type="button" class="advertiser-configure-button" onclick="openTLSModal()">{{.UIText_TLSConfigure}}</button>
+                                </div>
 
                                 <div class="form-group">
                                     <label for="AutoRestartServerTimer">{{.UIText_AutoRestartServerTimer}}:</label>
@@ -903,6 +934,7 @@
     <script src="/static/js/popup.js"></script>
     <script src="/static/js/slp.js"></script>
     <script src="/static/js/advertiser-settings.js"></script>
+    <script src="/static/js/tls-settings.js"></script>
 </body>
 
 </html>
