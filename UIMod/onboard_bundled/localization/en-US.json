@@ -231,7 +231,7 @@
             "UIText_Welcome_SkipButton": "Skip Setup",
             "UIText_PlsRead_Title": "Please read!",
             "UIText_PlsRead_HeaderTitle": "Disclaimer",
-            "UIText_PlsRead_StepMessage": "We strongly recommend you to read the texts in this setup wizard! Most reported issues occur because of a misconfiguration.",
+            "UIText_PlsRead_StepMessage": "You may change the language in the top right corner. This setup will take about 5 minutes to complete. We strongly recommend you to read the texts in this setup wizard! Most reported issues occur because of a misconfiguration.",
             "UIText_PlsRead_SubmitButton": "I understand",
             "UIText_PlsRead_SkipButton": "I understand",
             "UIText_ServerName_Title": "Stationeers Server UI",

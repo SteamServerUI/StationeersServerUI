@@ -333,7 +333,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 
 	case path == "/setup":
 		data.Mode = "setup"
-		data.ShowExtraButtons = true
+		data.ShowExtraButtons = stepID != "welcome" && stepID != "admin_account" && stepID != "finalize"
 
 		// Find the current step in our map
 		if step, exists := steps[stepID]; exists {

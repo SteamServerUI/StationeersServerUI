@@ -3,9 +3,7 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -16,8 +14,6 @@ import (
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
 	"github.com/google/uuid"
 )
-
-var setupReminderCount = 0 // to limit the number of setup reminders shown to the user
 
 // LoginHandler issues a JWT cookie
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -77,18 +73,10 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		//logger.Web.Debug("Request Path:" + r.URL.Path) //very spammy
 
 		// Check for first-time setup redirect
-		if config.GetIsFirstTimeSetup() {
-			totalSetupReminderCount := 3 // Defines how often we redirect the users reqests to the setup page
-			if setupReminderCount < totalSetupReminderCount {
-				if r.URL.Path == "/" && (r.Referer() == "" || r.Referer() != "/setup") {
-					remainingReminderCount := totalSetupReminderCount - setupReminderCount
-					logger.Web.Warn("🔍Redirecting to setup page, you should really enable authentication...")
-					logger.Web.Warn(fmt.Sprintf("You will be remined %s more times.", strconv.Itoa(remainingReminderCount)))
-					http.Redirect(w, r, "/setup", http.StatusTemporaryRedirect)
-					setupReminderCount++
-					return
-				}
-			}
+		if config.GetIsFirstTimeSetup() && r.URL.Path == "/" {
+			logger.Web.Warn("🔐 Redirecting to setup; first-time setup is required")
+			http.Redirect(w, r, "/setup", http.StatusTemporaryRedirect)
+			return
 		}
 
 		if !config.GetAuthEnabled() {
@@ -212,7 +200,7 @@ func SetupFinalizeHandler(w http.ResponseWriter, r *http.Request) {
 	if len(config.GetUsers()) == 0 {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "No users registered - cannot finalize setup at this time. You should really enable authentication - or click 'Skip authentication'"})
+		json.NewEncoder(w).Encode(map[string]string{"error": "No users registered - create an administrator account before finalizing setup"})
 		return
 	}
 
