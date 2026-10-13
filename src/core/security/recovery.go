@@ -125,6 +125,11 @@ func recoverOwnerWithHash(username, hash, actor string, now time.Time) (User, er
 	return recovered, err
 }
 
+// cloneStrings never returns nil, so empty lists are sent to the UI as [] instead of null.
+func cloneStrings(values []string) []string {
+	return append(make([]string, 0, len(values)), values...)
+}
+
 func contains(values []string, wanted string) bool {
 	for _, value := range values {
 		if value == wanted {

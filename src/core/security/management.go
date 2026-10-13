@@ -373,7 +373,7 @@ func isEnabledOwner(user User) bool {
 func userView(user User) UserView {
 	return UserView{
 		ID: user.ID, Username: user.Username, Enabled: user.Enabled,
-		GroupIDs: append([]string(nil), user.GroupIDs...), CreatedAt: user.CreatedAt, UpdatedAt: user.UpdatedAt,
+		GroupIDs: cloneStrings(user.GroupIDs), CreatedAt: user.CreatedAt, UpdatedAt: user.UpdatedAt,
 	}
 }
 

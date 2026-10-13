@@ -1,6 +1,7 @@
 package security
 
 import (
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -109,6 +110,41 @@ func TestChangeOwnPasswordRevokesExistingCredentials(t *testing.T) {
 	}
 	if _, err := AuthenticateUser("admin", "a much better password"); err != nil {
 		t.Fatal("new password did not work")
+	}
+}
+
+func TestEmptyListsAreNotSentAsNull(t *testing.T) {
+	useIdentityTestDirectory(t)
+	now := time.Date(2026, 9, 7, 10, 0, 0, 0, time.UTC)
+	if err := InitializeIdentity(nil, now); err != nil {
+		t.Fatal(err)
+	}
+	owner, err := BootstrapOwner("admin", "correct horse battery staple", now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, credential, err := CreateSession(owner.ID, now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	principal, _, err := AuthenticateSession(credential.Value, now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := CreateUser(principal, "nogroups", "correct horse battery staple", nil, now); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := CreateGroup(principal, "Empty", "", nil, now); err != nil {
+		t.Fatal(err)
+	}
+	for _, value := range []any{ListUsers(), ListGroups()} {
+		data, err := json.Marshal(value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if strings.Contains(string(data), "null") {
+			t.Fatalf("empty list was sent as null: %s", data)
+		}
 	}
 }
 

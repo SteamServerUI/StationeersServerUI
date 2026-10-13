@@ -220,12 +220,12 @@ func cloneIdentity(state IdentityState) IdentityState {
 	clone := state
 	clone.Users = make(map[string]User, len(state.Users))
 	for id, user := range state.Users {
-		user.GroupIDs = append([]string(nil), user.GroupIDs...)
+		user.GroupIDs = cloneStrings(user.GroupIDs)
 		clone.Users[id] = user
 	}
 	clone.Groups = make(map[string]Group, len(state.Groups))
 	for id, group := range state.Groups {
-		group.Permissions = append([]string(nil), group.Permissions...)
+		group.Permissions = cloneStrings(group.Permissions)
 		clone.Groups[id] = group
 	}
 	clone.Sessions = make(map[string]Session, len(state.Sessions))
@@ -234,7 +234,7 @@ func cloneIdentity(state IdentityState) IdentityState {
 	}
 	clone.Tokens = make(map[string]Token, len(state.Tokens))
 	for id, token := range state.Tokens {
-		token.Scopes = append([]string(nil), token.Scopes...)
+		token.Scopes = cloneStrings(token.Scopes)
 		if token.ExpiresAt != nil {
 			value := *token.ExpiresAt
 			token.ExpiresAt = &value

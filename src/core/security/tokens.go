@@ -24,7 +24,7 @@ func CreateToken(ownerID, name string, scopes []string, expiresAt *time.Time, no
 	}
 	token := Token{
 		ID: uuid.NewString(), Name: name, SecretHash: hashSecret(secret), OwnerID: ownerID,
-		Scopes: append([]string(nil), scopes...), CreatedAt: now, ExpiresAt: expiresAt,
+		Scopes: cloneStrings(scopes), CreatedAt: now, ExpiresAt: expiresAt,
 	}
 	var owner User
 	err = mutateIdentity(func(current *IdentityState) error {
