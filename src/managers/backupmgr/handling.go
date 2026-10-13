@@ -89,8 +89,6 @@ func handleBackup(m *BackupManager, name string, expected saveIdentity) error {
 	case m.scanGate <- struct{}{}:
 	}
 	defer func() { <-m.scanGate }()
-	m.mu.Lock()
-	defer m.mu.Unlock()
 	if err := m.ctx.Err(); err != nil {
 		return err
 	}
@@ -141,17 +139,23 @@ func handleBackup(m *BackupManager, name string, expected saveIdentity) error {
 	if err != nil {
 		return err
 	}
-	// Publish only the completed copy. Operations within this manager share m.mu.
-	if err := publishBackup(temp, destination); err != nil {
+	// Publish only the completed copy. Operations within this manager share m.mu,
+	// so restores and downloads do not wait for validation, copy or analysis.
+	m.mu.Lock()
+	err = publishBackup(temp, destination)
+	if err == nil {
+		m.stateMu.Lock()
+		m.records[name] = record
+		m.handled[name] = true
+		delete(m.observed, name)
+		delete(m.pending, name)
+		m.revision++
+		m.stateMu.Unlock()
+	}
+	m.mu.Unlock()
+	if err != nil {
 		return err
 	}
-	m.stateMu.Lock()
-	m.records[name] = record
-	m.handled[name] = true
-	delete(m.observed, name)
-	delete(m.pending, name)
-	m.revision++
-	m.stateMu.Unlock()
 	if err := saveManifest(m); err != nil {
 		logger.Backup.Warnf("%s Backup %q saved, but its manifest could not be written: %v", m.config.Identifier, name, err)
 	}
