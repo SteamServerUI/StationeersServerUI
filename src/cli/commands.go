@@ -1,19 +1,14 @@
 package cli
 
 import (
-	"archive/zip"
-	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
 	"os"
-	"os/exec"
-	"path/filepath"
-	"runtime"
-	"strings"
 	"time"
 
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/core/loader"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/diagnostics"
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/managers/gamemgr"
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/setup/update"
@@ -34,8 +29,8 @@ func init() {
 	RegisterCommand("reloadbackend", WrapNoReturn(loader.ReloadBackend), "Reload the SSUI backend", false, "rlb", "rb", "r")
 	RegisterCommand("reloadconfig", WrapNoReturn(loader.ReloadConfig), "Reload the SSUI configuration", false, "rlc", "rc")
 	RegisterCommand("restartbackend", WrapNoReturn(loader.RestartBackend), "Restart the SSUI backend", false, "rsb")
-	RegisterCommand("supportmode", WrapNoReturn(supportMode), "Enter support mode", false, "sm")
-	RegisterCommand("supportpackage", WrapNoReturn(supportPackage), "Create a support package", false, "sp")
+	RegisterCommand("supportmode", WrapNoReturn(supportMode), "Start or stop a support recording", false, "sm")
+	RegisterCommand("supportpackage", WrapNoReturn(supportPackage), "Export a support package (with logs if recorded)", false, "sp")
 	RegisterCommand("exit", WrapNoReturn(exitfromcli), "Exit / Shutdown SSUI", false, "e")
 	RegisterCommand("runsteamcmd", WrapNoReturn(runSteamCMD), "Run SteamCMD to update the Gameserver", false, "steamcmd", "stcmd")
 	RegisterCommand("downloadworkshopupdates", WrapNoReturn(downloadWorkshopUpdates), "Download Steam workshop Mod updates", true, "dwu")
@@ -130,92 +125,39 @@ func applyUpdate() {
 }
 
 func supportMode() {
-
-	if isSupportMode {
-		config.SetIsDebugMode(false)
-		config.SetLogLevel(20)
-		config.SetCreateSSUILogFile(false)
-		isSupportMode = false
-		logger.Core.Info("Support mode disabled.")
+	if logger.SupportRecordingStatus().Active {
+		if _, err := diagnostics.StopRecording(); err != nil {
+			logger.Core.Warn("Support recording stopped with an error: " + err.Error())
+		}
+		logger.Core.Info("Support recording stopped. Type 'supportpackage' or 'sp' to export it.")
 		return
 	}
-	config.SetIsDebugMode(true)
-	config.SetLogLevel(10)
-	config.SetCreateSSUILogFile(true)
-	isSupportMode = true
-	loader.ReloadBackend()
-	time.Sleep(1000 * time.Millisecond)
-	logger.Core.Info("Support mode enabled. To generate a support package, type 'supportpackage' or 'sp'.")
+	if _, err := logger.StartSupportRecording(); err != nil {
+		logger.Core.Error("Could not start support recording: " + err.Error())
+		return
+	}
+	logger.Core.Info("Support recording started. Reproduce the issue, then type 'supportpackage' or 'sp'.")
 }
 
 func supportPackage() {
-	if !isSupportMode {
-		logger.Core.Error("Support mode is not enabled.")
-		return
+	if logger.SupportRecordingStatus().Active {
+		supportMode()
 	}
-	zipFileName := fmt.Sprintf("support_package_%s.zip", time.Now().Format("20060102_150405"))
-	zipFile, _ := os.Create(zipFileName)
-	defer zipFile.Close()
-	zw := zip.NewWriter(zipFile)
-	defer zw.Close()
-
-	filepath.Walk("./SSUI/logs", func(p string, i os.FileInfo, err error) error {
-		if err != nil || i.IsDir() {
-			return nil
-		}
-		f, _ := os.Open(p)
-		defer f.Close()
-		w, _ := zw.Create(strings.TrimPrefix(p, "./"))
-		io.Copy(w, f)
-		return nil
-	})
-
-	configData, _ := os.ReadFile("./SSUI/config/config.json")
-
-	var configMap map[string]interface{}
-	if err := json.Unmarshal(configData, &configMap); err != nil {
-		logger.Core.Error("Failed to unmarshal config.json for support package")
-		return
+	write, name := diagnostics.WriteRecordingPackage, "support_recording"
+	if logger.SupportRecordingStatus().StoppedAt == nil {
+		write, name = diagnostics.WritePackage, "support_package"
 	}
-	delete(configMap, "discordToken")
-	delete(configMap, "users")
-	delete(configMap, "JwtKey")
-	delete(configMap, "AdminPassword")
-	delete(configMap, "ServerAuthSecret")
-	delete(configMap, "ServerPassword")
-	sanitizedConfig, err := json.MarshalIndent(configMap, "", "  ")
+	path := fmt.Sprintf("%s_%s.zip", name, time.Now().Format("20060102_150405"))
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
 	if err != nil {
-		logger.Core.Error("Failed to marshal sanitized config into support package")
+		logger.Core.Error("Could not create support package: " + err.Error())
 		return
 	}
-
-	// Write sanitized config to zip
-	w, _ := zw.Create("SSUI/config/config.json")
-
-	if _, err := w.Write(sanitizedConfig); err != nil {
-		logger.Core.Error("Failed to write sanitized config to support package")
+	err = errors.Join(write(file), file.Close())
+	if err != nil {
+		os.Remove(path)
+		logger.Core.Error("Could not write support package: " + err.Error())
+		return
 	}
-
-	// Gather system information
-	var osVersion string
-	if runtime.GOOS == "windows" {
-		cmd := exec.Command("cmd", "/c", "ver")
-		output, _ := cmd.Output()
-		osVersion = strings.TrimSpace(string(output))
-	} else if runtime.GOOS == "linux" {
-		d, _ := os.ReadFile("/etc/os-release")
-		for _, l := range strings.Split(string(d), "\n") {
-			if strings.HasPrefix(l, "PRETTY_NAME=") {
-				osVersion = strings.TrimPrefix(l, "PRETTY_NAME=")
-				break
-			}
-		}
-	} else {
-		osVersion = "unknown"
-	}
-
-	info := fmt.Sprintf("OS: %s\nVersion: %s\nArch: %s\nBranch: %s\nVersion: %s\nTime: %s",
-		runtime.GOOS, osVersion, runtime.GOARCH, config.GetBranch(), config.GetVersion(), time.Now().Format(time.RFC3339))
-	w, _ = zw.Create("system_info.txt")
-	w.Write([]byte(info))
+	logger.Core.Info("Support package written to " + path + ". Review it before sharing.")
 }

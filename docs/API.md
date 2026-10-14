@@ -128,6 +128,19 @@ Server status contains `running`, `state`, `startedAt`, `uptimeSeconds`, `server
 
 The connectivity result contains the check state, configured port, advertised address and the probe results for the tested UDP packet sizes. The POST route requires `server.control`, reserves the gameserver port temporarily and returns a conflict if another check is already running or the server is not stopped.
 
+## Support diagnostics
+
+| Method | Path | Permission | Purpose |
+|---|---|---|---|
+| GET | `/api/v3/support/diagnostics` | `server.view` | Run the passive checks and return the report. `findings` only lists what needs attention. |
+| GET | `/api/v3/support/recording` | `server.view` | Read the active or last stopped support recording. |
+| GET | `/api/v3/support/package` | `server.control` | Download a ZIP with `report.html` and `diagnosis.json`. It contains no logs. |
+| POST | `/api/v3/support/recording/start` | `server.control` | Start recording SSUI and gameserver logs. |
+| POST | `/api/v3/support/recording/stop` | `server.control` | Stop the recording and snapshot the diagnostics. |
+| GET | `/api/v3/support/recording/package` | `server.control` | Download the last stopped recording: the report from when it stopped plus its logs, with known secrets redacted. |
+
+None of these routes change settings, reload the backend or touch the game server.
+
 ## Live streams
 
 These authenticated endpoints return Server-Sent Events:

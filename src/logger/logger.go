@@ -165,8 +165,10 @@ func (l *Logger) Cleanf(format string, args ...any) {
 
 // log sends the log entry to the global channel
 func (l *Logger) log(entry logEntry) {
+	recording := supportRecording.Load() != nil
 	l.mu.Lock()
-	if !l.shouldLog(entry.severity) {
+	visible := l.shouldLog(entry.severity)
+	if !visible && !recording {
 		l.mu.Unlock()
 		return
 	}
@@ -189,6 +191,13 @@ func (l *Logger) log(entry logEntry) {
 		entry.fileLine = fmt.Sprintf("%s [%s/%s] %s\n", timestamp, l.suffix, entry.suffix, entry.message)
 	}
 	l.mu.Unlock()
+
+	if recording {
+		recordSupportLine(entry.fileLine, false)
+	}
+	if !visible {
+		return
+	}
 
 	// Send to global log channel (non-blocking unless channel is full)
 	select {

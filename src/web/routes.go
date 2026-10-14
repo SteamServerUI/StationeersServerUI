@@ -61,11 +61,21 @@ func SetupRoutes() *http.ServeMux {
 	registerBackupRoutes(v3)
 	registerSettingsRoutes(v3)
 	registerModdingRoutes(v3)
+	registerSupportRoutes(v3)
 	protectedAPI := api.IdentityMiddleware(v3)
 	mux.Handle("/api/v3", protectedAPI)
 	mux.Handle("/api/v3/", protectedAPI)
 
 	return mux
+}
+
+func registerSupportRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/v3/support/diagnostics", api.Require(security.PermissionServerView, GetSupportDiagnostics))
+	mux.HandleFunc("GET /api/v3/support/recording", api.Require(security.PermissionServerView, GetSupportRecording))
+	mux.HandleFunc("GET /api/v3/support/package", api.Require(security.PermissionServerControl, DownloadSupportPackage))
+	mux.HandleFunc("POST /api/v3/support/recording/start", api.Require(security.PermissionServerControl, StartSupportRecording))
+	mux.HandleFunc("POST /api/v3/support/recording/stop", api.Require(security.PermissionServerControl, StopSupportRecording))
+	mux.HandleFunc("GET /api/v3/support/recording/package", api.Require(security.PermissionServerControl, DownloadSupportRecording))
 }
 
 func registerIdentityRoutes(mux *http.ServeMux) {

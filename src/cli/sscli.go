@@ -21,8 +21,6 @@ const (
 	cliPrompt = "\033[32m" + "SSCLI" + " » " + "\033[0m"
 )
 
-var isSupportMode bool
-
 // CommandFunc defines the signature for command handler functions.
 type CommandFunc func(args []string) error
 

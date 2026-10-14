@@ -1219,6 +1219,18 @@
             <div id="theme-editor-root"></div>
         </div>
 
+        <details id="support-panel" class="access-card support-panel">
+            <summary><span aria-hidden="true">🧰</span> Support &amp; Diagnostics</summary>
+            <p id="support-overall" class="support-overall" role="status" aria-live="polite"></p>
+            <div id="support-findings" class="access-list"></div>
+            <div id="support-actions" class="support-actions">
+                <button id="support-package" class="panel-button" type="button">Download support package</button>
+                <button id="support-record" class="panel-button" type="button">Start recording</button>
+                <button id="support-recording-package" class="panel-button" type="button" hidden>Download recording</button>
+                <p>The support package contains no logs. To include logs, start a recording, reproduce the problem, stop it and download the recording. Known passwords and tokens are redacted, but review the ZIP before sharing it.</p>
+            </div>
+        </details>
+
     </main>
     <footer>
         <div class="copyright">Copyright &copy; 2026 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a>
@@ -1522,6 +1534,7 @@
     {{if .CanViewSettings}}<script src="/static/js/advertiser-settings.js"></script>
     <script src="/static/js/tls-settings.js"></script>{{end}}
     <script src="/static/js/identity-settings.js"></script>
+    <script src="/static/js/support.js"></script>
 </body>
 
 </html>

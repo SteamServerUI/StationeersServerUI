@@ -24,8 +24,8 @@ Type `help` or `h` for the commands available in the running build. Developer co
 | `reloadconfig` | `rlc`, `rc` | Reload the SSUI configuration. |
 | `reloadbackend` | `rlb`, `rb`, `r` | Reload backend components. |
 | `restartbackend` | `rsb` | Restart the SSUI backend flow. |
-| `supportmode` | `sm` | Toggle detailed support logging. |
-| `supportpackage` | `sp` | Create a sanitized support ZIP; support mode must be active. |
+| `supportmode` | `sm` | Start or stop a support recording. |
+| `supportpackage` | `sp` | Write a support ZIP; it includes logs only if you recorded them. |
 | `exit` | `e` | Stop the game server and exit SSUI. |
 
 `downloadworkshopupdates` (`dwu`) also exists for Workshop updates but is currently marked as a developer command in the command registry, so do not present it to ordinary users as a stable interface yet.
@@ -34,9 +34,7 @@ Type `help` or `h` for the commands available in the running build. Developer co
 
 The `sm` and `sp` commands belong in **SSCLI**, not in the Stationeers console inside the Web UI.
 
-Enter `supportmode`, reproduce the issue, enter `supportpackage`, then enter `supportmode` again.
-
-The final `supportmode` disables the additional debug/file logging again. See [Support Packages](Support-Packages.md).
+Enter `supportmode`, reproduce the issue, then enter `supportpackage`. It stops the recording and writes the ZIP to the folder SSUI runs from. See [Support Packages](Support-Packages.md).
 
 ## Developer commands
 

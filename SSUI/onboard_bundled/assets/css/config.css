@@ -2903,3 +2903,43 @@ body.modal-open {
         grid-template-columns: 1fr;
     }
 }
+
+.support-panel {
+    margin-top: 24px;
+}
+
+.support-panel > summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.support-overall {
+    margin: 14px 0 10px;
+    color: var(--text-dim);
+}
+
+.support-finding {
+    border-left: 3px solid var(--warning);
+}
+
+.support-finding.is-fail {
+    border-left-color: var(--danger);
+}
+
+.support-finding.is-unknown {
+    border-left-color: var(--text-dim);
+}
+
+.support-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.support-actions p {
+    flex-basis: 100%;
+    margin: 4px 0 0;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}

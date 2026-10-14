@@ -132,6 +132,8 @@ func tailLogFile(logFilePath string) {
 }
 
 func logToFile(message string) {
+	logger.SupportRecordGameLog(message)
+
 	if config.GetCreateGameServerLogFile() {
 		logFileFolder := gameServerLogFileFolder
 		if logFileFolder == "" {

@@ -1,38 +1,53 @@
 # Support packages
 
-A support package collects SSUI logs, system information and a configuration copy with known secret fields removed.
+A support package is a ZIP with a readable `report.html` and a machine-readable `diagnosis.json`. It shows the SSUI version, branch, OS, game build, a redacted view of your settings and every finding that needs attention. A plain package contains **no logs**.
 
-## Collect a package
+## Create one in the WebUI
 
-Use **SSCLI**, the terminal running SSUI. These are not Stationeers game-console commands.
+Open **Config**, scroll to the bottom and expand **Support & Diagnostics**. The findings are shown right there; anything not listed passed or does not apply.
 
-1. Enter `supportmode` (alias `sm`).
-2. Reproduce the issue and note the time and first error.
-3. Enter `supportpackage` (alias `sp`). Support mode must still be enabled.
-4. Enter `supportmode` again to turn it off.
-5. Open `support_package_<date>_<time>.zip` in the installation directory and verify its contents before sharing it.
+- **No logs needed:** click **Download support package**.
+- **Logs needed:** click **Start recording**, reproduce the issue, click **Stop recording**, then **Download recording**.
 
-Include the SSUI version/branch, operating system or image, game build, exact action and first relevant error in your report. Use the [issue tracker](https://github.com/SteamServerUI/StationeersServerUI/issues) or the project's [Discord](https://discord.gg/8n3vN92MyJ); share sensitive diagnostics through a private location agreed with support.
+A recording captures every SSUI line, including debug lines, and all gameserver output, no matter what your normal log settings are. It stops capturing at 64 MB, and SSUI keeps the last three recordings in `SSUI/logs/support-recordings`. The diagnostics in a recording are taken when you stop it.
+
+Creating packages and recordings requires the `server.control` permission.
+
+## Create one in SSCLI
+
+These are terminal commands, not Stationeers console commands.
+
+1. Enter `supportmode` (`sm`) to start a recording.
+2. Reproduce the issue.
+3. Enter `supportpackage` (`sp`). It stops the recording and writes the ZIP to the folder SSUI runs from.
+
+`sp` without a recording writes a package without logs.
+
+## Before you share it
+
+Include what you did and when the first error appeared. Use the [issue tracker](https://github.com/SteamServerUI/StationeersServerUI/issues) or [Discord](https://discord.gg/8n3vN92MyJ).
 
 !!! warning
-    Configuration sanitization is not log sanitization. Player names, Steam IDs, paths, IP addresses and even secrets previously printed by a command can remain in logs. Review the ZIP. “It says sanitized” is not a substitute for opening it.
+    SSUI replaces the server password, auth secret, admin password, Discord token and JWT key in recorded logs with `[REDACTED]`. Player names, Steam IDs, paths, IP addresses and anything else a subsystem printed stay in. Open the ZIP and review it before sharing it.
 
-<details>
-<summary>Included files and removed fields</summary>
+## Finding codes
 
-The generator includes files under `SSUI/logs`, sanitized `SSUI/config/config.json`, OS/version and architecture information, SSUI version/branch and creation time.
-
-It removes `discordToken`, `users`, `JwtKey`, `AdminPassword`, `ServerAuthSecret` and `ServerPassword` from the configuration copy. It does not include an automatic scrub of arbitrary log content.
-
-</details>
-
-## Restore normal logging
-
-Support mode enables debug, log level 10 and SSUI file logging, then reloads backend components. Turning it off sets debug false, log level 20 and file logging false; it does **not** restore your earlier custom values. Reapply those if needed.
-
-If SSUI started with debug enabled, its profiling listener on port `6060` remains a separate concern. Restart without debug to close that listener. [Access and HTTPS](Security-Considerations.md#limit-network-access).
-
-Check that the ZIP actually contains the expected files. The generator has limited error handling; a filename alone is not proof of a complete package.
+| Code | Meaning |
+|---|---|
+| `RootCat` | SSUI runs as root outside a container. |
+| `HairballConfig` | The config file is missing or unreadable. |
+| `EmptyBoxCat` | The Stationeers executable or its game data is missing. |
+| `TangledYarnCat` | The world settings are incomplete, for example a start condition without a difficulty. |
+| `LostWorldCat` | The world settings are not in the installed game's catalog, or the catalog could not be read. |
+| `Folder404Cat` | The SSUI data folder is missing or unreadable. |
+| `Log4Cat` | File logging is on, but the log folder is unusable. |
+| `SteamedCat` | SteamCMD is missing. |
+| `CatnipMissing` | SSCM is enabled, but its plugin folder is missing. |
+| `SaveMeow` | The save name is invalid, or the save folder does not exist yet. |
+| `Portcat` | A port or the local IP is invalid, or two ports collide. |
+| `Spacecat` | The last connectivity check could not reach the server from outside. |
+| `Jittercat` | The last connectivity check reached only some UDP packet sizes. |
+| `SchrodingersCat` | There is no connectivity check result yet. |
 
 ---
 
