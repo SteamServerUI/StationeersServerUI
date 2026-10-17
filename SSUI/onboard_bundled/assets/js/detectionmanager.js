@@ -79,7 +79,6 @@ function submitDetection() {
     const data = {
         type: type,
         pattern: pattern,
-        eventType: 'CUSTOM_DETECTION',
         message: message
     };
 
@@ -100,7 +99,7 @@ function submitDetection() {
         document.getElementById('detection-type-label').textContent = 'Keyword';
         document.getElementById('type').value = 'keyword';
         showNotification('Detection added successfully', 'success');
-        showTab('detection-list-tab');
+        loadDetections();
     })
     .catch(error => {
         showNotification('Error: ' + error.message, 'error');
