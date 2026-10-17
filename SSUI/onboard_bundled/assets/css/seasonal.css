@@ -76,18 +76,19 @@ body.seasonal-active > .home-footer-links {
 }
 
 .seasonal-layer--halloween .seasonal-decoration {
-  font-size: clamp(34px, 5vw, 72px);
-  filter: drop-shadow(0 0 15px rgba(255, 103, 23, 0.48));
+  --tilt: 0deg;
+  width: clamp(56px, 7vw, 110px);
+  filter: drop-shadow(0 0 16px rgba(255, 103, 23, 0.5));
   animation: seasonalDrift 18s ease-in-out infinite alternate;
 }
 
-.seasonal-layer--halloween .seasonal-decoration--1 { top: 12%; left: 7%; }
-.seasonal-layer--halloween .seasonal-decoration--2 { top: 22%; right: 8%; animation-delay: -7s; }
-.seasonal-layer--halloween .seasonal-decoration--3 { bottom: 6%; left: 4%; animation-delay: -11s; }
-.seasonal-layer--halloween .seasonal-decoration--4 { bottom: 8%; right: 5%; animation-delay: -3s; }
+.seasonal-layer--halloween .seasonal-decoration--1 { top: 13%; left: 4%; --tilt: -10deg; }
+.seasonal-layer--halloween .seasonal-decoration--2 { top: 24%; right: 4%; --tilt: 12deg; width: clamp(44px, 5.5vw, 86px); animation-delay: -7s; }
+.seasonal-layer--halloween .seasonal-decoration--3 { bottom: 7%; left: 3%; --tilt: 6deg; width: clamp(48px, 6vw, 92px); animation-delay: -11s; }
+.seasonal-layer--halloween .seasonal-decoration--4 { bottom: 9%; right: 3%; --tilt: -14deg; animation-delay: -3s; }
 
 body.seasonal-halloween #banner {
-  filter: sepia(0.35) saturate(1.35) hue-rotate(325deg) drop-shadow(0 0 12px rgba(255, 103, 23, 0.5));
+  filter: drop-shadow(0 0 12px rgba(255, 103, 23, 0.5));
 }
 
 body.background-paused .seasonal-layer,
@@ -113,8 +114,8 @@ body.seasonal-paused .seasonal-layer * {
 }
 
 @keyframes seasonalDrift {
-  from { transform: translate3d(-12px, 6px, 0) rotate(-6deg); }
-  to { transform: translate3d(18px, -14px, 0) rotate(8deg); }
+  from { transform: translate3d(-12px, 6px, 0) rotate(calc(var(--tilt, 0deg) - 6deg)); }
+  to { transform: translate3d(18px, -14px, 0) rotate(calc(var(--tilt, 0deg) + 8deg)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

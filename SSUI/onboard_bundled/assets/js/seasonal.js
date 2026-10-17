@@ -4,7 +4,12 @@
             id: 'halloween',
             from: 1020,
             through: 1102,
-            decorations: ['🦇', '🦇', '🎃', '👻']
+            decorations: [
+                '/static/seasonal/halloween/pumpkin.webp',
+                '/static/seasonal/halloween/pumpkin.webp',
+                '/static/seasonal/halloween/pumpkin.webp',
+                '/static/seasonal/halloween/pumpkin.webp'
+            ]
         },
         {
             id: 'christmas',
