@@ -228,6 +228,31 @@ func performServerAction(action, name string, backend serverActionBackend) (stri
 	return "The server process has started. Follow startup progress in the hub.", nil
 }
 
+func RunServerAction(action string) (string, error) {
+	name := ""
+	if action == "restore" {
+		manager := backupmgr.CurrentBackupManager()
+		if manager == nil {
+			return "", fmt.Errorf("backup manager is not initialized")
+		}
+		backups, err := manager.ListBackups(2)
+		if err != nil {
+			return "", err
+		}
+		if len(backups) < 2 {
+			return "", fmt.Errorf("restoring needs at least two backups")
+		}
+		name = backups[1].Name
+	}
+	if !beginDiscordAction(action) {
+		return "", fmt.Errorf("another server action is still running")
+	}
+	message, err := performServerAction(action, name, gameActionBackend())
+	finishDiscordAction(err)
+	refreshStatusPanel()
+	return message, err
+}
+
 func performDiscordAction(action, argument string) (string, error) {
 	switch action {
 	case "start", "stop", "restart", "update", "restore":

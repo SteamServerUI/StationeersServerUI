@@ -11,9 +11,11 @@ import (
 )
 
 type createDetectionRequest struct {
-	Type    string `json:"type"`
-	Pattern string `json:"pattern"`
-	Message string `json:"message"`
+	Name            string                       `json:"name"`
+	Type            string                       `json:"type"`
+	Pattern         string                       `json:"pattern"`
+	Actions         []detectionmgr.RoutineAction `json:"actions"`
+	CooldownSeconds int                          `json:"cooldownSeconds"`
 }
 
 func ListDetections(w http.ResponseWriter, _ *http.Request) {
@@ -28,33 +30,24 @@ func CreateDetection(w http.ResponseWriter, r *http.Request) {
 	}
 
 	request.Type = strings.ToLower(strings.TrimSpace(request.Type))
-	request.Pattern = strings.TrimSpace(request.Pattern)
-	request.Message = strings.TrimSpace(request.Message)
-	if request.Type != "keyword" && request.Type != "regex" {
-		api.WriteError(w, http.StatusBadRequest, "invalid_detection_type", "Type must be keyword or regex")
-		return
-	}
-	if request.Pattern == "" {
-		api.WriteError(w, http.StatusBadRequest, "invalid_pattern", "Pattern cannot be empty")
-		return
-	}
-	if request.Message == "" {
-		api.WriteError(w, http.StatusBadRequest, "invalid_message", "Message cannot be empty")
-		return
-	}
-
 	detection := detectionmgr.CustomDetection{
-		ID:        uuid.NewString(),
-		Type:      request.Type,
-		Pattern:   request.Pattern,
-		EventType: string(detectionmgr.EventCustomDetection),
-		Message:   request.Message,
+		ID:              uuid.NewString(),
+		Name:            strings.TrimSpace(request.Name),
+		Type:            request.Type,
+		Pattern:         strings.TrimSpace(request.Pattern),
+		Actions:         request.Actions,
+		CooldownSeconds: request.CooldownSeconds,
+	}
+	for i := range detection.Actions {
+		detection.Actions[i].Type = strings.TrimSpace(detection.Actions[i].Type)
+		detection.Actions[i].Value = strings.TrimSpace(detection.Actions[i].Value)
+		detection.Actions[i].Text = strings.TrimSpace(detection.Actions[i].Text)
+	}
+	if err := detectionmgr.ValidateDetection(detection); err != nil {
+		api.WriteError(w, http.StatusBadRequest, "invalid_detection", err.Error())
+		return
 	}
 	if err := detectionmgr.AddCustomDetection(detection); err != nil {
-		if strings.Contains(err.Error(), "invalid regex pattern") {
-			api.WriteError(w, http.StatusBadRequest, "invalid_pattern", err.Error())
-			return
-		}
 		api.WriteError(w, http.StatusInternalServerError, "detection_save_failed", "Could not save the detection")
 		return
 	}

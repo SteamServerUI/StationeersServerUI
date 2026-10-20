@@ -4,6 +4,7 @@ package detectionmgr
 import (
 	"regexp"
 	"sync"
+	"time"
 )
 
 // EventType defines the type of event detected
@@ -36,11 +37,14 @@ type Detector struct {
 }
 
 type CustomPattern struct {
-	Pattern     *regexp.Regexp
-	EventType   EventType
-	MessageTmpl string
-	IsRegex     bool
-	Keyword     string
+	ID       string
+	Name     string
+	Pattern  *regexp.Regexp
+	IsRegex  bool
+	Keyword  string
+	Trigger  EventType
+	Actions  []RoutineAction
+	Cooldown time.Duration
 }
 
 // Event represents a detected event from server logs

@@ -6,23 +6,40 @@ Built-in detections also drive connected-player and server-state information. If
 
 ## Add a custom event
 
-Open **Detection Manager**, or `/detectionmanager`. Custom detections publish events; they do not run game or operating-system commands.
+Open **Config → Detection Manager**. Each entry is a routine: one trigger and up to ten actions that run from top to bottom.
 
-1. Copy a real console line that identifies the condition.
-2. Choose `keyword` for a case-sensitive literal match, or `regex` to capture variable values.
-3. Enter the pattern and message, then add it.
-4. Observe or trigger the condition and check Events. If Discord event output is configured, check that channel too.
+1. Copy a real console line that identifies the condition, or pick a built-in server event.
+2. Choose the trigger: **Log contains** (case-sensitive literal), **Log matches regex** (captures variable values) or **Server event** (player joined/left, world saved, server joinable and others).
+3. Add actions in the order they should run, then save.
+4. Trigger the condition and check Events, Discord and the game.
 
-| Type | Pattern | Message |
+| Action | What it does |
+|---|---|
+| Post to event log | Shows the text in Events and the Discord event log channel |
+| Post to Discord hub | Posts the text in the Discord hub channel |
+| Announce to players | In-game `announce` (needs SSCM and a running server) |
+| Run console command | Any SSCM console command, for example `kick {1}` |
+| Save world | SSCM `save` |
+| Wait | Pauses the chain for 1-3600 seconds |
+| Call webhook | POSTs `{"content", "routine", "values"}` as JSON; Discord webhook URLs work as-is |
+| Start, stop, restart server | Same sequence as the Discord hub buttons |
+| Restore 2nd-newest backup | Stops the server, restores the second-newest backup and starts it again |
+
+If an action fails, the rest of the chain is skipped and the failure is posted to the event log.
+
+| Trigger | Pattern | Action text |
 |---|---|---|
-| `keyword` | `Unsupported shader` | `Unity reported an unsupported shader.` |
-| `regex` | `Player (.+) has reached level (\d+)` | `Player {1} reached level {2}` |
+| Log contains | `Unsupported shader` | `Unity reported an unsupported shader.` |
+| Log matches regex | `Player (.+) has reached level (\d+)` | `Player {1} reached level {2}` |
+| Server event | Player joined | `Welcome aboard, {1}!` |
 
 The regex example is illustrative log text, not a claim that Stationeers has that event. For `Player Alex has reached level 12`, it produces `Player Alex reached level 12`.
 
-Use Go-compatible regex syntax. Numbered capture groups become `{1}`, `{2}` and so on. Test both matching and unrelated lines. `.*` will match impressively often and tell you almost nothing.
+Use Go-compatible regex syntax. Numbered capture groups become `{1}`, `{2}` and so on, and `{0}` is the whole match. For player events, `{1}` is the player name and `{2}` the SteamID. Test both matching and unrelated lines. `.*` will match impressively often and tell you almost nothing.
 
-Definitions are stored at `SSUI/config/customdetections.json`. Include it when moving your configuration. Add/remove changes apply while SSUI is running.
+A routine ignores new triggers until its cooldown has passed. Routines that start, stop, restart or restore the server always wait at least two minutes, and they share one slot with the Discord hub, so two server actions never overlap.
+
+Definitions are stored at `SSUI/config/customdetections.json`. Include it when moving your configuration. Detections from older versions become routines with a single event-log action. Add/remove changes apply while SSUI is running.
 
 ## Diagnose a detection
 

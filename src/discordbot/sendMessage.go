@@ -9,13 +9,21 @@ import (
 )
 
 func SendMessageToEventLogChannel(message string) {
+	sendMessageToChannel(config.GetEventLogChannelID(), message)
+}
+
+func SendMessageToHubChannel(message string) {
+	sendMessageToChannel(config.GetStatusPanelChannelID(), message)
+}
+
+func sendMessageToChannel(channelID, message string) {
 	session := config.GetDiscordSession()
 
 	if !config.GetIsDiscordEnabled() {
 		return
 	}
 
-	if config.GetEventLogChannelID() == "" {
+	if channelID == "" {
 		return
 	}
 
@@ -25,9 +33,9 @@ func SendMessageToEventLogChannel(message string) {
 	}
 
 	if len(message) <= 2000 {
-		_, err := session.ChannelMessageSend(config.GetEventLogChannelID(), message)
+		_, err := session.ChannelMessageSend(channelID, message)
 		if err != nil {
-			logger.Discord.Error("Error sending message to EventLog channel: " + err.Error())
+			logger.Discord.Error("Error sending message to channel " + channelID + ": " + err.Error())
 		}
 		return
 	}
@@ -44,9 +52,9 @@ func SendMessageToEventLogChannel(message string) {
 			}
 
 			// Send the chunk
-			_, err := session.ChannelMessageSend(config.GetEventLogChannelID(), message[:splitIndex])
+			_, err := session.ChannelMessageSend(channelID, message[:splitIndex])
 			if err != nil {
-				logger.Discord.Error("Error sending message to EventLog channel: " + err.Error())
+				logger.Discord.Error("Error sending message to channel " + channelID + ": " + err.Error())
 				return
 			}
 
@@ -54,9 +62,9 @@ func SendMessageToEventLogChannel(message string) {
 			message = message[splitIndex:]
 		} else {
 			// Send the remaining part of the message
-			_, err := session.ChannelMessageSend(config.GetEventLogChannelID(), message)
+			_, err := session.ChannelMessageSend(channelID, message)
 			if err != nil {
-				logger.Discord.Error("Error sending message to EventLog channel: " + err.Error())
+				logger.Discord.Error("Error sending message to channel " + channelID + ": " + err.Error())
 				return
 			}
 			break

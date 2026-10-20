@@ -25,13 +25,6 @@ var lastWorldSavedTime time.Time // zero value means never saved
 func DefaultHandlers() map[EventType]Handler {
 	return map[EventType]Handler{
 
-		EventCustomDetection: func(event Event) {
-			message := fmt.Sprintf("🎮 [Custom Detection] %s", event.Message)
-			logger.Detection.Info(message)
-			ssestream.BroadcastDetectionEvent(message)
-			discordbot.SendMessageToEventLogChannel(message)
-		},
-
 		EventServerReady: func(event Event) {
 			message := "🎮 [Gameserver] 🔔 Server is ready to connect!"
 			logger.Detection.Info(message)

@@ -66,30 +66,13 @@ func (d *Detector) ProcessLogMessage(logMessage string) {
 	// Process regex patterns for more complex detections
 	d.processRegexPatterns(logMessage)
 
-	// Process CUSTOM PATTERNS (both regex and keywords)
 	for _, cp := range d.customPatterns {
 		if cp.IsRegex {
-			matches := cp.Pattern.FindStringSubmatch(logMessage)
-			if matches != nil {
-				// Format message with {0}, {1} placeholders
-				message := formatMessage(cp.MessageTmpl, matches)
-				d.triggerEvent(Event{
-					Type:      cp.EventType,
-					Message:   message,
-					RawLog:    logMessage,
-					Timestamp: time.Now().Format(time.RFC3339),
-				})
+			if matches := cp.Pattern.FindStringSubmatch(logMessage); matches != nil {
+				runRoutine(cp, matches)
 			}
-		} else {
-			// Keyword matching
-			if strings.Contains(logMessage, cp.Keyword) {
-				d.triggerEvent(Event{
-					Type:      cp.EventType,
-					Message:   cp.MessageTmpl,
-					RawLog:    logMessage,
-					Timestamp: time.Now().Format(time.RFC3339),
-				})
-			}
+		} else if cp.Keyword != "" && strings.Contains(logMessage, cp.Keyword) {
+			runRoutine(cp, []string{logMessage})
 		}
 	}
 }
@@ -279,6 +262,15 @@ func (d *Detector) triggerEvent(event Event) {
 	if handlers, ok := d.handlers[event.Type]; ok {
 		for _, handler := range handlers {
 			handler(event)
+		}
+	}
+	for _, cp := range d.customPatterns {
+		if cp.Trigger == event.Type {
+			values := []string{event.Message, "", ""}
+			if event.PlayerInfo != nil {
+				values[1], values[2] = event.PlayerInfo.Username, event.PlayerInfo.SteamID
+			}
+			runRoutine(cp, values)
 		}
 	}
 }
