@@ -1,6 +1,7 @@
 (() => {
     const root = document.getElementById('access-config-tab');
     if (!root) return;
+    const text = root.dataset;
 
     const state = {
         session: null,
@@ -66,9 +67,9 @@
     }
 
     function formatDate(value) {
-        if (!value) return 'Never';
+        if (!value) return text.never || 'Never';
         const date = new Date(value);
-        return Number.isNaN(date.getTime()) ? 'Unknown' : date.toLocaleString();
+        return Number.isNaN(date.getTime()) ? text.unknown || 'Unknown' : date.toLocaleString();
     }
 
     async function loadSession() {
@@ -103,14 +104,16 @@
         try {
             const result = await request('/api/v3/auth/sessions');
             if (!result.sessions.length) {
-                list.innerHTML = '<p class="access-empty">No active sessions.</p>';
+                list.innerHTML = `<p class="access-empty">${escapeHTML(text.noSessions || 'No active sessions.')}</p>`;
                 return;
             }
             list.innerHTML = result.sessions.map(session => `
                 <div class="access-list-item">
                     <div><strong>${escapeHTML(userName(session.userId))}</strong>
-                        <small>${session.id === state.session.credentialId ? 'This session' : `Last used ${escapeHTML(formatDate(session.lastUsedAt))}`}</small></div>
-                    <div class="access-list-actions"><button type="button" data-revoke-session="${escapeHTML(session.id)}">Sign out</button></div>
+                        <small>${escapeHTML(session.id === state.session.credentialId
+                            ? text.thisSession || 'This session'
+                            : (text.lastUsed || 'Last used {date}').replace('{date}', formatDate(session.lastUsedAt)))}</small></div>
+                    <div class="access-list-actions"><button type="button" data-revoke-session="${escapeHTML(session.id)}">${escapeHTML(text.signOut || 'Sign out')}</button></div>
                 </div>`).join('');
         } catch (error) {
             list.innerHTML = `<p class="access-empty">${escapeHTML(error.message)}</p>`;
@@ -150,12 +153,12 @@
         const groupSelect = document.getElementById('access-group-select');
         const createSelect = document.querySelector('#access-create-user select[name="groupId"]');
         if (can('groups.manage')) {
-            groupSelect.innerHTML = '<option value="new">Create a new group</option>' + state.groups.map(group =>
-                `<option value="${escapeHTML(group.id)}">${escapeHTML(group.name)}${group.system ? ' (system)' : ''}</option>`
+            groupSelect.innerHTML = `<option value="new">${escapeHTML(text.createGroup || 'Create a new group')}</option>` + state.groups.map(group =>
+                `<option value="${escapeHTML(group.id)}">${escapeHTML(group.name)}${group.system ? ` (${escapeHTML(text.systemGroup || 'system')})` : ''}</option>`
             ).join('');
         }
         const grantableGroups = state.groups.filter(canGrantGroup);
-        createSelect.innerHTML = '<option value="">No access group</option>' + grantableGroups.map(group =>
+        createSelect.innerHTML = `<option value="">${escapeHTML(text.noAccessGroup || 'No access group')}</option>` + grantableGroups.map(group =>
             `<option value="${escapeHTML(group.id)}">${escapeHTML(group.name)}</option>`
         ).join('');
     }
@@ -267,30 +270,55 @@
     function userGroupOptions(user) {
         const grantableGroups = state.groups.filter(canGrantGroup);
         if (!canEditUserGroups(user)) {
-            return '<p class="access-empty">This user belongs to an access group above your own access. Group membership cannot be changed.</p>';
+            return `<p class="access-empty">${escapeHTML(text.groupLocked || 'This user belongs to an access group above your own access. Group membership cannot be changed.')}</p>`;
         }
-        if (!grantableGroups.length) return '';
-        return `<div class="access-user-groups">${grantableGroups.map(group => `<label class="access-permission-option">
+        if (!grantableGroups.length) {
+            return `<p class="access-empty">${escapeHTML(text.noGrantableGroups || 'There are no access groups you can assign.')}</p>`;
+        }
+        return `<div class="access-user-groups">${grantableGroups.map(group => `<label class="access-chip">
             <input type="checkbox" value="${escapeHTML(group.id)}" ${user.groupIds.includes(group.id) ? 'checked' : ''}>
             <span>${escapeHTML(group.name)}</span>
         </label>`).join('')}</div>`;
+    }
+
+    function userTags(user) {
+        const status = `<span class="access-tag ${user.enabled ? 'is-enabled' : 'is-disabled'}">${escapeHTML(user.enabled ? text.enabled || 'Enabled' : text.disabled || 'Disabled')}</span>`;
+        const groups = user.groupIds.length
+            ? user.groupIds.map(id => `<span class="access-tag">${escapeHTML(groupName(id))}</span>`).join('')
+            : `<span class="access-tag is-muted">${escapeHTML(text.noAccessGroup || 'No access group')}</span>`;
+        return status + groups;
     }
 
     function renderUsers() {
         const list = document.getElementById('access-user-list');
         list.innerHTML = state.users.map(user => `
             <div class="access-list-item access-user-item" data-user-id="${escapeHTML(user.id)}">
-                <div><strong>${escapeHTML(user.username)}</strong>
-                    <small>${user.enabled ? 'Enabled' : 'Disabled'} · ${escapeHTML(user.groupIds.map(groupName).join(', ') || 'No access group')}</small></div>
-                <div class="access-list-actions"><button type="button" data-edit-user>Manage</button></div>
+                <div class="access-user-summary">
+                    <strong>${escapeHTML(user.username)}</strong>
+                    <div class="access-user-tags">${userTags(user)}</div>
+                </div>
+                <div class="access-list-actions"><button type="button" data-edit-user aria-expanded="false">${escapeHTML(text.manage || 'Manage')}</button></div>
                 <form class="access-user-editor" data-can-edit-groups="${canEditUserGroups(user)}" hidden>
-                    <label class="access-toggle"><input type="checkbox" name="enabled" ${user.enabled ? 'checked' : ''}> Account enabled</label>
-                    ${userGroupOptions(user)}
-                    <label>New password <small>Leave empty to keep it unchanged</small>
-                        <input type="password" name="password" minlength="10" autocomplete="new-password"></label>
-                    <div class="access-form-actions">
-                        <button type="submit">Save user</button>
-                        <button type="button" class="access-danger-button" data-delete-user>Delete user</button>
+                    <div class="access-user-block">
+                        <span class="panel-kicker">${escapeHTML(text.status || 'Status')}</span>
+                        <label class="access-switch">
+                            <input type="checkbox" name="enabled" ${user.enabled ? 'checked' : ''}>
+                            <span>${escapeHTML(text.accountEnabled || 'Account enabled')}</span>
+                        </label>
+                        <p class="access-empty">${escapeHTML(text.accountEnabledInfo || 'Disabled accounts cannot sign in or use their API tokens.')}</p>
+                    </div>
+                    <div class="access-user-block">
+                        <span class="panel-kicker">${escapeHTML(text.accessGroups || 'Access groups')}</span>
+                        ${userGroupOptions(user)}
+                    </div>
+                    <div class="access-user-block">
+                        <span class="panel-kicker">${escapeHTML(text.resetPassword || 'Reset password')}</span>
+                        <input type="password" name="password" minlength="10" autocomplete="new-password"
+                            placeholder="${escapeHTML(text.keepPassword || 'Leave empty to keep it unchanged')}">
+                    </div>
+                    <div class="access-user-footer">
+                        <button type="button" class="access-danger-button" data-delete-user>${escapeHTML(text.deleteUser || 'Delete user')}</button>
+                        <button type="submit" class="access-primary-button">${escapeHTML(text.saveUser || 'Save user')}</button>
                     </div>
                 </form>
             </div>`).join('');
@@ -366,9 +394,11 @@
         list.innerHTML = active.length ? active.map(token => `
             <div class="access-list-item">
                 <div><strong>${escapeHTML(token.name)}</strong>
-                    <small>${escapeHTML(userName(token.ownerId))} · ${token.expiresAt ? `Expires ${escapeHTML(formatDate(token.expiresAt))}` : 'Never expires'}<br>${escapeHTML(token.scopes.join(', '))}</small></div>
-                <div class="access-list-actions"><button type="button" data-revoke-token="${escapeHTML(token.id)}">Revoke</button></div>
-            </div>`).join('') : '<p class="access-empty">No active API tokens.</p>';
+                    <small>${escapeHTML(userName(token.ownerId))} · ${escapeHTML(token.expiresAt
+                        ? (text.expiresOn || 'Expires {date}').replace('{date}', formatDate(token.expiresAt))
+                        : text.neverExpires || 'Never expires')}<br>${escapeHTML(token.scopes.join(', '))}</small></div>
+                <div class="access-list-actions"><button type="button" data-revoke-token="${escapeHTML(token.id)}">${escapeHTML(text.revoke || 'Revoke')}</button></div>
+            </div>`).join('') : `<p class="access-empty">${escapeHTML(text.noTokens || 'No active API tokens.')}</p>`;
     }
 
     async function createToken(event) {
@@ -450,8 +480,12 @@
         root.addEventListener('click', event => {
             const edit = event.target.closest('[data-edit-user]');
             if (edit) {
-                const editor = edit.closest('.access-user-item').querySelector('.access-user-editor');
+                const item = edit.closest('.access-user-item');
+                const editor = item.querySelector('.access-user-editor');
                 editor.hidden = !editor.hidden;
+                item.classList.toggle('is-open', !editor.hidden);
+                edit.setAttribute('aria-expanded', String(!editor.hidden));
+                edit.textContent = editor.hidden ? text.manage || 'Manage' : text.close || 'Close';
             }
             const deleteButton = event.target.closest('[data-delete-user]');
             if (deleteButton) deleteUser(deleteButton.closest('[data-user-id]').dataset.userId);

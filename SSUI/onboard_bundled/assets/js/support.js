@@ -6,6 +6,7 @@
     const recordButton = document.getElementById('support-record');
     const recordingButton = document.getElementById('support-recording-package');
     const canControl = window.SSUIAccess.can('server.control');
+    const text = panel.dataset;
     let recording = null;
     let pollTimer;
 
@@ -23,7 +24,7 @@
     }
 
     async function loadDiagnostics() {
-        overall.textContent = 'Running diagnostics...';
+        overall.textContent = text.running || 'Running diagnostics...';
         try {
             const report = await request('/api/v3/support/diagnostics');
             overall.textContent = `SSUI ${report.system.version} (${report.system.branch}) · ${report.overall}`;
@@ -32,7 +33,7 @@
                 <div class="access-list-item support-finding is-${escapeHTML(finding.status)}">
                     <div><strong>${escapeHTML(finding.code)}</strong> ${escapeHTML(finding.summary)}
                         ${finding.fix ? `<small>${escapeHTML(finding.fix)}</small>` : ''}</div>
-                </div>`).join('') : '<p class="access-empty">Nothing needs attention.</p>';
+                </div>`).join('') : `<p class="access-empty">${escapeHTML(text.allGood || 'Nothing needs attention.')}</p>`;
         } catch (error) {
             overall.textContent = error.message;
             findings.innerHTML = '';
@@ -42,7 +43,10 @@
     function renderRecording() {
         const active = Boolean(recording?.active);
         const size = `${((recording?.bytes || 0) / 1048576).toFixed(1)} MB`;
-        recordButton.textContent = active ? `Stop recording (${size}${recording.full ? ', full' : ''})` : 'Start recording';
+        const detail = `${size}${recording?.full ? `, ${text.recordingFull || 'full'}` : ''}`;
+        recordButton.textContent = active
+            ? (text.stopRecording || 'Stop recording ({size})').replace('{size}', detail)
+            : text.startRecording || 'Start recording';
         recordingButton.hidden = active || !recording?.stoppedAt;
         window.clearTimeout(pollTimer);
         if (active && panel.open) pollTimer = window.setTimeout(loadRecording, 5000);

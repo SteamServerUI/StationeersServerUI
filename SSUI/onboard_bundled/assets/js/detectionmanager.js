@@ -1,57 +1,76 @@
 const ROUTINE_ACTIONS = {
-    eventlog: { group: 'Messages', label: 'Post to event log', field: 'text', placeholder: '{1} tried to spawn {2}' },
-    discord_hub: { group: 'Messages', label: 'Post to Discord hub', field: 'text', placeholder: 'Heads up: {1} did something' },
-    announce: { group: 'In game', label: 'Announce to players', field: 'text', placeholder: 'Nice try, {1}' },
-    command: { group: 'In game', label: 'Run console command', field: 'text', placeholder: 'kick {1}' },
-    save: { group: 'In game', label: 'Save world' },
-    wait: { group: 'Flow', label: 'Wait', field: 'seconds' },
-    webhook: { group: 'Flow', label: 'Call webhook', field: 'url', placeholder: 'https://example.com/hook' },
-    restart: { group: 'Server', label: 'Restart server' },
-    stop: { group: 'Server', label: 'Stop server' },
-    start: { group: 'Server', label: 'Start server' },
-    restore: { group: 'Server', label: 'Restore 2nd-newest backup' }
+    eventlog: { group: 'messages', field: 'text' },
+    discord_hub: { group: 'messages', field: 'text' },
+    announce: { group: 'ingame', field: 'text' },
+    command: { group: 'ingame', field: 'text', placeholder: 'kick {1}' },
+    save: { group: 'ingame' },
+    wait: { group: 'flow', field: 'seconds' },
+    webhook: { group: 'flow', field: 'url', placeholder: 'https://example.com/hook' },
+    restart: { group: 'server' },
+    stop: { group: 'server' },
+    start: { group: 'server' },
+    restore: { group: 'server' }
 };
 
-const TRIGGER_HINTS = {
-    keyword: 'Matches when a log line contains this text (case-sensitive). Use {0} in actions for the whole line.',
-    regex: 'Use {1}, {2}, … in actions for capture groups and {0} for the whole match. regex101.com is handy for testing.',
-    event: 'For player events, use {1} for the player name and {2} for the SteamID.'
-};
+let text = {};
+
+function actionKey(type) {
+    return type.replace(/_(.)/g, (_, letter) => letter.toUpperCase());
+}
+
+function actionLabel(type) {
+    const key = actionKey(type);
+    return text['action' + key[0].toUpperCase() + key.slice(1)] || type;
+}
+
+function actionPlaceholder(type) {
+    const key = actionKey(type);
+    return text['placeholder' + key[0].toUpperCase() + key.slice(1)] || ROUTINE_ACTIONS[type].placeholder || '';
+}
+
+function groupLabel(group) {
+    return text['group' + group[0].toUpperCase() + group.slice(1)] || group;
+}
 
 let triggerMode = 'keyword';
 
 function setTriggerMode(mode) {
     triggerMode = mode;
-    document.querySelectorAll('.routine-mode').forEach(button => button.classList.toggle('active', button.dataset.mode === mode));
+    let modeButton;
+    document.querySelectorAll('.routine-mode').forEach(button => {
+        const active = button.dataset.mode === mode;
+        button.classList.toggle('active', active);
+        if (active) modeButton = button;
+    });
     const pattern = document.getElementById('pattern');
     pattern.hidden = mode === 'event';
-    pattern.placeholder = mode === 'regex' ? "Player '(.+?)' tried to thing-spawn '(.+?)'" : 'Text to look for in the log';
+    pattern.placeholder = modeButton?.dataset.placeholder || '';
     pattern.classList.toggle('routine-mono', mode === 'regex');
     document.getElementById('trigger-event').hidden = mode !== 'event';
-    document.getElementById('placeholder-hint').textContent = TRIGGER_HINTS[mode];
+    document.getElementById('placeholder-hint').textContent = modeButton?.dataset.hint || '';
 }
 
 function actionOptions(selected) {
     const groups = {};
     Object.entries(ROUTINE_ACTIONS).forEach(([type, action]) => {
-        (groups[action.group] ||= []).push(`<option value="${type}"${type === selected ? ' selected' : ''}>${action.label}</option>`);
+        (groups[action.group] ||= []).push(`<option value="${type}"${type === selected ? ' selected' : ''}>${escapeHtml(actionLabel(type))}</option>`);
     });
-    return Object.entries(groups).map(([group, options]) => `<optgroup label="${group}">${options.join('')}</optgroup>`).join('');
+    return Object.entries(groups).map(([group, options]) => `<optgroup label="${escapeHtml(groupLabel(group))}">${options.join('')}</optgroup>`).join('');
 }
 
 function actionFields(type) {
     const action = ROUTINE_ACTIONS[type];
     if (action.field === 'seconds') {
-        return '<span class="routine-seconds"><input type="number" class="routine-input action-value" min="1" max="3600" value="30"> seconds</span>';
+        return `<span class="routine-seconds"><input type="number" class="routine-input action-value" min="1" max="3600" value="30"> ${escapeHtml(text.seconds || 'seconds')}</span>`;
     }
     if (action.field === 'url') {
-        return `<input type="url" class="routine-input action-value" placeholder="${action.placeholder}">
-            <input type="text" class="routine-input action-text" placeholder="Message to send (optional)">`;
+        return `<input type="url" class="routine-input action-value" placeholder="${escapeHtml(actionPlaceholder(type))}">
+            <input type="text" class="routine-input action-text" placeholder="${escapeHtml(text.webhookMessage || 'Message to send (optional)')}">`;
     }
     if (action.field === 'text') {
-        return `<input type="text" class="routine-input action-value" maxlength="1000" placeholder="${escapeHtml(action.placeholder)}">`;
+        return `<input type="text" class="routine-input action-value" maxlength="1000" placeholder="${escapeHtml(actionPlaceholder(type))}">`;
     }
-    return '<span class="routine-no-input">No settings needed</span>';
+    return `<span class="routine-no-input">${escapeHtml(text.noSettings || 'No settings needed')}</span>`;
 }
 
 function addActionRow(type = 'eventlog') {
@@ -64,9 +83,9 @@ function addActionRow(type = 'eventlog') {
             <div class="routine-action-fields">${actionFields(type)}</div>
         </div>
         <div class="routine-action-controls">
-            <button type="button" class="routine-icon-button" data-move="-1" title="Move up">↑</button>
-            <button type="button" class="routine-icon-button" data-move="1" title="Move down">↓</button>
-            <button type="button" class="routine-icon-button danger" data-remove title="Remove">✕</button>
+            <button type="button" class="routine-icon-button" data-move="-1" title="${escapeHtml(text.moveUp || 'Move up')}">↑</button>
+            <button type="button" class="routine-icon-button" data-move="1" title="${escapeHtml(text.moveDown || 'Move down')}">↓</button>
+            <button type="button" class="routine-icon-button danger" data-remove title="${escapeHtml(text.remove || 'Remove')}">✕</button>
         </div>`;
     row.querySelector('.action-type').addEventListener('change', event => {
         row.querySelector('.routine-action-fields').innerHTML = actionFields(event.target.value);
@@ -115,32 +134,33 @@ function resetBuilder() {
 function triggerSummary(detection) {
     if (detection.type === 'event') {
         const option = document.querySelector(`#trigger-event option[value="${CSS.escape(detection.pattern)}"]`);
-        return { badge: 'EVENT', text: option ? option.textContent : detection.pattern, mono: false };
+        return { badge: 'event', text: option ? option.textContent : detection.pattern, mono: false };
     }
-    return { badge: detection.type === 'regex' ? 'REGEX' : 'KEYWORD', text: detection.pattern, mono: true };
+    return { badge: detection.type === 'regex' ? 'regex' : 'keyword', text: detection.pattern, mono: true };
 }
 
 function actionSummary(action) {
-    const meta = ROUTINE_ACTIONS[action.type] || { label: action.type };
-    let text = meta.label;
-    if (action.type === 'wait') text = `Wait ${action.value}s`;
-    else if (action.type === 'webhook') { try { text = new URL(action.value).host; } catch { text = action.value; } }
-    else if (meta.field === 'text') text = action.value;
-    return `<span class="routine-chip${meta.group === 'Server' ? ' routine-chip-server' : ''}" title="${escapeHtml(meta.label)}"><span>${escapeHtml(text)}</span></span>`;
+    const meta = ROUTINE_ACTIONS[action.type] || {};
+    const label = actionLabel(action.type);
+    let summary = label;
+    if (action.type === 'wait') summary = (text.waitSummary || 'Wait {s}s').replace('{s}', action.value);
+    else if (action.type === 'webhook') { try { summary = new URL(action.value).host; } catch { summary = action.value; } }
+    else if (meta.field === 'text') summary = action.value;
+    return `<span class="routine-chip${meta.group === 'server' ? ' routine-chip-server' : ''}" title="${escapeHtml(label)}"><span>${escapeHtml(summary)}</span></span>`;
 }
 
 function renderRoutine(detection) {
     const trigger = triggerSummary(detection);
     const actions = (detection.actions || []).map(actionSummary).join('<span class="routine-arrow">→</span>');
-    const cooldown = detection.cooldownSeconds ? `<span class="routine-meta">${detection.cooldownSeconds}s cooldown</span>` : '';
+    const cooldown = detection.cooldownSeconds ? `<span class="routine-meta">${escapeHtml((text.cooldownMeta || '{s}s cooldown').replace('{s}', detection.cooldownSeconds))}</span>` : '';
     return `
         <article class="routine-card">
             <div class="routine-card-header">
-                <h4${detection.name ? '' : ' class="routine-untitled"'}>${escapeHtml(detection.name || 'Untitled routine')}</h4>
-                <button type="button" class="slp-button slp-button-small danger routine-delete" data-id="${escapeHtml(detection.id)}">Delete</button>
+                <h4${detection.name ? '' : ' class="routine-untitled"'}>${escapeHtml(detection.name || text.untitled || 'Untitled routine')}</h4>
+                <button type="button" class="slp-button slp-button-small danger routine-delete" data-id="${escapeHtml(detection.id)}">${escapeHtml(text.delete || 'Delete')}</button>
             </div>
             <div class="routine-trigger">
-                <span class="type-badge type-${trigger.badge.toLowerCase()}">${trigger.badge}</span>
+                <span class="type-badge type-${trigger.badge}">${escapeHtml(text['badge' + trigger.badge[0].toUpperCase() + trigger.badge.slice(1)] || trigger.badge)}</span>
                 <span class="${trigger.mono ? 'routine-mono' : ''}">${escapeHtml(trigger.text)}</span>
             </div>
             <div class="routine-chain">${actions}</div>
@@ -163,7 +183,7 @@ function loadDetections() {
             const detections = result.detections || [];
             items.innerHTML = detections.length
                 ? detections.map(renderRoutine).join('')
-                : '<div class="empty-list">No routines yet. Build one below.</div>';
+                : `<div class="empty-list">${escapeHtml(text.noRoutines || 'No routines yet. Build one below.')}</div>`;
             items.querySelectorAll('.routine-delete').forEach(button => button.addEventListener('click', () => deleteDetection(button.dataset.id)));
         })
         .catch(error => {
@@ -228,6 +248,7 @@ function escapeHtml(unsafe) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    text = document.getElementById('detectionmanager-config-tab')?.dataset || {};
     document.querySelectorAll('.routine-mode').forEach(button => button.addEventListener('click', () => setTriggerMode(button.dataset.mode)));
     document.getElementById('add-action').addEventListener('click', () => addActionRow());
     document.querySelector('.add-button').addEventListener('click', submitDetection);

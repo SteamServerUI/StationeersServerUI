@@ -12,6 +12,10 @@
         if (!container) return;
 
         const currentTheme = SSUITheme.getCurrentTheme();
+        const text = container.dataset;
+        const label = (key, fallback) => text[key] || fallback;
+        const varKey = variable => variable.slice(2).replace(/-(.)/g, (_, letter) => letter.toUpperCase());
+        const groupKey = group => 'group' + group.replace(/\s+/g, '');
 
         // Group variables by their group
         const groups = {};
@@ -24,7 +28,7 @@
 
         // ── Preset Buttons ──
         html += '<div class="theme-editor-section">';
-        html += '<h3>Theme Presets</h3>';
+        html += `<h3>${label('presets', 'Theme Presets')}</h3>`;
         html += '<div class="theme-presets">';
         Object.entries(SSUITheme.PRESETS).forEach(([name, preset]) => {
             const swatches = [preset['--primary'], preset['--bg-dark'], preset['--accent'], preset['--danger'], preset['--success']];
@@ -43,19 +47,19 @@
         // ── Color Editors per Group ──
         Object.entries(groups).forEach(([groupName, vars]) => {
             html += `<div class="theme-editor-section">`;
-            html += `<h3>${groupName}</h3>`;
+            html += `<h3>${label(groupKey(groupName), groupName)}</h3>`;
             html += `<div class="theme-color-grid">`;
             vars.forEach(v => {
                 const val = currentTheme[v.variable] || '#000000';
                 // Normalize to hex for the color picker
                 const hexVal = toHex(val);
                 html += `<div class="theme-color-item">`;
-                html += `  <label>${v.label}</label>`;
+                html += `  <label>${label(varKey(v.variable) + 'Label', v.label)}</label>`;
                 html += `  <div class="color-input-wrapper">`;
                 html += `    <input type="color" value="${hexVal}" data-var="${v.variable}" onchange="onThemeColorChange(this)" />`;
                 html += `    <input type="text" class="color-hex-input" value="${hexVal}" data-var="${v.variable}" onchange="onThemeHexChange(this)" placeholder="#RRGGBB" />`;
                 html += `  </div>`;
-                html += `  <span class="color-description">${v.description}</span>`;
+                html += `  <span class="color-description">${label(varKey(v.variable) + 'Desc', v.description)}</span>`;
                 html += `</div>`;
             });
             html += `</div>`;
@@ -64,12 +68,13 @@
 
         // ── Preview Strip ──
         html += `<div class="theme-editor-section">`;
-        html += `<h3>Live Preview</h3>`;
+        html += `<h3>${label('livePreview', 'Live Preview')}</h3>`;
         html += `<div class="theme-preview-strip" id="theme-preview-strip">`;
         SSUITheme.THEME_VARS.filter(v => v.group !== 'Console Colors').forEach(v => {
             html += `<div class="preview-swatch-group">`;
-            html += `  <div class="preview-swatch" style="background: var(${v.variable})" title="${v.label}"></div>`;
-            html += `  <span class="preview-swatch-label">${v.label}</span>`;
+            const swatchLabel = label(varKey(v.variable) + 'Label', v.label);
+            html += `  <div class="preview-swatch" style="background: var(${v.variable})" title="${swatchLabel}"></div>`;
+            html += `  <span class="preview-swatch-label">${swatchLabel}</span>`;
             html += `</div>`;
         });
         html += `</div>`;
@@ -77,22 +82,22 @@
 
         // ── Actions ──
         html += `<div class="theme-editor-section">`;
-        html += `<h3>Actions</h3>`;
+        html += `<h3>${label('actions', 'Actions')}</h3>`;
         html += `<div class="theme-actions">`;
-        html += `  <button onclick="saveCurrentTheme()">💾 Save Theme</button>`;
-        html += `  <button onclick="resetToDefaults()">↺ Reset to Defaults</button>`;
-        html += `  <button onclick="exportCurrentTheme()">📤 Export Theme</button>`;
-        html += `  <button onclick="showImportTheme()">📥 Import Theme</button>`;
+        html += `  <button onclick="saveCurrentTheme()">💾 ${label('saveTheme', 'Save Theme')}</button>`;
+        html += `  <button onclick="resetToDefaults()">↺ ${label('resetDefaults', 'Reset to Defaults')}</button>`;
+        html += `  <button onclick="exportCurrentTheme()">📤 ${label('exportTheme', 'Export Theme')}</button>`;
+        html += `  <button onclick="showImportTheme()">📥 ${label('importTheme', 'Import Theme')}</button>`;
         html += `</div>`;
 
         // Import area (hidden by default)
         html += `<div id="theme-import-area" style="display:none; margin-top:15px;">`;
         html += `  <div class="theme-import-export">`;
-        html += `    <textarea id="theme-import-text" placeholder="Paste theme JSON here..."></textarea>`;
+        html += `    <textarea id="theme-import-text" placeholder="${label('importPlaceholder', 'Paste theme JSON here...')}"></textarea>`;
         html += `  </div>`;
         html += `  <div class="theme-actions" style="margin-top: 10px;">`;
-        html += `    <button onclick="doImportTheme()">✓ Apply Imported Theme</button>`;
-        html += `    <button onclick="hideImportTheme()">✕ Cancel</button>`;
+        html += `    <button onclick="doImportTheme()">✓ ${label('applyImport', 'Apply Imported Theme')}</button>`;
+        html += `    <button onclick="hideImportTheme()">✕ ${label('cancel', 'Cancel')}</button>`;
         html += `  </div>`;
         html += `</div>`;
 
@@ -102,8 +107,8 @@
         html += `    <textarea id="theme-export-text" readonly></textarea>`;
         html += `  </div>`;
         html += `  <div class="theme-actions" style="margin-top: 10px;">`;
-        html += `    <button onclick="copyExportedTheme()">📋 Copy to Clipboard</button>`;
-        html += `    <button onclick="hideExportTheme()">✕ Close</button>`;
+        html += `    <button onclick="copyExportedTheme()">📋 ${label('copyClipboard', 'Copy to Clipboard')}</button>`;
+        html += `    <button onclick="hideExportTheme()">✕ ${label('close', 'Close')}</button>`;
         html += `  </div>`;
         html += `</div>`;
 

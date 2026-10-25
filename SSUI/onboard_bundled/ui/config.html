@@ -152,11 +152,11 @@
                 </button>
                 <button class="sliding-tab-button" data-tab="access-config-tab">
                     <span class="icon access-icon"></span>
-                    <span class="tab-text">People &amp; Access</span>
+                    <span class="tab-text">{{.UIText_AC_Tab}}</span>
                 </button>
                 <button class="sliding-tab-button" data-tab="theme-config-tab">
                     <span class="icon" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-1 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: center;"></span>
-                    <span class="tab-text">Themes</span>
+                    <span class="tab-text">{{.UIText_TH_Tab}}</span>
                 </button>
             </div>
         </div>
@@ -934,16 +934,16 @@
             <div class="slp-section workshop-add-section">
                 <div class="slp-section-heading">
                     <div>
-                        <span class="panel-kicker">Steam Workshop</span>
-                        <h3>Add Workshop Mods</h3>
+                        <span class="panel-kicker">{{.UIText_WS_Kicker}}</span>
+                        <h3>{{.UIText_WS_Title}}</h3>
                     </div>
                 </div>
-                <p>Paste one or more Workshop URLs or numeric IDs. Separate entries with a new line, comma, or space.</p>
+                <p>{{.UIText_WS_Description}}</p>
                 <textarea id="workshopModInput" class="workshop-mod-input" rows="5"
                     placeholder="https://steamcommunity.com/sharedfiles/filedetails/?id=1234567890&#10;9876543210"></textarea>
                 <div class="workshop-add-actions">
-                    <span class="input-info">SSUI downloads and installs every valid item using SteamCMD.</span>
-                    <button id="installWorkshopModsBtn" class="slp-button" onclick="installWorkshopMods()">⬇️ Download & Install</button>
+                    <span class="input-info">{{.UIText_WS_Info}}</span>
+                    <button id="installWorkshopModsBtn" class="slp-button" onclick="installWorkshopMods()">⬇️ {{.UIText_WS_Install}}</button>
                 </div>
             </div>
 
@@ -996,68 +996,100 @@
         {{end}}
 
         {{if .CanManageDetections}}
-        <div id="detectionmanager-config-tab" class="tab-content config-tab-stack">
+        <div id="detectionmanager-config-tab" class="tab-content config-tab-stack"
+            data-group-messages="{{.UIText_DM_GroupMessages}}"
+            data-group-ingame="{{.UIText_DM_GroupInGame}}"
+            data-group-flow="{{.UIText_DM_GroupFlow}}"
+            data-group-server="{{.UIText_DM_GroupServer}}"
+            data-action-eventlog="{{.UIText_DM_ActionEventlog}}"
+            data-action-discord-hub="{{.UIText_DM_ActionDiscordHub}}"
+            data-action-announce="{{.UIText_DM_ActionAnnounce}}"
+            data-action-command="{{.UIText_DM_ActionCommand}}"
+            data-action-save="{{.UIText_DM_ActionSave}}"
+            data-action-wait="{{.UIText_DM_ActionWait}}"
+            data-action-webhook="{{.UIText_DM_ActionWebhook}}"
+            data-action-restart="{{.UIText_DM_ActionRestart}}"
+            data-action-stop="{{.UIText_DM_ActionStop}}"
+            data-action-start="{{.UIText_DM_ActionStart}}"
+            data-action-restore="{{.UIText_DM_ActionRestore}}"
+            data-placeholder-eventlog="{{.UIText_DM_PlaceholderEventlog}}"
+            data-placeholder-discord-hub="{{.UIText_DM_PlaceholderDiscord}}"
+            data-placeholder-announce="{{.UIText_DM_PlaceholderAnnounce}}"
+            data-webhook-message="{{.UIText_DM_WebhookMessage}}"
+            data-seconds="{{.UIText_DM_Seconds}}"
+            data-no-settings="{{.UIText_DM_NoSettings}}"
+            data-move-up="{{.UIText_DM_MoveUp}}"
+            data-move-down="{{.UIText_DM_MoveDown}}"
+            data-remove="{{.UIText_DM_Remove}}"
+            data-delete="{{.UIText_DM_Delete}}"
+            data-untitled="{{.UIText_DM_Untitled}}"
+            data-no-routines="{{.UIText_DM_NoRoutines}}"
+            data-cooldown-meta="{{.UIText_DM_CooldownMeta}}"
+            data-wait-summary="{{.UIText_DM_WaitSummary}}"
+            data-badge-keyword="{{.UIText_DM_BadgeKeyword}}"
+            data-badge-regex="{{.UIText_DM_BadgeRegex}}"
+            data-badge-event="{{.UIText_DM_BadgeEvent}}">
             <div class="config-tab-intro">
                 <span class="panel-kicker">SSUI</span>
                 <h2>{{.UIText_DetectionManager}}</h2>
-                <p>Routines watch the server log. When their trigger fires, they run their actions from top to bottom: post to Discord, announce in game, run a console command, call a webhook or restart and restore the server.</p>
+                <p>{{.UIText_DM_Intro}}</p>
             </div>
 
             <section class="slp-section routine-list-section">
                 <div class="routine-section-heading">
-                    <h3>Routines</h3>
+                    <h3>{{.UIText_DM_Routines}}</h3>
                     <div class="loader" id="list-loader"></div>
                 </div>
                 <div id="detection-items" class="routine-list">
-                    <div class="empty-list">No routines yet. Build one below.</div>
+                    <div class="empty-list">{{.UIText_DM_NoRoutines}}</div>
                 </div>
             </section>
 
             <section class="slp-section workshop-add-section routine-builder">
                 <div class="routine-section-heading">
-                    <h3>New routine</h3>
+                    <h3>{{.UIText_DM_NewRoutine}}</h3>
                 </div>
 
                 <label class="routine-field">
-                    <span class="routine-label">Name</span>
-                    <input type="text" id="routine-name" class="routine-input" maxlength="80" placeholder="Luna of Shame alert">
+                    <span class="routine-label">{{.UIText_DM_Name}}</span>
+                    <input type="text" id="routine-name" class="routine-input" maxlength="80" placeholder="{{.UIText_DM_NamePlaceholder}}">
                 </label>
 
                 <div class="routine-step">
-                    <span class="routine-step-tag">When</span>
+                    <span class="routine-step-tag">{{.UIText_DM_When}}</span>
                     <div class="routine-trigger-modes" role="radiogroup">
-                        <button type="button" class="routine-mode active" data-mode="keyword">Log contains</button>
-                        <button type="button" class="routine-mode" data-mode="regex">Log matches regex</button>
-                        <button type="button" class="routine-mode" data-mode="event">Server event</button>
+                        <button type="button" class="routine-mode active" data-mode="keyword" data-placeholder="{{.UIText_DM_KeywordPlaceholder}}" data-hint="{{.UIText_DM_HintKeyword}}">{{.UIText_DM_ModeKeyword}}</button>
+                        <button type="button" class="routine-mode" data-mode="regex" data-placeholder="Player '(.+?)' tried to thing-spawn '(.+?)'" data-hint="{{.UIText_DM_HintRegex}}">{{.UIText_DM_ModeRegex}}</button>
+                        <button type="button" class="routine-mode" data-mode="event" data-hint="{{.UIText_DM_HintEvent}}">{{.UIText_DM_ModeEvent}}</button>
                     </div>
-                    <input type="text" id="pattern" class="routine-input routine-mono" placeholder="Text to look for in the log">
+                    <input type="text" id="pattern" class="routine-input routine-mono" placeholder="{{.UIText_DM_KeywordPlaceholder}}">
                     <select id="trigger-event" class="routine-input" hidden>
-                        <option value="PLAYER_READY">Player joined</option>
-                        <option value="PLAYER_CONNECTING">Player connecting</option>
-                        <option value="PLAYER_DISCONNECT">Player left</option>
-                        <option value="WORLD_SAVED">World saved</option>
-                        <option value="SESSION_REGISTERED">Server is joinable</option>
-                        <option value="SERVER_RUNNING">Server process started</option>
-                        <option value="EXCEPTION">Exception in the game log</option>
-                        <option value="SETTINGS_CHANGED">Game setting changed</option>
-                        <option value="NEW_GAME_STARTED">New world started</option>
+                        <option value="PLAYER_READY">{{.UIText_DM_EventPlayerReady}}</option>
+                        <option value="PLAYER_CONNECTING">{{.UIText_DM_EventPlayerConnecting}}</option>
+                        <option value="PLAYER_DISCONNECT">{{.UIText_DM_EventPlayerDisconnect}}</option>
+                        <option value="WORLD_SAVED">{{.UIText_DM_EventWorldSaved}}</option>
+                        <option value="SESSION_REGISTERED">{{.UIText_DM_EventSessionRegistered}}</option>
+                        <option value="SERVER_RUNNING">{{.UIText_DM_EventServerRunning}}</option>
+                        <option value="EXCEPTION">{{.UIText_DM_EventException}}</option>
+                        <option value="SETTINGS_CHANGED">{{.UIText_DM_EventSettingsChanged}}</option>
+                        <option value="NEW_GAME_STARTED">{{.UIText_DM_EventNewGameStarted}}</option>
                     </select>
                     <p class="routine-hint" id="placeholder-hint"></p>
                 </div>
 
                 <div class="routine-step">
-                    <span class="routine-step-tag">Then</span>
+                    <span class="routine-step-tag">{{.UIText_DM_Then}}</span>
                     <ol id="routine-actions" class="routine-actions"></ol>
-                    <button type="button" id="add-action" class="routine-add-action">+ Add action</button>
+                    <button type="button" id="add-action" class="routine-add-action">{{.UIText_DM_AddAction}}</button>
                 </div>
 
                 <div class="routine-footer">
                     <label class="routine-field routine-cooldown">
-                        <span class="routine-label">Cooldown</span>
+                        <span class="routine-label">{{.UIText_DM_Cooldown}}</span>
                         <span class="routine-cooldown-input"><input type="number" id="routine-cooldown" class="routine-input" min="0" max="86400" value="0"> s</span>
                     </label>
-                    <p class="routine-hint">Ignores new triggers until the cooldown has passed. Routines that stop, restart or restore the server always wait at least 2 minutes. Restore uses the second-newest backup.</p>
-                    <button type="button" class="slp-button add-button">Save routine</button>
+                    <p class="routine-hint">{{.UIText_DM_CooldownHint}}</p>
+                    <button type="button" class="slp-button add-button">{{.UIText_DM_SaveRoutine}}</button>
                 </div>
             </section>
 
@@ -1065,94 +1097,121 @@
         </div>
         {{else}}
         <div id="detectionmanager-config-tab" class="tab-content config-tab-stack">
-            <div class="permission-panel">You don't have permission to manage custom detections.</div>
+            <div class="permission-panel">{{.UIText_DM_NoPermission}}</div>
         </div>
         {{end}}
 
-        <div id="access-config-tab" class="tab-content config-tab-stack">
+        <div id="access-config-tab" class="tab-content config-tab-stack"
+            data-no-sessions="{{.UIText_AC_NoSessions}}"
+            data-this-session="{{.UIText_AC_ThisSession}}"
+            data-last-used="{{.UIText_AC_LastUsed}}"
+            data-sign-out="{{.UIText_AC_SignOut}}"
+            data-never="{{.UIText_AC_Never}}"
+            data-unknown="{{.UIText_AC_Unknown}}"
+            data-create-group="{{.UIText_AC_CreateGroup}}"
+            data-system-group="{{.UIText_AC_SystemGroup}}"
+            data-no-access-group="{{.UIText_AC_NoAccessGroup}}"
+            data-access-groups="{{.UIText_AC_NavGroups}}"
+            data-enabled="{{.UIText_AC_Enabled}}"
+            data-disabled="{{.UIText_AC_Disabled}}"
+            data-manage="{{.UIText_AC_Manage}}"
+            data-close="{{.UIText_AC_Close}}"
+            data-status="{{.UIText_AC_Status}}"
+            data-account-enabled="{{.UIText_AC_AccountEnabled}}"
+            data-account-enabled-info="{{.UIText_AC_AccountEnabledInfo}}"
+            data-reset-password="{{.UIText_AC_ResetPassword}}"
+            data-keep-password="{{.UIText_AC_KeepPassword}}"
+            data-save-user="{{.UIText_AC_SaveUser}}"
+            data-delete-user="{{.UIText_AC_DeleteUser}}"
+            data-group-locked="{{.UIText_AC_GroupLocked}}"
+            data-no-grantable-groups="{{.UIText_AC_NoGrantableGroups}}"
+            data-expires-on="{{.UIText_AC_ExpiresOn}}"
+            data-never-expires="{{.UIText_AC_NeverExpires}}"
+            data-revoke="{{.UIText_AC_Revoke}}"
+            data-no-tokens="{{.UIText_AC_NoTokens}}">
             <div class="access-intro config-surface">
                 <div>
-                    <span class="panel-kicker">SSUI Security</span>
-                    <h2>People &amp; Access</h2>
-                    <p>Manage your account, users, access groups and API tokens.</p>
+                    <span class="panel-kicker">{{.UIText_AC_Kicker}}</span>
+                    <h2>{{.UIText_AC_Tab}}</h2>
+                    <p>{{.UIText_AC_Intro}}</p>
                 </div>
-                <div id="access-current-user" class="access-user-badge">Loading account...</div>
+                <div id="access-current-user" class="access-user-badge">{{.UIText_AC_LoadingAccount}}</div>
             </div>
 
-            <nav class="access-nav" aria-label="People and access sections">
-                <button type="button" class="access-nav-button active" data-access-panel="access-account-panel">My account</button>
-                <button type="button" class="access-nav-button" data-access-panel="access-people-panel">People</button>
-                <button type="button" class="access-nav-button" data-access-panel="access-groups-panel">Access groups</button>
-                <button type="button" class="access-nav-button" data-access-panel="access-api-panel">API</button>
+            <nav class="access-nav" aria-label="{{.UIText_AC_Tab}}">
+                <button type="button" class="access-nav-button active" data-access-panel="access-account-panel">{{.UIText_AC_NavAccount}}</button>
+                <button type="button" class="access-nav-button" data-access-panel="access-people-panel">{{.UIText_AC_NavPeople}}</button>
+                <button type="button" class="access-nav-button" data-access-panel="access-groups-panel">{{.UIText_AC_NavGroups}}</button>
+                <button type="button" class="access-nav-button" data-access-panel="access-api-panel">{{.UIText_AC_NavAPI}}</button>
             </nav>
 
             <section id="access-account-panel" class="access-panel active">
                 <div class="access-card">
-                    <span class="panel-kicker">Account security</span>
-                    <h3>Change my password</h3>
-                    <p>Changing your password signs out every browser session and revokes your API tokens.</p>
+                    <span class="panel-kicker">{{.UIText_AC_AccountKicker}}</span>
+                    <h3>{{.UIText_AC_ChangeMyPassword}}</h3>
+                    <p>{{.UIText_AC_ChangePasswordInfo}}</p>
                     <form id="own-password-form" class="access-form access-form-narrow">
-                        <label>Current password<input type="password" name="currentPassword" autocomplete="current-password" required></label>
-                        <label>New password<input type="password" name="newPassword" autocomplete="new-password" minlength="10" required></label>
-                        <label>Repeat new password<input type="password" name="confirmPassword" autocomplete="new-password" minlength="10" required></label>
-                        <button type="submit">Change password</button>
+                        <label>{{.UIText_AC_CurrentPassword}}<input type="password" name="currentPassword" autocomplete="current-password" required></label>
+                        <label>{{.UIText_AC_NewPassword}}<input type="password" name="newPassword" autocomplete="new-password" minlength="10" required></label>
+                        <label>{{.UIText_AC_RepeatPassword}}<input type="password" name="confirmPassword" autocomplete="new-password" minlength="10" required></label>
+                        <button type="submit">{{.UIText_AC_ChangePassword}}</button>
                     </form>
                 </div>
                 <div class="access-card">
-                    <span class="panel-kicker">Signed in devices</span>
-                    <h3>Sessions</h3>
-                    <div id="access-session-list" class="access-list"><p class="access-empty">Loading sessions...</p></div>
+                    <span class="panel-kicker">{{.UIText_AC_DevicesKicker}}</span>
+                    <h3>{{.UIText_AC_Sessions}}</h3>
+                    <div id="access-session-list" class="access-list"><p class="access-empty">{{.UIText_AC_LoadingSessions}}</p></div>
                 </div>
             </section>
 
             <section id="access-people-panel" class="access-panel">
-                <div id="access-people-denied" class="permission-panel" hidden>You don't have permission to manage users.</div>
+                <div id="access-people-denied" class="permission-panel" hidden>{{.UIText_AC_NoUsersPermission}}</div>
                 <div id="access-people-content" hidden>
                     <div class="access-card">
-                        <span class="panel-kicker">New account</span>
-                        <h3>Add user</h3>
+                        <span class="panel-kicker">{{.UIText_AC_NewAccountKicker}}</span>
+                        <h3>{{.UIText_AC_AddUser}}</h3>
                         <form id="access-create-user" class="access-form access-create-user">
-                            <label>Username<input type="text" name="username" minlength="3" maxlength="64" required></label>
-                            <label>Temporary password<input type="password" name="password" minlength="10" required></label>
-                            <label>Access group<select name="groupId"><option value="">No access group</option></select></label>
-                            <button type="submit">Add user</button>
+                            <label>{{.UIText_AC_Username}}<input type="text" name="username" minlength="3" maxlength="64" required></label>
+                            <label>{{.UIText_AC_TempPassword}}<input type="password" name="password" minlength="10" required></label>
+                            <label>{{.UIText_AC_AccessGroup}}<select name="groupId"><option value="">{{.UIText_AC_NoAccessGroup}}</option></select></label>
+                            <button type="submit">{{.UIText_AC_AddUser}}</button>
                         </form>
                     </div>
                     <div class="access-card">
-                        <span class="panel-kicker">Accounts</span>
-                        <h3>Users</h3>
-                        <div id="access-user-list" class="access-list"><p class="access-empty">Loading users...</p></div>
+                        <span class="panel-kicker">{{.UIText_AC_AccountsKicker}}</span>
+                        <h3>{{.UIText_AC_Users}}</h3>
+                        <div id="access-user-list" class="access-list"><p class="access-empty">{{.UIText_AC_LoadingUsers}}</p></div>
                     </div>
                 </div>
             </section>
 
             <section id="access-groups-panel" class="access-panel">
-                <div id="access-groups-denied" class="permission-panel" hidden>You don't have permission to manage access groups.</div>
+                <div id="access-groups-denied" class="permission-panel" hidden>{{.UIText_AC_NoGroupsPermission}}</div>
                 <div id="access-groups-content" hidden>
                     <div class="access-card">
-                        <span class="panel-kicker">Roles</span>
-                        <h3>Access group</h3>
+                        <span class="panel-kicker">{{.UIText_AC_RolesKicker}}</span>
+                        <h3>{{.UIText_AC_AccessGroup}}</h3>
                         <div class="access-group-editor-head">
-                            <label>Group<select id="access-group-select"><option value="new">Create a new group</option></select></label>
-                            <label>Preset<select id="access-preset-select">
-                                <option value="custom">Custom</option>
-                                <option value="viewer">Viewer</option>
-                                <option value="operator">Server operator</option>
-                                <option value="backups">Backup manager</option>
-                                <option value="administrator">Administrator</option>
+                            <label>{{.UIText_AC_Group}}<select id="access-group-select"><option value="new">{{.UIText_AC_CreateGroup}}</option></select></label>
+                            <label>{{.UIText_AC_Preset}}<select id="access-preset-select">
+                                <option value="custom">{{.UIText_AC_PresetCustom}}</option>
+                                <option value="viewer">{{.UIText_AC_PresetViewer}}</option>
+                                <option value="operator">{{.UIText_AC_PresetOperator}}</option>
+                                <option value="backups">{{.UIText_AC_PresetBackups}}</option>
+                                <option value="administrator">{{.UIText_AC_PresetAdministrator}}</option>
                             </select></label>
                         </div>
                         <form id="access-group-form" class="access-form">
-                            <label>Name<input type="text" name="name" maxlength="80" required></label>
-                            <label>Description<input type="text" name="description" maxlength="180"></label>
+                            <label>{{.UIText_AC_Name}}<input type="text" name="name" maxlength="80" required></label>
+                            <label>{{.UIText_AC_Description}}<input type="text" name="description" maxlength="180"></label>
                             <div class="access-fine-tune">
-                                <div><span class="panel-kicker">Fine tune</span><h4>Permissions</h4></div>
-                                <button type="button" id="access-clear-permissions" class="access-quiet-button">Clear all</button>
+                                <div><span class="panel-kicker">{{.UIText_AC_FineTuneKicker}}</span><h4>{{.UIText_AC_Permissions}}</h4></div>
+                                <button type="button" id="access-clear-permissions" class="access-quiet-button">{{.UIText_AC_ClearAll}}</button>
                             </div>
                             <div id="access-permission-grid" class="access-permission-grid"></div>
                             <div class="access-form-actions">
-                                <button type="submit">Save group</button>
-                                <button type="button" id="access-delete-group" class="access-danger-button" hidden>Delete group</button>
+                                <button type="submit">{{.UIText_AC_SaveGroup}}</button>
+                                <button type="button" id="access-delete-group" class="access-danger-button" hidden>{{.UIText_AC_DeleteGroup}}</button>
                             </div>
                         </form>
                     </div>
@@ -1160,52 +1219,118 @@
             </section>
 
             <section id="access-api-panel" class="access-panel">
-                <div id="access-api-denied" class="permission-panel" hidden>You don't have permission to create API tokens.</div>
+                <div id="access-api-denied" class="permission-panel" hidden>{{.UIText_AC_NoTokensPermission}}</div>
                 <div id="access-api-content" hidden>
                     <div class="access-card">
-                        <span class="panel-kicker">Personal access tokens</span>
-                        <h3>Create API token</h3>
-                        <p>Tokens can never receive permissions that your account does not have.</p>
+                        <span class="panel-kicker">{{.UIText_AC_TokensKicker}}</span>
+                        <h3>{{.UIText_AC_CreateTokenTitle}}</h3>
+                        <p>{{.UIText_AC_TokenInfo}}</p>
                         <form id="access-token-form" class="access-form">
                             <div class="access-token-head">
-                                <label>Name<input type="text" name="name" maxlength="80" placeholder="Home Assistant" required></label>
-                                <label>Expires<select name="expires">
-                                    <option value="30">30 days</option>
-                                    <option value="90">90 days</option>
-                                    <option value="365">1 year</option>
-                                    <option value="never">Never</option>
+                                <label>{{.UIText_AC_Name}}<input type="text" name="name" maxlength="80" placeholder="Home Assistant" required></label>
+                                <label>{{.UIText_AC_Expires}}<select name="expires">
+                                    <option value="30">{{.UIText_AC_Days30}}</option>
+                                    <option value="90">{{.UIText_AC_Days90}}</option>
+                                    <option value="365">{{.UIText_AC_Year1}}</option>
+                                    <option value="never">{{.UIText_AC_Never}}</option>
                                 </select></label>
                             </div>
                             <div id="access-token-scopes" class="access-permission-grid"></div>
-                            <button type="submit">Create token</button>
+                            <button type="submit">{{.UIText_AC_CreateToken}}</button>
                         </form>
                         <div id="access-token-secret" class="access-token-secret" hidden>
-                            <strong>Copy this token now. It will not be shown again.</strong>
-                            <div><code></code><button type="button">Copy</button></div>
+                            <strong>{{.UIText_AC_CopyTokenNow}}</strong>
+                            <div><code></code><button type="button">{{.UIText_AC_Copy}}</button></div>
                         </div>
                     </div>
                     <div class="access-card">
-                        <span class="panel-kicker">Issued credentials</span>
-                        <h3>API tokens</h3>
-                        <div id="access-token-list" class="access-list"><p class="access-empty">Loading tokens...</p></div>
+                        <span class="panel-kicker">{{.UIText_AC_IssuedKicker}}</span>
+                        <h3>{{.UIText_AC_ApiTokens}}</h3>
+                        <div id="access-token-list" class="access-list"><p class="access-empty">{{.UIText_AC_LoadingTokens}}</p></div>
                     </div>
                 </div>
             </section>
         </div>
 
         <div id="theme-config-tab" class="tab-content">
-            <div id="theme-editor-root"></div>
+            <div id="theme-editor-root"
+                data-presets="{{.UIText_TH_Presets}}"
+                data-group-core-colors="{{.UIText_TH_GroupCoreColors}}"
+                data-group-text-colors="{{.UIText_TH_GroupTextColors}}"
+                data-group-surfaces="{{.UIText_TH_GroupSurfaces}}"
+                data-group-control-panel="{{.UIText_TH_GroupControlPanel}}"
+                data-group-console-colors="{{.UIText_TH_GroupConsoleColors}}"
+                data-live-preview="{{.UIText_TH_LivePreview}}"
+                data-actions="{{.UIText_TH_Actions}}"
+                data-save-theme="{{.UIText_TH_SaveTheme}}"
+                data-reset-defaults="{{.UIText_TH_ResetDefaults}}"
+                data-export-theme="{{.UIText_TH_ExportTheme}}"
+                data-import-theme="{{.UIText_TH_ImportTheme}}"
+                data-import-placeholder="{{.UIText_TH_ImportPlaceholder}}"
+                data-apply-import="{{.UIText_TH_ApplyImport}}"
+                data-cancel="{{.UIText_TH_Cancel}}"
+                data-copy-clipboard="{{.UIText_TH_CopyClipboard}}"
+                data-close="{{.UIText_TH_Close}}"
+                data-primary-label="{{.UIText_TH_PrimaryLabel}}"
+                data-primary-desc="{{.UIText_TH_PrimaryDesc}}"
+                data-bg-dark-label="{{.UIText_TH_BgDarkLabel}}"
+                data-bg-dark-desc="{{.UIText_TH_BgDarkDesc}}"
+                data-bg-panel-label="{{.UIText_TH_BgPanelLabel}}"
+                data-bg-panel-desc="{{.UIText_TH_BgPanelDesc}}"
+                data-accent-label="{{.UIText_TH_AccentLabel}}"
+                data-accent-desc="{{.UIText_TH_AccentDesc}}"
+                data-danger-label="{{.UIText_TH_DangerLabel}}"
+                data-danger-desc="{{.UIText_TH_DangerDesc}}"
+                data-success-label="{{.UIText_TH_SuccessLabel}}"
+                data-success-desc="{{.UIText_TH_SuccessDesc}}"
+                data-warning-label="{{.UIText_TH_WarningLabel}}"
+                data-warning-desc="{{.UIText_TH_WarningDesc}}"
+                data-text-header-label="{{.UIText_TH_TextHeaderLabel}}"
+                data-text-header-desc="{{.UIText_TH_TextHeaderDesc}}"
+                data-text-bright-label="{{.UIText_TH_TextBrightLabel}}"
+                data-text-bright-desc="{{.UIText_TH_TextBrightDesc}}"
+                data-text-dim-label="{{.UIText_TH_TextDimLabel}}"
+                data-text-dim-desc="{{.UIText_TH_TextDimDesc}}"
+                data-text-muted-label="{{.UIText_TH_TextMutedLabel}}"
+                data-text-muted-desc="{{.UIText_TH_TextMutedDesc}}"
+                data-surface-dark-label="{{.UIText_TH_SurfaceDarkLabel}}"
+                data-surface-dark-desc="{{.UIText_TH_SurfaceDarkDesc}}"
+                data-surface-hover-label="{{.UIText_TH_SurfaceHoverLabel}}"
+                data-surface-hover-desc="{{.UIText_TH_SurfaceHoverDesc}}"
+                data-surface-overlay-label="{{.UIText_TH_SurfaceOverlayLabel}}"
+                data-surface-overlay-desc="{{.UIText_TH_SurfaceOverlayDesc}}"
+                data-panel-frame-label="{{.UIText_TH_PanelFrameLabel}}"
+                data-panel-frame-desc="{{.UIText_TH_PanelFrameDesc}}"
+                data-panel-surface-label="{{.UIText_TH_PanelSurfaceLabel}}"
+                data-panel-surface-desc="{{.UIText_TH_PanelSurfaceDesc}}"
+                data-panel-inset-label="{{.UIText_TH_PanelInsetLabel}}"
+                data-panel-inset-desc="{{.UIText_TH_PanelInsetDesc}}"
+                data-panel-lamp-label="{{.UIText_TH_PanelLampLabel}}"
+                data-panel-lamp-desc="{{.UIText_TH_PanelLampDesc}}"
+                data-console-info-label="{{.UIText_TH_ConsoleInfoLabel}}"
+                data-console-info-desc="{{.UIText_TH_ConsoleInfoDesc}}"
+                data-console-warning-label="{{.UIText_TH_ConsoleWarningLabel}}"
+                data-console-warning-desc="{{.UIText_TH_ConsoleWarningDesc}}"
+                data-console-error-label="{{.UIText_TH_ConsoleErrorLabel}}"
+                data-console-error-desc="{{.UIText_TH_ConsoleErrorDesc}}"
+                data-console-success-label="{{.UIText_TH_ConsoleSuccessLabel}}"
+                data-console-success-desc="{{.UIText_TH_ConsoleSuccessDesc}}"></div>
         </div>
 
-        <details id="support-panel" class="access-card support-panel">
-            <summary><span aria-hidden="true">🧰</span> Support &amp; Diagnostics</summary>
+        <details id="support-panel" class="access-card support-panel"
+            data-running="{{.UIText_SUP_Running}}"
+            data-all-good="{{.UIText_SUP_AllGood}}"
+            data-start-recording="{{.UIText_SUP_StartRecording}}"
+            data-stop-recording="{{.UIText_SUP_StopRecording}}"
+            data-recording-full="{{.UIText_SUP_RecordingFull}}">
+            <summary><span aria-hidden="true">🧰</span> {{.UIText_SUP_Title}}</summary>
             <p id="support-overall" class="support-overall" role="status" aria-live="polite"></p>
             <div id="support-findings" class="access-list"></div>
             <div id="support-actions" class="support-actions">
-                <button id="support-package" class="panel-button" type="button">Download support package</button>
-                <button id="support-record" class="panel-button" type="button">Start recording</button>
-                <button id="support-recording-package" class="panel-button" type="button" hidden>Download recording</button>
-                <p>The support package contains no logs. To include logs, start a recording, reproduce the problem, stop it and download the recording. Known passwords and tokens are redacted, but review the ZIP before sharing it.</p>
+                <button id="support-package" class="panel-button" type="button">{{.UIText_SUP_DownloadPackage}}</button>
+                <button id="support-record" class="panel-button" type="button">{{.UIText_SUP_StartRecording}}</button>
+                <button id="support-recording-package" class="panel-button" type="button" hidden>{{.UIText_SUP_DownloadRecording}}</button>
+                <p>{{.UIText_SUP_PackageInfo}}</p>
             </div>
         </details>
 
