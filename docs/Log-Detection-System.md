@@ -6,7 +6,7 @@ Built-in detections also drive connected-player and server-state information. If
 
 ## Add a custom event
 
-Open **Config → Detection Manager**. Each entry is a routine: one trigger and up to ten actions that run from top to bottom.
+Open **Config → Detection Manager**. Each entry is a routine: one trigger and up to ten actions that run from top to bottom. Managing routines requires `detections.manage`.
 
 1. Copy a real console line that identifies the condition, or pick a built-in server event.
 2. Choose the trigger: **Log contains** (case-sensitive literal), **Log matches regex** (captures variable values) or **Server event** (player joined/left, world saved, server joinable and others).
@@ -25,7 +25,7 @@ Open **Config → Detection Manager**. Each entry is a routine: one trigger and 
 | Start, stop, restart server | Same sequence as the Discord hub buttons |
 | Restore 2nd-newest backup | Stops the server, restores the second-newest backup and starts it again |
 
-If an action fails, the rest of the chain is skipped and the failure is posted to the event log.
+If an action fails, the rest of the chain is skipped and the failure is posted to the event log. A webhook counts as failed when it does not answer with a 2xx status within 10 seconds or its HTTPS certificate is not trusted.
 
 | Trigger | Pattern | Action text |
 |---|---|---|

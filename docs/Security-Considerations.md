@@ -21,8 +21,8 @@ Lost your login? The local [recovery flag](Command-line-flags.md#recovery-user) 
 
 Open **Edit Config**, then select **People & Access**. What appears there depends on your own permissions:
 
-- **Your account** is available to every signed-in user and changes only that user's password.
-- **People** lets an administrator create, disable and remove users or assign an access group.
+- **Your account** is available to every signed-in user. It changes that user's password and lists their signed-in sessions, each of which can be signed out.
+- **People** lets an administrator create users. **Manage** on a user opens the account switch, the access groups as selectable chips and a password reset field; deleting the user is in the same view.
 - **Access groups** offers presets for common roles and a fine-tune view for individual permissions.
 - **API access** creates and revokes personal access tokens when the user has `tokens.manage`.
 

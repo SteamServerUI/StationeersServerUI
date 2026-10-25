@@ -37,8 +37,12 @@ Select **Edit Config** or open `/config`. Settings are grouped by purpose rather
 - autosaves, automatic restarts and updates;
 - backup retention;
 - logging and diagnostics;
-- Discord and modding; and
-- **People & Access** for accounts, groups and API tokens.
+- Discord and modding;
+- the **Detection Manager** for log-driven routines;
+- **People & Access** for accounts, groups and API tokens; and
+- **Themes** for the colors of your own browser.
+
+**Support & Diagnostics** sits at the bottom of the page. It lists findings that need attention and creates [support packages](Support-Packages.md).
 
 **Show Expert Settings** reveals less common controls in a separate tab. Hiding that tab later does not erase its values.
 
@@ -54,11 +58,15 @@ See [manage people and access](Security-Considerations.md#manage-people-and-acce
 
 ## Detection Manager
 
-Open `/detectionmanager` to turn a distinctive game-log line into a named event using a keyword or regular expression. This page requires `detections.manage`. Custom detections publish events; they do not execute shell or game commands. [Logs and detections](Log-Detection-System.md) includes examples.
+The **Detection Manager** tab in configuration builds routines: a trigger (log text, a regex or a server event) followed by up to ten actions such as a Discord post, an in-game announcement, a console command, a webhook or a server restart. It requires `detections.manage`. Routines do run game commands and server actions, so treat the permission like `server.control`. [Logs and detections](Log-Detection-System.md#add-a-custom-event) lists every action and includes examples.
+
+## Language
+
+The flags in the configuration header switch the interface between English, German and Swedish. The language is a server setting, so it applies to everyone. Pages, labels and hints are translated; short notifications after an action and messages produced by the backend stay in English.
 
 ## Appearance and background activity
 
-Themes and background modes are stored by the browser, so two administrators can choose different appearances without fighting over server configuration. Animated modes pause when the page is not in focus, and reduced-motion/static options are available for browsers without suitable graphics acceleration or for anyone who would simply like the planet to hold still.
+The **Themes** tab offers presets, a color editor with a live preview and JSON import and export for sharing a theme. Themes and background modes are stored by the browser, so two administrators can choose different appearances without fighting over server configuration. Animated modes pause when the page is not in focus, and reduced-motion/static options are available for browsers without suitable graphics acceleration or for anyone who would simply like the planet to hold still.
 
 Changing pages within the interface keeps the active background state instead of restarting the orbit. Login and setup use a lightweight static background so public assets and startup time stay limited.
 
