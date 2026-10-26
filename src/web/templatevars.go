@@ -8,6 +8,26 @@ type IndexTemplateData struct {
 	UIText_UpdateNow                       string
 	UIText_UpdateInstalling                string
 	UIText_UpdateFailed                    string
+	UIText_UpdateTitle                     string
+	UIText_UpdateVersion                   string
+	UIText_UpdateReleaseNotes              string
+	UIText_UpdateContainerTitle            string
+	UIText_UpdateContainerInfo             string
+	UIText_UpdateMajorTitle                string
+	UIText_UpdateMajorInfo                 string
+	UIText_UpdateMajorConfirm              string
+	UIText_UpdatePrereleaseTitle           string
+	UIText_UpdatePrereleaseInfo            string
+	UIText_UpdatePrereleaseConfirm         string
+	UIText_UpdateTryAgain                  string
+	UIText_UpdateBadgeMajor                string
+	UIText_UpdateBadgePrerelease           string
+	UIText_UpdateBadgeStable               string
+	UIText_UpdateSummary                   string
+	UIText_UpdateSummaryContainer          string
+	UIText_UpdateNoneAvailable             string
+	UIText_UpdateManagedByDocker           string
+	UIText_UpdateInstallingVersion         string
 	Version                                string
 	Branch                                 string
 	SSUIIdentifier                         string
@@ -274,6 +294,28 @@ type ConfigTemplateData struct {
 	UIText_AdvertiserDNS                  string
 	UIText_AdvertiserAddress              string
 	UIText_AdvertiserRestartWarning       string
+	UIText_AdvertiserKicker               string
+	UIText_AdvertiserRestartRequired      string
+	UIText_DebugMode                      string
+	UIText_DebugModeInfo                  string
+	UIText_LogLevel                       string
+	UIText_LogLevelInfo                   string
+	UIText_LogClutterToConsole            string
+	UIText_LogClutterToConsoleInfo        string
+	UIText_SSUIWebPort                    string
+	UIText_SSUIWebPortInfo                string
+	UIText_ConsoleEnabled                 string
+	UIText_ConsoleEnabledInfo             string
+	UIText_SSCMEnabled                    string
+	UIText_SSCMEnabledInfo                string
+	UIText_UpdateEnabled                  string
+	UIText_UpdateEnabledInfo              string
+	UIText_AllowPrereleaseUpdates         string
+	UIText_AllowPrereleaseUpdatesInfo     string
+	UIText_AllowMajorUpdates              string
+	UIText_AllowMajorUpdatesInfo          string
+	UIText_SLPAutoUpdates                 string
+	UIText_SLPAutoUpdatesInfo             string
 	UIText_AdvertiserSaveRestart          string
 	UIText_AdvertiserRestarting           string
 	UIText_Cancel                         string

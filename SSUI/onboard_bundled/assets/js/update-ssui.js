@@ -88,9 +88,14 @@
         document.getElementById('confirm-major').checked = false;
         document.getElementById('confirm-prerelease').checked = false;
 
+        const text = document.getElementById('update-modal').dataset;
         const flags = document.getElementById('update-release-flags');
         flags.replaceChildren();
-        for (const value of [major && 'Major version', prerelease && 'Prerelease', !major && !prerelease && 'Stable update'].filter(Boolean)) {
+        for (const value of [
+            major && (text.badgeMajor || 'Major version'),
+            prerelease && (text.badgePrerelease || 'Prerelease'),
+            !major && !prerelease && (text.badgeStable || 'Stable update')
+        ].filter(Boolean)) {
             const badge = document.createElement('span');
             badge.textContent = value;
             flags.appendChild(badge);
@@ -99,12 +104,12 @@
         notes.hidden = !candidate?.releaseNotes;
         notes.href = candidate?.releaseNotes || '#';
         document.getElementById('update-summary').textContent = candidate
-            ? containerManaged
-                ? `${candidate.version} is available as a new container image.`
-                : `${candidate.version} is available. Choose the version you want SSUI to install.`
-            : 'No installable update is currently available.';
+            ? (containerManaged
+                ? text.summaryContainer || '{version} is available as a new container image.'
+                : text.summary || '{version} is available. Choose the version you want SSUI to install.').replace('{version}', candidate.version)
+            : text.noneAvailable || 'No installable update is currently available.';
         const installButton = document.getElementById('update-now-btn');
-        installButton.textContent = containerManaged ? 'Managed by Docker' : installButton.dataset.defaultLabel;
+        installButton.textContent = containerManaged ? text.managedByDocker || 'Managed by Docker' : installButton.dataset.defaultLabel;
         updateInstallButton();
     };
 
@@ -140,7 +145,8 @@
         document.querySelectorAll('.update-warning').forEach(item => item.style.display = 'none');
         document.getElementById('update-status-failed').classList.remove('failed');
         document.getElementById('update-status-running').classList.add('running');
-        document.getElementById('update-running-text').textContent = `Installing ${selectedVersion}. SSUI will reconnect after the restart.`;
+        const template = document.getElementById('update-modal').dataset.installingVersion || 'Installing {version}. SSUI will reconnect after the restart.';
+        document.getElementById('update-running-text').textContent = template.replace('{version}', selectedVersion);
     }
 
     function showUpdateFailure(message) {

@@ -39,33 +39,41 @@
     </div>
 
     <!-- Update Modal -->
-    <div id="update-modal">
+    <div id="update-modal"
+        data-badge-major="{{.UIText_UpdateBadgeMajor}}"
+        data-badge-prerelease="{{.UIText_UpdateBadgePrerelease}}"
+        data-badge-stable="{{.UIText_UpdateBadgeStable}}"
+        data-summary="{{.UIText_UpdateSummary}}"
+        data-summary-container="{{.UIText_UpdateSummaryContainer}}"
+        data-none-available="{{.UIText_UpdateNoneAvailable}}"
+        data-managed-by-docker="{{.UIText_UpdateManagedByDocker}}"
+        data-installing-version="{{.UIText_UpdateInstallingVersion}}">
         <div class="update-modal-content">
             <button type="button" class="update-modal-close" onclick="closeUpdateModal()" aria-label="Close">&times;</button>
             <div class="update-modal-icon"><svg class="update-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg></div>
-            <h2>SSUI update</h2>
+            <h2>{{.UIText_UpdateTitle}}</h2>
             <p id="update-summary">{{.UIText_UpdateAvailable}}</p>
 
             <label class="update-version-picker" for="update-version-select">
-                Version
+                {{.UIText_UpdateVersion}}
                 <select id="update-version-select" onchange="selectUpdateVersion()"></select>
             </label>
             <div class="update-release-flags" id="update-release-flags"></div>
-            <a class="update-release-notes" id="update-release-notes" target="_blank" rel="noopener noreferrer">Read release notes</a>
+            <a class="update-release-notes" id="update-release-notes" target="_blank" rel="noopener noreferrer">{{.UIText_UpdateReleaseNotes}}</a>
             <div class="update-warning update-container-warning" id="update-container-warning">
-                <strong>Container-managed installation</strong>
-                <p>Pull the new SSUI image and recreate this container to update. SSUI will not replace its own executable inside a container.</p>
+                <strong>{{.UIText_UpdateContainerTitle}}</strong>
+                <p>{{.UIText_UpdateContainerInfo}}</p>
             </div>
 
             <div class="update-warning" id="update-major-warning">
-                <strong>Major update</strong>
-                <p>This version can contain breaking changes. Read its release notes and make sure your server folder is backed up.</p>
-                <label><input type="checkbox" id="confirm-major" onchange="updateInstallButton()"> I want to install this major version.</label>
+                <strong>{{.UIText_UpdateMajorTitle}}</strong>
+                <p>{{.UIText_UpdateMajorInfo}}</p>
+                <label><input type="checkbox" id="confirm-major" onchange="updateInstallButton()"> {{.UIText_UpdateMajorConfirm}}</label>
             </div>
             <div class="update-warning is-prerelease" id="update-prerelease-warning">
-                <strong>Prerelease build</strong>
-                <p>This is unfinished release-candidate software. It may contain bugs or require manual recovery.</p>
-                <label><input type="checkbox" id="confirm-prerelease" onchange="updateInstallButton()"> I understand the risk and want the prerelease.</label>
+                <strong>{{.UIText_UpdatePrereleaseTitle}}</strong>
+                <p>{{.UIText_UpdatePrereleaseInfo}}</p>
+                <label><input type="checkbox" id="confirm-prerelease" onchange="updateInstallButton()"> {{.UIText_UpdatePrereleaseConfirm}}</label>
             </div>
 
             <div class="update-modal-buttons" id="update-modal-buttons">
@@ -79,7 +87,7 @@
             <div id="update-status-failed" class="update-status-message">
                 <strong>{{.UIText_UpdateFailed}}</strong>
                 <span id="update-failure-text"></span>
-                <button type="button" onclick="resetUpdateModal()">Try again</button>
+                <button type="button" onclick="resetUpdateModal()">{{.UIText_UpdateTryAgain}}</button>
             </div>
         </div>
     </div>
