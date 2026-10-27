@@ -502,6 +502,22 @@ type ConfigTemplateData struct {
 	UIText_SUP_PackageInfo        string
 	UIText_SUP_Running            string
 	UIText_SUP_AllGood            string
+	UIText_SUP_LinkTitle          string
+	UIText_SUP_LinkInfo           string
+	UIText_SUP_LinkDuration       string
+	UIText_SUP_Link30             string
+	UIText_SUP_Link60             string
+	UIText_SUP_Link120            string
+	UIText_SUP_LinkOpen           string
+	UIText_SUP_LinkClose          string
+	UIText_SUP_LinkCode           string
+	UIText_SUP_LinkCopy           string
+	UIText_SUP_LinkWaiting        string
+	UIText_SUP_LinkClaimed        string
+	UIText_SUP_LinkOffline        string
+	UIText_SUP_LinkExpires        string
+	UIText_SUP_LinkActivity       string
+	UIText_SUP_LinkNoActivity     string
 	UIText_AC_Tab                 string
 	UIText_AC_Kicker              string
 	UIText_AC_Intro               string

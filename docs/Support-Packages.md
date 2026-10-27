@@ -23,6 +23,12 @@ These are terminal commands, not Stationeers console commands.
 
 `sp` without a recording writes a package without logs.
 
+## Open a support connection
+
+If the SSUI team asks for it in your Discord ticket, expand **Support & Diagnostics**, pick a duration and click **Open support connection**. SSUI shows a code; enter it in your ticket with `/ssui connect`. While the connection is open, SSUI sends the team a snapshot every minute: server status, diagnostics, the redacted configuration, connected players with their Steam IDs, recent backups, mods, routines and the last log lines. The team can also request support packages, a connectivity check and a log recording. Passwords and tokens are never sent. Nothing else: no remote control, no config changes, no shell. The data is relayed to the ticket and not stored.
+
+SSUI only opens an outgoing HTTPS connection to `jxsn.dev`, no port is opened. Every request appears in the panel while it is running. **End connection** stops it immediately, and it ends by itself after the chosen duration. Opening a connection requires `server.control`.
+
 ## Before you share it
 
 Include what you did and when the first error appeared. Use the [issue tracker](https://github.com/SteamServerUI/StationeersServerUI/issues) or [Discord](https://discord.gg/8n3vN92MyJ).

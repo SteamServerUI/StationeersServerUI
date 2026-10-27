@@ -95,14 +95,82 @@
         }
     }
 
+    const link = document.getElementById('support-link');
+    const linkText = link.dataset;
+    let linkTimer;
+
+    function renderLink(status) {
+        const active = Boolean(status?.active);
+        document.getElementById('support-link-idle').hidden = active;
+        document.getElementById('support-link-active').hidden = !active;
+        window.clearTimeout(linkTimer);
+        if (!active) return;
+
+        const expires = status.expiresAt ? new Date(status.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+        const state = !status.connected ? linkText.offline : status.claimed ? linkText.claimed : linkText.waiting;
+        document.getElementById('support-link-state').textContent = `${state} · ${(linkText.expires || 'Ends at {time}').replace('{time}', expires)}`;
+        document.getElementById('support-link-code-box').hidden = !status.claimCode;
+        document.getElementById('support-link-code').textContent = status.claimCode || '';
+        const activity = status.activity || [];
+        document.getElementById('support-link-activity').innerHTML = activity.length
+            ? activity.slice().reverse().map(entry => `
+                <div class="access-list-item support-finding${entry.ok ? ' is-ok' : ' is-fail'}">
+                    <div><strong>${escapeHTML(entry.command)}</strong>
+                        <small>${escapeHTML(new Date(entry.at).toLocaleTimeString())}</small></div>
+                </div>`).join('')
+            : `<p class="access-empty">${escapeHTML(linkText.noActivity || 'No requests yet.')}</p>`;
+        if (panel.open) linkTimer = window.setTimeout(loadLink, 5000);
+    }
+
+    async function loadLink() {
+        try {
+            renderLink(await request('/api/v3/support/connection'));
+        } catch (error) {
+            window.SSUIAccess.notify(error.message);
+        }
+    }
+
+    async function changeLink(button, options) {
+        button.disabled = true;
+        try {
+            renderLink(await request('/api/v3/support/connection', options));
+        } catch (error) {
+            window.SSUIAccess.notify(error.message);
+        } finally {
+            button.disabled = false;
+        }
+    }
+
+    document.getElementById('support-link-open').addEventListener('click', event => changeLink(event.currentTarget, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ minutes: Number(document.getElementById('support-link-minutes').value) })
+    }));
+    document.getElementById('support-link-close').addEventListener('click', event =>
+        changeLink(event.currentTarget, { method: 'DELETE' }));
+    document.getElementById('support-link-copy').addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(document.getElementById('support-link-code').textContent);
+        } catch (_) {
+            window.getSelection().selectAllChildren(document.getElementById('support-link-code'));
+        }
+    });
+
+    link.hidden = !canControl;
     document.getElementById('support-actions').hidden = !canControl;
     document.getElementById('support-package').addEventListener('click', event =>
         download(event.currentTarget, '/api/v3/support/package'));
     recordingButton.addEventListener('click', () => download(recordingButton, '/api/v3/support/recording/package'));
     recordButton.addEventListener('click', toggleRecording);
     panel.addEventListener('toggle', () => {
-        if (!panel.open) return window.clearTimeout(pollTimer);
+        if (!panel.open) {
+            window.clearTimeout(linkTimer);
+            return window.clearTimeout(pollTimer);
+        }
         loadDiagnostics();
-        if (canControl) loadRecording();
+        if (canControl) {
+            loadRecording();
+            loadLink();
+        }
     });
 })();

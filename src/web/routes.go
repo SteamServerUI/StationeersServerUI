@@ -76,6 +76,9 @@ func registerSupportRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v3/support/recording/start", api.Require(security.PermissionServerControl, StartSupportRecording))
 	mux.HandleFunc("POST /api/v3/support/recording/stop", api.Require(security.PermissionServerControl, StopSupportRecording))
 	mux.HandleFunc("GET /api/v3/support/recording/package", api.Require(security.PermissionServerControl, DownloadSupportRecording))
+	mux.HandleFunc("GET /api/v3/support/connection", api.Require(security.PermissionServerControl, GetSupportConnection))
+	mux.HandleFunc("POST /api/v3/support/connection", api.Require(security.PermissionServerControl, OpenSupportConnection))
+	mux.HandleFunc("DELETE /api/v3/support/connection", api.Require(security.PermissionServerControl, CloseSupportConnection))
 }
 
 func registerIdentityRoutes(mux *http.ServeMux) {

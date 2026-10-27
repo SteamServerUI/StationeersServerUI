@@ -1332,6 +1332,35 @@
                 <button id="support-recording-package" class="panel-button" type="button" hidden>{{.UIText_SUP_DownloadRecording}}</button>
                 <p>{{.UIText_SUP_PackageInfo}}</p>
             </div>
+            <section id="support-link" class="support-link" hidden
+                data-waiting="{{.UIText_SUP_LinkWaiting}}"
+                data-claimed="{{.UIText_SUP_LinkClaimed}}"
+                data-offline="{{.UIText_SUP_LinkOffline}}"
+                data-expires="{{.UIText_SUP_LinkExpires}}"
+                data-no-activity="{{.UIText_SUP_LinkNoActivity}}">
+                <h4>{{.UIText_SUP_LinkTitle}}</h4>
+                <p>{{.UIText_SUP_LinkInfo}}</p>
+                <div id="support-link-idle" class="support-link-row">
+                    <label>{{.UIText_SUP_LinkDuration}}
+                        <select id="support-link-minutes">
+                            <option value="30">{{.UIText_SUP_Link30}}</option>
+                            <option value="60" selected>{{.UIText_SUP_Link60}}</option>
+                            <option value="120">{{.UIText_SUP_Link120}}</option>
+                        </select>
+                    </label>
+                    <button id="support-link-open" class="panel-button" type="button">{{.UIText_SUP_LinkOpen}}</button>
+                </div>
+                <div id="support-link-active" hidden>
+                    <p id="support-link-state" class="support-link-state" role="status" aria-live="polite"></p>
+                    <div id="support-link-code-box" class="support-link-code" hidden>
+                        <span>{{.UIText_SUP_LinkCode}}</span>
+                        <div><code id="support-link-code"></code><button id="support-link-copy" type="button">{{.UIText_SUP_LinkCopy}}</button></div>
+                    </div>
+                    <span class="panel-kicker">{{.UIText_SUP_LinkActivity}}</span>
+                    <div id="support-link-activity" class="access-list"></div>
+                    <button id="support-link-close" class="panel-button access-danger-button" type="button">{{.UIText_SUP_LinkClose}}</button>
+                </div>
+            </section>
         </details>
 
     </main>

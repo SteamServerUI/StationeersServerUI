@@ -10,6 +10,7 @@ import (
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/api"
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/diagnostics"
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/supportlink"
 )
 
 func GetSupportDiagnostics(w http.ResponseWriter, r *http.Request) {
@@ -65,4 +66,34 @@ func streamSupportZip(w http.ResponseWriter, name string, write func(io.Writer) 
 	if err := write(w); err != nil {
 		logger.Web.Error("Could not write support package: " + err.Error())
 	}
+}
+
+func GetSupportConnection(w http.ResponseWriter, r *http.Request) {
+	api.WriteData(w, http.StatusOK, supportlink.Snapshot())
+}
+
+func OpenSupportConnection(w http.ResponseWriter, r *http.Request) {
+	var body struct {
+		Minutes int `json:"minutes"`
+	}
+	if err := api.DecodeJSON(w, r, &body); err != nil {
+		api.WriteError(w, http.StatusBadRequest, "invalid_request", err.Error())
+		return
+	}
+	status, err := supportlink.Start(time.Duration(body.Minutes) * time.Minute)
+	switch {
+	case errors.Is(err, supportlink.ErrActive):
+		api.WriteError(w, http.StatusConflict, "support_connection_active", "A support connection is already open")
+	case errors.Is(err, supportlink.ErrInvalidDuration):
+		api.WriteError(w, http.StatusBadRequest, "invalid_duration", err.Error())
+	case err != nil:
+		logger.Web.Error("Could not open support connection: " + err.Error())
+		api.WriteError(w, http.StatusInternalServerError, "support_connection_failed", "Could not open the support connection")
+	default:
+		api.WriteData(w, http.StatusOK, status)
+	}
+}
+
+func CloseSupportConnection(w http.ResponseWriter, r *http.Request) {
+	api.WriteData(w, http.StatusOK, supportlink.Stop())
 }

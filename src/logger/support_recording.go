@@ -104,6 +104,9 @@ func SupportRecordGameLog(line string) {
 }
 
 func recordSupportLine(line string, game bool) {
+	if game {
+		recentGame.add(line)
+	}
 	recorder := supportRecording.Load()
 	if recorder == nil {
 		return
@@ -150,4 +153,43 @@ func pruneSupportRecordings(root string) {
 		os.RemoveAll(filepath.Join(root, dirs[0]))
 		dirs = dirs[1:]
 	}
+}
+
+const recentLineLimit = 300
+
+type lineRing struct {
+	mu    sync.Mutex
+	lines []string
+	next  int
+}
+
+var recentSSUI, recentGame lineRing
+
+func (ring *lineRing) add(line string) {
+	line = strings.TrimRight(line, "\r\n")
+	ring.mu.Lock()
+	defer ring.mu.Unlock()
+	if len(ring.lines) < recentLineLimit {
+		ring.lines = append(ring.lines, line)
+		return
+	}
+	ring.lines[ring.next] = line
+	ring.next = (ring.next + 1) % recentLineLimit
+}
+
+func (ring *lineRing) last(count int) []string {
+	ring.mu.Lock()
+	defer ring.mu.Unlock()
+	ordered := append(append([]string{}, ring.lines[ring.next:]...), ring.lines[:ring.next]...)
+	if count > 0 && count < len(ordered) {
+		ordered = ordered[len(ordered)-count:]
+	}
+	return ordered
+}
+
+func RecentLines(game bool, count int) []string {
+	if game {
+		return recentGame.last(count)
+	}
+	return recentSSUI.last(count)
 }

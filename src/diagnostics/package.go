@@ -110,6 +110,14 @@ func writeRedactedLog(archive *zip.Writer, path string, redact *strings.Replacer
 	}
 }
 
+func Redact(text string) string {
+	return secretRedactor().Replace(text)
+}
+
+func WriteReportHTML(w io.Writer, report Report) error {
+	return reportTemplate.Execute(w, report)
+}
+
 func secretRedactor() *strings.Replacer {
 	var pairs []string
 	for _, secret := range []string{config.GetServerPassword(), config.GetServerAuthSecret(), config.GetAdminPassword(), config.GetDiscordToken(), config.GetJwtKey()} {

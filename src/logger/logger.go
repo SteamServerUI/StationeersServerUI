@@ -192,6 +192,9 @@ func (l *Logger) log(entry logEntry) {
 	}
 	l.mu.Unlock()
 
+	if visible {
+		recentSSUI.add(entry.fileLine)
+	}
 	if recording {
 		recordSupportLine(entry.fileLine, false)
 	}

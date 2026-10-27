@@ -3116,3 +3116,90 @@ body.modal-open {
     color: var(--text-dim);
     font-size: 0.85rem;
 }
+
+.support-link {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--config-border-soft);
+}
+
+.support-link[hidden],
+.support-link [hidden] {
+    display: none;
+}
+
+.support-link h4,
+.support-link p {
+    margin: 0;
+}
+
+.support-link > p {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.support-link-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 10px;
+}
+
+.support-link-row label {
+    display: grid;
+    gap: 6px;
+    color: var(--text-dim);
+    font: 0.76rem 'Share Tech Mono', monospace;
+}
+
+.support-link-row select {
+    margin: 0;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+}
+
+#support-link-active {
+    display: grid;
+    gap: 10px;
+}
+
+.support-link-state {
+    color: var(--text-bright);
+}
+
+.support-link-code {
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid var(--primary-dim);
+    border-radius: 7px;
+    background: var(--config-surface-inset);
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.support-link-code > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.support-link-code code {
+    flex: 1;
+    padding: 9px 10px;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.24);
+    color: var(--primary);
+    overflow-wrap: anywhere;
+    user-select: all;
+}
+
+.support-finding.is-ok {
+    border-left-color: var(--success);
+}
+
+#support-link-close {
+    justify-self: start;
+}
