@@ -136,7 +136,7 @@ func Run() Report {
 
 func RunFull() Report {
 	report := Run()
-	scan := scanAccess()
+	scan := scanAccess(accessScanLimit)
 	report.Access = &scan
 	if scan.Problems > 0 {
 		report.add(codeAccess, StatusFail, fmt.Sprintf("SSUI cannot fully access %d files or folders in its data or save folders.", scan.Problems), "Fix the owner and permissions of the listed paths, for example with chown -R.")

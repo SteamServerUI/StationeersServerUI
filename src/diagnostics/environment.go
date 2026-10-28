@@ -52,7 +52,7 @@ type AccessScan struct {
 }
 
 func collectEnvironment() Environment {
-	env := Environment{UID: -1, GID: -1, CPUs: runtime.NumCPU(), ContainerSignals: containerSignals(), Volumes: []Volume{}}
+	env := Environment{UID: -1, GID: -1, CPUs: runtime.NumCPU(), ContainerSignals: ContainerSignals(), Volumes: []Volume{}}
 	if runtime.GOOS != "windows" {
 		env.UID, env.GID = os.Getuid(), os.Getgid()
 		env.Groups, _ = os.Getgroups()
@@ -73,9 +73,9 @@ func collectEnvironment() Environment {
 	return env
 }
 
-func containerSignals() []string {
+func ContainerSignals() []string {
 	signals := []string{}
-	if value := strings.TrimSpace(os.Getenv("SSUI_CONTAINER")); value != "" {
+	if value := strings.TrimSpace(os.Getenv("SSUI_CONTAINER")); value == "1" || strings.EqualFold(value, "true") {
 		signals = append(signals, "SSUI_CONTAINER="+value)
 	}
 	if _, err := os.Stat("/.dockerenv"); err == nil {
@@ -99,14 +99,23 @@ func inspectDirectory(path string) string {
 	if status != "ok" {
 		return status
 	}
-	file, err := os.CreateTemp(path, ".ssui-write-test-*")
-	if err != nil {
+	if writeTest(path) != nil {
 		return "not writable"
 	}
-	name := file.Name()
-	file.Close()
-	os.Remove(name)
 	return "ok"
+}
+
+func writeTest(path string) error {
+	file, err := os.CreateTemp(path, ".ssui-write-test-*")
+	if err != nil {
+		return err
+	}
+	name := file.Name()
+	if err := file.Close(); err != nil {
+		os.Remove(name)
+		return err
+	}
+	return os.Remove(name)
 }
 
 func (report *Report) checkEnvironment() {
@@ -126,42 +135,56 @@ func (report *Report) checkEnvironment() {
 	}
 }
 
-func scanAccess() AccessScan {
+func scanAccess(limit int) AccessScan {
 	scan := AccessScan{Issues: []string{}}
-	for _, root := range []string{config.GetSSUIFolder(), "./saves"} {
-		if strings.TrimSpace(root) == "" {
-			continue
+	scan.tree(config.GetSSUIFolder(), true, limit)
+	scan.tree("./saves", config.GetIsDockerContainer(), limit)
+	return scan
+}
+
+func (scan *AccessScan) tree(root string, writable bool, limit int) {
+	if strings.TrimSpace(root) == "" {
+		return
+	}
+	if _, err := os.Stat(root); errors.Is(err, fs.ErrNotExist) {
+		return
+	}
+	filepath.WalkDir(root, func(path string, entry fs.DirEntry, walkErr error) error {
+		if limit > 0 && scan.Checked >= limit {
+			scan.Truncated = true
+			return filepath.SkipAll
 		}
-		filepath.WalkDir(root, func(path string, entry fs.DirEntry, walkErr error) error {
-			if scan.Checked >= accessScanLimit {
-				scan.Truncated = true
-				return filepath.SkipAll
-			}
-			if walkErr != nil {
-				if !errors.Is(walkErr, fs.ErrNotExist) {
-					scan.note(path, "cannot be read")
-				}
-				return nil
-			}
-			if entry.Type()&fs.ModeSymlink != 0 || (!entry.IsDir() && !entry.Type().IsRegular()) {
-				return nil
-			}
-			scan.Checked++
-			if entry.IsDir() {
-				if status := inspectDirectory(path); status != "ok" {
-					scan.note(path, status)
-				}
-				return nil
-			}
-			if file, err := os.OpenFile(path, os.O_RDWR, 0); err != nil {
-				scan.note(path, "cannot be opened for reading and writing")
-			} else {
-				file.Close()
+		if walkErr != nil {
+			if !errors.Is(walkErr, fs.ErrNotExist) {
+				scan.note(path, "cannot be read")
 			}
 			return nil
-		})
-	}
-	return scan
+		}
+		if entry.Type()&fs.ModeSymlink != 0 || (!entry.IsDir() && !entry.Type().IsRegular()) {
+			return nil
+		}
+		scan.Checked++
+		if entry.IsDir() {
+			status := inspectPath(path, true)
+			if status == "ok" && writable && writeTest(path) != nil {
+				status = "not writable"
+			}
+			if status != "ok" {
+				scan.note(path, status)
+			}
+			return nil
+		}
+		flag, problem := os.O_RDONLY, "cannot be read"
+		if writable {
+			flag, problem = os.O_RDWR, "cannot be opened for reading and writing"
+		}
+		if file, err := os.OpenFile(path, flag, 0); err != nil {
+			scan.note(path, problem)
+		} else {
+			file.Close()
+		}
+		return nil
+	})
 }
 
 func (scan *AccessScan) note(path, problem string) {
