@@ -25,7 +25,7 @@ These are terminal commands, not Stationeers console commands.
 
 ## Open a support connection
 
-If the SSUI team asks for it in your Discord ticket, expand **Support & Diagnostics**, pick a duration and click **Open support connection**. SSUI shows a code; enter it in your ticket with `/ssui connect`. While the connection is open, SSUI sends the team a snapshot every minute: server status, diagnostics, the redacted configuration, connected players with their Steam IDs, recent backups, mods, routines and the last log lines. The team can also request support packages, a connectivity check and a log recording. Passwords and tokens are never sent. Nothing else: no remote control, no config changes, no shell. The data is relayed to the ticket and not stored.
+This is how the SSUI team supports you. Expand **Support & Diagnostics**, pick a duration and click **Open support connection**. SSUI shows a code. In your Discord ticket, press **Start remote connection** and enter the code. While the connection is open, SSUI sends the team a snapshot every minute: server status, diagnostics, the redacted configuration, connected players with their Steam IDs, recent backups, mods, routines, the last log lines and system details: OS, kernel, Docker, the user SSUI runs as, and the owner, mount, filesystem and free space of the SSUI, save and log folders. The team can also request support packages, a connectivity check and a log recording, and start, stop or restart the game server. Passwords and tokens are never sent. Nothing else: no config changes, no console commands, no shell. The data is relayed to the ticket and not stored.
 
 SSUI only opens an outgoing HTTPS connection to `jxsn.dev`, no port is opened. Every request appears in the panel while it is running. **End connection** stops it immediately, and it ends by itself after the chosen duration. Opening a connection requires `server.control`.
 
@@ -54,6 +54,10 @@ Include what you did and when the first error appeared. Use the [issue tracker](
 | `Spacecat` | The last connectivity check could not reach the server from outside. |
 | `Jittercat` | The last connectivity check reached only some UDP packet sizes. |
 | `SchrodingersCat` | There is no connectivity check result yet. |
+| `LockedBoxCat` | A SSUI, save or log folder is not writable or sits on a read-only mount. |
+| `FullBowlCat` | Less than 2 GB are free for a SSUI, save or log folder. |
+| `StrayCat` | A folder SSUI cannot use belongs to a different user. |
+| `ScratchedCat` | SSUI cannot read or write some files or folders in its data or save folders. |
 
 ---
 

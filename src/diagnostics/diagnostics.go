@@ -1,6 +1,7 @@
 package diagnostics
 
 import (
+	"fmt"
 	"net"
 	"os"
 	"os/exec"
@@ -40,6 +41,10 @@ const (
 	codeUnreachable = "Spacecat"
 	codeJitter      = "Jittercat"
 	codeUnverified  = "SchrodingersCat"
+	codeReadOnly    = "LockedBoxCat"
+	codeDisk        = "FullBowlCat"
+	codeOwner       = "StrayCat"
+	codeAccess      = "ScratchedCat"
 )
 
 type Finding struct {
@@ -58,6 +63,8 @@ type Report struct {
 	Paths       map[string]string   `json:"paths"`
 	World       World               `json:"world"`
 	Spacecat    connectivity.Status `json:"spacecat"`
+	Environment Environment         `json:"environment"`
+	Access      *AccessScan         `json:"access,omitempty"`
 }
 
 type System struct {
@@ -115,13 +122,30 @@ func Run() Report {
 		Config:      summarizeConfig(cfg),
 		Paths:       map[string]string{},
 		Spacecat:    connectivity.StatusSnapshot(),
+		Environment: collectEnvironment(),
 	}
 	report.checkSystem()
 	report.checkGame(cfg)
 	report.checkFolders(cfg)
 	report.checkPorts(cfg)
 	report.checkSpacecat()
+	report.checkEnvironment()
+	report.summarize()
+	return report
+}
 
+func RunFull() Report {
+	report := Run()
+	scan := scanAccess()
+	report.Access = &scan
+	if scan.Problems > 0 {
+		report.add(codeAccess, StatusFail, fmt.Sprintf("SSUI cannot fully access %d files or folders in its data or save folders.", scan.Problems), "Fix the owner and permissions of the listed paths, for example with chown -R.")
+		report.summarize()
+	}
+	return report
+}
+
+func (report *Report) summarize() {
 	report.Overall = "healthy"
 	for _, finding := range report.Findings {
 		switch {
@@ -133,7 +157,6 @@ func Run() Report {
 			report.Overall = "unknown"
 		}
 	}
-	return report
 }
 
 func (report *Report) add(code string, status Status, summary, fix string) {

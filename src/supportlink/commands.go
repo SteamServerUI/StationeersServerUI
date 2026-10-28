@@ -11,7 +11,9 @@ import (
 
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/connectivity"
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/diagnostics"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/discordbot"
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/managers/gamemgr"
 )
 
 var commands = map[string]func() response{
@@ -30,6 +32,10 @@ var commands = map[string]func() response{
 	"record_start":      recordStartCommand,
 	"record_stop":       recordStopCommand,
 	"recording_package": recordingPackageCommand,
+	"server_state":      serverStateCommand,
+	"server_start":      serverActionCommand("start"),
+	"server_stop":       serverActionCommand("stop"),
+	"server_restart":    serverActionCommand("restart"),
 }
 
 func execute(command string) response {
@@ -66,7 +72,7 @@ func statusCommand() response {
 }
 
 func diagnosticsCommand() response {
-	report := diagnostics.Run()
+	report := diagnostics.RunFull()
 	data, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
 		return response{Error: err.Error()}
@@ -80,7 +86,7 @@ func snapshotCommand() response {
 }
 
 func reportCommand() response {
-	report := diagnostics.Run()
+	report := diagnostics.RunFull()
 	var buffer bytes.Buffer
 	if err := diagnostics.WriteReportHTML(&buffer, report); err != nil {
 		return response{Error: err.Error()}
@@ -201,6 +207,28 @@ func recordStopCommand() response {
 		text += "\nThe recording stopped with an error: " + err.Error()
 	}
 	return response{OK: true, Text: text, Data: recording}
+}
+
+func serverStateCommand() response {
+	state := map[string]any{"state": gamemgr.GetServerState(), "running": gamemgr.InternalIsServerRunning()}
+	text := fmt.Sprintf("Game server: %s", state["state"])
+	if uptime := gamemgr.GetServerUptime(); uptime > 0 {
+		state["uptimeSeconds"] = int64(uptime / time.Second)
+		text += fmt.Sprintf(", up %s", uptime.Round(time.Second))
+	}
+	return response{OK: true, Text: text, Data: state}
+}
+
+func serverActionCommand(action string) func() response {
+	return func() response {
+		message, err := discordbot.RunServerAction(action)
+		if err != nil {
+			return response{Error: err.Error()}
+		}
+		reply := serverStateCommand()
+		reply.Text = message + "\n" + reply.Text
+		return reply
+	}
 }
 
 func zipResponse(name string, write func(io.Writer) error) response {
