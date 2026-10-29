@@ -15,6 +15,7 @@ Use the spelling and capitalization shown below.
 | `-LogToFiles` | `-lf` | boolean flag | Enable SSUI log files. |
 | `-NoSteamCMD` | - | boolean flag | Skip SteamCMD installation/initialization. |
 | `-NoSanityCheck` | - | boolean flag | Skip startup sanity checks. Not recommended. |
+| `-Diagnose` | - | boolean flag | Print a diagnosis of the installation and exit without starting SSUI or changing files. |
 | `-AdvertiserOverride` | - | address | Override advertised address with `auto`, IPv4, or DNS hostname. `ServerVisible` must be false for this mode. |
 | `-dev` | - | boolean flag | Development-only mode with known development credentials. Never use on a real exposed server. |
 

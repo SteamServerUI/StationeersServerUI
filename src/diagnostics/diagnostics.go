@@ -45,6 +45,7 @@ const (
 	codeDisk        = "FullBowlCat"
 	codeOwner       = "StrayCat"
 	codeAccess      = "ScratchedCat"
+	codeDNS         = "LostCat"
 )
 
 type Finding struct {
@@ -65,6 +66,7 @@ type Report struct {
 	Spacecat    connectivity.Status `json:"spacecat"`
 	Environment Environment         `json:"environment"`
 	Access      *AccessScan         `json:"access,omitempty"`
+	DNS         []DNSResult         `json:"dns,omitempty"`
 }
 
 type System struct {
@@ -140,9 +142,24 @@ func RunFull() Report {
 	report.Access = &scan
 	if scan.Problems > 0 {
 		report.add(codeAccess, StatusFail, fmt.Sprintf("SSUI cannot fully access %d files or folders in its data or save folders.", scan.Problems), "Fix the owner and permissions of the listed paths, for example with chown -R.")
-		report.summarize()
 	}
+	report.DNS = checkDNS()
+	report.checkDNS()
+	report.summarize()
 	return report
+}
+
+func (report *Report) RecheckSpacecat() {
+	report.Spacecat, _ = connectivity.Check()
+	kept := report.Findings[:0]
+	for _, finding := range report.Findings {
+		if finding.Code != codeUnreachable && finding.Code != codeJitter && finding.Code != codeUnverified {
+			kept = append(kept, finding)
+		}
+	}
+	report.Findings = kept
+	report.checkSpacecat()
+	report.summarize()
 }
 
 func (report *Report) summarize() {

@@ -144,6 +144,19 @@ func LoadConfig() (*JsonConfig, error) {
 	return &effective, nil
 }
 
+// LoadConfigWithoutSaving applies the persisted config without normalizing the file on disk.
+func LoadConfigWithoutSaving() error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	jsonConfig, err := readConfigFile(ConfigPath)
+	if err != nil {
+		return err
+	}
+	applyConfig(jsonConfig)
+	return nil
+}
+
 // ReadConfigFile returns the persisted config without changing runtime state.
 func ReadConfigFile() (*JsonConfig, error) {
 	ConfigMu.RLock()

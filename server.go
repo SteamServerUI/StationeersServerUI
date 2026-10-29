@@ -42,6 +42,7 @@ func main() {
 	var wg sync.WaitGroup
 	logger.ConfigureConsole()
 	loader.ParseFlags()
+	loader.HandleDiagnoseFlag()
 	loader.HandleSanityCheckFlag()
 	loader.SanityCheck()
 	if migrated, err := setup.MigrateLegacyRuntimeFolder(); err != nil {

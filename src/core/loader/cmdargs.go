@@ -4,11 +4,13 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/core/security"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/diagnostics"
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
 )
 
@@ -24,6 +26,7 @@ var devModeFlag bool
 var skipSteamCMDFlag bool
 var sanityCheckFlag bool
 var advertiserOverrideFlag string
+var diagnoseFlag bool
 
 // ParseFlags parses command-line arguments ONCE at startup (called from func main)
 func ParseFlags() {
@@ -43,6 +46,7 @@ func ParseFlags() {
 	flag.BoolVar(&createSSUILogFileFlag, "lf", false, "(Alias) Create log files for SSUI")
 	flag.BoolVar(&skipSteamCMDFlag, "NoSteamCMD", false, "Skips SteamCMD installation")
 	flag.BoolVar(&sanityCheckFlag, "NoSanityCheck", false, "Skips the sanity check. Not recommended.")
+	flag.BoolVar(&diagnoseFlag, "Diagnose", false, "Prints a diagnosis of this SSUI installation and exits without starting SSUI")
 	flag.StringVar(&advertiserOverrideFlag, "AdvertiserOverride", "", "Override the advertised server IP. For this, the ServerVisible setting must be set to false. Use \"auto\" for automatic public IP detection, an IPv4 address, or a DNS hostname (to allow server advertisement if you are behind a reverse proxy)")
 
 	// Parse command-line flags
@@ -142,6 +146,29 @@ func HandleIdentityFlags() {
 		return
 	}
 	logger.Security.Warn("Recovered owner account 'recovery'. Existing sessions and API tokens were revoked.")
+}
+
+// HandleDiagnoseFlag prints the diagnosis and exits before anything else starts or writes files.
+func HandleDiagnoseFlag() {
+	if !diagnoseFlag {
+		return
+	}
+	detectContainer()
+	if err := moveToExecutableDir(); err != nil {
+		fmt.Fprintln(os.Stderr, "Could not switch to the SSUI folder: "+err.Error())
+	}
+	if err := config.LoadConfigWithoutSaving(); err != nil {
+		fmt.Fprintln(os.Stderr, "Could not read the config: "+err.Error())
+	}
+	report := diagnostics.RunFull()
+	report.RecheckSpacecat()
+	if err := diagnostics.WriteText(os.Stdout, report); err != nil {
+		os.Exit(2)
+	}
+	if report.Overall == "failed" {
+		os.Exit(1)
+	}
+	os.Exit(0)
 }
 
 // HandleSanityCheckFlag has special handling to allow usage directly at startup before other systems are initialized.

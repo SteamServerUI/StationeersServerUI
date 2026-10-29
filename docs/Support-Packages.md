@@ -23,6 +23,10 @@ These are terminal commands, not Stationeers console commands.
 
 `sp` without a recording writes a package without logs.
 
+## When SSUI does not start
+
+Run SSUI with `-Diagnose`, for example `./StationeersServerUI -Diagnose`. It checks the installation, the config, the folders and their permissions, DNS, and runs the Spacecat connectivity check, prints the findings and the full data, and exits without starting SSUI or changing any file. The output is plain text, so you can paste it into your ticket or give it to an AI assistant together with [ssui.dev](https://ssui.dev). Known passwords and tokens are redacted.
+
 ## Open a support connection
 
 This is how the SSUI team supports you. Expand **Support & Diagnostics**, pick a duration and click **Open support connection**. SSUI shows a code. In your Discord ticket, press **Start remote connection** and enter the code. While the connection is open, SSUI sends the team a snapshot every minute: server status, diagnostics, the redacted configuration, connected players with their Steam IDs, recent backups, mods, routines, the last log lines and system details: OS, kernel, Docker, the user SSUI runs as, and the owner, mount, filesystem and free space of the SSUI, save and log folders. The team can also request support packages, a connectivity check and a log recording, and start, stop or restart the game server. Passwords and tokens are never sent. Nothing else: no config changes, no console commands, no shell. The data is relayed to the ticket and not stored.
@@ -58,6 +62,7 @@ Include what you did and when the first error appeared. Use the [issue tracker](
 | `FullBowlCat` | Less than 2 GB are free for a SSUI, save or log folder. |
 | `StrayCat` | A folder SSUI cannot use belongs to a different user. |
 | `ScratchedCat` | SSUI cannot read or write some files or folders in its data or save folders. |
+| `LostCat` | SSUI cannot resolve the host names it needs, for example for updates, SteamCMD or Discord. |
 
 ---
 
