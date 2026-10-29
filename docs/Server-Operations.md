@@ -8,7 +8,7 @@ Use the web dashboard for everyday control, or [SSCLI](SSUICLI-Commands.md) in t
 
 The dashboard's **Spacecat** check answers one small but expensive question: can traffic reach the configured **Stationeers gameserver UDP port from the internet**? It is not a check of the SSUI web port, and it is not a promise that every player's ISP will behave.
 
-The check runs while the gameserver is stopped. SSUI temporarily reserves the configured `GamePort`, asks the external probe service to send UDP packets and reports which test sizes came back. The default probes are `1000`, `1200` and `1400` bytes. A partial result is useful: it can point at MTU or firewall handling even when small packets work.
+The check runs while the gameserver is stopped. SSUI temporarily reserves the configured `GamePort`, asks the external probe service to send UDP packets and reports which test sizes came back. The default probes are `1000`, `1200` and `1400` bytes. A partial result is useful: it can point at MTU or firewall handling even when small packets work. The probe service runs in Frankfurt, Germany, so the shown latency is the round trip from there and says nothing about how fast the server is for your players.
 
 Spacecat is enabled by default and can be disabled with `ConnectivityCheckEnabled`. A red result usually means port forwarding, host firewall, Docker publishing, the advertised address or carrier-grade NAT needs attention. A green result means the probe reached the gameserver port; still test an actual player connection from the network your players use.
 

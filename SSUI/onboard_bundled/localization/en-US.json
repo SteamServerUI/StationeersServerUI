@@ -435,7 +435,7 @@
                 "UIText_SUP_Running": "Running diagnostics...",
                 "UIText_SUP_AllGood": "Nothing needs attention.",
                 "UIText_SUP_LinkTitle": "Support connection",
-                "UIText_SUP_LinkInfo": "Lets the SSUI team look at this server from your Discord ticket. While connected, SSUI shares server status, diagnostics, the redacted configuration, connected players with their Steam IDs, recent backups, mods, routines, the last log lines and system details such as the OS, Docker, folder permissions and free disk space. The team can also start, stop and restart the game server, for example to record a log. Passwords and tokens are never sent. No config changes, no console commands, no shell. You can end it at any time.",
+                "UIText_SUP_LinkInfo": "Lets the SSUI team look at this server from your Discord ticket. While connected, SSUI shares server status, diagnostics, the redacted configuration, connected players with their Steam IDs, recent backups, mods, routines, the last log lines and system details such as the OS, Docker, folder permissions and free disk space. The team can also start, stop and restart the game server, for example to record a log. Passwords and tokens are never sent. No config changes, no console commands, no shell. Our AI support bot, provided by OpenAI, reads the same data in your ticket. You can end it at any time.",
                 "UIText_SUP_LinkDuration": "Duration",
                 "UIText_SUP_Link30": "30 minutes",
                 "UIText_SUP_Link60": "1 hour",

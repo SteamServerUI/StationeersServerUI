@@ -15,7 +15,7 @@ Do the smallest useful check first:
 2. Write down the operating system or container image.
 3. Reproduce the problem once and keep the first relevant error with its timestamp.
 4. Say what you expected, what happened instead and what changed immediately before it.
-5. If the issue is not obvious, create a [support package](Support-Packages.md) and review it before sharing it.
+5. If the issue is not obvious, open a [support connection](Support-Packages.md#open-a-support-connection) from your ticket. If SSUI does not start at all, run it with [`-Diagnose`](Support-Packages.md#when-ssui-does-not-start).
 
 The [troubleshooting guide](Troubleshooting.md) is organized by symptom. It is a starting point, not an entrance exam. If a step does not fit your setup, say so instead of forcing the setup into the step.
 
@@ -27,7 +27,7 @@ The [troubleshooting guide](Troubleshooting.md) is organized by symptom. It is a
 | Players cannot connect | Discord, with the gameserver port, firewall/router setup and Spacecat result |
 | A reproducible crash or regression | GitHub issue, with version, steps and the first error |
 | A documentation claim is wrong or unclear | GitHub issue or a focused pull request |
-| You need to share logs or configuration | A reviewed support package through a private channel agreed with support |
+| The team needs to see your server | A [support connection](Support-Packages.md#open-a-support-connection) from your Discord ticket |
 
 ## Keep secrets out of support requests
 

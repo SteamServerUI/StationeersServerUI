@@ -433,7 +433,7 @@
                 "UIText_SUP_Running": "Kör diagnostik...",
                 "UIText_SUP_AllGood": "Inget behöver åtgärdas.",
                 "UIText_SUP_LinkTitle": "Supportanslutning",
-                "UIText_SUP_LinkInfo": "Låter SSUI-teamet titta på servern från ditt Discord-ärende. Medan anslutningen är öppen delar SSUI serverstatus, diagnostik, den maskerade konfigurationen, anslutna spelare med deras Steam-ID:n, de senaste säkerhetskopiorna, moddar, rutiner, de senaste loggraderna och systemdetaljer som operativsystem, Docker, mappbehörigheter och ledigt diskutrymme. Teamet kan också starta, stoppa och starta om spelservern, till exempel för att spela in en logg. Lösenord och tokens skickas aldrig. Inga konfigurationsändringar, inga konsolkommandon, inget skal. Du kan avsluta när som helst.",
+                "UIText_SUP_LinkInfo": "Låter SSUI-teamet titta på servern från ditt Discord-ärende. Medan anslutningen är öppen delar SSUI serverstatus, diagnostik, den maskerade konfigurationen, anslutna spelare med deras Steam-ID:n, de senaste säkerhetskopiorna, moddar, rutiner, de senaste loggraderna och systemdetaljer som operativsystem, Docker, mappbehörigheter och ledigt diskutrymme. Teamet kan också starta, stoppa och starta om spelservern, till exempel för att spela in en logg. Lösenord och tokens skickas aldrig. Inga konfigurationsändringar, inga konsolkommandon, inget skal. Vår AI-supportbot, som tillhandahålls av OpenAI, läser samma data i ditt ärende. Du kan avsluta när som helst.",
                 "UIText_SUP_LinkDuration": "Varaktighet",
                 "UIText_SUP_Link30": "30 minuter",
                 "UIText_SUP_Link60": "1 timme",

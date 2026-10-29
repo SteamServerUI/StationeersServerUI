@@ -29,9 +29,26 @@ Run SSUI with `-Diagnose`, for example `./StationeersServerUI -Diagnose`. It che
 
 ## Open a support connection
 
-This is how the SSUI team supports you. Expand **Support & Diagnostics**, pick a duration and click **Open support connection**. SSUI shows a code. In your Discord ticket, press **Start remote connection** and enter the code. While the connection is open, SSUI sends the team a snapshot every minute: server status, diagnostics, the redacted configuration, connected players with their Steam IDs, recent backups, mods, routines, the last log lines and system details: OS, kernel, Docker, the user SSUI runs as, and the owner, mount, filesystem and free space of the SSUI, save and log folders. The team can also request support packages, a connectivity check and a log recording, and start, stop or restart the game server. Passwords and tokens are never sent. Nothing else: no config changes, no console commands, no shell. The data is relayed to the ticket and not stored.
+This is how the SSUI team supports you. Expand **Support & Diagnostics**, pick a duration and click **Open support connection**. SSUI shows a code. In your Discord ticket, press **Start remote connection** and enter the code. While the connection is open, SSUI sends the team a snapshot every minute: server status, diagnostics, the redacted configuration, connected players with their Steam IDs, recent backups, mods, routines, the last log lines and system details: OS, kernel, Docker, the user SSUI runs as, and the owner, mount, filesystem and free space of the SSUI, save and log folders. The team can also request support packages, a connectivity check and a log recording, and start, stop or restart the game server. Passwords and tokens are never sent. Nothing else: no config changes, no console commands, no shell. The relay on jxsn.dev only passes the data through and does not keep it. Everything the team or the support bot fetches is posted in your ticket.
 
 SSUI only opens an outgoing HTTPS connection to `jxsn.dev`, no port is opened. Every request appears in the panel while it is running. **End connection** stops it immediately, and it ends by itself after the chosen duration. Opening a connection requires `server.control`.
+
+### The support bot during a remote connection
+
+Our Discord support bot is an AI teammate. It knows the SSUI source code and documentation and answers in your ticket by default. While a remote connection is active, it also sees the live overview of your SSUI, the same data the support team sees, and uses it in its answers.
+
+- **It can fetch data itself.** When it needs more information, the bot can request read-only data from your SSUI: status, diagnostics, report, logs, connectivity check, config (without passwords and tokens), players, backups, mods, routines and the game server state. Every result is posted in your ticket, marked "fetched by the support bot", so you always see what it looked at.
+- **It can only suggest a server start, stop or restart.** The bot asks you in the ticket first, and only you, the person who opened the ticket, can confirm with **Yes, go ahead**. If you say **No**, or nobody answers within 10 minutes, nothing changes. The same applies when a supporter asks for it.
+
+The bot never changes your configuration, files or saves, and it cannot run anything outside the support commands SSUI allows.
+
+### Bug reports to GitHub
+
+If a ticket turns up a real bug, the support team can ask the bot to draft a GitHub issue. The bot writes the draft in English, with a summary, steps to reproduce, expected and actual behavior, versions and relevant log excerpts, and posts it in the ticket. Only after a team member confirms it with **Create issue** is it filed in the matching repository, and the bot posts the link. Issue drafts never contain Discord names or IDs, IP addresses, Steam IDs or other personal data. Users cannot create issues through the bot.
+
+### Privacy
+
+The AI behind the bot is provided by OpenAI. What the bot sees in your ticket, the conversation and, with a remote connection, your SSUI status and the results it fetched, is sent there so it can answer you. IP addresses and Steam IDs are removed first; player names and log lines stay in. OpenAI's own retention rules apply there. The bot keeps the conversation of your ticket, including that data, a short summary of the ticket and the Discord ID of whoever started the connection for 180 days after the last activity in the ticket so it can follow up, then deletes them automatically. Only anonymous lessons learned, a problem and its fix without names, IDs, IP addresses or server names, are kept longer. The bot runs isolated from the rest of the SSUI infrastructure.
 
 ## Before you share it
 

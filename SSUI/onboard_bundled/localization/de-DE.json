@@ -435,7 +435,7 @@
                 "UIText_SUP_Running": "Diagnose läuft...",
                 "UIText_SUP_AllGood": "Alles in Ordnung.",
                 "UIText_SUP_LinkTitle": "Support-Verbindung",
-                "UIText_SUP_LinkInfo": "Lässt das SSUI-Team aus deinem Discord-Ticket auf diesen Server schauen. Solange die Verbindung offen ist, teilt SSUI Serverstatus, Diagnose, die geschwärzte Config, verbundene Spieler mit ihren Steam-IDs, die letzten Backups, Mods, Routinen, die letzten Log-Zeilen und Systemdetails wie Betriebssystem, Docker, Ordnerrechte und freien Speicher. Das Team kann außerdem den Gameserver starten, stoppen und neu starten, zum Beispiel um ein Log aufzunehmen. Passwörter und Tokens werden nie gesendet. Keine Config-Änderungen, keine Konsolenbefehle, keine Shell. Du kannst die Verbindung jederzeit beenden.",
+                "UIText_SUP_LinkInfo": "Lässt das SSUI-Team aus deinem Discord-Ticket auf diesen Server schauen. Solange die Verbindung offen ist, teilt SSUI Serverstatus, Diagnose, die geschwärzte Config, verbundene Spieler mit ihren Steam-IDs, die letzten Backups, Mods, Routinen, die letzten Log-Zeilen und Systemdetails wie Betriebssystem, Docker, Ordnerrechte und freien Speicher. Das Team kann außerdem den Gameserver starten, stoppen und neu starten, zum Beispiel um ein Log aufzunehmen. Passwörter und Tokens werden nie gesendet. Keine Config-Änderungen, keine Konsolenbefehle, keine Shell. Unser KI-Support-Bot, bereitgestellt von OpenAI, liest dieselben Daten in deinem Ticket mit. Du kannst die Verbindung jederzeit beenden.",
                 "UIText_SUP_LinkDuration": "Dauer",
                 "UIText_SUP_Link30": "30 Minuten",
                 "UIText_SUP_Link60": "1 Stunde",
