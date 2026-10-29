@@ -317,7 +317,7 @@
                             placeholder="${escapeHTML(text.keepPassword || 'Leave empty to keep it unchanged')}">
                     </div>
                     <div class="access-user-footer">
-                        <button type="button" class="access-danger-button" data-delete-user>${escapeHTML(text.deleteUser || 'Delete user')}</button>
+                        <button type="button" class="access-danger-button" data-remove-user>${escapeHTML(text.deleteUser || 'Delete user')}</button>
                         <button type="submit" class="access-primary-button">${escapeHTML(text.saveUser || 'Save user')}</button>
                     </div>
                 </form>
@@ -487,7 +487,7 @@
                 edit.setAttribute('aria-expanded', String(!editor.hidden));
                 edit.textContent = editor.hidden ? text.manage || 'Manage' : text.close || 'Close';
             }
-            const deleteButton = event.target.closest('[data-delete-user]');
+            const deleteButton = event.target.closest('[data-remove-user]');
             if (deleteButton) deleteUser(deleteButton.closest('[data-user-id]').dataset.userId);
             const sessionButton = event.target.closest('[data-revoke-session]');
             if (sessionButton) revokeSession(sessionButton.dataset.revokeSession);
