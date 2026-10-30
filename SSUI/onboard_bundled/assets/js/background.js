@@ -13,6 +13,12 @@
         'planets-static': 'Classic planets (reduced motion)',
         'disabled': 'No background'
     };
+    const kinds = [
+        ['celestial', 'Celestial'],
+        ['panorama', 'Panoramas'],
+        ['planets', 'Classic'],
+        ['disabled', 'None']
+    ];
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const hardwareWebGL = detectHardwareWebGL();
@@ -26,6 +32,7 @@
     let readyResolved = false;
     const ready = new Promise(resolve => resolveReady = resolve);
     if (!modes[mode]) mode = reducedMotion || !hardwareWebGL ? 'celestial-static' : 'celestial-focus';
+    let staticMotion = mode === 'disabled' ? reducedMotion || !hardwareWebGL : mode.endsWith('-static');
 
     function detectHardwareWebGL() {
         const canvas = document.createElement('canvas');
@@ -102,13 +109,34 @@
         picker.hidden = true;
         picker.innerHTML = `
             <strong>Background</strong>
-            ${Object.entries(modes).map(([value, label]) => `
-                <label><input type="radio" name="ssui-background-mode" value="${value}">
-                    <span>${label}</span></label>`).join('')}`;
+            <div class="background-picker-tabs" role="radiogroup" aria-label="Background">
+                ${kinds.map(([kind, label]) => `<button type="button" role="radio" data-kind="${kind}">${label}</button>`).join('')}
+            </div>
+            <label class="background-switch">
+                <input type="checkbox" data-setting="motion">
+                <span class="background-switch-track" aria-hidden="true"></span>
+                <span>Reduced motion</span>
+            </label>
+            <div class="background-picker-season" hidden>
+                <label class="background-switch">
+                    <input type="checkbox" data-setting="season">
+                    <span class="background-switch-track" aria-hidden="true"></span>
+                    <span data-season-label></span>
+                </label>
+                <small>Turning it off hides this season for 30 days. Other seasons still show.</small>
+            </div>`;
         button.insertAdjacentElement('afterend', picker);
 
+        picker.addEventListener('click', event => {
+            const tab = event.target.closest('[data-kind]');
+            if (tab) setMode(tab.dataset.kind === 'disabled' ? 'disabled' : `${tab.dataset.kind}-${staticMotion ? 'static' : 'focus'}`);
+        });
         picker.addEventListener('change', event => {
-            if (event.target.name === 'ssui-background-mode') setMode(event.target.value);
+            if (event.target.dataset.setting === 'motion') {
+                staticMotion = event.target.checked;
+                if (mode !== 'disabled') setMode(`${baseMode()}-${staticMotion ? 'static' : 'focus'}`);
+            }
+            if (event.target.dataset.setting === 'season') window.SSUISeasonal?.setEnabled(event.target.checked);
         });
         document.addEventListener('click', event => {
             if (!picker.hidden && !picker.contains(event.target) && event.target !== button) picker.hidden = true;
@@ -118,32 +146,51 @@
         });
     }
 
+    function syncPicker() {
+        if (!picker) return;
+        const current = mode === 'disabled' ? 'disabled' : baseMode();
+        picker.querySelectorAll('[data-kind]').forEach(tab => {
+            const selected = tab.dataset.kind === current;
+            tab.classList.toggle('active', selected);
+            tab.setAttribute('aria-checked', String(selected));
+        });
+        const motion = picker.querySelector('[data-setting="motion"]');
+        motion.checked = staticMotion;
+        motion.disabled = mode === 'disabled';
+
+        const seasonal = window.SSUISeasonal;
+        const season = picker.querySelector('.background-picker-season');
+        season.hidden = !seasonal?.active;
+        if (seasonal?.active) {
+            picker.querySelector('[data-season-label]').textContent = `${seasonal.active.charAt(0).toUpperCase()}${seasonal.active.slice(1)} theme`;
+            picker.querySelector('[data-setting="season"]').checked = seasonal.enabled;
+        }
+    }
+
     function openPicker() {
         buildPicker();
         if (!picker) return;
-        const selected = picker.querySelector(`input[value="${mode}"]`);
-        if (selected) selected.checked = true;
+        syncPicker();
         picker.hidden = !picker.hidden;
     }
 
     function setMode(nextMode) {
-        if (!modes[nextMode]) return;
+        if (!modes[nextMode] || nextMode === mode) return;
         mode = nextMode;
         localStorage.setItem(storageKey, mode);
         setBodyMode();
         updateButton();
-        if (picker) picker.hidden = true;
+        syncPicker();
 
         if (baseMode() === 'planets') createPlanets();
         stopRenderer();
         if (baseMode() === 'celestial') startCelestial();
         if (baseMode() === 'panorama') startPanorama();
-
-        window.SSUIAccess?.notify(`Background set to ${modes[mode]}.`, 'success');
     }
 
     function stopRenderer() {
         rendererGeneration++;
+        document.body.classList.remove('background-seasonal-body');
         window.cancelAnimationFrame(frame);
         frame = null;
         disposeRenderer(renderer);
@@ -200,7 +247,8 @@
             if (!manifestResponse.ok) throw new Error('manifest unavailable');
             const manifest = await manifestResponse.json();
             if (!manifest.bodies?.length) throw new Error('no celestial bodies installed');
-            const body = await chooseCelestialBody(manifest.bodies, configuredWorldID);
+            const seasonalBody = window.SSUISeasonal?.celestialBody;
+            const body = seasonalBody ? { id: 'seasonal', path: seasonalBody } : await chooseCelestialBody(manifest.bodies, configuredWorldID);
             const created = await createCelestialRenderer(body);
             if (generation !== rendererGeneration || baseMode() !== 'celestial') {
                 disposeRenderer(created);
@@ -208,6 +256,7 @@
             }
             renderer = created;
             renderer.canvas.dataset.scene = body.id;
+            document.body.classList.toggle('background-seasonal-body', body.id === 'seasonal');
             document.getElementById('space-background').prepend(renderer.canvas);
             document.body.classList.remove('background-fallback');
             drawBackground(performance.now());
@@ -620,6 +669,12 @@
         if (baseMode() === 'panorama') await startPanorama();
 
         window.addEventListener('resize', resizeCanvas);
+        document.addEventListener('ssui-season', () => {
+            syncPicker();
+            const wanted = window.SSUISeasonal?.celestialBody ? 'seasonal' : null;
+            const shown = renderer?.canvas.dataset.scene === 'seasonal' ? 'seasonal' : null;
+            if (baseMode() === 'celestial' && wanted !== shown) refreshCelestialBody();
+        });
         document.querySelectorAll('[name="WorldID"]').forEach(input => {
             input.addEventListener('input', () => refreshCelestialBody(input.value));
         });

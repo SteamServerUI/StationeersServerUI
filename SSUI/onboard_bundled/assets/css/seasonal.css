@@ -87,6 +87,10 @@ body.seasonal-active > .home-footer-links {
 .seasonal-layer--halloween .seasonal-decoration--3 { bottom: 7%; left: 3%; --tilt: 6deg; width: clamp(48px, 6vw, 92px); animation-delay: -11s; }
 .seasonal-layer--halloween .seasonal-decoration--4 { bottom: 9%; right: 3%; --tilt: -14deg; animation-delay: -3s; }
 
+body.background-seasonal-body .seasonal-decoration {
+  display: none;
+}
+
 body.seasonal-halloween #banner {
   filter: drop-shadow(0 0 12px rgba(255, 103, 23, 0.5));
 }
