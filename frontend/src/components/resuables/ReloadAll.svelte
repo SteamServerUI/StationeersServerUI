@@ -11,8 +11,8 @@
     responseMessage = '';
 
     try {
-      const response = await apiFetch('/api/v2/loader/reloadbackend', {
-        method: 'GET'
+      const response = await apiFetch('/api/v3/backend/reload', {
+        method: 'POST'
       });
 
       let data;
@@ -22,11 +22,11 @@
         throw new Error('Invalid response format');
       }
 
-      if (!response.ok || data.status !== 'OK') {
+      if (!response.ok) {
         isError = true;
-        responseMessage = data.message || 'Backend reload failed';
+        responseMessage = data.error || 'Backend reload failed';
       } else {
-        responseMessage = 'Backend reload triggered';
+        responseMessage = data.message || 'Backend reloaded';
       }
     } catch (error) {
       isError = true;

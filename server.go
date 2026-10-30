@@ -22,24 +22,35 @@ package main
 
 import (
 	"embed"
+	"os"
 	"sync"
+	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/cli"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/loader"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/web"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/cli"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/core/loader"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/core/security"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/setup"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/web"
 )
 
-//go:embed UIMod/onboard_bundled
+//go:embed SSUI/onboard_bundled
 var v1uiFS embed.FS
 
 func main() {
 	var wg sync.WaitGroup
 	logger.ConfigureConsole()
 	loader.ParseFlags()
+	loader.HandleDiagnoseFlag()
 	loader.HandleSanityCheckFlag()
 	loader.SanityCheck()
+	if migrated, err := setup.MigrateLegacyRuntimeFolder(); err != nil {
+		logger.Main.Error("Failed to migrate UIMod to SSUI: " + err.Error())
+		os.Exit(1)
+	} else if migrated {
+		logger.Main.Info("Copied UIMod data to SSUI. The old UIMod folder was left untouched.")
+	}
 	logger.Main.Info("Initializing resources...")
 	loader.InitVirtFS(v1uiFS)
 	logger.Install.Info("Starting setup...")
@@ -47,13 +58,20 @@ func main() {
 	loader.HandleFlags()
 	setup.Install(&wg)
 	wg.Wait()
+	err := security.InitializeIdentity(config.GetUsers(), time.Now())
+	if err != nil {
+		logger.Security.Error("Failed to initialize identity store: " + err.Error())
+		os.Exit(1)
+	}
+	loader.HandleIdentityFlags()
 	logger.Main.Debug("Initializing Backend...")
 	loader.InitBackend()
+	loader.HandleShutdownSignals()
 	logger.Main.Debug("Starting webserver...")
 	web.StartWebServer(&wg)
 	logger.Main.Debug("Initializing after start tasks...")
 	loader.AfterStartComplete()
-	logger.Main.Debug("Initializing SSUICLI...")
+	logger.Main.Debug("Initializing SSCLI...")
 	cli.StartConsole(&wg)
 	wg.Wait()
 }

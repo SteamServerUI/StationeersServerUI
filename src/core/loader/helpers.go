@@ -1,14 +1,11 @@
 package loader
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strings"
-	"sync"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
 )
 
 func PrintConfigDetails(logLevel ...string) {
@@ -77,11 +74,10 @@ func PrintConfigDetails(logLevel ...string) {
 	// Discord Configuration
 	discord := map[string]string{
 		"IsDiscordEnabled":      fmt.Sprintf("%v", config.GetIsDiscordEnabled()),
-		"ControlChannelID":      config.GetControlChannelID(),
+		"DiscordAdminRoleID":    config.GetDiscordAdminRoleID(),
 		"EventLogChannelID":     config.GetEventLogChannelID(),
 		"StatusPanelChannelID":  config.GetStatusPanelChannelID(),
 		"LogChannelID":          config.GetLogChannelID(),
-		"ControlPanelChannelID": config.GetControlPanelChannelID(),
 		"DiscordCharBufferSize": fmt.Sprintf("%d", config.GetDiscordCharBufferSize()),
 		"BlackListFilePath":     config.GetBlackListFilePath(),
 	}
@@ -136,7 +132,7 @@ func PrintConfigDetails(logLevel ...string) {
 	ui := map[string]string{
 		"SSUIIdentifier":       config.GetSSUIIdentifier(),
 		"SSUIWebPort":          config.GetSSUIWebPort(),
-		"UIModFolder":          config.GetUIModFolder(),
+		"SSUIFolder":           config.GetSSUIFolder(),
 		"MaxSSEConnections":    fmt.Sprintf("%d", config.GetMaxSSEConnections()),
 		"SSEMessageBufferSize": fmt.Sprintf("%d", config.GetSSEMessageBufferSize()),
 	}
@@ -156,34 +152,4 @@ func PrintConfigDetails(logLevel ...string) {
 	printSection("Custom Detections Configuration", custom)
 
 	logger.Config.Debug("=======================================")
-}
-
-func IsInsideContainer(wg *sync.WaitGroup) {
-	wg.Add(1)
-	defer wg.Done()
-	// Check .dockerenv file (Docker-specific)
-	if _, err := os.Stat("/.dockerenv"); err == nil {
-		config.SetIsDockerContainer(true)
-		return
-	}
-	// Check cgroup (works for Docker and other container runtimes)
-	file, err := os.Open("/proc/1/cgroup")
-	if err != nil {
-		return
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		// Check for various container runtime indicators
-		if strings.Contains(line, "docker") ||
-			strings.Contains(line, "containerd") ||
-			strings.Contains(line, "kubepods") ||
-			strings.Contains(line, "crio") ||
-			strings.Contains(line, "libpod") {
-			config.SetIsDockerContainer(true)
-			return
-		}
-	}
 }

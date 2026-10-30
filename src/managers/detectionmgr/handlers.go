@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/core/ssestream"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/discordbot"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
 )
 
 /*
@@ -24,13 +24,6 @@ var lastWorldSavedTime time.Time // zero value means never saved
 // DefaultHandlers returns a map of event types to default handlers
 func DefaultHandlers() map[EventType]Handler {
 	return map[EventType]Handler{
-
-		EventCustomDetection: func(event Event) {
-			message := fmt.Sprintf("🎮 [Custom Detection] %s", event.Message)
-			logger.Detection.Info(message)
-			ssestream.BroadcastDetectionEvent(message)
-			discordbot.SendMessageToEventLogChannel(message)
-		},
 
 		EventServerReady: func(event Event) {
 			message := "🎮 [Gameserver] 🔔 Server is ready to connect!"

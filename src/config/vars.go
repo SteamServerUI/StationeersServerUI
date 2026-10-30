@@ -59,12 +59,12 @@ var (
 	AutoRestartServerTimer                   string
 	AutoRestartCountdown                     string
 	IsConsoleEnabled                         bool
-	IsCLIDashboardEnabled                    bool
 	LogClutterToConsole                      bool // surpresses clutter mono logs from the gameserver
 	LanguageSetting                          string
 	AutoStartServerOnStartup                 bool
 	SSUIIdentifier                           string
 	AdvertiserOverride                       string
+	ConnectivityCheckEnabled                 bool
 	IsStationeersLaunchPadEnabled            bool
 	IsStationeersLaunchPadAutoUpdatesEnabled bool
 	ShowExpertSettings                       bool
@@ -84,32 +84,39 @@ var (
 
 // Discord integration
 var (
-	DiscordToken          string
-	DiscordSession        *discordgo.Session
-	IsDiscordEnabled      bool
-	RotateServerPassword  bool
-	ControlChannelID      string
-	EventLogChannelID     string
-	LogChannelID          string
-	StatusPanelChannelID  string
-	ControlPanelChannelID string
-	DiscordCharBufferSize int
-	ExceptionMessageID    string
-	BlackListFilePath     string
+	DiscordToken                      string
+	DiscordSession                    *discordgo.Session
+	IsDiscordEnabled                  bool
+	RotateServerPassword              bool
+	DiscordRestartVoteEnabled         bool
+	DiscordRestoreVoteEnabled         bool
+	DiscordVoteDurationMinutes        int
+	DiscordRestartVoteThreshold       int
+	DiscordRestartVoteMinimum         int
+	DiscordRestartVoteCooldownMinutes int
+	DiscordRestoreVoteThreshold       int
+	DiscordRestoreVoteMinimum         int
+	DiscordRestoreVoteCooldownMinutes int
+	DiscordAdminRoleID                string
+	EventLogChannelID                 string
+	LogChannelID                      string
+	StatusPanelChannelID              string
+	DiscordCharBufferSize             int
+	ExceptionMessageID                string
+	BlackListFilePath                 string
 )
 
 // Backup and cleanup settings
 var (
-	IsCleanupEnabled          bool
-	BackupKeepLastN           int
-	BackupKeepDailyFor        time.Duration
-	BackupKeepWeeklyFor       time.Duration
-	BackupKeepMonthlyFor      time.Duration
-	BackupCleanupInterval     time.Duration
-	ConfiguredBackupDir       string
-	ConfiguredSafeBackupDir   string
-	BackupWaitTime            time.Duration
-	IsNewTerrainAndSaveSystem bool
+	BackupRetentionEnabled       bool
+	BackupKeepNewestCount        int
+	BackupDailyRetentionDays     int
+	BackupWeeklyRetentionWeeks   int
+	BackupMonthlyRetentionMonths int
+	BackupCleanupInterval        time.Duration
+	ConfiguredBackupDir          string
+	ConfiguredSafeBackupDir      string
+	IsNewTerrainAndSaveSystem    bool
 )
 
 // Authentication and security
@@ -137,18 +144,18 @@ var (
 
 // File paths
 var (
-	TLSCertPath                   = "./UIMod/tls/cert.pem"
-	TLSKeyPath                    = "./UIMod/tls/key.pem"
-	ConfigPath                    = "./UIMod/config/config.json"
-	CustomDetectionsFilePath      = "./UIMod/config/customdetections.json"
-	LogFolder                     = "./UIMod/logs/"
-	UIModFolder                   = "./UIMod/"
-	TwoBoxFormFolder              = "./UIMod/twoboxform/"
-	ConfigHtmlPath                = "./UIMod/ui/config.html"
-	DetectionManagerHtmlPath      = "./UIMod/ui/detectionmanager.html"
-	TwoBoxFormHtmlPath            = "./UIMod/twoboxform/twoboxform.html"
-	IndexHtmlPath                 = "./UIMod/ui/index.html"
-	SSCMWebDir                    = "./UIMod/sscm/"
+	TLSCertPath                   = "./SSUI/tls/cert.pem"
+	TLSKeyPath                    = "./SSUI/tls/key.pem"
+	ConfigPath                    = "./SSUI/config/config.json"
+	CustomDetectionsFilePath      = "./SSUI/config/customdetections.json"
+	LogFolder                     = "./SSUI/logs/"
+	SSUIFolder                    = "./SSUI/"
+	TwoBoxFormFolder              = "./SSUI/twoboxform/"
+	ConfigHtmlPath                = "./SSUI/ui/config.html"
+	DetectionManagerHtmlPath      = "./SSUI/ui/detectionmanager.html"
+	TwoBoxFormHtmlPath            = "./SSUI/twoboxform/twoboxform.html"
+	IndexHtmlPath                 = "./SSUI/ui/index.html"
+	SSCMWebDir                    = "./SSUI/sscm/"
 	SSCMFilePath                  = "./BepInEx/plugins/SSCM/SSCM.socket"
 	SSCMPluginDir                 = "./BepInEx/plugins/SSCM/"
 	StationeersServerPingEndpoint = "http://40.82.200.175:8081/Ping"

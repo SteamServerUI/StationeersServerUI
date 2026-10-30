@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSUI v{{.Version}}{{.SSUIIdentifier}}</title>
+    <link rel="stylesheet" href="/static/css/page-loader.css">
+    <script src="/static/js/page-loader.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/tabs.css">
+    <link rel="stylesheet" href="/static/css/background.css?v=6">
+    <link rel="stylesheet" href="/static/css/mobile.css">
+    <link rel="stylesheet" href="/static/css/home.css">
+    <link rel="stylesheet" href="/static/css/popup.css">
+    <link rel="stylesheet" href="/static/css/sscm.css">
+    <link rel="stylesheet" href="/static/css/info-notice.css">
+    <link rel="stylesheet" href="/static/css/seasonal.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+</head>
+
+<body data-authenticated="true" data-permissions="{{.Permissions}}">
+    <div id="page-loader" role="status" aria-label="Loading Stationeers Server UI">
+        <div class="page-loader-content">
+            <div class="page-loader-mark">SSUI</div>
+            <div class="page-loader-line" aria-hidden="true"></div>
+        </div>
+    </div>
+    <div id="space-background"></div>
+    <div id="planet-container"></div>
+    <div id="universalPopup" class="popup">
+        <div class="popup-content">
+            <h2 id="popupTitle"></h2>
+            <p id="popupMessage"></p>
+            <button onclick="closePopup()">Close</button>
+        </div>
+    </div>
+
+    <!-- Update Modal -->
+    <div id="update-modal"
+        data-badge-major="{{.UIText_UpdateBadgeMajor}}"
+        data-badge-prerelease="{{.UIText_UpdateBadgePrerelease}}"
+        data-badge-stable="{{.UIText_UpdateBadgeStable}}"
+        data-summary="{{.UIText_UpdateSummary}}"
+        data-summary-container="{{.UIText_UpdateSummaryContainer}}"
+        data-none-available="{{.UIText_UpdateNoneAvailable}}"
+        data-managed-by-docker="{{.UIText_UpdateManagedByDocker}}"
+        data-installing-version="{{.UIText_UpdateInstallingVersion}}">
+        <div class="update-modal-content">
+            <button type="button" class="update-modal-close" onclick="closeUpdateModal()" aria-label="Close">&times;</button>
+            <div class="update-modal-icon"><svg class="update-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg></div>
+            <h2>{{.UIText_UpdateTitle}}</h2>
+            <p id="update-summary">{{.UIText_UpdateAvailable}}</p>
+
+            <label class="update-version-picker" for="update-version-select">
+                {{.UIText_UpdateVersion}}
+                <select id="update-version-select" onchange="selectUpdateVersion()"></select>
+            </label>
+            <div class="update-release-flags" id="update-release-flags"></div>
+            <a class="update-release-notes" id="update-release-notes" target="_blank" rel="noopener noreferrer">{{.UIText_UpdateReleaseNotes}}</a>
+            <div class="update-warning update-container-warning" id="update-container-warning">
+                <strong>{{.UIText_UpdateContainerTitle}}</strong>
+                <p>{{.UIText_UpdateContainerInfo}}</p>
+            </div>
+
+            <div class="update-warning" id="update-major-warning">
+                <strong>{{.UIText_UpdateMajorTitle}}</strong>
+                <p>{{.UIText_UpdateMajorInfo}}</p>
+                <label><input type="checkbox" id="confirm-major" onchange="updateInstallButton()"> {{.UIText_UpdateMajorConfirm}}</label>
+            </div>
+            <div class="update-warning is-prerelease" id="update-prerelease-warning">
+                <strong>{{.UIText_UpdatePrereleaseTitle}}</strong>
+                <p>{{.UIText_UpdatePrereleaseInfo}}</p>
+                <label><input type="checkbox" id="confirm-prerelease" onchange="updateInstallButton()"> {{.UIText_UpdatePrereleaseConfirm}}</label>
+            </div>
+
+            <div class="update-modal-buttons" id="update-modal-buttons">
+                <button id="update-later-btn" onclick="closeUpdateModal()">{{.UIText_UpdateLater}}</button>
+                <button id="update-now-btn" data-default-label="{{.UIText_UpdateNow}}" onclick="startUpdate()" disabled>{{.UIText_UpdateNow}}</button>
+            </div>
+            <div id="update-status-running" class="update-status-message">
+                <span class="update-spinner" aria-hidden="true"></span>
+                <span id="update-running-text">{{.UIText_UpdateInstalling}}</span>
+            </div>
+            <div id="update-status-failed" class="update-status-message">
+                <strong>{{.UIText_UpdateFailed}}</strong>
+                <span id="update-failure-text"></span>
+                <button type="button" onclick="resetUpdateModal()">{{.UIText_UpdateTryAgain}}</button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <img src="/static/stationeers.webp" alt="Stationeers Banner" id="banner" onclick="window.location.href = 'https://www.youtube.com/watch?v=xvFZjo5PgG0'">
+        <button onclick="fetch('/api/v3/auth/logout', { method: 'POST' }).finally(() => window.location.href = '/login');" class="logout-icon" title="Logout"></button>
+        <button onclick="toggleGPUSaver()" class="gpusaver-icon" title="Background settings">
+        </button>
+    </header>
+    <main>
+
+        <button onclick="openUpdateModal()" id="update-button" class="update-icon" title="Update available"><svg class="update-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"/></svg></button>
+        <h1>Stationeers Server UI v{{.Version}}{{.SSUIIdentifier}}</h1>
+
+        <section class="mission-overview" aria-label="Server overview">
+            <div class="mission-state">
+                <div id="status-indicator" class="status-indicator offline" title="Server status unknown"></div>
+                <div>
+                    <span class="overview-label">{{.UIText_GameServer}}</span>
+                    <strong id="server-state-label"
+                        data-uncertain="{{.UIText_StateUncertain}}"
+                        data-stopped="{{.UIText_StateStopped}}"
+                        data-starting="{{.UIText_StateStarting}}"
+                        data-loading-map="{{.UIText_StateLoadingMap}}"
+                        data-hosting-session="{{.UIText_StateHostingSession}}"
+                        data-running="{{.UIText_StateRunning}}"
+                        data-stopping="{{.UIText_StateStopping}}">{{.UIText_StateUncertain}}</strong>
+                </div>
+            </div>
+            <div class="overview-stat">
+                <span class="overview-label">{{.UIText_Uptime}}</span>
+                <strong id="uptime-display" class="uptime-display">-</strong>
+            </div>
+            <div class="overview-stat">
+                <span class="overview-label">{{.UIText_PlayersOnline}}</span>
+                <strong id="player-count-display">-</strong>
+            </div>
+            <div class="overview-stat">
+                <span class="overview-label">{{.UIText_LatestBackup}}</span>
+                <strong id="latest-backup-display">Checking...</strong>
+            </div>
+        </section>
+
+        <div id="controls">
+            <button id="start-server-button" class="server-action primary-action" onclick="startServer()">{{.UIText_StartButton}}</button>
+            <button id="stop-server-button" class="server-action" onclick="stopServer()">{{.UIText_StopButton}}</button>
+            <button onclick="navigateTo('/config')">{{.UIText_Settings}}</button>
+            <button onclick="triggerSteamCMD()">{{.UIText_Update_SteamCMD}}</button>
+        </div>
+        <p id="status" hidden></p>
+
+        <div id="dynamic-announcement-list">
+            <!-- Dynamic announcements will be inserted here by JavaScript -->
+        </div>
+
+        <section id="control-panel-workspace" class="control-panel-workspace no-players">
+            <div class="tab-container console-workspace">
+                <div class="console-workspace-header">
+                    <div>
+                        <span class="panel-kicker">{{.UIText_ServerOutput}}</span>
+                        <div class="stream-readout">
+                            <span id="stream-status-lamp" class="stream-status-lamp connecting"></span>
+                            <span id="stream-status-text"
+                                data-connected="{{.UIText_StreamConnected}}"
+                                data-connecting="{{.UIText_StreamConnecting}}"
+                                data-reconnecting="{{.UIText_StreamReconnecting}}"
+                                data-paused="{{.UIText_StreamPaused}}">{{.UIText_StreamConnecting}}</span>
+                        </div>
+                    </div>
+                    <div class="stream-actions">
+                        <button id="stream-pause-button" class="panel-button" onclick="toggleActiveStreamPause()"
+                            data-pause="{{.UIText_Pause}}" data-resume="{{.UIText_Resume}}">{{.UIText_Pause}}</button>
+                        <button id="stream-clear-button" class="panel-button" onclick="clearActiveStream()">{{.UIText_Clear}}</button>
+                    </div>
+                </div>
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab-id="console-tab" onclick="showTab('console-tab')">{{.UIText_Console}}</button>
+                    <button class="tab-button" data-tab-id="detection-tab" onclick="showTab('detection-tab')">{{.UIText_Detection_Events}}</button>
+                    <button class="tab-button" data-tab-id="log-tab" onclick="showTab('log-tab')">{{.UIText_Backend_Log}}</button>
+                </div>
+                <div id="console-tab" class="tab-content active">
+                    <div id="console"></div>
+                    <div id="sscm-command-slot"></div>
+                </div>
+                <div id="detection-tab" class="tab-content">
+                    <div id="detection-console"></div>
+                </div>
+                <div id="log-tab" class="tab-content">
+                    <div id="backendlog-console"></div>
+                </div>
+            </div>
+
+            <div id="players" class="side-panel">
+                <div class="side-panel-header">
+                    <div>
+                        <span class="panel-kicker">{{.UIText_ServerActivity}}</span>
+                        <h2>{{.UIText_Connected_PlayersHeader}}</h2>
+                    </div>
+                    <button id="playerListRefreshButton" class="icon-button" onclick="fetchPlayers()" title="{{.UIText_Refresh}}">↻</button>
+                </div>
+                <div id="players-empty" class="panel-empty"
+                    data-empty="{{.UIText_NoPlayers}}" data-error="{{.UIText_PlayersUnavailable}}">{{.UIText_NoPlayers}}</div>
+                <ul id="playerList"></ul>
+            </div>
+
+            <div id="backups" class="side-panel compact-backups"
+                data-created="{{.UIText_BackupCreated}}"
+                data-days-played="{{.UIText_BackupDaysPlayed}}"
+                data-things="{{.UIText_BackupThings}}"
+                data-atmospheres="{{.UIText_BackupAtmospheres}}"
+                data-game-version="{{.UIText_BackupGameVersion}}">
+                <div class="side-panel-header">
+                    <div>
+                        <span id="backup-panel-kicker" class="panel-kicker"
+                            data-compact="{{.UIText_RecentBackups}}" data-expanded="{{.UIText_BackupHistory}}">{{.UIText_RecentBackups}}</span>
+                        <h2>{{.UIText_Backup_Manager}}</h2>
+                    </div>
+                    <button id="backupRefreshButton" class="icon-button" onclick="fetchBackups()" title="{{.UIText_Refresh}}">↻</button>
+                </div>
+                <div class="backup-controls">
+                    <select id="backupLimit" onchange="fetchBackups()">
+                        <option value="5">Last 5</option>
+                        <option value="10">Last 10</option>
+                        <option value="20">Last 20</option>
+                        <option value="30">Last 30</option>
+                        <option value="50">Last 50</option>
+                        <option value="100">Last 100</option>
+                        <option value="200">Last 200</option>
+                        <option value="1000">Last 1000</option>
+                        <option value="2000">Last 2000</option>
+                        <option value="">All backups</option>
+                    </select>
+                </div>
+                <ul id="backupList"></ul>
+                <a id="backup-view-toggle" class="panel-link-button" href="/backups">{{.UIText_ViewAllBackups}}</a>
+            </div>
+        </section>
+        <div id="legacy-info-notice" class="info-notice" style="display: none;">
+            <h3>
+                <span class="notice-icon">ℹ️</span>
+                Transitioning to SteamServerUI (click to expand)
+            </h3>
+            <div class="collapsible-content">
+                <p>
+                    <strong>StationeersServerUI (V5)</strong> is slowly evolving into <strong><a
+                            href="https://steamserverui.github.io/SteamServerUI/" target="_blank">SteamServerUI
+                            (V6)</a></strong> - a modern, multi-game server management tool that supports any Steam game
+                    while keeping Stationeers at its core.
+                </p>
+                <p>ℹ️ Sit back and relax: If you have auto updates enabled, you'll get notified and guided once V6 is
+                    ready. Current plan: End of Q42026, StationeersServerUI will get LTS until further notice.
+                    You can check the <a
+                        href="https://github.com/SteamServerUI/SteamServerUI/wiki/Migration-from-StationeersServerUI"
+                        target="_blank">Migration Guide</a> to plan your transition.</p>
+                <p>
+                    <strong>Why are we doing this?</strong> StationeersServerUI has been great for Stationeers servers
+                    with
+                    its one-click setups, Discord bots, and smart backups. However, its Stationeers-only focus and
+                    retro,
+                    hard-to-maintain frontend code limited its potential. SteamServerUI uses the same reliable Go
+                    backend
+                    but adds a modern Svelte-based UI, desktop app, and flexible system supporting any Steam game - from
+                    Satisfactory to Project Zomboid and beyond.
+                </p>
+                <p>
+                    <strong>What's changing:</strong> V6 features a sleek new interface, universal Steam game support,
+                    and
+                    enhanced reliability. You're gaining a future-proof tool that's easier to use and can grow with you.
+                </p>
+                <p>
+                    <strong>Timeline:</strong> A Stable SteamServerUI release planned for Q4-2026. Christmas, probably.
+                    StationeersServerUI will continue receiving long time support updates until Q42026. See the Roadmap
+                    <a href="https://github.com/SteamServerUI/SteamServerUI/wiki/Roadmap" target="_blank">here</a> for
+                    more
+                    details.
+                </p>
+            </div>
+        </div>
+
+        <section id="connectivity-panel" class="info-notice connectivity-notice" hidden aria-live="polite"
+            data-notice="{{.UIText_ConnectivityNotice}}"
+            data-all-crisp="{{.UIText_ConnectivityAllCrisp}}"
+            data-checking="{{.UIText_ConnectivityChecking}}"
+            data-reachable="{{.UIText_ConnectivityReachable}}"
+            data-partial="{{.UIText_ConnectivityPartial}}"
+            data-unreachable="{{.UIText_ConnectivityUnreachable}}"
+            data-bind-failed="{{.UIText_ConnectivityBindFailed}}"
+            data-config-error="{{.UIText_ConnectivityConfigError}}"
+            data-service-error="{{.UIText_ConnectivityServiceError}}"
+            data-default-title="{{.UIText_ConnectivityDefault}}"
+            data-message-checking="{{.UIText_ConnectivityMessageChecking}}"
+            data-message-reachable="{{.UIText_ConnectivityMessageReachable}}"
+            data-message-partial="{{.UIText_ConnectivityMessagePartial}}"
+            data-message-unreachable="{{.UIText_ConnectivityMessageUnreachable}}"
+            data-message-bind-failed="{{.UIText_ConnectivityMessageBindFailed}}"
+            data-message-config-error="{{.UIText_ConnectivityMessageConfigError}}"
+            data-message-service-error="{{.UIText_ConnectivityMessageServiceError}}"
+            data-retry="{{.UIText_ConnectivityRetry}}"
+            data-dismiss="{{.UIText_ConnectivityDismiss}}"
+            data-received="{{.UIText_ConnectivityReceived}}"
+            data-lost="{{.UIText_ConnectivityLost}}"
+            data-bytes="{{.UIText_ConnectivityBytes}}"
+            data-permission="{{.UIText_ConnectivityPermission}}">
+            <h3>
+                <span class="notice-icon" aria-hidden="true">🌐</span>
+                <span id="connectivity-summary">{{.UIText_ConnectivityNotice}}: {{.UIText_ConnectivityChecking}}</span>
+            </h3>
+            <div class="collapsible-content">
+                <div class="connectivity-panel-header">
+                    <h2 id="connectivity-title">{{.UIText_ConnectivityChecking}}</h2>
+                    <div class="connectivity-panel-actions">
+                        <button id="connectivity-retry" class="panel-button" type="button" onclick="runConnectivityCheck()">{{.UIText_ConnectivityRetry}}</button>
+                        <button id="connectivity-dismiss" class="connectivity-dismiss" type="button" onclick="dismissConnectivityWarning()"
+                            aria-label="{{.UIText_ConnectivityDismiss}}" title="{{.UIText_ConnectivityDismiss}}">×</button>
+                    </div>
+                </div>
+                <p id="connectivity-message">{{.UIText_ConnectivityMessageChecking}}</p>
+                <div id="connectivity-probes" class="connectivity-probes"></div>
+                <p class="connectivity-footer">
+                    {{.UIText_ConnectivityFooterPrefix}}<a href="/config?tab=settings&amp;section=network-settings">{{.UIText_ConnectivityFooterLink}}</a>{{.UIText_ConnectivityFooterSuffix}}
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <discord-button>
+        <a href="https://discord.gg/8n3vN92MyJ" target="_blank">
+            <img src="https://cdn.discordapp.com/icons/1357524183260729404/a_958df6c2347c9fe6af4761acbed4e557.webp"
+                alt="SSUI Discord" width="40" height="40">
+        </a>
+    </discord-button>
+    <div class="home-footer-links">
+        <a href="https://discord.gg/8n3vN92MyJ" target="_blank" rel="noopener noreferrer"
+            class="home-community-link">{{.UIText_Discord_Info}}</a>
+        <nav class="home-resource-links" aria-label="Resources">
+            <a href="/static/apiinfo.html" class="home-resource-link">Documentation</a>
+            <span class="home-resource-separator" aria-hidden="true">|</span>
+            <a href="/static/credits.html" class="home-resource-link">Credits</a>
+            <span class="home-resource-separator" aria-hidden="true">|</span>
+            <a href="https://ko-fi.com/jxsntm" target="_blank" rel="noopener noreferrer"
+                class="home-resource-link">Support SSUI</a>
+        </nav>
+    </div>
+    <footer>
+        <div class="copyright">
+            Copyright © 2026 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a>
+            {{.UIText_Copyright1}} <a
+                href="https://github.com/SteamServerUI/StationeersServerUI/blob/main/LICENSE">{{.UIText_Copyright2}}</a>.
+        </div>
+    </footer>
+
+    <script src="/static/js/api-client.js"></script>
+    <script src="/static/js/theme-engine.js"></script>
+    <script src="/static/js/background.js"></script>
+    <script src="/static/js/sscm.js"></script>
+    <script src="/static/js/ui-utils.js"></script>
+    <script src="/static/js/server-api.js"></script>
+    <script src="/static/js/console-manager.js"></script>
+    <script src="/static/js/main.js?v=6"></script>
+    <script src="/static/js/popup.js"></script>
+    <script src="/static/js/seasonal.js"></script>
+    <script src="/static/js/dynamic-announcement.js"></script>
+    <script src="/static/js/update-ssui.js"></script>
+</body>
+
+</html>

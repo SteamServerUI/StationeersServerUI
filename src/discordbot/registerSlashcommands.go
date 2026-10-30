@@ -1,16 +1,15 @@
 package discordbot
 
 import (
-	"sync"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 // registerSlashCommands defines and registers slash commands if they have not been registered already.
-func registerSlashCommands(s *discordgo.Session) {
+func registerSlashCommands(s *discordgo.Session, applicationID string) {
 	commands := []*discordgo.ApplicationCommand{
 		{
 			Name:        "start",
@@ -19,6 +18,10 @@ func registerSlashCommands(s *discordgo.Session) {
 		{
 			Name:        "stop",
 			Description: "Stop the server",
+		},
+		{
+			Name:        "restart",
+			Description: "Restart the game server (confirmation required)",
 		},
 		{
 			Name:        "status",
@@ -58,12 +61,12 @@ func registerSlashCommands(s *discordgo.Session) {
 		},
 		{
 			Name:        "restore",
-			Description: "Restore a backup at the specified index",
+			Description: "Restore a backup at the specified filename",
 			Options: []*discordgo.ApplicationCommandOption{
 				{
 					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "index",
-					Description: "Backup index to restore (e.g., 1)",
+					Name:        "name",
+					Description: "Backup filename from /list",
 					Required:    true,
 				},
 			},
@@ -75,19 +78,19 @@ func registerSlashCommands(s *discordgo.Session) {
 				{
 					Type:        discordgo.ApplicationCommandOptionString,
 					Name:        "limit",
-					Description: "Number of backups to list or 'all' (default: 5)",
+					Description: "Number of backups to browse or 'all' (default: all, paginated)",
 					Required:    false,
 				},
 			},
 		},
 		{
 			Name:        "download",
-			Description: "Download a backup file (most recent if no index given)",
+			Description: "Download a backup file (most recent if no name given)",
 			Options: []*discordgo.ApplicationCommandOption{
 				{
-					Type:        discordgo.ApplicationCommandOptionInteger,
-					Name:        "index",
-					Description: "Backup index to download (default: most recent)",
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "name",
+					Description: "Backup filename from /list (default: most recent)",
 					Required:    false,
 				},
 			},
@@ -119,9 +122,13 @@ func registerSlashCommands(s *discordgo.Session) {
 	}
 
 	logger.Discord.Info("Checking and registering slash commands with Discord...")
+	for _, command := range commands {
+		dmPermission := false
+		command.DMPermission = &dmPermission
+	}
 
 	// Fetch existing commands from Discord
-	existingCmds, err := s.ApplicationCommands(s.State.User.ID, "")
+	existingCmds, err := s.ApplicationCommands(applicationID, "")
 	if err != nil {
 		logger.Discord.Error("Failed to fetch existing commands: " + err.Error())
 		return
@@ -134,46 +141,37 @@ func registerSlashCommands(s *discordgo.Session) {
 	}
 
 	// Compare and register only what’s necessary
-	var wg sync.WaitGroup
-	commandsToRegister := make(chan *discordgo.ApplicationCommand, len(commands))
-
 	for _, desiredCmd := range commands {
 		existing, exists := existingMap[desiredCmd.Name]
 		needsUpdate := !exists || !commandsAreEqual(desiredCmd, existing)
 
-		if needsUpdate {
-			wg.Add(1)
-			commandsToRegister <- desiredCmd
+		if !needsUpdate {
+			logger.Discord.Debug("Command " + desiredCmd.Name + " already up-to-date, skipping")
+			continue
 		}
 
-		logger.Discord.Debug("Command " + desiredCmd.Name + " already up-to-date, skipping")
-
+		startTime := time.Now()
+		_, err := s.ApplicationCommandCreate(applicationID, "", desiredCmd)
+		duration := time.Since(startTime)
+		if err != nil {
+			logger.Discord.Error("Error registering command " + desiredCmd.Name + ": " + err.Error())
+		} else {
+			logger.Discord.Debug("Successfully registered command " + desiredCmd.Name + " took:" + duration.String())
+		}
 	}
-	close(commandsToRegister)
 
-	// Worker to process api registrations
-	go func() {
-		for cmd := range commandsToRegister {
-			startTime := time.Now()
-			_, err := s.ApplicationCommandCreate(s.State.User.ID, "", cmd)
-			duration := time.Since(startTime)
-
-			if err != nil {
-				logger.Discord.Error("Error registering command " + cmd.Name + ": " + err.Error())
-			}
-			logger.Discord.Debug("Successfully registered command " + cmd.Name + " took:" + duration.String())
-			wg.Done()
-		}
-	}()
-
-	// Wait for all registrations to finish
-	wg.Wait()
 	logger.Discord.Info("Finished processing slash commands.")
 }
 
 // This is used to determine if a slash command needs to be registered with the discord server we are connected to or if it already exists.
 // commandsAreEqual (helper) checks if two discrd commands are functionally identical
 func commandsAreEqual(desired, existing *discordgo.ApplicationCommand) bool {
+	if (desired.DMPermission == nil) != (existing.DMPermission == nil) {
+		return false
+	}
+	if desired.DMPermission != nil && *desired.DMPermission != *existing.DMPermission {
+		return false
+	}
 	if desired.Name != existing.Name || desired.Description != existing.Description {
 		return false
 	}

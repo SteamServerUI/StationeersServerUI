@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSUI API v3</title>
+    <link rel="stylesheet" href="/static/css/page-loader.css">
+    <script src="/static/js/page-loader.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/background.css?v=6">
+    <link rel="stylesheet" href="/static/css/apiinfo.css">
+    <link rel="stylesheet" href="/static/css/seasonal.css">
+</head>
+<body data-authenticated="true">
+    <div id="page-loader" role="status" aria-label="Loading Stationeers Server UI">
+        <div class="page-loader-content">
+            <div class="page-loader-mark">SSUI</div>
+            <div class="page-loader-line" aria-hidden="true"></div>
+        </div>
+    </div>
+    <div id="space-background"></div>
+    <div id="planet-container"></div>
+    <main class="api-page">
+        <header class="api-hero">
+            <div>
+                <p class="eyebrow">Stationeers Server UI</p>
+                <h1>API v3</h1>
+                <p>One versioned API, one response shape, and explicit permissions for every operation.</p>
+            </div>
+            <a class="home-link" href="/">Back to SSUI</a>
+        </header>
+
+        <section class="api-card">
+            <h2>Response format</h2>
+            <p>JSON endpoints return exactly one of these envelopes:</p>
+            <pre><code>{"data":{"running":true}}
+{"error":{"code":"forbidden","message":"Permission denied"}}</code></pre>
+            <p>Downloads return the requested file and stream endpoints use <code>text/event-stream</code>.</p>
+        </section>
+
+        <section class="api-card">
+            <h2>Authentication</h2>
+            <p>Authentication is mandatory in v6. Browser logins create an HttpOnly <code>SSUISession</code> cookie. State-changing browser requests also require the value of the <code>SSUICSRF</code> cookie in the <code>X-SSUI-CSRF</code> header.</p>
+            <p>Automations use personal access tokens as <code>Authorization: Bearer ssui_pat_...</code>. A token only receives the scopes selected when it is created. Old JWT API keys are not migrated.</p>
+            <pre><code>POST /api/v3/auth/login
+Content-Type: application/json
+
+{"username":"admin","password":"your password"}</code></pre>
+        </section>
+
+        <section class="api-card">
+            <h2>First start</h2>
+            <p>If no v5 users can be migrated, create the first owner on the setup page. Existing human users are migrated as owners; old API keys and sessions are discarded.</p>
+        </section>
+
+        <section class="api-card endpoint-section">
+            <h2>Identity</h2>
+            <div class="endpoint-list">
+                <p><span class="method get">GET</span><code>/api/v3</code> API capabilities and granted permissions</p>
+                <p><span class="method get">GET</span><code>/api/v3/auth/session</code> Current session and user</p>
+                <p><span class="method post">POST</span><code>/api/v3/auth/login</code> Create a browser session</p>
+                <p><span class="method post">POST</span><code>/api/v3/auth/logout</code> Revoke the browser session</p>
+                <p><span class="method get">GET</span><code>/api/v3/auth/users</code> List users</p>
+                <p><span class="method post">POST</span><code>/api/v3/auth/users</code> Create a user</p>
+                <p><span class="method patch">PATCH</span><code>/api/v3/auth/users/{id}</code> Update a user</p>
+                <p><span class="method delete">DELETE</span><code>/api/v3/auth/users/{id}</code> Delete a user</p>
+                <p><span class="method get">GET</span><code>/api/v3/auth/groups</code> List groups and permissions</p>
+                <p><span class="method post">POST</span><code>/api/v3/auth/groups</code> Create a group</p>
+                <p><span class="method put">PUT</span><code>/api/v3/auth/groups/{id}</code> Replace a group</p>
+                <p><span class="method delete">DELETE</span><code>/api/v3/auth/groups/{id}</code> Delete a group</p>
+                <p><span class="method get">GET</span><code>/api/v3/auth/tokens</code> List visible tokens</p>
+                <p><span class="method post">POST</span><code>/api/v3/auth/tokens</code> Create a scoped token</p>
+                <p><span class="method delete">DELETE</span><code>/api/v3/auth/tokens/{id}</code> Revoke a token</p>
+                <p><span class="method get">GET</span><code>/api/v3/auth/sessions</code> List visible sessions</p>
+                <p><span class="method delete">DELETE</span><code>/api/v3/auth/sessions/{id}</code> Revoke a session</p>
+                <p><span class="method get">GET</span><code>/api/v3/auth/audit</code> Read the security audit log</p>
+            </div>
+        </section>
+
+        <section class="api-card endpoint-section">
+            <h2>Server and backups</h2>
+            <div class="endpoint-list">
+                <p><span class="method get">GET</span><code>/api/v3/server/status</code> Server state and uptime</p>
+                <p><span class="method get">GET</span><code>/api/v3/server/connectivity</code> Latest external UDP connectivity check</p>
+                <p><span class="method post">POST</span><code>/api/v3/server/connectivity/check</code> Run an external UDP connectivity check</p>
+                <p><span class="method get">GET</span><code>/api/v3/server/players</code> Connected players</p>
+                <p><span class="method post">POST</span><code>/api/v3/server/start</code> Start the server</p>
+                <p><span class="method post">POST</span><code>/api/v3/server/stop</code> Stop the server</p>
+                <p><span class="method get">GET</span><code>/api/v3/backups</code> List archives by stable filename</p>
+                <p><span class="method get">GET</span><code>/api/v3/backups/analysis?name=FILE.save</code> Read or run save analysis</p>
+                <p><span class="method post">POST</span><code>/api/v3/backups/restore</code> Restore the archive named by <code>{"name":"FILE.save"}</code></p>
+                <p><span class="method get">GET</span><code>/api/v3/backups/download?name=FILE.save</code> Stream an archive</p>
+            </div>
+        </section>
+
+        <section class="api-card endpoint-section">
+            <h2>Configuration and tools</h2>
+            <div class="endpoint-list">
+                <p><span class="method get">GET</span><code>/api/v3/settings</code> Read web UI settings</p>
+                <p><span class="method patch">PATCH</span><code>/api/v3/settings</code> Update selected settings</p>
+                <p><span class="method get">GET</span><code>/api/v3/worldgen/catalog</code> World generation choices</p>
+                <p><span class="method post">POST</span><code>/api/v3/backend/reload</code> Reload managed components</p>
+                <p><span class="method get">GET</span><code>/api/v3/update</code> Read update availability</p>
+                <p><span class="method post">POST</span><code>/api/v3/update</code> Check for or apply an update</p>
+                <p><span class="method get">GET</span><code>/api/v3/detections</code> List custom detections</p>
+                <p><span class="method post">POST</span><code>/api/v3/detections</code> Create a custom detection</p>
+                <p><span class="method delete">DELETE</span><code>/api/v3/detections/{id}</code> Delete a custom detection</p>
+                <p><span class="method get">GET</span><code>/api/v3/sscm/status</code> Read SSCM availability</p>
+                <p><span class="method post">POST</span><code>/api/v3/sscm/commands</code> Send an SSCM command</p>
+                <p><span class="method post">POST</span><code>/api/v3/steamcmd/run</code> Update the game installation</p>
+                <p><span class="method get">GET</span><code>/api/v3/slp/mods</code> List installed mods</p>
+                <p><span class="method post">POST</span><code>/api/v3/slp/mods</code> Install Workshop IDs from <code>{"workshopIds":[]}</code></p>
+            </div>
+        </section>
+
+        <section class="api-card endpoint-section">
+            <h2>Streams</h2>
+            <p>Available below <code>/api/v3/streams/</code>: <code>console</code>, <code>events</code>, <code>logs/debug</code>, <code>logs/info</code>, <code>logs/warn</code>, <code>logs/error</code>, and <code>logs/backend</code>.</p>
+        </section>
+    </main>
+    <script src="/static/js/theme-engine.js"></script>
+    <script src="/static/js/background.js"></script>
+    <script src="/static/js/seasonal.js"></script>
+</body>
+</html>

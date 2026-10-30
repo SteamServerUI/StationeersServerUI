@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	defaultWaitTime = 30 * time.Second
+	defaultWaitTime = 45 * time.Second
 )
 
 // BackupConfig holds configuration for backup operations
@@ -22,17 +22,18 @@ type BackupConfig struct {
 
 // RetentionPolicy defines backup retention rules
 type RetentionPolicy struct {
-	KeepLastN       int           // Keep last N backups regardless of age
-	KeepDailyFor    time.Duration // Keep daily backups for this duration
-	KeepWeeklyFor   time.Duration // Keep weekly backups for this duration
-	KeepMonthlyFor  time.Duration // Keep monthly backups for this duration
+	KeepNewestCount int           // Keep newest backups regardless of age
+	DailyDays       int           // Keep one representative per calendar day
+	WeeklyWeeks     int           // Keep one representative per ISO calendar week
+	MonthlyMonths   int           // Keep one representative per calendar month
 	CleanupInterval time.Duration // How often to run cleanup
 }
 
 type BackupSaveFile struct {
-	Index    int
-	SaveFile string
-	SaveTime time.Time
+	Name         string
+	SaveTime     time.Time
+	Summary      SaveSummary `json:"-"`
+	SummaryReady bool        `json:"-"`
 }
 
 // BackupFileData contains the backup file bytes and metadata for download/transfer
@@ -43,12 +44,32 @@ type BackupFileData struct {
 	SaveTime time.Time
 }
 
+type BackupFileInfo struct {
+	Filename string
+	Size     int64
+	SaveTime time.Time
+}
+
 // BackupManager manages backup operations
 type BackupManager struct {
-	config  BackupConfig
-	mu      sync.Mutex
-	watcher *fsWatcher
-	ctx     context.Context
-	cancel  context.CancelFunc
-	wg      sync.WaitGroup // Added for tracking goroutines
+	config        BackupConfig
+	mu            sync.Mutex
+	lifecycleMu   sync.Mutex
+	started       bool
+	stateMu       sync.RWMutex
+	loadMu        sync.Mutex
+	manifestMu    sync.Mutex
+	loaded        bool
+	records       map[string]backupRecord
+	handled       map[string]bool
+	retired       map[string]bool // Intentional retention deletions while the source still exists.
+	observed      map[string]saveObservation
+	pending       map[string]saveIdentity
+	revision      uint64
+	savedRevision uint64
+	wake          chan struct{}
+	scanGate      chan struct{}
+	ctx           context.Context
+	cancel        context.CancelFunc
+	wg            sync.WaitGroup
 }

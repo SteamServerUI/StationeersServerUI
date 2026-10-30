@@ -4,25 +4,33 @@ package loader
 import (
 	"embed"
 	"os"
+	"reflect"
+	"sync"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/advertiser"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/backupmgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/detectionmgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/modding"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/steamcmd"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/advertiser"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/discordbot"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/localization"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/managers/backupmgr"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/managers/detectionmgr"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/managers/gamemgr"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/modding"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/setup"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/setup/update"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/steamcmd"
 )
 
 var reloadDiscordBotFunc = func() {
 	ReloadDiscordBot()
 }
+
+var discordReload = struct {
+	sync.Mutex
+	running bool
+	pending bool
+}{}
 
 // only call this once at startup
 func InitBackend() {
@@ -53,6 +61,92 @@ func ReloadBackend() {
 	logger.Core.Info("Backend reload done!")
 }
 
+// ReloadChangedConfig applies a saved config and only restarts the parts that
+// keep their own runtime state. Most settings are read through config getters
+// and need no subsystem reload at all.
+func ReloadChangedConfig(previous, next *config.JsonConfig) {
+	ReloadConfig()
+	plan := planConfigReload(previous, next)
+
+	if plan.backupManager {
+		ReloadBackupManager()
+	}
+	if plan.localizer {
+		ReloadLocalizer()
+	}
+	if plan.appInfoPoller {
+		ReloadAppInfoPoller()
+	}
+	if plan.discord {
+		reloadDiscordBotFunc()
+	}
+	if plan.sscm {
+		ReloadSSCM()
+	}
+	if plan.slpAutoUpdates {
+		EnsureSLPAutoUpdates()
+	}
+}
+
+type configReloadPlan struct {
+	backupManager  bool
+	localizer      bool
+	appInfoPoller  bool
+	discord        bool
+	sscm           bool
+	slpAutoUpdates bool
+}
+
+func planConfigReload(previous, next *config.JsonConfig) configReloadPlan {
+	return configReloadPlan{
+		backupManager:  backupConfigChanged(previous, next),
+		localizer:      previous.LanguageSetting != next.LanguageSetting,
+		appInfoPoller:  boolChanged(previous.AllowAutoGameServerUpdates, next.AllowAutoGameServerUpdates),
+		discord:        discordConfigChanged(previous, next),
+		sscm:           boolChanged(previous.IsSSCMEnabled, next.IsSSCMEnabled),
+		slpAutoUpdates: boolChanged(previous.IsStationeersLaunchPadAutoUpdatesEnabled, next.IsStationeersLaunchPadAutoUpdatesEnabled),
+	}
+}
+
+func backupConfigChanged(previous, next *config.JsonConfig) bool {
+	return previous.SaveName != next.SaveName ||
+		boolChanged(previous.BackupRetentionEnabled, next.BackupRetentionEnabled) ||
+		intChanged(previous.BackupKeepNewestCount, next.BackupKeepNewestCount) ||
+		intChanged(previous.BackupDailyRetentionDays, next.BackupDailyRetentionDays) ||
+		intChanged(previous.BackupWeeklyRetentionWeeks, next.BackupWeeklyRetentionWeeks) ||
+		intChanged(previous.BackupMonthlyRetentionMonths, next.BackupMonthlyRetentionMonths) ||
+		intChanged(previous.BackupCleanupIntervalHours, next.BackupCleanupIntervalHours)
+}
+
+func discordConfigChanged(previous, next *config.JsonConfig) bool {
+	return previous.DiscordToken != next.DiscordToken ||
+		previous.DiscordAdminRoleID != next.DiscordAdminRoleID ||
+		previous.EventLogChannelID != next.EventLogChannelID ||
+		previous.StatusPanelChannelID != next.StatusPanelChannelID ||
+		previous.LogChannelID != next.LogChannelID ||
+		previous.DiscordCharBufferSize != next.DiscordCharBufferSize ||
+		previous.BlackListFilePath != next.BlackListFilePath ||
+		boolChanged(previous.IsDiscordEnabled, next.IsDiscordEnabled) ||
+		boolChanged(previous.RotateServerPassword, next.RotateServerPassword) ||
+		boolChanged(previous.DiscordRestartVoteEnabled, next.DiscordRestartVoteEnabled) ||
+		boolChanged(previous.DiscordRestoreVoteEnabled, next.DiscordRestoreVoteEnabled) ||
+		intChanged(previous.DiscordVoteDurationMinutes, next.DiscordVoteDurationMinutes) ||
+		intChanged(previous.DiscordRestartVoteThreshold, next.DiscordRestartVoteThreshold) ||
+		intChanged(previous.DiscordRestartVoteMinimum, next.DiscordRestartVoteMinimum) ||
+		intChanged(previous.DiscordRestartVoteCooldownMinutes, next.DiscordRestartVoteCooldownMinutes) ||
+		intChanged(previous.DiscordRestoreVoteThreshold, next.DiscordRestoreVoteThreshold) ||
+		intChanged(previous.DiscordRestoreVoteMinimum, next.DiscordRestoreVoteMinimum) ||
+		intChanged(previous.DiscordRestoreVoteCooldownMinutes, next.DiscordRestoreVoteCooldownMinutes)
+}
+
+func boolChanged(previous, next *bool) bool {
+	return !reflect.DeepEqual(previous, next)
+}
+
+func intChanged(previous, next *int) bool {
+	return !reflect.DeepEqual(previous, next)
+}
+
 // should ideally not be called standalone, if feasable, call ReloadBackend instead
 func ReloadConfig() {
 	if _, err := config.LoadConfig(); err != nil {
@@ -77,22 +171,48 @@ func ReloadBackupManager() {
 }
 
 func ReloadDiscordBot() {
-	if !config.GetIsDiscordEnabled() {
-		if config.DiscordSession != nil {
-			logger.Discord.Info("Discord integration disabled, closing existing session")
-			config.DiscordSession.Close()
-			config.DiscordSession = nil
+	discordReload.Lock()
+	if discordReload.running {
+		discordReload.pending = true
+		discordReload.Unlock()
+		logger.Discord.Debug("Discord bot reload already running; keeping one pending reload")
+		return
+	}
+	discordReload.running = true
+	discordReload.Unlock()
+
+	go runDiscordReloads()
+	logger.Discord.Info("Discord bot reload requested")
+}
+
+func runDiscordReloads() {
+	for {
+		reloadDiscordBot()
+
+		discordReload.Lock()
+		if !discordReload.pending {
+			discordReload.running = false
+			discordReload.Unlock()
+			return
 		}
+		discordReload.pending = false
+		discordReload.Unlock()
+	}
+}
+
+func reloadDiscordBot() {
+	if !config.GetIsDiscordEnabled() {
+		discordbot.DisableRuntimeState()
 		return
 	}
 
 	if config.GetDiscordToken() == "" {
 		logger.Discord.Warn("Discord is enabled but no token is configured")
+		discordbot.DisableRuntimeState()
 		return
 	}
 
-	go discordbot.InitializeDiscordBot()
-	logger.Discord.Info("Discord bot reload requested")
+	discordbot.InitializeDiscordBot()
 }
 
 // The detector should NOT be reloaded, as it is a singleton. Instead, dynamic changes come in via the custom detections manager.
@@ -106,7 +226,9 @@ func InitDetector() {
 			gamemgr.SetServerState(gamemgr.ServerStateLoadingMap)
 		case detectionmgr.EventServerHosted, detectionmgr.EventSessionStarting:
 			gamemgr.SetServerState(gamemgr.ServerStateHostingSession)
-		case detectionmgr.EventSessionRegistered:
+		case detectionmgr.EventSessionRegistered, detectionmgr.EventWorldSaved:
+			// Completing a world save proves the server is healthy and overrides
+			// transitional or uncertain startup state.
 			gamemgr.SetServerState(gamemgr.ServerStateRunning)
 		}
 	})
@@ -138,9 +260,9 @@ func LoadAdvertiser() {
 }
 
 func StartUpdateCheckLoop() {
-	if config.GetIsUpdateEnabled() {
-		go update.StartUpdateCheckLoop()
-	}
+	// The disabled loop stays local and cheap, but needs to exist so enabling
+	// updates at runtime takes effect without restarting SSUI.
+	go update.StartUpdateCheckLoop()
 }
 
 // InitBundler initialized the onboard bundled assets for the web UI
@@ -171,7 +293,7 @@ func EnsureSLPAutoUpdates() {
 func SanityCheck() {
 	err := runSanityCheck()
 	if err != nil {
-		logger.Main.Error("Sanity check failed, exiting in 10 secconds: " + err.Error())
+		logger.Main.Error("Sanity check failed, exiting in 10 seconds: " + err.Error())
 		logger.Main.Info("If you want to continue anyway, run SSUI with the --NoSanityCheck flag, but be aware there may be Dragons ahead.")
 		logger.Main.Info("This is not recommended nor supported and may cause unexpected behavior, including potential data loss!")
 		time.Sleep(10 * time.Second)

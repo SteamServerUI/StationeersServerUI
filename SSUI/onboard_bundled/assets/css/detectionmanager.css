@@ -1,0 +1,507 @@
+@import '/static/css/variables.css';
+
+.type-badge {
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.type-keyword {
+    background-color: var(--primary);
+    color: var(--bg-dark);
+}
+
+.type-regex {
+    background-color: var(--primary);
+    color: var(--bg-dark);
+}
+
+.type-event {
+    background-color: var(--accent);
+    color: var(--text-header);
+}
+
+.empty-list {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-dim);
+    font-style: italic;
+}
+
+/* Loading spinner */
+.loader {
+    border: 5px solid var(--surface-dark);
+    border-top: 5px solid var(--accent);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+    margin: 2rem auto;
+    display: none;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Notification */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem;
+    border-radius: 4px;
+    color: var(--text-header);
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+    z-index: 1000;
+    max-width: 300px;
+    word-wrap: break-word;
+}
+
+.notification-success {
+    background-color: var(--primary);
+    color: var(--bg-dark);
+}
+
+.notification-error {
+    background-color: var(--danger);
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--text-dim);
+    border-radius: 4px;
+    box-sizing: border-box;
+    background: var(--bg-dark);
+    color: var(--primary)
+}
+
+.routine-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.routine-section-heading .loader {
+    width: 18px;
+    height: 18px;
+    border-width: 3px;
+    margin: 0 0 20px;
+}
+
+.routine-list {
+    display: grid;
+    gap: 12px;
+}
+
+.routine-card {
+    display: grid;
+    gap: 10px;
+    padding: 14px 16px;
+    border: 1px solid var(--config-border-soft);
+    border-left: 3px solid var(--primary);
+    border-radius: var(--ui-radius);
+    background: var(--config-surface-inset);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.routine-card:hover {
+    border-color: var(--config-border);
+    box-shadow: 0 0 12px var(--primary-glow-soft);
+}
+
+.routine-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.routine-card-header h4 {
+    margin: 0;
+    color: var(--text-bright);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    overflow-wrap: anywhere;
+}
+
+.routine-card-header h4.routine-untitled {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.routine-card .routine-delete {
+    min-width: 0;
+    margin: 0;
+    padding: 6px 14px;
+    font-size: 0.65rem;
+}
+
+.routine-trigger {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+}
+
+.routine-trigger .type-badge {
+    flex-shrink: 0;
+    font-size: 0.6rem;
+}
+
+.routine-trigger > span:last-child {
+    overflow-wrap: anywhere;
+}
+
+.routine-mono {
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.routine-chain {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.routine-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    padding: 5px 10px;
+    border: 1px solid var(--config-border);
+    border-radius: 999px;
+    background: var(--config-surface-raised);
+    color: var(--text-bright);
+    font-size: 0.72rem;
+}
+
+.routine-chip span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 260px;
+}
+
+.routine-chip-server {
+    border-color: color-mix(in srgb, var(--warning) 60%, transparent);
+    background: color-mix(in srgb, var(--warning) 12%, var(--config-surface-inset));
+}
+
+.routine-arrow {
+    color: var(--primary-dim);
+}
+
+.routine-meta {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+}
+
+.routine-builder {
+    display: grid;
+    gap: 18px;
+}
+
+.routine-builder .routine-section-heading h3 {
+    margin-bottom: 0;
+}
+
+.routine-field {
+    display: grid;
+    gap: 6px;
+}
+
+.routine-label,
+.routine-step-tag {
+    color: var(--primary);
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.routine-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid var(--config-border);
+    border-radius: var(--ui-radius);
+    background: var(--config-surface-inset);
+    color: var(--text-bright);
+    font: inherit;
+    font-size: 0.85rem;
+}
+
+.routine-builder .routine-input {
+    height: 42px;
+    margin: 0;
+    padding: 0 12px;
+    border-width: 1px;
+    border-radius: var(--ui-radius);
+    box-shadow: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.85rem;
+}
+
+.routine-builder input.routine-input {
+    color: var(--primary);
+}
+
+.routine-builder select.routine-input {
+    padding-right: 36px;
+}
+
+.routine-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-glow-soft);
+}
+
+.routine-step {
+    display: grid;
+    gap: 10px;
+    padding: 14px;
+    border: 1px dashed var(--config-border);
+    border-radius: var(--ui-radius-large);
+    background: color-mix(in srgb, var(--config-surface-inset) 70%, transparent);
+}
+
+.routine-step-tag {
+    font-weight: bold;
+}
+
+.routine-trigger-modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.routine-mode {
+    padding: 8px 14px;
+    border: 1px solid var(--config-border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-dim);
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.routine-mode:hover {
+    color: var(--text-bright);
+    border-color: var(--primary);
+}
+
+.routine-mode.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--bg-dark);
+    font-weight: bold;
+}
+
+.routine-hint {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    line-height: 1.5;
+}
+
+.routine-actions {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.routine-action {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border: 1px solid var(--config-border-soft);
+    border-radius: var(--ui-radius);
+    background: var(--config-surface);
+}
+
+.routine-action-number {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--bg-dark);
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.routine-action-number,
+.routine-action-controls {
+    margin-top: 0;
+    align-self: center;
+}
+
+.routine-action-body {
+    display: grid;
+    grid-template-columns: minmax(200px, 260px) 1fr;
+    align-items: start;
+    gap: 8px;
+    min-width: 0;
+}
+
+.routine-action-fields {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+}
+
+.routine-seconds {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+}
+
+.routine-seconds .routine-input {
+    max-width: 110px;
+}
+
+.routine-no-input {
+    display: flex;
+    align-items: center;
+    height: 42px;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.routine-action-controls {
+    display: flex;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.routine-icon-button,
+.routine-mode,
+.routine-add-action {
+    box-shadow: none;
+    letter-spacing: normal;
+    line-height: 1.2;
+}
+
+.routine-icon-button:hover,
+.routine-mode:hover,
+.routine-add-action:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.routine-icon-button {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-family: system-ui, sans-serif;
+    font-size: 0.9rem;
+    border: 1px solid var(--config-border-soft);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.routine-icon-button:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.routine-icon-button.danger:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.routine-add-action {
+    justify-self: start;
+    padding: 8px 16px;
+    border: 1px dashed var(--primary-dim);
+    border-radius: var(--ui-radius);
+    background: transparent;
+    color: var(--primary);
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+
+.routine-add-action:hover:not(:disabled) {
+    background: var(--primary-glow-soft);
+}
+
+.routine-add-action:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.routine-footer {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 16px;
+}
+
+.routine-cooldown-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dim);
+}
+
+.routine-cooldown-input .routine-input {
+    width: 100px;
+}
+
+@media (max-width: 768px) {
+    .routine-action {
+        grid-template-columns: auto 1fr;
+    }
+
+    .routine-action-body {
+        grid-template-columns: 1fr;
+    }
+
+    .routine-action-controls {
+        grid-column: 2;
+    }
+
+    .routine-footer {
+        grid-template-columns: 1fr;
+    }
+}
+
+#detectionmanager-config-tab > *,
+.routine-builder > *,
+.routine-step > *,
+.routine-list > * {
+    min-width: 0;
+}

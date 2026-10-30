@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.UIText_ServerConfig}}</title>
+    <link rel="stylesheet" href="/static/css/page-loader.css">
+    <script src="/static/js/page-loader.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/tabs.css">
+    <link rel="stylesheet" href="/static/css/background.css?v=6">
+    <link rel="stylesheet" href="/static/css/mobile.css">
+    <link rel="stylesheet" href="/static/css/config.css">
+    <link rel="stylesheet" href="/static/css/detectionmanager.css">
+    <link rel="stylesheet" href="/static/css/theme-editor.css">
+    <link rel="stylesheet" href="/static/css/flags.css">
+    <link rel="stylesheet" href="/static/css/popup.css">
+    <link rel="stylesheet" href="/static/css/seasonal.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+</head>
+
+<body data-authenticated="true" data-permissions="{{.Permissions}}" data-can-manage-settings="{{.CanManageSettings}}">
+    <div id="page-loader" role="status" aria-label="Loading Stationeers Server UI">
+        <div class="page-loader-content">
+            <div class="page-loader-mark">SSUI</div>
+            <div class="page-loader-line" aria-hidden="true"></div>
+        </div>
+    </div>
+    <div id="space-background"></div>
+    <div id="config-save-notification" class="config-save-notification" role="status" aria-live="polite"
+        data-saving="{{.UIText_ConfigSaving}}" data-success="{{.UIText_ConfigSaveSuccess}}"
+        data-failed="{{.UIText_ConfigSaveFailed}}"></div>
+    <div id="universalPopup" class="popup">
+        <div class="popup-content">
+            <h2 id="popupTitle"></h2>
+            <p id="popupMessage"></p>
+            <button onclick="closePopup()">Close</button>
+        </div>
+    </div>
+    <div id="advertiser-modal" class="advertiser-modal" aria-hidden="true">
+        <div class="advertiser-dialog" role="dialog" aria-modal="true" aria-labelledby="advertiser-modal-title">
+            <div class="advertiser-modal-header">
+                <div>
+                    <span class="panel-kicker">{{.UIText_AdvertiserKicker}}</span>
+                    <h2 id="advertiser-modal-title">{{.UIText_AdvertiserTitle}}</h2>
+                </div>
+                <button type="button" class="advertiser-modal-close" onclick="closeAdvertiserModal()"
+                    aria-label="{{.UIText_Close}}">×</button>
+            </div>
+
+            <div class="advertiser-explanation">
+                <p>{{.UIText_AdvertiserExplanation}}</p>
+                <p>{{.UIText_AdvertiserMasterServer}}</p>
+            </div>
+
+            <div class="advertiser-mode-grid">
+                <label class="advertiser-mode-option">
+                    <input type="radio" name="advertiserMode" value="disabled">
+                    <span>{{.UIText_AdvertiserDisabled}}</span>
+                </label>
+                <label class="advertiser-mode-option">
+                    <input type="radio" name="advertiserMode" value="auto">
+                    <span>{{.UIText_AdvertiserAuto}}</span>
+                </label>
+                <label class="advertiser-mode-option">
+                    <input type="radio" name="advertiserMode" value="ipv4">
+                    <span>{{.UIText_AdvertiserIPv4}}</span>
+                </label>
+                <label class="advertiser-mode-option">
+                    <input type="radio" name="advertiserMode" value="dns">
+                    <span>{{.UIText_AdvertiserDNS}}</span>
+                </label>
+            </div>
+
+            <div id="advertiser-address-field" class="advertiser-address-field">
+                <label for="advertiserAddress">{{.UIText_AdvertiserAddress}}</label>
+                <input type="text" id="advertiserAddress" value="{{.AdvertiserOverride}}"
+                    placeholder="203.0.113.10 / server.example.com" autocomplete="off">
+                <div id="advertiser-validation" class="advertiser-validation"></div>
+            </div>
+
+            <div class="advertiser-restart-warning">
+                <strong>{{.UIText_AdvertiserRestartRequired}}</strong>
+                <span>{{.UIText_AdvertiserRestartWarning}}</span>
+            </div>
+            <div id="advertiser-restarting" class="advertiser-restarting" hidden>{{.UIText_AdvertiserRestarting}}</div>
+
+            <div class="advertiser-modal-actions">
+                <button type="button" class="advertiser-cancel" onclick="closeAdvertiserModal()">{{.UIText_Cancel}}</button>
+                <button type="button" id="advertiser-save-button" onclick="saveAdvertiserOverride()">{{.UIText_AdvertiserSaveRestart}}</button>
+            </div>
+        </div>
+    </div>
+    <div id="tls-modal" class="advertiser-modal" aria-hidden="true">
+        <div class="advertiser-dialog" role="dialog" aria-modal="true" aria-labelledby="tls-modal-title">
+            <div class="advertiser-modal-header">
+                <div><span class="panel-kicker">HTTPS</span><h2 id="tls-modal-title">{{.UIText_TLSCertificateTitle}}</h2></div>
+                <button type="button" class="advertiser-modal-close" onclick="closeTLSModal()" aria-label="{{.UIText_Close}}">×</button>
+            </div>
+            <div class="advertiser-explanation">
+                <p>{{.UIText_TLSCertificateExplanation}}</p>
+                <p>{{.UIText_TLSCertificateFormats}}</p>
+            </div>
+            <div class="tls-upload-grid">
+                <label class="tls-file-field"><span>{{.UIText_TLSCertificateFile}}</span><input type="file" id="tls-certificate-file" accept=".pem,.crt,.cer,.der,application/x-x509-ca-cert"></label>
+                <label class="tls-file-field"><span>{{.UIText_TLSPrivateKeyFile}}</span><input type="file" id="tls-private-key-file" accept=".pem,.key,.der"></label>
+            </div>
+            <div id="tls-validation" class="advertiser-validation"></div>
+            <div class="advertiser-restart-warning"><strong>{{.UIText_TLSRestartRequired}}</strong><span>{{.UIText_TLSRestartWarning}}</span></div>
+            <div id="tls-restarting" class="advertiser-restarting" hidden>{{.UIText_TLSRestarting}}</div>
+            <div class="advertiser-modal-actions" id="tls-modal-actions">
+                <button type="button" class="advertiser-cancel" onclick="closeTLSModal()">{{.UIText_Cancel}}</button>
+                <button type="button" id="tls-save-button" onclick="saveTLSCertificate()">{{.UIText_TLSSaveRestart}}</button>
+            </div>
+        </div>
+    </div>
+    <header>
+        <img src="/static/stationeers.webp" alt="Stationeers Banner" id="banner">
+        <div id="language-flags">
+            <img src="/static/flags/en.webp" alt="English" data-lang="en-US" title="English">
+            <img src="/static/flags/de.webp" alt="German" data-lang="de-DE" title="German">
+            <img src="/static/flags/sv.webp" alt="Swedish" data-lang="sv-SE" title="Swedish">
+        </div>
+    </header>
+    <main>
+        <h1>{{.UIText_ConfigHeadline}}</h1>
+
+        <div class="sliding-tabs-container">
+            <div class="sliding-tabs">
+                <button class="sliding-tab-button" title="{{.UIText_BackToDashboard}}" aria-label="{{.UIText_BackToDashboard}}" onclick="window.location.href = '/'">
+                    <span class="icon back-icon"></span>
+                    <span class="tab-text">{{.UIText_BackToDashboard}}</span>
+                </button>
+                <button class="sliding-tab-button active" title="{{.UIText_ServerConfig}}" aria-label="{{.UIText_ServerConfig}}" data-tab="server-config-tab">
+                    <span class="icon server-icon"></span>
+                    <span class="tab-text">{{.UIText_ServerConfig}}</span>
+                </button>
+                <button class="sliding-tab-button" title="{{.UIText_DiscordIntegration}}" aria-label="{{.UIText_DiscordIntegration}}" data-tab="discord-config-tab">
+                    <span class="icon discord-icon"></span>
+                    <span class="tab-text">{{.UIText_DiscordIntegration}}</span>
+                </button>
+                <button class="sliding-tab-button" title="{{.UIText_SLPModIntegration}}" aria-label="{{.UIText_SLPModIntegration}}" data-tab="slp-config-tab">
+                    <span class="icon slp-icon"></span>
+                    <span class="tab-text">{{.UIText_SLPModIntegration}}</span>
+                </button>
+                <button class="sliding-tab-button" title="{{.UIText_DetectionManager}}" aria-label="{{.UIText_DetectionManager}}" data-tab="detectionmanager-config-tab">
+                    <span class="icon detection-icon"></span>
+                    <span class="tab-text">{{.UIText_DetectionManager}}</span>
+                </button>
+                <button class="sliding-tab-button" title="{{.UIText_AC_Tab}}" aria-label="{{.UIText_AC_Tab}}" data-tab="access-config-tab">
+                    <span class="icon access-icon"></span>
+                    <span class="tab-text">{{.UIText_AC_Tab}}</span>
+                </button>
+                <button class="sliding-tab-button" title="{{.UIText_TH_Tab}}" aria-label="{{.UIText_TH_Tab}}" data-tab="theme-config-tab">
+                    <span class="icon" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-1 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: center;"></span>
+                    <span class="tab-text">{{.UIText_TH_Tab}}</span>
+                </button>
+                <button class="sliding-tab-button" title="{{.UIText_SUP_Title}}" aria-label="{{.UIText_SUP_Title}}" data-tab="support-config-tab">
+                    <span class="icon support-icon"></span>
+                    <span class="tab-text">{{.UIText_SUP_Title}}</span>
+                </button>
+            </div>
+        </div>
+
+        {{if .CanViewSettings}}
+        <div id="server-config-tab" class="tab-content active">
+            {{if not .CanManageSettings}}
+            <div class="permission-panel">You can view these settings, but you don't have permission to change them.</div>
+            {{end}}
+            <div class="grid-container server-settings-shell">
+                <div class="wizard-button-container">
+                    <button class="wizard-button" onclick="window.location.href = '/setup?step=game_branch'">
+                        <span class="wizard-icon"></span>
+                        <span class="wizard-text">{{.UIText_ConfigurationWizard}}</span>
+                    </button>
+                </div>
+                <div class="config-sections">
+                    <div class="section-navigation">
+                        <button class="section-nav-button active"
+                            data-section="basic-settings">{{.UIText_BasicSettings}}</button>
+                        {{if eq .IsNewTerrainAndSaveSystemTrueSelected "selected"}}
+                        <button class="section-nav-button"
+                            data-section="terrain-settings">{{.UIText_TerrainSettings}}</button>
+                        {{end}}
+                        <button class="section-nav-button"
+                            data-section="network-settings">{{.UIText_NetworkSettings}}</button>
+                        <button class="section-nav-button"
+                            data-section="backup-retention">{{.UIText_BackupRetention}}</button>
+                        <button class="section-nav-button"
+                            data-section="advanced-settings">{{.UIText_AdvancedSettings}}</button>
+                        <button class="section-nav-button" data-section="expert-settings"
+                            {{if ne .ShowExpertSettingsTrueSelected "selected"}}hidden{{end}}>{{.UIText_ExpertSettings}}</button>
+                    </div>
+
+                    <div id="server-config-panel">
+                        <div id="select-prompt" hidden
+                            style="text-align: center; margin: 30px 0; color: var(--primary); font-family: 'Share Tech Mono', monospace;">
+                            <h3>{{.UIText_PleaseSelectSection}}</h3>
+                            <p>{{.UIText_UseWizardAlternative}}</p>
+                        </div>
+
+                        <div id="basic-settings" class="config-section active">
+                            <div class="config-section-heading">
+                                <h3 class="section-title">{{.UIText_BasicServerSettings}}</h3>
+                                <button type="button" class="save-button config-section-save"
+                                    aria-label="{{.UIText_SaveConfiguration}}" title="{{.UIText_SaveConfiguration}}"></button>
+                            </div>
+                            <div class="channel-grid">
+                                <div class="form-group">
+                                    <label for="ServerName">{{.UIText_ServerName}}:</label>
+                                    <input type="text" id="ServerName" name="ServerName" value="{{.ServerName}}">
+                                    <div class="input-info">{{.UIText_ServerNameInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="SaveName">{{.UIText_SaveName}}:</label>
+                                    <input type="text" id="SaveName" name="SaveName" value="{{.SaveName}}">
+                                    <div class="input-info">{{.UIText_SaveNameInfo}}</div>
+                                </div>
+
+                                <!--
+                                <div class="form-group">
+                                    <label for="WorldID">{{.UIText_WorldID}}:</label>
+                                    <input type="text" id="WorldID" name="WorldID" value="{{.WorldID}}">
+                                    <div class="input-info">{{.UIText_WorldIDInfo}}</div>
+                                </div>
+                                -->
+
+                                <div class="form-group">
+                                    <label for="ServerMaxPlayers">{{.UIText_MaxPlayers}}:</label>
+                                    <input type="text" id="ServerMaxPlayers" name="ServerMaxPlayers"
+                                        value="{{.ServerMaxPlayers}}" pattern="^\S*$" required>
+                                    <div class="input-info">{{.UIText_MaxPlayersInfo}}</div>
+                                </div>
+
+                                <div class="form-group password-field">
+                                    <label for="ServerPassword">{{.UIText_ServerPassword}}:</label>
+                                    <input type="text" id="ServerPassword" name="ServerPassword"
+                                        value="{{.ServerPassword}}" pattern="^\S*$">
+                                    <div class="input-info">{{.UIText_ServerPasswordInfo}}</div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label for="ServerAuthSecret">{{.UIText_ServerAuthSecret}}:</label>
+                                    <input type="text" id="ServerAuthSecret" name="ServerAuthSecret"
+                                        value="{{.ServerAuthSecret}}">
+                                    <div class="input-info">{{.UIText_ServerAuthSecretInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="AutoSave">{{.UIText_AutoSave}}:</label>
+                                    <select id="AutoSave" name="AutoSave" required>
+                                        <option value="true" {{.AutoSaveTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.AutoSaveFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_AutoSaveInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="SaveInterval">{{.UIText_SaveInterval}}:</label>
+                                    <input type="text" id="SaveInterval" name="SaveInterval" value="{{.SaveInterval}}"
+                                        pattern="^\S*$" required>
+                                    <div class="input-info">{{.UIText_SaveIntervalInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="AutoPauseServer">{{.UIText_AutoPauseServer}}:</label>
+                                    <select id="AutoPauseServer" name="AutoPauseServer" required>
+                                        <option value="true" {{.AutoPauseServerTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.AutoPauseServerFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_AutoPauseServerInfo}}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="network-settings" class="config-section">
+                            <div class="config-section-heading">
+                                <h3 class="section-title">{{.UIText_NetworkConfiguration}}</h3>
+                                <button type="button" class="save-button config-section-save"
+                                    aria-label="{{.UIText_SaveConfiguration}}" title="{{.UIText_SaveConfiguration}}"></button>
+                            </div>
+                            <div class="channel-grid">
+                                <div class="form-group">
+                                    <label for="GamePort">{{.UIText_GamePort}}:</label>
+                                    <input type="text" id="GamePort" name="GamePort" value="{{.GamePort}}"
+                                        pattern="^\S*$" required>
+                                    <div class="input-info">{{.UIText_GamePortInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="UpdatePort">{{.UIText_UpdatePort}}:</label>
+                                    <input type="text" id="UpdatePort" name="UpdatePort" value="{{.UpdatePort}}"
+                                        pattern="^\S*$" required>
+                                    <div class="input-info">{{.UIText_UpdatePortInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="UPNPEnabled">{{.UIText_UPNPEnabled}}:</label>
+                                    <select id="UPNPEnabled" name="UPNPEnabled" required>
+                                        <option value="true" {{.UPNPEnabledTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.UPNPEnabledFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_UPNPEnabledInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="LocalIpAddress">{{.UIText_LocalIpAddress}}:</label>
+                                    <input type="text" id="LocalIpAddress" name="LocalIpAddress"
+                                        value="{{.LocalIpAddress}}" pattern="^\S*$" required>
+                                    <div class="input-info">{{.UIText_LocalIpAddressInfo}}</div>
+                                </div>
+
+                                <!--
+                                <div class="form-group">
+                                    <label for="StartLocalHost">{{.UIText_StartLocalHost}}:</label>
+                                    <select id="StartLocalHost" name="StartLocalHost" required>
+                                        <option value="true" {{.StartLocalHostTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.StartLocalHostFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_StartLocalHostInfo}}</div>
+                                </div>
+                                -->
+
+                                <div class="form-group">
+                                    <label for="ServerVisible">{{.UIText_ServerVisible}}:</label>
+                                    <select id="ServerVisible" name="ServerVisible" required>
+                                        <option value="true" {{.ServerVisibleTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.ServerVisibleFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_ServerVisibleInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="UseSteamP2P">{{.UIText_UseSteamP2P}}:</label>
+                                    <select id="UseSteamP2P" name="UseSteamP2P" required>
+                                        <option value="true" {{.UseSteamP2PTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.UseSteamP2PFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_UseSteamP2PInfo}}</div>
+                                </div>
+
+                                <div class="form-group advertiser-setting-card">
+                                    <div>
+                                        <label>{{.UIText_AdvertiserTitle}}</label>
+                                        <div class="input-info">{{.UIText_AdvertiserSummary}}</div>
+                                        <div id="advertiser-current-value" class="advertiser-current-value"
+                                            data-value="{{.AdvertiserOverride}}"
+                                            data-disabled="{{.UIText_AdvertiserDisabled}}"
+                                            data-auto="{{.UIText_AdvertiserAuto}}"
+                                            data-ipv4="{{.UIText_AdvertiserIPv4}}"
+                                            data-dns="{{.UIText_AdvertiserDNS}}"></div>
+                                    </div>
+                                    <button type="button" class="advertiser-configure-button"
+                                        onclick="openAdvertiserModal()">{{.UIText_AdvertiserConfigure}}</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="advanced-settings" class="config-section">
+                            <div class="config-section-heading">
+                                <h3 class="section-title">{{.UIText_AdvancedConfiguration}}</h3>
+                                <button type="button" class="save-button config-section-save"
+                                    aria-label="{{.UIText_SaveConfiguration}}" title="{{.UIText_SaveConfiguration}}"></button>
+                            </div>
+                            <div class="channel-grid">
+
+                                <div class="form-group advertiser-setting-card">
+                                    <div class="advertiser-setting-copy">
+                                        <label>{{.UIText_TLSCertificateTitle}}</label>
+                                        <div class="input-info">{{.UIText_TLSCertificateSummary}}</div>
+                                    </div>
+                                    <button type="button" class="advertiser-configure-button" onclick="openTLSModal()">{{.UIText_TLSConfigure}}</button>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="AutoRestartServerTimer">{{.UIText_AutoRestartServerTimer}}:</label>
+                                    <input type="text" id="AutoRestartServerTimer" name="AutoRestartServerTimer"
+                                        value="{{.AutoRestartServerTimer}}">
+                                    <div class="input-info">{{.UIText_AutoRestartServerTimerInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="AutoRestartCountdown">{{.UIText_AutoRestartCountdown}}:</label>
+                                    <input type="text" id="AutoRestartCountdown" name="AutoRestartCountdown"
+                                        value="{{.AutoRestartCountdown}}">
+                                    <div class="input-info">{{.UIText_AutoRestartCountdownInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="AutoStartServerOnStartup">{{.UIText_AutoStartServerOnStartup}}:</label>
+                                    <select id="AutoStartServerOnStartup" name="AutoStartServerOnStartup" required>
+                                        <option value="true" {{.AutoStartServerOnStartupTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.AutoStartServerOnStartupFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_AutoStartServerOnStartupInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ConnectivityCheckEnabled">{{.UIText_ConnectivityCheck}}:</label>
+                                    <select id="ConnectivityCheckEnabled" name="ConnectivityCheckEnabled" required>
+                                        <option value="true" {{.ConnectivityCheckEnabledTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.ConnectivityCheckEnabledFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_ConnectivityCheckInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label
+                                        for="AllowAutoGameServerUpdates">{{.UIText_AllowAutoGameServerUpdates}}:</label>
+                                    <select id="AllowAutoGameServerUpdates" name="AllowAutoGameServerUpdates" required>
+                                        <option value="true" {{.AllowAutoGameServerUpdatesTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.AllowAutoGameServerUpdatesFalseSelected}}>FALSE
+                                        </option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_AllowAutoGameServerUpdatesInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="CreateSSUILogFile">{{.UIText_CreateSSUILogFile}}:</label>
+                                    <select id="CreateSSUILogFile" name="CreateSSUILogFile" required>
+                                        <option value="true" {{.CreateSSUILogFileTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.CreateSSUILogFileFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_CreateSSUILogFileInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="CreateGameServerLogFile">{{.UIText_CreateGameServerLogFile}}:</label>
+                                    <select id="CreateGameServerLogFile" name="CreateGameServerLogFile" required>
+                                        <option value="true" {{.CreateGameServerLogFileTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.CreateGameServerLogFileFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_CreateGameServerLogFileInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="gameBranch">{{.UIText_GameBranch}}</label>
+                                    <input type="text" id="gameBranch" name="gameBranch" value="{{.GameBranch}}">
+                                    <div class="input-info">{{.UIText_GameBranchInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ExePath">{{.UIText_ServerExePath}}:</label>
+                                    <input type="text" id="ExePath" name="ExePath" value="{{.ExePath}}" readonly>
+                                    <div class="input-info">{{.UIText_ServerExePathInfo}}</div>
+                                    <div class="input-info">{{.UIText_ServerExePathInfo2}}</div>
+                                </div>
+
+                                <div class="form-group password-field">
+                                    <label for="AdminPassword">{{.UIText_AdminPassword}}:</label>
+                                    <input type="text" id="AdminPassword" name="AdminPassword"
+                                        value="{{.AdminPassword}}" pattern="^\S*$">
+                                    <div class="input-info">{{.UIText_AdminPasswordInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="AdditionalParams">{{.UIText_AdditionalParams}}:</label>
+                                    <input type="text" id="AdditionalParams" name="AdditionalParams"
+                                        value="{{.AdditionalParams}}">
+                                    <div class="input-info">{{.UIText_AdditionalParamsInfo}}</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ShowExpertSettings">{{.UIText_ShowExpertSettings}}</label>
+                                    <select id="ShowExpertSettings" name="ShowExpertSettings" required>
+                                        <option value="true" {{.ShowExpertSettingsTrueSelected}}>TRUE</option>
+                                        <option value="false" {{.ShowExpertSettingsFalseSelected}}>FALSE</option>
+                                    </select>
+                                    <div class="input-info">{{.UIText_ShowExpertSettingsInfo}}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="expert-settings" class="config-section"
+                            {{if ne .ShowExpertSettingsTrueSelected "selected"}}hidden{{end}}>
+                            <div class="config-section-heading">
+                                <h3 class="section-title">{{.UIText_ExpertSettings}}</h3>
+                                <button type="button" class="save-button config-section-save"
+                                    aria-label="{{.UIText_SaveConfiguration}}" title="{{.UIText_SaveConfiguration}}"></button>
+                            </div>
+                            <div class="expert-settings-notice">{{.UIText_ExpertSettingsWarning}}</div>
+                            <div class="channel-grid">
+                            
+                                    <div class="form-group">
+                                        <label for="Debug">{{.UIText_DebugMode}}</label>
+                                        <select id="Debug" name="Debug" required>
+                                            <option value="true" {{.DebugTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.DebugFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">{{.UIText_DebugModeInfo}}</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="LogLevel">{{.UIText_LogLevel}}</label>
+                                        <input type="number" id="LogLevel" name="LogLevel" value="{{.LogLevel}}" min="10" max="40" step="10">
+                                        <div class="input-info">{{.UIText_LogLevelInfo}}</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="LogClutterToConsole">{{.UIText_LogClutterToConsole}}</label>
+                                        <select id="LogClutterToConsole" name="LogClutterToConsole" required>
+                                            <option value="true" {{.LogClutterToConsoleTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.LogClutterToConsoleFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">{{.UIText_LogClutterToConsoleInfo}}</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="SSUIWebPort">{{.UIText_SSUIWebPort}}</label>
+                                        <input type="text" id="SSUIWebPort" name="SSUIWebPort" value="{{.SSUIWebPort}}">
+                                        <div class="input-info">{{.UIText_SSUIWebPortInfo}}</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="IsConsoleEnabled">{{.UIText_ConsoleEnabled}}</label>
+                                        <select id="IsConsoleEnabled" name="IsConsoleEnabled" required>
+                                            <option value="true" {{.IsConsoleEnabledTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.IsConsoleEnabledFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">{{.UIText_ConsoleEnabledInfo}}</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="IsSSCMEnabled">{{.UIText_SSCMEnabled}}</label>
+                                        <select id="IsSSCMEnabled" name="IsSSCMEnabled" required>
+                                            <option value="true" {{.IsSSCMEnabledTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.IsSSCMEnabledFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">{{.UIText_SSCMEnabledInfo}}</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="IsUpdateEnabled">{{.UIText_UpdateEnabled}}</label>
+                                        <select id="IsUpdateEnabled" name="IsUpdateEnabled" required>
+                                            <option value="true" {{.IsUpdateEnabledTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.IsUpdateEnabledFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">{{.UIText_UpdateEnabledInfo}}</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="AllowPrereleaseUpdates">{{.UIText_AllowPrereleaseUpdates}}</label>
+                                        <select id="AllowPrereleaseUpdates" name="AllowPrereleaseUpdates" required>
+                                            <option value="true" {{.AllowPrereleaseUpdatesTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.AllowPrereleaseUpdatesFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">{{.UIText_AllowPrereleaseUpdatesInfo}}</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="AllowMajorUpdates">{{.UIText_AllowMajorUpdates}}</label>
+                                        <select id="AllowMajorUpdates" name="AllowMajorUpdates" required>
+                                            <option value="true" {{.AllowMajorUpdatesTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.AllowMajorUpdatesFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">{{.UIText_AllowMajorUpdatesInfo}}</div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="IsStationeersLaunchPadAutoUpdatesEnabled">{{.UIText_SLPAutoUpdates}}</label>
+                                        <select id="IsStationeersLaunchPadAutoUpdatesEnabled" name="IsStationeersLaunchPadAutoUpdatesEnabled" required>
+                                            <option value="true" {{.IsStationeersLaunchPadAutoUpdatesEnabledTrueSelected}}>TRUE</option>
+                                            <option value="false" {{.IsStationeersLaunchPadAutoUpdatesEnabledFalseSelected}}>FALSE</option>
+                                        </select>
+                                        <div class="input-info">{{.UIText_SLPAutoUpdatesInfo}}</div>
+                                    </div>
+
+                            </div>
+                        </div>
+
+                        <div id="backup-retention" class="config-section backup-retention-section">
+                            <div class="retention-heading">
+                                <div>
+                                    <h3 class="section-title">{{.UIText_BackupRetentionTitle}}</h3>
+                                    <p>{{.UIText_BackupRetentionIntro}}</p>
+                                </div>
+                                <div class="retention-heading-actions">
+                                    <button type="button" class="save-button config-section-save"
+                                        aria-label="{{.UIText_SaveConfiguration}}" title="{{.UIText_SaveConfiguration}}"></button>
+                                </div>
+                            </div>
+
+                            <div class="retention-master-control">
+                                <div>
+                                    <label for="backupRetentionEnabled">{{.UIText_BackupCleanupEnabled}}</label>
+                                    <div class="input-info">{{.UIText_BackupCleanupInfo}}</div>
+                                </div>
+                                <select id="backupRetentionEnabled" name="backupRetentionEnabled" required>
+                                    <option value="true" {{.BackupRetentionEnabledTrueSelected}}>ENABLED</option>
+                                    <option value="false" {{.BackupRetentionEnabledFalseSelected}}>DISABLED</option>
+                                </select>
+                            </div>
+
+                            <div class="retention-grid">
+                                <div class="retention-control-card">
+                                    <label for="backupKeepNewestCount">{{.UIText_BackupKeepNewest}}</label>
+                                    <div class="retention-value-row">
+                                        <input type="number" id="backupKeepNewestCount" name="backupKeepNewestCount"
+                                            value="{{.BackupKeepNewestCount}}" min="0" step="1" required>
+                                        <span class="retention-unit">{{.UIText_BackupFiles}}</span>
+                                    </div>
+                                    <div class="input-info">{{.UIText_BackupKeepNewestInfo}}</div>
+                                </div>
+
+                                <div class="retention-control-card">
+                                    <label for="backupDailyRetentionDays">{{.UIText_BackupKeepDaily}}</label>
+                                    <div class="retention-value-row">
+                                        <input type="number" id="backupDailyRetentionDays" name="backupDailyRetentionDays"
+                                            value="{{.BackupDailyRetentionDays}}" min="0" step="1" required>
+                                        <span class="retention-unit">{{.UIText_BackupDays}}</span>
+                                    </div>
+                                    <div class="input-info">{{.UIText_BackupKeepDailyInfo}}</div>
+                                </div>
+
+                                <div class="retention-control-card">
+                                    <label for="backupWeeklyRetentionWeeks">{{.UIText_BackupKeepWeekly}}</label>
+                                    <div class="retention-value-row">
+                                        <input type="number" id="backupWeeklyRetentionWeeks" name="backupWeeklyRetentionWeeks"
+                                            value="{{.BackupWeeklyRetentionWeeks}}" min="0" step="1" required>
+                                        <span class="retention-unit">{{.UIText_BackupWeeks}}</span>
+                                    </div>
+                                    <div class="input-info">{{.UIText_BackupKeepWeeklyInfo}}</div>
+                                </div>
+
+                                <div class="retention-control-card">
+                                    <label for="backupMonthlyRetentionMonths">{{.UIText_BackupKeepMonthly}}</label>
+                                    <div class="retention-value-row">
+                                        <input type="number" id="backupMonthlyRetentionMonths" name="backupMonthlyRetentionMonths"
+                                            value="{{.BackupMonthlyRetentionMonths}}" min="0" step="1" required>
+                                        <span class="retention-unit">{{.UIText_BackupMonths}}</span>
+                                    </div>
+                                    <div class="input-info">{{.UIText_BackupKeepMonthlyInfo}}</div>
+                                </div>
+
+                                <div class="retention-control-card">
+                                    <label for="backupCleanupIntervalHours">{{.UIText_BackupCleanupInterval}}</label>
+                                    <div class="retention-value-row">
+                                        <input type="number" id="backupCleanupIntervalHours" name="backupCleanupIntervalHours"
+                                            value="{{.BackupCleanupIntervalHours}}" min="1" step="1" required>
+                                        <span class="retention-unit">{{.UIText_BackupHours}}</span>
+                                    </div>
+                                    <div class="input-info">{{.UIText_BackupCleanupIntervalInfo}}</div>
+                                </div>
+                            </div>
+
+                            <div class="retention-delay-note">
+                                <span aria-hidden="true">⏱</span>
+                                <span>{{.UIText_BackupCopyDelayInfo}}</span>
+                            </div>
+
+                            <div class="retention-warning">
+                                <span class="retention-warning-icon" aria-hidden="true">!</span>
+                                <div>
+                                    <strong>{{.UIText_BackupWarningTitle}}</strong>
+                                    <p>{{.UIText_BackupWarning}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="terrain-settings" class="config-section">
+                            <div class="config-section-heading">
+                                <h3 class="section-title">{{.UIText_TerrainSettingsHeader}}</h3>
+                                <button type="button" class="save-button config-section-save"
+                                    aria-label="{{.UIText_SaveConfiguration}}" title="{{.UIText_SaveConfiguration}}"></button>
+                            </div>
+                            <div class="beta-warning">{{.UIText_TerrainWarning}}</div>
+                            <br>
+                            <div class="channel-grid">
+
+                                <div class="form-group worldgen-form-group">
+                                    <label for="WorldID">{{.UIText_WorldID}}:</label>
+                                    <div class="worldgen-combobox" data-worldgen-combobox="worlds">
+                                        <input type="text" id="WorldID" name="WorldID" value="{{.WorldID}}"
+                                            autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list"
+                                            aria-haspopup="listbox" aria-expanded="false"
+                                            aria-controls="world-id-options">
+                                        <button type="button" class="worldgen-combobox-toggle"
+                                            aria-label="{{.UIText_WorldID}}" tabindex="-1"></button>
+                                        <div id="world-id-options" class="worldgen-combobox-options"
+                                            role="listbox" hidden></div>
+                                    </div>
+                                    <div class="input-info">{{.UIText_WorldIDInfo}}</div>
+                                </div>
+
+                                <div class="form-group worldgen-form-group">
+                                    <label for="Difficulty">{{.UIText_Difficulty}}:</label>
+                                    <div class="worldgen-combobox" data-worldgen-combobox="difficulties">
+                                        <input type="text" id="Difficulty" name="Difficulty" value="{{.Difficulty}}"
+                                            autocomplete="off" spellcheck="false" pattern="^\S*$" role="combobox"
+                                            aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false"
+                                            aria-controls="difficulty-options">
+                                        <button type="button" class="worldgen-combobox-toggle"
+                                            aria-label="{{.UIText_Difficulty}}" tabindex="-1"></button>
+                                        <div id="difficulty-options" class="worldgen-combobox-options"
+                                            role="listbox" hidden></div>
+                                    </div>
+                                    <div class="input-info">{{.UIText_DifficultyInfo}}</div>
+                                </div>
+
+                                <div class="form-group worldgen-form-group">
+                                    <label for="StartCondition">{{.UIText_StartCondition}}:</label>
+                                    <div class="worldgen-combobox" data-worldgen-combobox="conditions">
+                                        <input type="text" id="StartCondition" name="StartCondition"
+                                            value="{{.StartCondition}}" autocomplete="off" spellcheck="false" pattern="^\S*$"
+                                            data-config-include-disabled role="combobox" aria-autocomplete="list"
+                                            aria-haspopup="listbox" aria-expanded="false"
+                                            aria-controls="start-condition-options">
+                                        <button type="button" class="worldgen-combobox-toggle"
+                                            aria-label="{{.UIText_StartCondition}}" tabindex="-1"></button>
+                                        <div id="start-condition-options" class="worldgen-combobox-options"
+                                            role="listbox" hidden></div>
+                                    </div>
+                                    <div class="input-info">{{.UIText_StartConditionInfo}}</div>
+                                </div>
+
+                                <div class="form-group worldgen-form-group">
+                                    <label for="StartLocation">{{.UIText_StartLocation}}:</label>
+                                    <div class="worldgen-combobox" data-worldgen-combobox="locations">
+                                        <input type="text" id="StartLocation" name="StartLocation"
+                                            value="{{.StartLocation}}" autocomplete="off" spellcheck="false" pattern="^\S*$"
+                                            data-config-include-disabled role="combobox" aria-autocomplete="list"
+                                            aria-haspopup="listbox" aria-expanded="false"
+                                            aria-controls="start-location-options">
+                                        <button type="button" class="worldgen-combobox-toggle"
+                                            aria-label="{{.UIText_StartLocation}}" tabindex="-1"></button>
+                                        <div id="start-location-options" class="worldgen-combobox-options"
+                                            role="listbox" hidden></div>
+                                    </div>
+                                    <div class="input-info">{{.UIText_StartLocationInfo}}</div>
+                                </div>
+                            </div>
+                            <div class="fill-hint-wraper" id="fill-hint-wraper" role="alert" hidden>
+                                <div class="fill-hint" id="fill-hint">{{.UIText_TerrainSettingsFillHint}}</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{else}}
+        <div id="server-config-tab" class="tab-content active">
+            <div class="permission-panel">You don't have permission to view server settings.</div>
+        </div>
+        {{end}}
+
+        {{if .CanViewSettings}}
+        <div id="discord-config-tab" class="tab-content config-tab-stack">
+            {{if not .CanManageSettings}}
+            <div class="permission-panel">You can view these settings, but you don't have permission to change them.</div>
+            {{end}}
+            <div id="discord-config-panel" data-config-save-scope>
+                <div class="integration-status discord-integration-header config-surface">
+                    <div class="discord-status-copy">
+                        <span class="discord-mark" aria-hidden="true"></span>
+                        <label for="isDiscordEnabled" class="highlight-label">{{.UIText_DiscordIntegration}}</label>
+                    </div>
+                    <select id="isDiscordEnabled" name="isDiscordEnabled">
+                        <option value="true" {{.IsDiscordEnabledTrueSelected}}>ENABLED</option>
+                        <option value="false" {{.IsDiscordEnabledFalseSelected}}>DISABLED</option>
+                    </select>
+                    <div class="feature-badge">RECOMMENDED</div>
+                </div>
+                <div class="discord-token-section config-surface">
+                    <div class="slp-section-heading">
+                        <span class="panel-kicker">Discord</span>
+                        <h3>{{.UIText_DiscordBotToken}}</h3>
+                    </div>
+                    <div class="form-group discord-token-panel">
+                        <label for="discordToken">{{.UIText_DiscordBotToken}}:</label>
+                        <input type="password" id="discordToken" name="discordToken" value="{{.DiscordToken}}">
+                        <div class="input-info">{{.UIText_DiscordBotTokenInfo}}</div>
+                    </div>
+                </div>
+
+                <div class="discord-container config-surface">
+                    <div class="discord-section-heading">
+                        <span class="panel-kicker">Discord</span>
+                        <div class="discord-section-heading-row">
+                            <h2>{{.UIText_ChannelConfiguration}}</h2>
+                            <button type="button" class="save-button config-section-save"
+                                aria-label="{{.UIText_SaveConfiguration}}" title="{{.UIText_SaveConfiguration}}"></button>
+                        </div>
+                    </div>
+                    <div class="channel-grid discord-channel-grid">
+                        <div class="form-group">
+                            <label for="discordAdminRoleID">{{.UIText_DiscordAdminRole}}:</label>
+                            <input type="text" id="discordAdminRoleID" name="discordAdminRoleID" inputmode="numeric" pattern="[0-9]{1,20}"
+                                value="{{.DiscordAdminRoleID}}">
+                            <div class="input-info">{{.UIText_DiscordAdminRoleInfo}}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rotateServerPassword">{{.UIText_RotateServerPassword}}:</label>
+                            <select id="rotateServerPassword" name="rotateServerPassword">
+                                <option value="true" {{.RotateServerPasswordTrueSelected}}>ENABLED</option>
+                                <option value="false" {{.RotateServerPasswordFalseSelected}}>DISABLED</option>
+                            </select>
+                            <div class="input-info">{{.UIText_RotateServerPasswordInfo}}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="eventLogChannelID">{{.UIText_EventLogChannel}}:</label>
+                            <input type="text" id="eventLogChannelID" name="eventLogChannelID" value="{{.EventLogChannelID}}">
+                            <div class="input-info">{{.UIText_EventLogChannelInfo}}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="statusPanelChannelID">{{.UIText_StatusPanelChannel}}:</label>
+                            <input type="text" id="statusPanelChannelID" name="statusPanelChannelID"
+                                value="{{.StatusPanelChannelID}}">
+                            <div class="input-info">{{.UIText_StatusPanelChannelInfo}}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="logChannelID">{{.UIText_LogChannel}}:</label>
+                            <input type="text" id="logChannelID" name="logChannelID" value="{{.LogChannelID}}">
+                            <div class="input-info">{{.UIText_LogChannelInfo}}</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="blackListFilePath">{{.UIText_BannedPlayersListPath}}:</label>
+                        <input type="text" id="blackListFilePath" name="blackListFilePath"
+                            value="{{.BlackListFilePath}}">
+                        <div class="input-info">{{.UIText_BannedPlayersListPathInfo}}</div>
+                    </div>
+
+					<div class="discord-section-heading">
+						<span class="panel-kicker">Discord</span>
+						<div class="discord-section-heading-row">
+							<h2>{{.UIText_DiscordVotingTitle}}</h2>
+						</div>
+						<p>{{.UIText_DiscordVotingInfo}}</p>
+					</div>
+					<div class="channel-grid discord-channel-grid">
+						<div class="form-group">
+							<label for="discordRestartVoteEnabled">{{.UIText_DiscordRestartVoteEnabled}}:</label>
+							<select id="discordRestartVoteEnabled" name="discordRestartVoteEnabled">
+								<option value="true" {{.DiscordRestartVoteEnabledTrueSelected}}>ENABLED</option>
+								<option value="false" {{.DiscordRestartVoteEnabledFalseSelected}}>DISABLED</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="discordRestoreVoteEnabled">{{.UIText_DiscordRestoreVoteEnabled}}:</label>
+							<select id="discordRestoreVoteEnabled" name="discordRestoreVoteEnabled">
+								<option value="true" {{.DiscordRestoreVoteEnabledTrueSelected}}>ENABLED</option>
+								<option value="false" {{.DiscordRestoreVoteEnabledFalseSelected}}>DISABLED</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="discordVoteDurationMinutes">{{.UIText_DiscordVoteDuration}}:</label>
+							<input type="number" id="discordVoteDurationMinutes" name="discordVoteDurationMinutes"
+								value="{{.DiscordVoteDurationMinutes}}" min="1" step="1" required>
+						</div>
+						<div class="form-group">
+							<label for="discordRestartVoteThreshold">{{.UIText_DiscordRestartVoteEnabled}} - {{.UIText_DiscordVoteThreshold}}:</label>
+							<input type="number" id="discordRestartVoteThreshold" name="discordRestartVoteThreshold"
+								value="{{.DiscordRestartVoteThreshold}}" min="1" max="100" step="1" required>
+						</div>
+						<div class="form-group">
+							<label for="discordRestartVoteMinimum">{{.UIText_DiscordRestartVoteEnabled}} - {{.UIText_DiscordVoteMinimum}}:</label>
+							<input type="number" id="discordRestartVoteMinimum" name="discordRestartVoteMinimum"
+								value="{{.DiscordRestartVoteMinimum}}" min="1" step="1" required>
+						</div>
+						<div class="form-group">
+							<label for="discordRestartVoteCooldownMinutes">{{.UIText_DiscordRestartVoteEnabled}} - {{.UIText_DiscordVoteCooldown}}:</label>
+							<input type="number" id="discordRestartVoteCooldownMinutes" name="discordRestartVoteCooldownMinutes"
+								value="{{.DiscordRestartVoteCooldownMinutes}}" min="0" step="1" required>
+						</div>
+						<div class="form-group">
+							<label for="discordRestoreVoteThreshold">{{.UIText_DiscordRestoreVoteEnabled}} - {{.UIText_DiscordVoteThreshold}}:</label>
+							<input type="number" id="discordRestoreVoteThreshold" name="discordRestoreVoteThreshold"
+								value="{{.DiscordRestoreVoteThreshold}}" min="1" max="100" step="1" required>
+						</div>
+						<div class="form-group">
+							<label for="discordRestoreVoteMinimum">{{.UIText_DiscordRestoreVoteEnabled}} - {{.UIText_DiscordVoteMinimum}}:</label>
+							<input type="number" id="discordRestoreVoteMinimum" name="discordRestoreVoteMinimum"
+								value="{{.DiscordRestoreVoteMinimum}}" min="1" step="1" required>
+						</div>
+						<div class="form-group">
+							<label for="discordRestoreVoteCooldownMinutes">{{.UIText_DiscordRestoreVoteEnabled}} - {{.UIText_DiscordVoteCooldown}}:</label>
+							<input type="number" id="discordRestoreVoteCooldownMinutes" name="discordRestoreVoteCooldownMinutes"
+								value="{{.DiscordRestoreVoteCooldownMinutes}}" min="0" step="1" required>
+						</div>
+					</div>
+                </div>
+            </div>
+            <div class="info-panel">
+                <h3>{{.UIText_DiscordIntegrationBenefits}}</h3>
+                <ul class="feature-list">
+                    <li>{{.UIText_DiscordBenefit1}}</li>
+                    <li>{{.UIText_DiscordBenefit2}}</li>
+                    <li>{{.UIText_DiscordBenefit3}}</li>
+                    <li>{{.UIText_DiscordBenefit4}}</li>
+                    <li>{{.UIText_DiscordBenefit5}}</li>
+                </ul>
+                <p>{{.UIText_DiscordSetupInstructions}} <a
+                        href="https://github.com/jacksonthemaster/StationeersServerUI" target="_blank">GitHub
+                        repository</a></p>
+            </div>
+        </div>
+        {{else}}
+        <div id="discord-config-tab" class="tab-content config-tab-stack">
+            <div class="permission-panel">You don't have permission to view Discord settings.</div>
+        </div>
+        {{end}}
+
+        {{if .CanManageSLP}}
+        <div id="slp-config-tab" class="tab-content config-tab-stack">
+            {{if eq .IsStationeersLaunchPadEnabled "false"}}
+            <div class="slp-section slp-install-section">
+                <div class="slp-install-header">
+                    <span class="slp-install-icon">🚀</span>
+                    <h3>{{.UIText_SLP_Title}}</h3>
+                </div>
+                <p>{{.UIText_SLP_Description}}</p>
+                <p style="color: var(--success); margin-top: 15px; font-weight: bold;">{{.UIText_SLP_ReadyToInstall}}</p>
+                <button id="installSLPBtn" class="slp-button slp-button-large" onclick="installSLP()">⬇️ {{.UIText_SLP_InstallButton}}</button>
+            </div>
+
+            <div class="slp-section">
+                <h3>{{.UIText_SLP_UploadModPackage}}</h3>
+                <div id="modPackageUploadZone" class="upload-zone-disabled">
+                    <span class="upload-icon">🔒</span>
+                    <div class="upload-text">{{.UIText_SLP_InstallFirst}}</div>
+                    <div class="upload-subtext">{{.UIText_SLP_InstallFirstSubtext}}</div>
+                </div>
+            </div>
+            {{end}}
+
+            {{if eq .IsStationeersLaunchPadEnabled "true"}}
+            <div class="slp-section workshop-add-section">
+                <div class="slp-section-heading">
+                    <div>
+                        <span class="panel-kicker">{{.UIText_WS_Kicker}}</span>
+                        <h3>{{.UIText_WS_Title}}</h3>
+                    </div>
+                </div>
+                <p>{{.UIText_WS_Description}}</p>
+                <textarea id="workshopModInput" class="workshop-mod-input" rows="5"
+                    placeholder="https://steamcommunity.com/sharedfiles/filedetails/?id=1234567890&#10;9876543210"></textarea>
+                <div class="workshop-add-actions">
+                    <span class="input-info">{{.UIText_WS_Info}}</span>
+                    <button id="installWorkshopModsBtn" class="slp-button" onclick="installWorkshopMods()">⬇️ {{.UIText_WS_Install}}</button>
+                </div>
+            </div>
+
+            <div class="slp-section">
+                <h3>{{.UIText_SLP_UploadModPackage}}</h3>
+                <p>{{.UIText_SLP_UploadDescription}}</p>
+                <p>{{.UIText_SLP_UploadDescriptionLink}} <a href="https://github.com/SteamServerUI/StationeersServerUI/wiki/Modding-with-StationeersLaunchPad#generate-a-mod-package" target="_blank">wiki</a>.</p>
+                
+                <div id="modPackageUploadZone">
+                    <span class="upload-icon">📦</span>
+                    <div class="upload-text">{{.UIText_SLP_DragDropHere}}</div>
+                    <div class="upload-subtext">{{.UIText_SLP_OrClickToSelect}}</div>
+                </div>
+                <div id="modPackageUploadProgress"></div>
+                <input type="file" id="modPackageUpload" accept=".zip" onchange="handleModPackageSelection(this.files)">
+                <button id="uploadModPackageBtn" class="slp-button" onclick="uploadModPackage()" disabled>⬆️ {{.UIText_SLP_UploadButton}}</button>
+            </div>
+
+            <div class="slp-section slp-manage-section">
+                <h3>{{.UIText_SLP_ManageInstallation}}</h3>
+                <div class="manage-buttons">
+                    <div class="manage-left">
+                        <p style="color: var(--danger);">⚠️ {{.UIText_SLP_UninstallWarning}}</p>
+                        <button id="uninstallSLPBtn" class="slp-button slp-button-small danger" onclick="uninstallSLP()">🗑️ {{.UIText_SLP_UninstallButton}}</button>
+                    </div>
+                    <div class="manage-center">
+                        <p>Re-download and reinstall SLP without removing your mods.</p>
+                        <button id="reinstallSLPBtn" class="slp-button slp-button-small" onclick="reinstallSLP()">🔄 Reinstall SLP</button>
+                    </div>
+                    <div class="manage-right">
+                        <p>{{.UIText_SLP_UpdateWorkshopModsDesc}}</p>
+                        <button id="updateWorkshopModsBtn" class="slp-button" onclick="updateWorkshopMods()">🔄 {{.UIText_SLP_UpdateButton}}</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slp-section">
+                <h3>{{.UIText_SLP_InstalledMods}}</h3>
+                <div id="mods-list-container">
+                    <div class="loader" id="mods-loader"></div>
+                    <div id="mods-list" class="mods-list"></div>
+                </div>
+            </div>
+            {{end}}
+        </div>
+        {{else}}
+        <div id="slp-config-tab" class="tab-content config-tab-stack">
+            <div class="permission-panel">You don't have permission to manage StationeersLaunchPad.</div>
+        </div>
+        {{end}}
+
+        {{if .CanManageDetections}}
+        <div id="detectionmanager-config-tab" class="tab-content config-tab-stack"
+            data-group-messages="{{.UIText_DM_GroupMessages}}"
+            data-group-ingame="{{.UIText_DM_GroupInGame}}"
+            data-group-flow="{{.UIText_DM_GroupFlow}}"
+            data-group-server="{{.UIText_DM_GroupServer}}"
+            data-action-eventlog="{{.UIText_DM_ActionEventlog}}"
+            data-action-discord-hub="{{.UIText_DM_ActionDiscordHub}}"
+            data-action-announce="{{.UIText_DM_ActionAnnounce}}"
+            data-action-command="{{.UIText_DM_ActionCommand}}"
+            data-action-save="{{.UIText_DM_ActionSave}}"
+            data-action-wait="{{.UIText_DM_ActionWait}}"
+            data-action-webhook="{{.UIText_DM_ActionWebhook}}"
+            data-action-restart="{{.UIText_DM_ActionRestart}}"
+            data-action-stop="{{.UIText_DM_ActionStop}}"
+            data-action-start="{{.UIText_DM_ActionStart}}"
+            data-action-restore="{{.UIText_DM_ActionRestore}}"
+            data-placeholder-eventlog="{{.UIText_DM_PlaceholderEventlog}}"
+            data-placeholder-discord-hub="{{.UIText_DM_PlaceholderDiscord}}"
+            data-placeholder-announce="{{.UIText_DM_PlaceholderAnnounce}}"
+            data-webhook-message="{{.UIText_DM_WebhookMessage}}"
+            data-seconds="{{.UIText_DM_Seconds}}"
+            data-no-settings="{{.UIText_DM_NoSettings}}"
+            data-move-up="{{.UIText_DM_MoveUp}}"
+            data-move-down="{{.UIText_DM_MoveDown}}"
+            data-remove="{{.UIText_DM_Remove}}"
+            data-delete="{{.UIText_DM_Delete}}"
+            data-untitled="{{.UIText_DM_Untitled}}"
+            data-no-routines="{{.UIText_DM_NoRoutines}}"
+            data-cooldown-meta="{{.UIText_DM_CooldownMeta}}"
+            data-wait-summary="{{.UIText_DM_WaitSummary}}"
+            data-badge-keyword="{{.UIText_DM_BadgeKeyword}}"
+            data-badge-regex="{{.UIText_DM_BadgeRegex}}"
+            data-badge-event="{{.UIText_DM_BadgeEvent}}">
+            <div class="config-tab-intro">
+                <span class="panel-kicker">SSUI</span>
+                <h2>{{.UIText_DetectionManager}}</h2>
+                <p>{{.UIText_DM_Intro}}</p>
+            </div>
+
+            <section class="slp-section routine-list-section">
+                <div class="routine-section-heading">
+                    <h3>{{.UIText_DM_Routines}}</h3>
+                    <div class="loader" id="list-loader"></div>
+                </div>
+                <div id="detection-items" class="routine-list">
+                    <div class="empty-list">{{.UIText_DM_NoRoutines}}</div>
+                </div>
+            </section>
+
+            <section class="slp-section workshop-add-section routine-builder">
+                <div class="routine-section-heading">
+                    <h3>{{.UIText_DM_NewRoutine}}</h3>
+                </div>
+
+                <label class="routine-field">
+                    <span class="routine-label">{{.UIText_DM_Name}}</span>
+                    <input type="text" id="routine-name" class="routine-input" maxlength="80" placeholder="{{.UIText_DM_NamePlaceholder}}">
+                </label>
+
+                <div class="routine-step">
+                    <span class="routine-step-tag">{{.UIText_DM_When}}</span>
+                    <div class="routine-trigger-modes" role="radiogroup">
+                        <button type="button" class="routine-mode active" data-mode="keyword" data-placeholder="{{.UIText_DM_KeywordPlaceholder}}" data-hint="{{.UIText_DM_HintKeyword}}">{{.UIText_DM_ModeKeyword}}</button>
+                        <button type="button" class="routine-mode" data-mode="regex" data-placeholder="Player '(.+?)' tried to thing-spawn '(.+?)'" data-hint="{{.UIText_DM_HintRegex}}">{{.UIText_DM_ModeRegex}}</button>
+                        <button type="button" class="routine-mode" data-mode="event" data-hint="{{.UIText_DM_HintEvent}}">{{.UIText_DM_ModeEvent}}</button>
+                    </div>
+                    <input type="text" id="pattern" class="routine-input routine-mono" placeholder="{{.UIText_DM_KeywordPlaceholder}}">
+                    <select id="trigger-event" class="routine-input" hidden>
+                        <option value="PLAYER_READY">{{.UIText_DM_EventPlayerReady}}</option>
+                        <option value="PLAYER_CONNECTING">{{.UIText_DM_EventPlayerConnecting}}</option>
+                        <option value="PLAYER_DISCONNECT">{{.UIText_DM_EventPlayerDisconnect}}</option>
+                        <option value="WORLD_SAVED">{{.UIText_DM_EventWorldSaved}}</option>
+                        <option value="SESSION_REGISTERED">{{.UIText_DM_EventSessionRegistered}}</option>
+                        <option value="SERVER_RUNNING">{{.UIText_DM_EventServerRunning}}</option>
+                        <option value="EXCEPTION">{{.UIText_DM_EventException}}</option>
+                        <option value="SETTINGS_CHANGED">{{.UIText_DM_EventSettingsChanged}}</option>
+                        <option value="NEW_GAME_STARTED">{{.UIText_DM_EventNewGameStarted}}</option>
+                    </select>
+                    <p class="routine-hint" id="placeholder-hint"></p>
+                </div>
+
+                <div class="routine-step">
+                    <span class="routine-step-tag">{{.UIText_DM_Then}}</span>
+                    <ol id="routine-actions" class="routine-actions"></ol>
+                    <button type="button" id="add-action" class="routine-add-action">{{.UIText_DM_AddAction}}</button>
+                </div>
+
+                <div class="routine-footer">
+                    <label class="routine-field routine-cooldown">
+                        <span class="routine-label">{{.UIText_DM_Cooldown}}</span>
+                        <span class="routine-cooldown-input"><input type="number" id="routine-cooldown" class="routine-input" min="0" max="86400" value="0"> s</span>
+                    </label>
+                    <p class="routine-hint">{{.UIText_DM_CooldownHint}}</p>
+                    <button type="button" class="slp-button add-button">{{.UIText_DM_SaveRoutine}}</button>
+                </div>
+            </section>
+
+            <div class="notification" id="notification"></div>
+        </div>
+        {{else}}
+        <div id="detectionmanager-config-tab" class="tab-content config-tab-stack">
+            <div class="permission-panel">{{.UIText_DM_NoPermission}}</div>
+        </div>
+        {{end}}
+
+        <div id="access-config-tab" class="tab-content config-tab-stack"
+            data-no-sessions="{{.UIText_AC_NoSessions}}"
+            data-this-session="{{.UIText_AC_ThisSession}}"
+            data-last-used="{{.UIText_AC_LastUsed}}"
+            data-sign-out="{{.UIText_AC_SignOut}}"
+            data-never="{{.UIText_AC_Never}}"
+            data-unknown="{{.UIText_AC_Unknown}}"
+            data-create-group="{{.UIText_AC_CreateGroup}}"
+            data-system-group="{{.UIText_AC_SystemGroup}}"
+            data-no-access-group="{{.UIText_AC_NoAccessGroup}}"
+            data-access-groups="{{.UIText_AC_NavGroups}}"
+            data-enabled="{{.UIText_AC_Enabled}}"
+            data-disabled="{{.UIText_AC_Disabled}}"
+            data-manage="{{.UIText_AC_Manage}}"
+            data-close="{{.UIText_AC_Close}}"
+            data-status="{{.UIText_AC_Status}}"
+            data-account-enabled="{{.UIText_AC_AccountEnabled}}"
+            data-account-enabled-info="{{.UIText_AC_AccountEnabledInfo}}"
+            data-reset-password="{{.UIText_AC_ResetPassword}}"
+            data-keep-password="{{.UIText_AC_KeepPassword}}"
+            data-save-user="{{.UIText_AC_SaveUser}}"
+            data-delete-user="{{.UIText_AC_DeleteUser}}"
+            data-group-locked="{{.UIText_AC_GroupLocked}}"
+            data-no-grantable-groups="{{.UIText_AC_NoGrantableGroups}}"
+            data-expires-on="{{.UIText_AC_ExpiresOn}}"
+            data-never-expires="{{.UIText_AC_NeverExpires}}"
+            data-revoke="{{.UIText_AC_Revoke}}"
+            data-no-tokens="{{.UIText_AC_NoTokens}}">
+            <div class="access-intro config-surface">
+                <div>
+                    <span class="panel-kicker">{{.UIText_AC_Kicker}}</span>
+                    <h2>{{.UIText_AC_Tab}}</h2>
+                    <p>{{.UIText_AC_Intro}}</p>
+                </div>
+                <div id="access-current-user" class="access-user-badge">{{.UIText_AC_LoadingAccount}}</div>
+            </div>
+
+            <nav class="access-nav" aria-label="{{.UIText_AC_Tab}}">
+                <button type="button" class="access-nav-button active" data-access-panel="access-account-panel">{{.UIText_AC_NavAccount}}</button>
+                <button type="button" class="access-nav-button" data-access-panel="access-people-panel">{{.UIText_AC_NavPeople}}</button>
+                <button type="button" class="access-nav-button" data-access-panel="access-groups-panel">{{.UIText_AC_NavGroups}}</button>
+                <button type="button" class="access-nav-button" data-access-panel="access-api-panel">{{.UIText_AC_NavAPI}}</button>
+            </nav>
+
+            <section id="access-account-panel" class="access-panel active">
+                <div class="access-card">
+                    <span class="panel-kicker">{{.UIText_AC_AccountKicker}}</span>
+                    <h3>{{.UIText_AC_ChangeMyPassword}}</h3>
+                    <p>{{.UIText_AC_ChangePasswordInfo}}</p>
+                    <form id="own-password-form" class="access-form access-form-narrow">
+                        <label>{{.UIText_AC_CurrentPassword}}<input type="password" name="currentPassword" autocomplete="current-password" required></label>
+                        <label>{{.UIText_AC_NewPassword}}<input type="password" name="newPassword" autocomplete="new-password" minlength="10" required></label>
+                        <label>{{.UIText_AC_RepeatPassword}}<input type="password" name="confirmPassword" autocomplete="new-password" minlength="10" required></label>
+                        <button type="submit">{{.UIText_AC_ChangePassword}}</button>
+                    </form>
+                </div>
+                <div class="access-card">
+                    <span class="panel-kicker">{{.UIText_AC_DevicesKicker}}</span>
+                    <h3>{{.UIText_AC_Sessions}}</h3>
+                    <div id="access-session-list" class="access-list"><p class="access-empty">{{.UIText_AC_LoadingSessions}}</p></div>
+                </div>
+            </section>
+
+            <section id="access-people-panel" class="access-panel">
+                <div id="access-people-denied" class="permission-panel" hidden>{{.UIText_AC_NoUsersPermission}}</div>
+                <div id="access-people-content" hidden>
+                    <div class="access-card">
+                        <span class="panel-kicker">{{.UIText_AC_NewAccountKicker}}</span>
+                        <h3>{{.UIText_AC_AddUser}}</h3>
+                        <form id="access-create-user" class="access-form access-create-user">
+                            <label>{{.UIText_AC_Username}}<input type="text" name="username" minlength="3" maxlength="64" required></label>
+                            <label>{{.UIText_AC_TempPassword}}<input type="password" name="password" minlength="10" required></label>
+                            <label>{{.UIText_AC_AccessGroup}}<select name="groupId"><option value="">{{.UIText_AC_NoAccessGroup}}</option></select></label>
+                            <button type="submit">{{.UIText_AC_AddUser}}</button>
+                        </form>
+                    </div>
+                    <div class="access-card">
+                        <span class="panel-kicker">{{.UIText_AC_AccountsKicker}}</span>
+                        <h3>{{.UIText_AC_Users}}</h3>
+                        <div id="access-user-list" class="access-list"><p class="access-empty">{{.UIText_AC_LoadingUsers}}</p></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="access-groups-panel" class="access-panel">
+                <div id="access-groups-denied" class="permission-panel" hidden>{{.UIText_AC_NoGroupsPermission}}</div>
+                <div id="access-groups-content" hidden>
+                    <div class="access-card">
+                        <span class="panel-kicker">{{.UIText_AC_RolesKicker}}</span>
+                        <h3>{{.UIText_AC_AccessGroup}}</h3>
+                        <div class="access-group-editor-head">
+                            <label>{{.UIText_AC_Group}}<select id="access-group-select"><option value="new">{{.UIText_AC_CreateGroup}}</option></select></label>
+                            <label>{{.UIText_AC_Preset}}<select id="access-preset-select">
+                                <option value="custom">{{.UIText_AC_PresetCustom}}</option>
+                                <option value="viewer">{{.UIText_AC_PresetViewer}}</option>
+                                <option value="operator">{{.UIText_AC_PresetOperator}}</option>
+                                <option value="backups">{{.UIText_AC_PresetBackups}}</option>
+                                <option value="administrator">{{.UIText_AC_PresetAdministrator}}</option>
+                            </select></label>
+                        </div>
+                        <form id="access-group-form" class="access-form">
+                            <label>{{.UIText_AC_Name}}<input type="text" name="name" maxlength="80" required></label>
+                            <label>{{.UIText_AC_Description}}<input type="text" name="description" maxlength="180"></label>
+                            <div class="access-fine-tune">
+                                <div><span class="panel-kicker">{{.UIText_AC_FineTuneKicker}}</span><h4>{{.UIText_AC_Permissions}}</h4></div>
+                                <button type="button" id="access-clear-permissions" class="access-quiet-button">{{.UIText_AC_ClearAll}}</button>
+                            </div>
+                            <div id="access-permission-grid" class="access-permission-grid"></div>
+                            <div class="access-form-actions">
+                                <button type="submit">{{.UIText_AC_SaveGroup}}</button>
+                                <button type="button" id="access-delete-group" class="access-danger-button" hidden>{{.UIText_AC_DeleteGroup}}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section id="access-api-panel" class="access-panel">
+                <div id="access-api-denied" class="permission-panel" hidden>{{.UIText_AC_NoTokensPermission}}</div>
+                <div id="access-api-content" hidden>
+                    <div class="access-card">
+                        <span class="panel-kicker">{{.UIText_AC_TokensKicker}}</span>
+                        <h3>{{.UIText_AC_CreateTokenTitle}}</h3>
+                        <p>{{.UIText_AC_TokenInfo}}</p>
+                        <form id="access-token-form" class="access-form">
+                            <div class="access-token-head">
+                                <label>{{.UIText_AC_Name}}<input type="text" name="name" maxlength="80" placeholder="Home Assistant" required></label>
+                                <label>{{.UIText_AC_Expires}}<select name="expires">
+                                    <option value="30">{{.UIText_AC_Days30}}</option>
+                                    <option value="90">{{.UIText_AC_Days90}}</option>
+                                    <option value="365">{{.UIText_AC_Year1}}</option>
+                                    <option value="never">{{.UIText_AC_Never}}</option>
+                                </select></label>
+                            </div>
+                            <div id="access-token-scopes" class="access-permission-grid"></div>
+                            <button type="submit">{{.UIText_AC_CreateToken}}</button>
+                        </form>
+                        <div id="access-token-secret" class="access-token-secret" hidden>
+                            <strong>{{.UIText_AC_CopyTokenNow}}</strong>
+                            <div><code></code><button type="button">{{.UIText_AC_Copy}}</button></div>
+                        </div>
+                    </div>
+                    <div class="access-card">
+                        <span class="panel-kicker">{{.UIText_AC_IssuedKicker}}</span>
+                        <h3>{{.UIText_AC_ApiTokens}}</h3>
+                        <div id="access-token-list" class="access-list"><p class="access-empty">{{.UIText_AC_LoadingTokens}}</p></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="theme-config-tab" class="tab-content">
+            <div id="theme-editor-root"
+                data-presets="{{.UIText_TH_Presets}}"
+                data-group-core-colors="{{.UIText_TH_GroupCoreColors}}"
+                data-group-text-colors="{{.UIText_TH_GroupTextColors}}"
+                data-group-surfaces="{{.UIText_TH_GroupSurfaces}}"
+                data-group-control-panel="{{.UIText_TH_GroupControlPanel}}"
+                data-group-console-colors="{{.UIText_TH_GroupConsoleColors}}"
+                data-live-preview="{{.UIText_TH_LivePreview}}"
+                data-actions="{{.UIText_TH_Actions}}"
+                data-save-theme="{{.UIText_TH_SaveTheme}}"
+                data-reset-defaults="{{.UIText_TH_ResetDefaults}}"
+                data-export-theme="{{.UIText_TH_ExportTheme}}"
+                data-import-theme="{{.UIText_TH_ImportTheme}}"
+                data-import-placeholder="{{.UIText_TH_ImportPlaceholder}}"
+                data-apply-import="{{.UIText_TH_ApplyImport}}"
+                data-cancel="{{.UIText_TH_Cancel}}"
+                data-copy-clipboard="{{.UIText_TH_CopyClipboard}}"
+                data-close="{{.UIText_TH_Close}}"
+                data-primary-label="{{.UIText_TH_PrimaryLabel}}"
+                data-primary-desc="{{.UIText_TH_PrimaryDesc}}"
+                data-bg-dark-label="{{.UIText_TH_BgDarkLabel}}"
+                data-bg-dark-desc="{{.UIText_TH_BgDarkDesc}}"
+                data-bg-panel-label="{{.UIText_TH_BgPanelLabel}}"
+                data-bg-panel-desc="{{.UIText_TH_BgPanelDesc}}"
+                data-accent-label="{{.UIText_TH_AccentLabel}}"
+                data-accent-desc="{{.UIText_TH_AccentDesc}}"
+                data-danger-label="{{.UIText_TH_DangerLabel}}"
+                data-danger-desc="{{.UIText_TH_DangerDesc}}"
+                data-success-label="{{.UIText_TH_SuccessLabel}}"
+                data-success-desc="{{.UIText_TH_SuccessDesc}}"
+                data-warning-label="{{.UIText_TH_WarningLabel}}"
+                data-warning-desc="{{.UIText_TH_WarningDesc}}"
+                data-text-header-label="{{.UIText_TH_TextHeaderLabel}}"
+                data-text-header-desc="{{.UIText_TH_TextHeaderDesc}}"
+                data-text-bright-label="{{.UIText_TH_TextBrightLabel}}"
+                data-text-bright-desc="{{.UIText_TH_TextBrightDesc}}"
+                data-text-dim-label="{{.UIText_TH_TextDimLabel}}"
+                data-text-dim-desc="{{.UIText_TH_TextDimDesc}}"
+                data-text-muted-label="{{.UIText_TH_TextMutedLabel}}"
+                data-text-muted-desc="{{.UIText_TH_TextMutedDesc}}"
+                data-surface-dark-label="{{.UIText_TH_SurfaceDarkLabel}}"
+                data-surface-dark-desc="{{.UIText_TH_SurfaceDarkDesc}}"
+                data-surface-hover-label="{{.UIText_TH_SurfaceHoverLabel}}"
+                data-surface-hover-desc="{{.UIText_TH_SurfaceHoverDesc}}"
+                data-surface-overlay-label="{{.UIText_TH_SurfaceOverlayLabel}}"
+                data-surface-overlay-desc="{{.UIText_TH_SurfaceOverlayDesc}}"
+                data-panel-frame-label="{{.UIText_TH_PanelFrameLabel}}"
+                data-panel-frame-desc="{{.UIText_TH_PanelFrameDesc}}"
+                data-panel-surface-label="{{.UIText_TH_PanelSurfaceLabel}}"
+                data-panel-surface-desc="{{.UIText_TH_PanelSurfaceDesc}}"
+                data-panel-inset-label="{{.UIText_TH_PanelInsetLabel}}"
+                data-panel-inset-desc="{{.UIText_TH_PanelInsetDesc}}"
+                data-panel-lamp-label="{{.UIText_TH_PanelLampLabel}}"
+                data-panel-lamp-desc="{{.UIText_TH_PanelLampDesc}}"
+                data-console-info-label="{{.UIText_TH_ConsoleInfoLabel}}"
+                data-console-info-desc="{{.UIText_TH_ConsoleInfoDesc}}"
+                data-console-warning-label="{{.UIText_TH_ConsoleWarningLabel}}"
+                data-console-warning-desc="{{.UIText_TH_ConsoleWarningDesc}}"
+                data-console-error-label="{{.UIText_TH_ConsoleErrorLabel}}"
+                data-console-error-desc="{{.UIText_TH_ConsoleErrorDesc}}"
+                data-console-success-label="{{.UIText_TH_ConsoleSuccessLabel}}"
+                data-console-success-desc="{{.UIText_TH_ConsoleSuccessDesc}}"></div>
+        </div>
+
+        <div id="support-config-tab" class="tab-content config-tab-stack support-panel"
+            data-running="{{.UIText_SUP_Running}}"
+            data-all-good="{{.UIText_SUP_AllGood}}"
+            data-start-recording="{{.UIText_SUP_StartRecording}}"
+            data-stop-recording="{{.UIText_SUP_StopRecording}}"
+            data-recording-full="{{.UIText_SUP_RecordingFull}}">
+            <div class="access-intro support-intro">
+                <div>
+                    <span id="support-version" class="panel-kicker">SSUI</span>
+                    <h2>{{.UIText_SUP_Title}}</h2>
+                    <p>{{.UIText_SUP_Intro}}</p>
+                </div>
+                <div class="support-status">
+                    <span id="support-overall" class="support-overall" role="status" aria-live="polite">{{.UIText_SUP_Running}}</span>
+                    <button id="support-refresh" class="support-button" type="button">{{.UIText_SUP_Refresh}}</button>
+                </div>
+            </div>
+            <div id="support-findings" class="support-findings"></div>
+            <div class="support-grid">
+                <section id="support-actions" class="access-card support-card">
+                    <h3>{{.UIText_SUP_PackageTitle}}</h3>
+                    <p>{{.UIText_SUP_PackageInfo}}</p>
+                    <div class="support-buttons">
+                        <button id="support-package" class="support-button support-primary" type="button">{{.UIText_SUP_DownloadPackage}}</button>
+                        <button id="support-record" class="support-button" type="button">{{.UIText_SUP_StartRecording}}</button>
+                        <button id="support-recording-package" class="support-button support-primary" type="button" hidden>{{.UIText_SUP_DownloadRecording}}</button>
+                    </div>
+                </section>
+                <section id="support-link" class="access-card support-card support-link" hidden
+                    data-waiting="{{.UIText_SUP_LinkWaiting}}"
+                    data-claimed="{{.UIText_SUP_LinkClaimed}}"
+                    data-offline="{{.UIText_SUP_LinkOffline}}"
+                    data-expires="{{.UIText_SUP_LinkExpires}}"
+                    data-no-activity="{{.UIText_SUP_LinkNoActivity}}">
+                    <h3>{{.UIText_SUP_LinkTitle}}</h3>
+                    <p>{{.UIText_SUP_LinkInfo}}</p>
+                    <div id="support-link-idle" class="support-buttons">
+                        <label class="support-duration">{{.UIText_SUP_LinkDuration}}
+                            <select id="support-link-minutes">
+                                <option value="30">{{.UIText_SUP_Link30}}</option>
+                                <option value="60" selected>{{.UIText_SUP_Link60}}</option>
+                                <option value="120">{{.UIText_SUP_Link120}}</option>
+                            </select>
+                        </label>
+                        <button id="support-link-open" class="support-button support-primary" type="button">{{.UIText_SUP_LinkOpen}}</button>
+                    </div>
+                    <div id="support-link-active" hidden>
+                        <p id="support-link-state" class="support-link-state" role="status" aria-live="polite"></p>
+                        <div id="support-link-code-box" class="support-link-code" hidden>
+                            <span>{{.UIText_SUP_LinkCode}}</span>
+                            <div><code id="support-link-code"></code><button id="support-link-copy" class="support-button" type="button">{{.UIText_SUP_LinkCopy}}</button></div>
+                        </div>
+                        <span class="panel-kicker">{{.UIText_SUP_LinkActivity}}</span>
+                        <div id="support-link-activity" class="support-activity"></div>
+                        <button id="support-link-close" class="support-button access-danger-button" type="button">{{.UIText_SUP_LinkClose}}</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+    </main>
+    <footer>
+        <div class="copyright">Copyright &copy; 2026 <a href="https://github.com/jacksonthemaster">JacksonTheMaster.</a>
+            {{.UIText_CopyrightConfig1}} <a
+                href="https://github.com/jacksonthemaster/StationeersServerUI/blob/main/LICENSE">{{.UIText_CopyrightConfig2}}</a>.
+        </div>
+    </footer>
+
+    <script>
+        let configNotificationTimer;
+
+        function showConfigNotification(message, type) {
+            const notification = document.getElementById('config-save-notification');
+            window.clearTimeout(configNotificationTimer);
+            notification.textContent = message;
+            notification.className = `config-save-notification ${type} show`;
+
+            const duration = type === 'error' ? 7000 : type === 'success' ? 4000 : 0;
+            if (duration > 0) {
+                configNotificationTimer = window.setTimeout(() => {
+                    notification.classList.remove('show');
+                }, duration);
+            }
+        }
+
+        function configAPIField(name) {
+            const aliases = {
+                WorldID: 'worldId',
+                UPNPEnabled: 'upnpEnabled',
+                SSUIWebPort: 'ssuiWebPort',
+                IsSSCMEnabled: 'sscmEnabled',
+                IsConsoleEnabled: 'consoleEnabled',
+                IsUpdateEnabled: 'updatesEnabled',
+                IsStationeersLaunchPadEnabled: 'stationeersLaunchPadEnabled',
+                IsStationeersLaunchPadAutoUpdatesEnabled: 'stationeersLaunchPadAutoUpdatesEnabled',
+                LanguageSetting: 'language',
+                isDiscordEnabled: 'discordEnabled',
+                discordAdminRoleID: 'discordAdminRoleId',
+                eventLogChannelID: 'eventLogChannelId',
+                statusPanelChannelID: 'statusPanelChannelId',
+                logChannelID: 'logChannelId',
+                blackListFilePath: 'blacklistFilePath'
+            };
+            return aliases[name] || name.charAt(0).toLowerCase() + name.slice(1);
+        }
+
+        function configScopePayload(scope) {
+            const payload = {};
+
+            scope.querySelectorAll('input[name], select[name], textarea[name]').forEach(control => {
+                if ((control.disabled && !control.hasAttribute('data-config-include-disabled')) ||
+                    ((control.type === 'checkbox' || control.type === 'radio') && !control.checked)) {
+                    return;
+                }
+
+                if (control?.type === 'number') {
+                    payload[configAPIField(control.name)] = Number(control.value);
+                } else if (control?.tagName === 'SELECT' && (control.value === 'true' || control.value === 'false')) {
+                    payload[configAPIField(control.name)] = control.value === 'true';
+                } else {
+                    payload[configAPIField(control.name)] = control.value;
+                }
+            });
+
+            return payload;
+        }
+
+        function validateConfigScope(scope) {
+            const invalidControl = Array.from(scope.querySelectorAll('input, select, textarea'))
+                .find(control => !control.disabled && !control.checkValidity());
+
+            if (invalidControl) {
+                invalidControl.reportValidity();
+                return false;
+            }
+
+            return true;
+        }
+
+        async function saveConfigSection(event) {
+            if (!window.SSUIAccess?.require('settings.manage', "You don't have permission to change these settings.")) {
+                return;
+            }
+            const saveButton = event.currentTarget;
+            const scope = saveButton.closest('.config-section, [data-config-save-scope]');
+            const notification = document.getElementById('config-save-notification');
+
+            if (!scope || !validateConfigScope(scope)) {
+                return;
+            }
+
+            saveButton.disabled = true;
+            showConfigNotification(notification.dataset.saving, 'info');
+
+            try {
+                const response = await fetch('/api/v3/settings', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(configScopePayload(scope))
+                });
+                const responseData = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(responseData.error || 'Configuration update failed');
+                }
+
+                if (responseData.restartRequired?.includes('ssuiWebPort')) {
+                    showConfigNotification('Saved. Restart SSUI to apply the web port change.', 'info');
+                } else {
+                    showConfigNotification(notification.dataset.success, 'success');
+                }
+            } catch (error) {
+                const detail = error.message ? ` ${error.message}` : '';
+                showConfigNotification(notification.dataset.failed + detail, 'error');
+            } finally {
+                saveButton.disabled = false;
+            }
+        }
+
+        function setExpertSettingsVisibility(enabled, openWhenEnabled = false) {
+            const section = document.getElementById('expert-settings');
+            const button = document.querySelector('.section-nav-button[data-section="expert-settings"]');
+
+            section.hidden = !enabled;
+            button.hidden = !enabled;
+
+            if (!enabled && section.classList.contains('active')) {
+                showConfigSection('advanced-settings');
+            } else if (enabled && openWhenEnabled) {
+                showConfigSection('expert-settings');
+            }
+        }
+
+        async function saveExpertSettingsVisibility(event) {
+            if (!window.SSUIAccess?.require('settings.manage', "You don't have permission to change these settings.")) {
+                return;
+            }
+            const select = event.currentTarget;
+            const notification = document.getElementById('config-save-notification');
+            const previousValue = select.dataset.persistedValue || (select.value === 'true' ? 'false' : 'true');
+            const enabled = select.value === 'true';
+
+            select.disabled = true;
+            showConfigNotification(notification.dataset.saving, 'info');
+
+            try {
+                const response = await fetch('/api/v3/settings', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ showExpertSettings: enabled })
+                });
+                const responseText = await response.text();
+
+                if (!response.ok) {
+                    let errorMessage = responseText;
+                    try {
+                        errorMessage = JSON.parse(responseText).error?.message || responseText;
+                    } catch (_) {
+                        // The endpoint may return a plain-text HTTP error.
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                select.dataset.persistedValue = select.value;
+                setExpertSettingsVisibility(enabled, enabled);
+                showConfigNotification(notification.dataset.success, 'success');
+            } catch (error) {
+                select.value = previousValue;
+                const detail = error.message ? ` ${error.message}` : '';
+                showConfigNotification(notification.dataset.failed + detail, 'error');
+            } finally {
+                select.disabled = false;
+            }
+        }
+
+        const configTabs = {
+            settings: 'server-config-tab',
+            discord: 'discord-config-tab',
+            slp: 'slp-config-tab',
+            dmgr: 'detectionmanager-config-tab',
+            access: 'access-config-tab',
+            theme: 'theme-config-tab',
+            support: 'support-config-tab'
+        };
+
+        function showConfigTab(tabId, updateUrl = true) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.querySelectorAll('.sliding-tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show the selected content
+            const content = document.getElementById(tabId);
+            if (content) {
+                content.classList.add('active');
+            }
+
+            const button = document.querySelector(`.sliding-tab-button[data-tab="${tabId}"]`);
+            if (button) {
+                button.classList.add('active');
+            }
+
+            document.dispatchEvent(new CustomEvent('config-tab', { detail: tabId }));
+
+            if (updateUrl) {
+                const tabName = Object.keys(configTabs).find(name => configTabs[name] === tabId) || 'settings';
+                const url = new URL(window.location.href);
+                url.searchParams.set('tab', tabName);
+                window.history.replaceState({}, '', url);
+            }
+        }
+
+        function showConfigTabFromUrl() {
+            const requestedTab = new URLSearchParams(window.location.search).get('tab') || 'settings';
+            showConfigTab(configTabs[requestedTab] || configTabs.settings, false);
+            const requestedSection = new URLSearchParams(window.location.search).get('section') || 'basic-settings';
+            if (document.getElementById('server-config-panel')) {
+                showConfigSection(requestedSection, false);
+            }
+        }
+
+        function showConfigSection(sectionId, updateUrl = true) {
+            let section = document.getElementById(sectionId);
+            if (!section || section.hidden) {
+                section = document.getElementById(sectionId === 'expert-settings' ? 'advanced-settings' : 'basic-settings');
+            }
+            const button = document.querySelector(`.section-nav-button[data-section="${section.id}"]`);
+
+            document.querySelectorAll('.server-settings-shell .config-section').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelectorAll('.server-settings-shell .section-nav-button').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            document.getElementById('select-prompt').style.display = 'none';
+            section.classList.add('active');
+            button?.classList.add('active');
+
+            if (updateUrl) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('tab', 'settings');
+                url.searchParams.set('section', section.id);
+                window.history.replaceState({}, '', url);
+            }
+        }
+
+        document.getElementById('isDiscordEnabled')?.addEventListener('change', function () {
+            if (this.value === 'false') {
+                document.querySelector('.discord-container').classList.add('disabled');
+                document.querySelector('.discord-integration-header').classList.add('is-disabled');
+            } else {
+                document.querySelector('.discord-container').classList.remove('disabled');
+                document.querySelector('.discord-integration-header').classList.remove('is-disabled');
+            }
+        });
+
+        // Set initial state
+        if (document.getElementById('isDiscordEnabled')?.value === 'false') {
+            document.querySelector('.discord-container').classList.add('disabled');
+            document.querySelector('.discord-integration-header').classList.add('is-disabled');
+        }
+
+        // Section navigation
+        document.querySelectorAll('.section-nav-button').forEach(button => {
+            button.addEventListener('click', function () {
+                showConfigSection(this.getAttribute('data-section'));
+            });
+        });
+        document.querySelectorAll('.sliding-tab-button[data-tab]').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                showConfigTab(tabId);
+            });
+        });
+        window.addEventListener('popstate', showConfigTabFromUrl);
+        document.querySelectorAll('.config-section-save').forEach(button => {
+            button.addEventListener('click', saveConfigSection);
+        });
+        const expertSettingsToggle = document.getElementById('ShowExpertSettings');
+        if (expertSettingsToggle) {
+            expertSettingsToggle.dataset.persistedValue = expertSettingsToggle.value;
+            expertSettingsToggle.addEventListener('change', saveExpertSettingsVisibility);
+        }
+        if (document.body.dataset.canManageSettings !== 'true') {
+            document.querySelectorAll('#server-config-tab input, #server-config-tab select, #server-config-tab textarea, #discord-config-tab input, #discord-config-tab select, #discord-config-tab textarea')
+                .forEach(control => control.disabled = true);
+        }
+        showConfigTabFromUrl();
+    </script>
+    <script src="/static/js/api-client.js"></script>
+    <script src="/static/js/theme-engine.js"></script>
+    <script src="/static/js/background.js"></script>
+    <script src="/static/js/theme-editor.js"></script>
+    <script src="/static/js/main.js?v=6"></script>
+    {{if .CanViewSettings}}<script src="/static/js/world-gen-config.js"></script>{{end}}
+    {{if .CanManageDetections}}<script src="/static/js/detectionmanager.js"></script>{{end}}
+    <script src="/static/js/seasonal.js"></script>
+    <script src="/static/js/popup.js"></script>
+    {{if .CanManageSLP}}<script src="/static/js/slp.js"></script>{{end}}
+    {{if .CanViewSettings}}<script src="/static/js/advertiser-settings.js"></script>
+    <script src="/static/js/tls-settings.js"></script>{{end}}
+    <script src="/static/js/identity-settings.js"></script>
+    <script src="/static/js/support.js"></script>
+</body>
+
+</html>

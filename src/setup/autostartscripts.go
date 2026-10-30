@@ -6,11 +6,11 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
 )
 
 func SetupAutostartScripts() {
-	scriptFS, err := fs.Sub(config.V1UIFS, "UIMod/onboard_bundled/scripts")
+	scriptFS, err := fs.Sub(config.V1UIFS, "SSUI/onboard_bundled/scripts")
 	if err != nil {
 		return
 	}

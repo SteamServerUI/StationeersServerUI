@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/discordbot"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/discordbot"
 )
 
 /*
@@ -51,7 +51,6 @@ func (d *Detector) ProcessLogMessage(logMessage string) {
 		"Initialize engine version":           EventServerRunning,
 		"game manager initialized":            EventGameManagerReady,
 		"StartSession. config: {":             EventSessionStarting,
-		"registered with session #":           EventSessionRegistered,
 	}
 
 	for keyword, eventType := range keywordPatterns {
@@ -67,30 +66,13 @@ func (d *Detector) ProcessLogMessage(logMessage string) {
 	// Process regex patterns for more complex detections
 	d.processRegexPatterns(logMessage)
 
-	// Process CUSTOM PATTERNS (both regex and keywords)
 	for _, cp := range d.customPatterns {
 		if cp.IsRegex {
-			matches := cp.Pattern.FindStringSubmatch(logMessage)
-			if matches != nil {
-				// Format message with {0}, {1} placeholders
-				message := formatMessage(cp.MessageTmpl, matches)
-				d.triggerEvent(Event{
-					Type:      cp.EventType,
-					Message:   message,
-					RawLog:    logMessage,
-					Timestamp: time.Now().Format(time.RFC3339),
-				})
+			if matches := cp.Pattern.FindStringSubmatch(logMessage); matches != nil {
+				runRoutine(cp, matches)
 			}
-		} else {
-			// Keyword matching
-			if strings.Contains(logMessage, cp.Keyword) {
-				d.triggerEvent(Event{
-					Type:      cp.EventType,
-					Message:   cp.MessageTmpl,
-					RawLog:    logMessage,
-					Timestamp: time.Now().Format(time.RFC3339),
-				})
-			}
+		} else if cp.Keyword != "" && strings.Contains(logMessage, cp.Keyword) {
+			runRoutine(cp, []string{logMessage})
 		}
 	}
 }
@@ -109,6 +91,17 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 		pattern *regexp.Regexp
 		handler func(matches []string, logMessage string)
 	}{
+		{ // Session registration format and capitalization vary between game builds.
+			pattern: regexp.MustCompile(`(?i)registered\s+with\s+session\s*#?\s*\d+`),
+			handler: func(_ []string, logMessage string) {
+				d.triggerEvent(Event{
+					Type:      EventSessionRegistered,
+					Message:   "Session registered",
+					RawLog:    logMessage,
+					Timestamp: time.Now().Format(time.RFC3339),
+				})
+			},
+		},
 		{
 			// Player ready pattern
 			pattern: regexp.MustCompile(`Client\s+(.+)\s+\((\d+)\)\s+is\s+ready!?`),
@@ -175,8 +168,8 @@ func (d *Detector) processRegexPatterns(logMessage string) {
 			},
 		},
 		{
-			// World saved pattern (simpy detects "Saving - file created and zipped in" since preterrain detection using "World Saved:\s.*,\sBackupIndex:\s(\d+)" is no longer possible)
-			pattern: regexp.MustCompile(`Saving\s*-\s*file created and zipped in`),
+			// Current and historical save-completion messages.
+			pattern: regexp.MustCompile(`(?i)(?:serialized,\s*zipped\s+and\s+file\s+created|Saving\s*-\s*file\s+created\s+and\s+zipped)\s+in(?:\s+\d+\s*ms)?`),
 			handler: func(matches []string, logMessage string) {
 				d.triggerEvent(Event{
 					Type:      EventWorldSaved,
@@ -269,6 +262,15 @@ func (d *Detector) triggerEvent(event Event) {
 	if handlers, ok := d.handlers[event.Type]; ok {
 		for _, handler := range handlers {
 			handler(event)
+		}
+	}
+	for _, cp := range d.customPatterns {
+		if cp.Trigger == event.Type {
+			values := []string{event.Message, "", ""}
+			if event.PlayerInfo != nil {
+				values[1], values[2] = event.PlayerInfo.Username, event.PlayerInfo.SteamID
+			}
+			runRoutine(cp, values)
 		}
 	}
 }

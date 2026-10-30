@@ -11,16 +11,19 @@ import (
 
 var (
 	// All configuration variables can be found in vars.go
-	Version = "5.14.1"
+	Version = "6.0.0"
 	Branch  = "release"
 )
 
 /*
-If you read this, you are likely a developer. I sincerly apologize for the way the config works.
+If you read this, you are likely a developer. I sincerely apologize for the way the config works.
 While I would love to refactor the config to not write to file then read the file every time a config value is changed,
 I have not found the time to do so. So, for now, we save to file, then read the file and rely on whatever the file says. Although this is not ideal, it works for now. Deal with it.
 JacksonTheMaster
 */
+
+// JsonConfig is the config.json format. Keep its existing JSON names stable;
+// the public API has its own contract in api.SettingsPatch.
 
 type JsonConfig struct {
 	// reordered in 5.6.4 to simplify the order of the config file.
@@ -51,12 +54,13 @@ type JsonConfig struct {
 	StartLocation    string `json:"StartLocation"`
 
 	// Logging and debug settings
-	Debug                   *bool    `json:"Debug"`
-	CreateSSUILogFile       *bool    `json:"CreateSSUILogFile"`
-	CreateGameServerLogFile *bool    `json:"CreateGameServerLogFile"`
-	LogLevel                int      `json:"LogLevel"`
-	SubsystemFilters        []string `json:"subsystemFilters"`
-	AdvertiserOverride      string   `json:"AdvertiserOverride"`
+	Debug                    *bool    `json:"Debug"`
+	CreateSSUILogFile        *bool    `json:"CreateSSUILogFile"`
+	CreateGameServerLogFile  *bool    `json:"CreateGameServerLogFile"`
+	LogLevel                 int      `json:"LogLevel"`
+	SubsystemFilters         []string `json:"subsystemFilters"`
+	AdvertiserOverride       string   `json:"AdvertiserOverride"`
+	ConnectivityCheckEnabled *bool    `json:"ConnectivityCheckEnabled"`
 
 	// Authentication Settings
 	Users             map[string]string `json:"users"`       // Map of username to hashed password
@@ -72,7 +76,6 @@ type JsonConfig struct {
 	AutoRestartServerTimer    string `json:"AutoRestartServerTimer"`
 	AutoRestartCountdown      string `json:"AutoRestartCountdown"`
 	IsConsoleEnabled          *bool  `json:"IsConsoleEnabled"`
-	IsCLIDashboardEnabled     *bool  `json:"IsCLIDashboardEnabled"`
 	LanguageSetting           string `json:"LanguageSetting"`
 	AutoStartServerOnStartup  *bool  `json:"AutoStartServerOnStartup"`
 	SSUIIdentifier            string `json:"SSUIIdentifier"`
@@ -90,28 +93,36 @@ type JsonConfig struct {
 	IsStationeersLaunchPadAutoUpdatesEnabled *bool `json:"IsStationeersLaunchPadAutoUpdatesEnabled"`
 
 	// Discord Settings
-	DiscordToken            string `json:"discordToken"`
-	ControlChannelID        string `json:"controlChannelID"`
-	EventLogChannelID       string `json:"eventLogChannelID"`
-	StatusChannelID         string `json:"statusChannelID,omitempty"`         // deprecated, migrated to EventLogChannelID
-	ConnectionListChannelID string `json:"connectionListChannelID,omitempty"` // deprecated, migrated to StatusPanelChannelID
-	StatusPanelChannelID    string `json:"statusPanelChannelID"`              // replaces ConnectionListChannelID and ServerInfoPanelChannelID
-	LogChannelID            string `json:"logChannelID"`
-	SaveChannelID           string `json:"saveChannelID,omitempty"` // deprecated, merged into EventLogChannelID
-	ControlPanelChannelID   string `json:"controlPanelChannelID"`
-	DiscordCharBufferSize   int    `json:"DiscordCharBufferSize"`
-	BlackListFilePath       string `json:"blackListFilePath"`
-	IsDiscordEnabled        *bool  `json:"isDiscordEnabled"`
-	RotateServerPassword    *bool  `json:"rotateServerPassword"`
+	DiscordToken                      string `json:"discordToken"`
+	DiscordAdminRoleID                string `json:"discordAdminRoleID"`
+	EventLogChannelID                 string `json:"eventLogChannelID"`
+	StatusChannelID                   string `json:"statusChannelID,omitempty"`         // deprecated, migrated to EventLogChannelID
+	ConnectionListChannelID           string `json:"connectionListChannelID,omitempty"` // deprecated, migrated to StatusPanelChannelID
+	StatusPanelChannelID              string `json:"statusPanelChannelID"`              // replaces ConnectionListChannelID and ServerInfoPanelChannelID
+	LogChannelID                      string `json:"logChannelID"`
+	SaveChannelID                     string `json:"saveChannelID,omitempty"` // deprecated, merged into EventLogChannelID
+	DiscordCharBufferSize             int    `json:"DiscordCharBufferSize"`
+	BlackListFilePath                 string `json:"blackListFilePath"`
+	IsDiscordEnabled                  *bool  `json:"isDiscordEnabled"`
+	RotateServerPassword              *bool  `json:"rotateServerPassword"`
+	DiscordRestartVoteEnabled         *bool  `json:"discordRestartVoteEnabled"`
+	DiscordRestoreVoteEnabled         *bool  `json:"discordRestoreVoteEnabled"`
+	DiscordVoteDurationMinutes        *int   `json:"discordVoteDurationMinutes"`
+	DiscordRestartVoteThreshold       *int   `json:"discordRestartVoteThreshold"`
+	DiscordRestartVoteMinimum         *int   `json:"discordRestartVoteMinimum"`
+	DiscordRestartVoteCooldownMinutes *int   `json:"discordRestartVoteCooldownMinutes"`
+	DiscordRestoreVoteThreshold       *int   `json:"discordRestoreVoteThreshold"`
+	DiscordRestoreVoteMinimum         *int   `json:"discordRestoreVoteMinimum"`
+	DiscordRestoreVoteCooldownMinutes *int   `json:"discordRestoreVoteCooldownMinutes"`
 
-	//Backup Settings
-	BackupKeepLastN       int   `json:"backupKeepLastN"`       // Number of most recent backups to keep (default: 2000)
-	IsCleanupEnabled      *bool `json:"isCleanupEnabled"`      // Enable automatic cleanup of backups (default: false)
-	BackupKeepDailyFor    int   `json:"backupKeepDailyFor"`    // Retention period in hours for daily backups
-	BackupKeepWeeklyFor   int   `json:"backupKeepWeeklyFor"`   // Retention period in hours for weekly backups
-	BackupKeepMonthlyFor  int   `json:"backupKeepMonthlyFor"`  // Retention period in hours for monthly backups
-	BackupCleanupInterval int   `json:"backupCleanupInterval"` // Hours between backup cleanup operations
-	BackupWaitTime        int   `json:"backupWaitTime"`        // Seconds to wait before copying backups
+	// Backup retention settings. The former backupKeep* / isCleanupEnabled keys
+	// are intentionally not migrated so upgrades return to the safe disabled state.
+	BackupRetentionEnabled       *bool `json:"backupRetentionEnabled"`
+	BackupKeepNewestCount        *int  `json:"backupKeepNewestCount"`
+	BackupDailyRetentionDays     *int  `json:"backupDailyRetentionDays"`
+	BackupWeeklyRetentionWeeks   *int  `json:"backupWeeklyRetentionWeeks"`
+	BackupMonthlyRetentionMonths *int  `json:"backupMonthlyRetentionMonths"`
+	BackupCleanupIntervalHours   *int  `json:"backupCleanupIntervalHours"`
 }
 
 // LoadConfig loads and initializes the configuration
@@ -119,8 +130,43 @@ func LoadConfig() (*JsonConfig, error) {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
+	jsonConfig, err := readConfigFile(ConfigPath)
+	if err != nil {
+		return nil, err
+	}
+	// Apply configuration
+	applyConfig(jsonConfig)
+	effective := snapshotConfig()
+	if err := writeConfigFile(ConfigPath, &effective); err != nil {
+		return nil, fmt.Errorf("save normalized config: %w", err)
+	}
+
+	return &effective, nil
+}
+
+// LoadConfigWithoutSaving applies the persisted config without normalizing the file on disk.
+func LoadConfigWithoutSaving() error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	jsonConfig, err := readConfigFile(ConfigPath)
+	if err != nil {
+		return err
+	}
+	applyConfig(jsonConfig)
+	return nil
+}
+
+// ReadConfigFile returns the persisted config without changing runtime state.
+func ReadConfigFile() (*JsonConfig, error) {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return readConfigFile(ConfigPath)
+}
+
+func readConfigFile(path string) (*JsonConfig, error) {
 	var jsonConfig JsonConfig
-	file, err := os.Open(ConfigPath)
+	file, err := os.Open(path)
 	if err == nil {
 		// File exists, proceed to decode it
 		defer file.Close()
@@ -135,9 +181,6 @@ func LoadConfig() (*JsonConfig, error) {
 		// Other errors (e.g., permissions), fail immediately
 		return nil, fmt.Errorf("failed to open config file: %v", err)
 	}
-	// Apply configuration
-	applyConfig(&jsonConfig)
-
 	return &jsonConfig, nil
 }
 
@@ -145,11 +188,10 @@ func LoadConfig() (*JsonConfig, error) {
 func applyConfig(cfg *JsonConfig) {
 	// Apply values with hierarchy
 	DiscordToken = getString(cfg.DiscordToken, "DISCORD_TOKEN", "")
-	ControlChannelID = getString(cfg.ControlChannelID, "CONTROL_CHANNEL_ID", "")
+	DiscordAdminRoleID = getString(cfg.DiscordAdminRoleID, "DISCORD_ADMIN_ROLE_ID", "")
 	EventLogChannelID = getString(cfg.EventLogChannelID, "GAME_EVENT_LOG_CHANNEL_ID", "")
 	StatusPanelChannelID = getString(cfg.StatusPanelChannelID, "STATUS_PANEL_CHANNEL_ID", "")
 	LogChannelID = getString(cfg.LogChannelID, "LOG_CHANNEL_ID", "")
-	ControlPanelChannelID = getString(cfg.ControlPanelChannelID, "CONTROL_PANEL_CHANNEL_ID", "")
 	DiscordCharBufferSize = getInt(cfg.DiscordCharBufferSize, "DISCORD_CHAR_BUFFER_SIZE", 1000)
 	BlackListFilePath = getString(cfg.BlackListFilePath, "BLACKLIST_FILE_PATH", "./Blacklist.txt")
 
@@ -161,17 +203,79 @@ func applyConfig(cfg *JsonConfig) {
 	RotateServerPassword = rotateServerPasswordVal
 	cfg.RotateServerPassword = &rotateServerPasswordVal
 
-	BackupKeepLastN = getInt(cfg.BackupKeepLastN, "BACKUP_KEEP_LAST_N", 2000)
+	discordRestartVoteEnabledVal := getBool(cfg.DiscordRestartVoteEnabled, "DISCORD_RESTART_VOTE_ENABLED", false)
+	DiscordRestartVoteEnabled = discordRestartVoteEnabledVal
+	cfg.DiscordRestartVoteEnabled = &discordRestartVoteEnabledVal
+	discordRestoreVoteEnabledVal := getBool(cfg.DiscordRestoreVoteEnabled, "DISCORD_RESTORE_VOTE_ENABLED", false)
+	DiscordRestoreVoteEnabled = discordRestoreVoteEnabledVal
+	cfg.DiscordRestoreVoteEnabled = &discordRestoreVoteEnabledVal
+	DiscordVoteDurationMinutes = getOptionalInt(cfg.DiscordVoteDurationMinutes, "DISCORD_VOTE_DURATION_MINUTES", 5)
+	cfg.DiscordVoteDurationMinutes = intPointer(DiscordVoteDurationMinutes)
+	DiscordRestartVoteThreshold = getOptionalInt(cfg.DiscordRestartVoteThreshold, "DISCORD_RESTART_VOTE_THRESHOLD", 60)
+	cfg.DiscordRestartVoteThreshold = intPointer(DiscordRestartVoteThreshold)
+	DiscordRestartVoteMinimum = getOptionalInt(cfg.DiscordRestartVoteMinimum, "DISCORD_RESTART_VOTE_MINIMUM", 1)
+	cfg.DiscordRestartVoteMinimum = intPointer(DiscordRestartVoteMinimum)
+	DiscordRestartVoteCooldownMinutes = getOptionalInt(cfg.DiscordRestartVoteCooldownMinutes, "DISCORD_RESTART_VOTE_COOLDOWN_MINUTES", 30)
+	cfg.DiscordRestartVoteCooldownMinutes = intPointer(DiscordRestartVoteCooldownMinutes)
+	DiscordRestoreVoteThreshold = getOptionalInt(cfg.DiscordRestoreVoteThreshold, "DISCORD_RESTORE_VOTE_THRESHOLD", 100)
+	cfg.DiscordRestoreVoteThreshold = intPointer(DiscordRestoreVoteThreshold)
+	DiscordRestoreVoteMinimum = getOptionalInt(cfg.DiscordRestoreVoteMinimum, "DISCORD_RESTORE_VOTE_MINIMUM", 2)
+	cfg.DiscordRestoreVoteMinimum = intPointer(DiscordRestoreVoteMinimum)
+	DiscordRestoreVoteCooldownMinutes = getOptionalInt(cfg.DiscordRestoreVoteCooldownMinutes, "DISCORD_RESTORE_VOTE_COOLDOWN_MINUTES", 60)
+	cfg.DiscordRestoreVoteCooldownMinutes = intPointer(DiscordRestoreVoteCooldownMinutes)
 
-	isCleanupEnabledVal := getBool(cfg.IsCleanupEnabled, "IS_CLEANUP_ENABLED", false)
-	IsCleanupEnabled = isCleanupEnabledVal
-	cfg.IsCleanupEnabled = &isCleanupEnabledVal
+	backupRetentionEnabledVal := getBool(cfg.BackupRetentionEnabled, "BACKUP_RETENTION_ENABLED", false)
+	BackupRetentionEnabled = backupRetentionEnabledVal
+	cfg.BackupRetentionEnabled = &backupRetentionEnabledVal
 
-	BackupKeepDailyFor = time.Duration(getInt(cfg.BackupKeepDailyFor, "BACKUP_KEEP_DAILY_FOR", 24)) * time.Hour
-	BackupKeepWeeklyFor = time.Duration(getInt(cfg.BackupKeepWeeklyFor, "BACKUP_KEEP_WEEKLY_FOR", 168)) * time.Hour
-	BackupKeepMonthlyFor = time.Duration(getInt(cfg.BackupKeepMonthlyFor, "BACKUP_KEEP_MONTHLY_FOR", 730)) * time.Hour
-	BackupCleanupInterval = time.Duration(getInt(cfg.BackupCleanupInterval, "BACKUP_CLEANUP_INTERVAL", 730)) * time.Hour
-	BackupWaitTime = time.Duration(getInt(cfg.BackupWaitTime, "BACKUP_WAIT_TIME", 30)) * time.Second
+	backupKeepNewestCountVal := getOptionalInt(cfg.BackupKeepNewestCount, "BACKUP_KEEP_NEWEST_COUNT", 2)
+	unsafeBackupRetentionConfig := false
+	if backupKeepNewestCountVal < 0 {
+		backupKeepNewestCountVal = 2
+		unsafeBackupRetentionConfig = true
+	}
+	BackupKeepNewestCount = backupKeepNewestCountVal
+	cfg.BackupKeepNewestCount = &backupKeepNewestCountVal
+
+	backupDailyRetentionDaysVal := getOptionalInt(cfg.BackupDailyRetentionDays, "BACKUP_DAILY_RETENTION_DAYS", 7)
+	if backupDailyRetentionDaysVal < 0 {
+		backupDailyRetentionDaysVal = 7
+		unsafeBackupRetentionConfig = true
+	}
+	BackupDailyRetentionDays = backupDailyRetentionDaysVal
+	cfg.BackupDailyRetentionDays = &backupDailyRetentionDaysVal
+
+	backupWeeklyRetentionWeeksVal := getOptionalInt(cfg.BackupWeeklyRetentionWeeks, "BACKUP_WEEKLY_RETENTION_WEEKS", 4)
+	if backupWeeklyRetentionWeeksVal < 0 {
+		backupWeeklyRetentionWeeksVal = 4
+		unsafeBackupRetentionConfig = true
+	}
+	BackupWeeklyRetentionWeeks = backupWeeklyRetentionWeeksVal
+	cfg.BackupWeeklyRetentionWeeks = &backupWeeklyRetentionWeeksVal
+
+	backupMonthlyRetentionMonthsVal := getOptionalInt(cfg.BackupMonthlyRetentionMonths, "BACKUP_MONTHLY_RETENTION_MONTHS", 3)
+	if backupMonthlyRetentionMonthsVal < 0 {
+		backupMonthlyRetentionMonthsVal = 3
+		unsafeBackupRetentionConfig = true
+	}
+	BackupMonthlyRetentionMonths = backupMonthlyRetentionMonthsVal
+	cfg.BackupMonthlyRetentionMonths = &backupMonthlyRetentionMonthsVal
+
+	backupCleanupIntervalHoursVal := getOptionalInt(cfg.BackupCleanupIntervalHours, "BACKUP_CLEANUP_INTERVAL_HOURS", 24)
+	maxCleanupIntervalHours := int64((1<<63 - 1) / int64(time.Hour))
+	if backupCleanupIntervalHoursVal <= 0 || int64(backupCleanupIntervalHoursVal) > maxCleanupIntervalHours {
+		backupCleanupIntervalHoursVal = 24
+		unsafeBackupRetentionConfig = true
+	}
+	BackupCleanupInterval = time.Duration(backupCleanupIntervalHoursVal) * time.Hour
+	cfg.BackupCleanupIntervalHours = &backupCleanupIntervalHoursVal
+
+	if unsafeBackupRetentionConfig {
+		backupRetentionEnabledVal = false
+		BackupRetentionEnabled = backupRetentionEnabledVal
+		cfg.BackupRetentionEnabled = &backupRetentionEnabledVal
+		fmt.Println("WARNING: Invalid backup retention settings were replaced with safe defaults; automatic backup cleanup has been disabled.")
+	}
 
 	isNewTerrainAndSaveSystemVal := getBool(cfg.IsNewTerrainAndSaveSystem, "ENABLE_DOT_SAVES", true)
 	IsNewTerrainAndSaveSystem = isNewTerrainAndSaveSystemVal
@@ -283,10 +387,6 @@ func applyConfig(cfg *JsonConfig) {
 	IsConsoleEnabled = isConsoleEnabledVal
 	cfg.IsConsoleEnabled = &isConsoleEnabledVal
 
-	isCLIDashboardEnabledVal := getBool(cfg.IsCLIDashboardEnabled, "IS_CLI_DASHBOARD_ENABLED", false)
-	IsCLIDashboardEnabled = isCLIDashboardEnabledVal
-	cfg.IsCLIDashboardEnabled = &isCLIDashboardEnabledVal
-
 	logClutterToConsoleVal := getBool(cfg.LogClutterToConsole, "LOG_CLUTTER_TO_CONSOLE", false)
 	LogClutterToConsole = logClutterToConsoleVal
 	cfg.LogClutterToConsole = &logClutterToConsoleVal
@@ -365,35 +465,58 @@ func applyConfig(cfg *JsonConfig) {
 		// use old style Backups folder
 		ConfiguredBackupDir = filepath.Join("./saves/", SaveName, "Backup")
 	}
-	// use Safebackups folder either way.
-	ConfiguredSafeBackupDir = filepath.Join("./saves/", SaveName, "Safebackups")
+	// SSUI owns archived saves. The old saves/<world>/Safebackups folder is
+	// intentionally left alone when upgrading.
+	ConfiguredSafeBackupDir = filepath.Join(SSUIFolder, "savebackups", SaveName)
 
 	AdvertiserOverride = getString(cfg.AdvertiserOverride, "ADVERTISER_OVERRIDE", "")
-
-	safeSaveConfig()
+	connectivityCheckEnabledVal := getBool(cfg.ConnectivityCheckEnabled, "CONNECTIVITY_CHECK_ENABLED", true)
+	ConnectivityCheckEnabled = connectivityCheckEnabledVal
+	cfg.ConnectivityCheckEnabled = &connectivityCheckEnabledVal
 }
 
 // use safeSaveConfig EXCLUSIVELY though setter functions
 // M U S T be called while holding a lock on ConfigMu!
 func safeSaveConfig() error {
-	cfg := JsonConfig{
+	cfg := snapshotConfig()
+	return writeConfigFile(ConfigPath, &cfg)
+}
+
+// Snapshot returns the effective runtime configuration. It is useful for
+// readers that need a consistent view of more than one setting.
+func Snapshot() JsonConfig {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return snapshotConfig()
+}
+
+// snapshotConfig must be called while holding ConfigMu.
+func snapshotConfig() JsonConfig {
+	return JsonConfig{
 		DiscordToken:                             DiscordToken,
-		ControlChannelID:                         ControlChannelID,
+		DiscordAdminRoleID:                       DiscordAdminRoleID,
 		EventLogChannelID:                        EventLogChannelID,
 		StatusPanelChannelID:                     StatusPanelChannelID,
 		LogChannelID:                             LogChannelID,
-		ControlPanelChannelID:                    ControlPanelChannelID,
 		DiscordCharBufferSize:                    DiscordCharBufferSize,
 		BlackListFilePath:                        BlackListFilePath,
 		IsDiscordEnabled:                         &IsDiscordEnabled,
 		RotateServerPassword:                     &RotateServerPassword,
-		BackupKeepLastN:                          BackupKeepLastN,
-		IsCleanupEnabled:                         &IsCleanupEnabled,
-		BackupKeepDailyFor:                       int(BackupKeepDailyFor / time.Hour),    // Convert to hours
-		BackupKeepWeeklyFor:                      int(BackupKeepWeeklyFor / time.Hour),   // Convert to hours
-		BackupKeepMonthlyFor:                     int(BackupKeepMonthlyFor / time.Hour),  // Convert to hours
-		BackupCleanupInterval:                    int(BackupCleanupInterval / time.Hour), // Convert to hours
-		BackupWaitTime:                           int(BackupWaitTime / time.Second),      // Convert to seconds
+		DiscordRestartVoteEnabled:                &DiscordRestartVoteEnabled,
+		DiscordRestoreVoteEnabled:                &DiscordRestoreVoteEnabled,
+		DiscordVoteDurationMinutes:               intPointer(DiscordVoteDurationMinutes),
+		DiscordRestartVoteThreshold:              intPointer(DiscordRestartVoteThreshold),
+		DiscordRestartVoteMinimum:                intPointer(DiscordRestartVoteMinimum),
+		DiscordRestartVoteCooldownMinutes:        intPointer(DiscordRestartVoteCooldownMinutes),
+		DiscordRestoreVoteThreshold:              intPointer(DiscordRestoreVoteThreshold),
+		DiscordRestoreVoteMinimum:                intPointer(DiscordRestoreVoteMinimum),
+		DiscordRestoreVoteCooldownMinutes:        intPointer(DiscordRestoreVoteCooldownMinutes),
+		BackupRetentionEnabled:                   &BackupRetentionEnabled,
+		BackupKeepNewestCount:                    intPointer(BackupKeepNewestCount),
+		BackupDailyRetentionDays:                 intPointer(BackupDailyRetentionDays),
+		BackupWeeklyRetentionWeeks:               intPointer(BackupWeeklyRetentionWeeks),
+		BackupMonthlyRetentionMonths:             intPointer(BackupMonthlyRetentionMonths),
+		BackupCleanupIntervalHours:               intPointer(int(BackupCleanupInterval / time.Hour)),
 		IsNewTerrainAndSaveSystem:                &IsNewTerrainAndSaveSystem,
 		GameBranch:                               GameBranch,
 		Difficulty:                               Difficulty,
@@ -438,28 +561,46 @@ func safeSaveConfig() error {
 		IsStationeersLaunchPadEnabled:            &IsStationeersLaunchPadEnabled,
 		IsStationeersLaunchPadAutoUpdatesEnabled: &IsStationeersLaunchPadAutoUpdatesEnabled,
 		IsConsoleEnabled:                         &IsConsoleEnabled,
-		IsCLIDashboardEnabled:                    &IsCLIDashboardEnabled,
 		LanguageSetting:                          LanguageSetting,
 		AutoStartServerOnStartup:                 &AutoStartServerOnStartup,
 		SSUIIdentifier:                           SSUIIdentifier,
 		SSUIWebPort:                              SSUIWebPort,
 		AdvertiserOverride:                       AdvertiserOverride,
+		ConnectivityCheckEnabled:                 &ConnectivityCheckEnabled,
 		ShowExpertSettings:                       &ShowExpertSettings,
 	}
+}
 
-	file, err := os.Create(ConfigPath)
+// UpdateConfig changes and writes the persisted config while holding one lock.
+// The callback should only mutate fields it owns and may reject the update.
+func UpdateConfig(update func(*JsonConfig) error) (*JsonConfig, *JsonConfig, error) {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	current, err := readConfigFile(ConfigPath)
 	if err != nil {
-		return fmt.Errorf("error creating config.json: %v", err)
+		return nil, nil, err
 	}
-	defer file.Close()
-
-	encoder := json.NewEncoder(file)
-	encoder.SetIndent("", "  ")
-	if err := encoder.Encode(cfg); err != nil {
-		return fmt.Errorf("error encoding config.json: %v", err)
+	previous := cloneConfig(current)
+	if err := update(current); err != nil {
+		return nil, nil, err
 	}
+	if err := writeConfigFile(ConfigPath, current); err != nil {
+		return nil, nil, err
+	}
+	return previous, cloneConfig(current), nil
+}
 
-	return nil
+func cloneConfig(source *JsonConfig) *JsonConfig {
+	clone := *source
+	if source.Users != nil {
+		clone.Users = make(map[string]string, len(source.Users))
+		for name, password := range source.Users {
+			clone.Users[name] = password
+		}
+	}
+	clone.SubsystemFilters = append([]string(nil), source.SubsystemFilters...)
+	return &clone
 }
 
 // use SaveConfig EXCLUSIVELY though loader.SaveConfig to trigger a reload afterwards!
@@ -470,17 +611,45 @@ func SaveConfigToFile(cfg *JsonConfig) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	file, err := os.Create(ConfigPath)
-	if err != nil {
-		return fmt.Errorf("error creating config.json: %v", err)
-	}
-	defer file.Close()
+	return writeConfigFile(ConfigPath, cfg)
+}
 
+func writeConfigFile(path string, cfg *JsonConfig) error {
+	directory := filepath.Dir(path)
+	if err := os.MkdirAll(directory, 0700); err != nil {
+		return fmt.Errorf("create config directory: %w", err)
+	}
+	file, err := os.CreateTemp(directory, ".config-*.tmp")
+	if err != nil {
+		return fmt.Errorf("create temporary config file: %w", err)
+	}
+	temporary := file.Name()
+	defer os.Remove(temporary)
+
+	if err := file.Chmod(0600); err != nil {
+		file.Close()
+		return fmt.Errorf("set config file permissions: %w", err)
+	}
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
 	if err := encoder.Encode(cfg); err != nil {
-		return fmt.Errorf("error encoding config.json: %v", err)
+		file.Close()
+		return fmt.Errorf("encode config.json: %w", err)
+	}
+	if err := file.Sync(); err != nil {
+		file.Close()
+		return fmt.Errorf("flush config.json: %w", err)
+	}
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("close config.json: %w", err)
+	}
+	if err := replaceConfigFile(temporary, path); err != nil {
+		return fmt.Errorf("replace config.json: %w", err)
 	}
 
+	if dir, err := os.Open(directory); err == nil {
+		_ = dir.Sync()
+		_ = dir.Close()
+	}
 	return nil
 }

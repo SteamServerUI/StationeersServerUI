@@ -7,9 +7,9 @@ import (
 	"net/http/pprof"
 	"sync"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/security"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/core/security"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
 )
 
 type webServerLogger struct{}
@@ -23,10 +23,7 @@ func (cl *webServerLogger) Write(p []byte) (n int, err error) {
 func StartWebServer(wg *sync.WaitGroup) {
 
 	logger.Web.Info("Starting API services...")
-	mux, protectedMux := SetupRoutes()
-
-	// Apply middleware only to protected routes
-	mux.Handle("/", AuthMiddleware(protectedMux)) // Wrap protected routes under root
+	mux := SetupRoutes()
 
 	httpLogger := log.New(&webServerLogger{}, "", 0)
 	// Start HTTP server

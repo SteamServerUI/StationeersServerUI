@@ -1,0 +1,434 @@
+@import '/static/css/variables.css';
+
+header {
+    width: 100%;
+    text-align: center;
+    padding: 30px 0 0 0;
+    position: relative;
+    isolation: isolate; /* Better stacking context */
+  }
+  
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-size: 20px 20px;
+    background-position: center center;
+    z-index: 0;
+  }
+  
+  #space-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at bottom, color-mix(in srgb, var(--bg-dark) 70%, var(--bg-panel)) 0%, var(--bg-dark) 100%);
+    z-index: 0;
+    will-change: transform;
+    overflow: hidden;
+  }
+
+  #panorama-background {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 1;
+    transition: opacity 220ms ease;
+  }
+
+  #space-background.background-switching #panorama-background {
+    opacity: 0;
+  }
+
+  /* Old main.js versions changed these values inline. Keep cached v5 code from
+     hiding the v6 background after an update. */
+  body:not(.background-disabled) #space-background {
+    display: block !important;
+    opacity: 1 !important;
+  }
+
+  body.background-planets #planet-container {
+    display: block !important;
+  }
+
+  body.background-panorama:not(.background-fallback) #space-background::before {
+    z-index: 1;
+    opacity: 0.75;
+    background:
+      linear-gradient(180deg, rgba(4, 6, 12, 0.28), rgba(4, 6, 12, 0.58)),
+      radial-gradient(ellipse at center, transparent 35%, rgba(2, 3, 8, 0.72) 100%);
+  }
+
+  body.background-panorama:not(.background-fallback) #space-background::after {
+    z-index: 2;
+    opacity: 0.14;
+    background-image:
+      radial-gradient(1px 1px at 12% 30%, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(1px 1px at 71% 63%, rgba(255, 255, 255, 0.65), transparent),
+      radial-gradient(1.5px 1.5px at 43% 82%, rgba(255, 255, 255, 0.55), transparent),
+      radial-gradient(1px 1px at 88% 16%, rgba(255, 255, 255, 0.7), transparent);
+    background-size: 620px 540px;
+    animation: panoramaDust 90s linear infinite;
+  }
+
+  body.background-celestial:not(.background-fallback) #space-background::before {
+    z-index: 1;
+    opacity: 1;
+    background: radial-gradient(ellipse at center, transparent 48%, rgba(0, 0, 0, 0.55) 100%);
+  }
+
+  body.background-celestial:not(.background-fallback) #space-background::after {
+    display: none;
+  }
+
+  body.background-celestial #planet-container,
+  body.background-panorama #planet-container,
+  body.background-disabled #planet-container {
+    display: none !important;
+  }
+
+  body.background-planets #panorama-background,
+  body.background-disabled #panorama-background {
+    display: none;
+  }
+
+  body.background-disabled #space-background {
+    display: none !important;
+  }
+
+  body.background-paused #space-background::after,
+  body.background-paused #space-background::before,
+  body.background-paused #space-background *,
+  body.background-paused #planet-container,
+  body.background-paused #planet-container * {
+    animation-play-state: paused !important;
+  }
+
+  @keyframes panoramaDust {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-80px, -45px, 0); }
+  }
+
+  .background-picker {
+    position: absolute;
+    top: 50px;
+    left: 10px;
+    z-index: 20;
+    display: grid;
+    width: min(330px, calc(100vw - 20px));
+    box-sizing: border-box;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--primary-dim);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--bg-dark) 94%, transparent);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45), 0 0 18px var(--primary-glow-soft);
+    text-align: left;
+    backdrop-filter: blur(12px);
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .background-picker[hidden] {
+    display: none;
+  }
+
+  .background-picker strong {
+    color: var(--primary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .background-picker-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px;
+    padding: 3px;
+    border: 1px solid var(--primary-dim);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  .background-picker-tabs button {
+    min-width: 0;
+    margin: 0;
+    padding: 8px 4px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    box-shadow: none;
+    color: var(--text-dim);
+    font: 0.72rem 'Share Tech Mono', monospace;
+    letter-spacing: 0.02em;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .background-picker-tabs button::before {
+    display: none;
+  }
+
+  .background-picker-tabs button:hover {
+    transform: none;
+    box-shadow: none;
+    background: var(--primary-glow-soft);
+    color: var(--text-bright);
+  }
+
+  .background-picker-tabs button.active {
+    background: var(--primary);
+    color: var(--bg-dark);
+  }
+
+  .background-switch {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: var(--text-bright);
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+
+  .background-switch input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .background-switch-track {
+    position: relative;
+    flex: none;
+    width: 36px;
+    height: 20px;
+    border: 1px solid var(--primary-dim);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.35);
+    transition: background 0.15s ease;
+  }
+
+  .background-switch-track::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .background-switch input:checked + .background-switch-track {
+    background: var(--primary-glow);
+    border-color: var(--primary);
+  }
+
+  .background-switch input:checked + .background-switch-track::after {
+    transform: translateX(16px);
+    background: var(--primary);
+  }
+
+  .background-switch input:focus-visible + .background-switch-track {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  .background-switch:has(input:disabled) {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  .background-picker-season {
+    display: grid;
+    gap: 6px;
+    padding-top: 12px;
+    border-top: 1px solid var(--primary-glow-soft);
+  }
+
+  .background-picker-season[hidden] {
+    display: none;
+  }
+
+  .background-picker-season small {
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    line-height: 1.4;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #panorama-background,
+    #space-background::after,
+    .orbit {
+      animation-play-state: paused !important;
+    }
+  }
+  
+  /* Stars Layer 1 - smaller and more scattered stars */
+  #space-background::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 1;
+    pointer-events: none;
+    background-image: 
+      radial-gradient(1px 1px at 17px 43px, var(--text-bright), transparent),
+      radial-gradient(1px 1px at 39px 157px, var(--text-header), transparent),
+      radial-gradient(1px 1px at 73px 91px, var(--text-header), transparent),
+      radial-gradient(1px 1px at 109px 134px, var(--text-bright), transparent),
+      radial-gradient(1px 1px at 143px 27px, var(--text-bright), transparent),
+      radial-gradient(1px 1px at 53px 79px, var(--text-header), transparent),
+      radial-gradient(1px 1px at 85px 123px, var(--text-bright), transparent),
+      radial-gradient(1px 1px at 174px 36px, var(--text-header), transparent),
+      radial-gradient(1px 1px at 102px 64px, var(--text-bright), transparent),
+      radial-gradient(1px 1px at 127px 187px, var(--text-header), transparent);
+    background-size: 250px 250px;
+    opacity: 0.4;
+  }
+  
+  /* Stars Layer 2 - larger and brighter stars with different pattern */
+  #space-background::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 2;
+    pointer-events: none;
+    background-image: 
+      radial-gradient(2px 2px at 43px 267px, var(--text-header), transparent),
+      radial-gradient(2px 2px at 167px 312px, var(--text-bright), transparent),
+      radial-gradient(2px 2px at 213px 117px, var(--text-header), transparent),
+      radial-gradient(2px 2px at 81px 209px, var(--text-bright), transparent),
+      radial-gradient(2px 2px at 239px 349px, var(--text-header), transparent),
+      radial-gradient(2px 2px at 124px 281px, var(--text-bright), transparent),
+      radial-gradient(2px 2px at 198px 153px, var(--text-header), transparent),
+      radial-gradient(2px 2px at 56px 379px, var(--text-bright), transparent),
+      radial-gradient(1.5px 1.5px at 297px 246px, var(--text-header), transparent),
+      radial-gradient(1.5px 1.5px at 147px 133px, var(--text-bright), transparent);
+    background-size: 400px 400px;
+    opacity: 0.5;
+    animation: stars 120s linear infinite;
+  }
+  
+  /* Nebula Element - overlaid on the stars layer */
+  #space-background::before {
+    background: 
+      radial-gradient(1px 1px at 17px 43px, var(--text-bright), transparent),
+      radial-gradient(1px 1px at 39px 157px, var(--text-header), transparent),
+      radial-gradient(1px 1px at 73px 91px, var(--text-header), transparent),
+      radial-gradient(1px 1px at 109px 134px, var(--text-bright), transparent),
+      radial-gradient(1px 1px at 143px 27px, var(--text-bright), transparent),
+      radial-gradient(1px 1px at 53px 79px, var(--text-header), transparent),
+      radial-gradient(1px 1px at 85px 123px, var(--text-bright), transparent),
+      radial-gradient(1px 1px at 174px 36px, var(--text-header), transparent),
+      radial-gradient(1px 1px at 102px 64px, var(--text-bright), transparent),
+      radial-gradient(1px 1px at 127px 187px, var(--text-header), transparent),
+      radial-gradient(700px 500px at 65% 75%, var(--primary-glow), transparent),
+      radial-gradient(500px 400px at 20% 25%, color-mix(in srgb, var(--accent) 15%, transparent), transparent);
+    background-size: 250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                     250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                     100% 100%, 100% 100%;
+    
+  }
+  
+  /* Animation for stars */
+  @keyframes stars {
+    0% {
+      background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0;
+    }
+    100% {
+      background-position: 250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                           250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                           0 0, 0 0;
+    }
+  }
+  
+  /* Animation for nebula */
+  @keyframes nebulaPulse {
+    0% {
+      opacity: 0.3;
+      background-size: 250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                       250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                       100% 100%, 100% 100%;
+    }
+    50% {
+      opacity: 0.4;
+      background-size: 250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                       250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                       110% 110%, 105% 105%;
+    }
+    100% {
+      opacity: 0.5;
+      background-size: 250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                       250px 250px, 250px 250px, 250px 250px, 250px 250px, 250px 250px, 
+                       100% 100%, 100% 100%;
+    }
+  }
+  
+  
+  #planet-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden; /* Prevents any overflow issues */
+  }
+  
+  @keyframes orbit {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+  
+  @keyframes stars {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-2000px); }
+  }
+  
+  .orbit {
+    transform-origin: center center;
+  }
+  
+  .planet {
+    transform: translateY(-50%);
+    will-change: transform;
+  }
+  
+  #banner {
+    width: 60%;
+    max-width: 500px;
+    border-radius: 12px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 20px var(--button-glow), 0 0 20px var(--button-glow-soft);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+    will-change: transform, box-shadow;
+  }
+  
+  #banner:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 40px var(--button-glow), 0 0 20px var(--button-glow-soft);
+  }
+
+header:has(.background-picker:not([hidden])) {
+  position: relative;
+  z-index: 30;
+}

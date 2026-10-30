@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/localization"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/core/security"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/localization"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
 )
 
 func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +60,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 		Steps                    []Step
 	}
 
-	twoboxformAssetsFS, err := fs.Sub(config.GetV1UIFS(), "UIMod/onboard_bundled/twoboxform")
+	twoboxformAssetsFS, err := fs.Sub(config.GetV1UIFS(), "SSUI/onboard_bundled/twoboxform")
 	if err != nil {
 		logger.Web.Error("Failed to get bundled FS")
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -97,13 +98,14 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if config.GetIsNewTerrainAndSaveSystem() {
-		worldOptions = []struct{ Display, Value string }{
-			{Display: "Lunar", Value: "Lunar"},
-			{Display: "Vulcan", Value: "Vulcan2"},
-			{Display: "Venus", Value: "Venus"},
-			{Display: "Mars", Value: "Mars2"},
-			{Display: "Europa", Value: "Europa3"},
-			{Display: "Mimas Herschel", Value: "MimasHerschel"}}
+		catalog := loadWorldGenerationCatalog()
+		worldOptions = make([]struct{ Display, Value string }, 0, len(catalog.Worlds))
+		for _, world := range catalog.Worlds {
+			worldOptions = append(worldOptions, struct{ Display, Value string }{
+				Display: world.Label,
+				Value:   world.ID,
+			})
+		}
 	}
 
 	// Define all steps in a map for easy access and modification
@@ -327,7 +329,7 @@ func ServeTwoBoxFormTemplate(w http.ResponseWriter, r *http.Request) {
 
 	switch {
 
-	case path == "/login" && !config.GetAuthEnabled():
+	case path == "/login" && security.SetupRequired():
 		http.Redirect(w, r, "/setup", http.StatusSeeOther)
 		return
 

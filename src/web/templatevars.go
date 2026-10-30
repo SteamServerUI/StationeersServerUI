@@ -2,72 +2,138 @@ package web
 
 // TemplateData holds data to be passed to templates
 type IndexTemplateData struct {
-	UIText_UpdateAvailable         string
-	UIText_UpdateLater             string
-	UIText_UpdateNow               string
-	UIText_UpdateInstalling        string
-	UIText_UpdateFailed            string
-	UIText_UpdateDescription       string
-	UIText_MajorUpdateTitle        string
-	UIText_MajorUpdateWarning      string
-	UIText_MajorUpdateConfirm      string
-	UIText_UpdateReleaseNotes      string
-	UIText_UpdateRetry             string
-	Version                        string
-	Branch                         string
-	SSUIIdentifier                 string
-	UIText_StartButton             string
-	UIText_StopButton              string
-	UIText_Settings                string
-	UIText_Update_SteamCMD         string
-	UIText_Console                 string
-	UIText_Detection_Events        string
-	UIText_Backend_Log             string
-	UIText_Backup_Manager          string
-	UIText_Connected_PlayersHeader string
-	UIText_GameServer              string
-	UIText_Uptime                  string
-	UIText_PlayersOnline           string
-	UIText_LatestBackup            string
-	UIText_ServerOutput            string
-	UIText_ServerActivity          string
-	UIText_StreamConnected         string
-	UIText_StreamConnecting        string
-	UIText_StreamReconnecting      string
-	UIText_StreamPaused            string
-	UIText_Pause                   string
-	UIText_Resume                  string
-	UIText_Clear                   string
-	UIText_NoPlayers               string
-	UIText_PlayersUnavailable      string
-	UIText_RecentBackups           string
-	UIText_BackupHistory           string
-	UIText_ViewAllBackups          string
-	UIText_ShowRecentBackups       string
-	UIText_Refresh                 string
-	UIText_Close                   string
-	UIText_StateUncertain          string
-	UIText_StateStopped            string
-	UIText_StateStarting           string
-	UIText_StateLoadingMap         string
-	UIText_StateHostingSession     string
-	UIText_StateRunning            string
-	UIText_StateStopping           string
-	UIText_Discord_Info            string
-	UIText_API_Info                string
-	UIText_Copyright1              string
-	UIText_Copyright2              string
+	Permissions                            string
+	UIText_UpdateAvailable                 string
+	UIText_UpdateLater                     string
+	UIText_UpdateNow                       string
+	UIText_UpdateInstalling                string
+	UIText_UpdateFailed                    string
+	UIText_UpdateTitle                     string
+	UIText_UpdateVersion                   string
+	UIText_UpdateReleaseNotes              string
+	UIText_UpdateContainerTitle            string
+	UIText_UpdateContainerInfo             string
+	UIText_UpdateMajorTitle                string
+	UIText_UpdateMajorInfo                 string
+	UIText_UpdateMajorConfirm              string
+	UIText_UpdatePrereleaseTitle           string
+	UIText_UpdatePrereleaseInfo            string
+	UIText_UpdatePrereleaseConfirm         string
+	UIText_UpdateTryAgain                  string
+	UIText_UpdateBadgeMajor                string
+	UIText_UpdateBadgePrerelease           string
+	UIText_UpdateBadgeStable               string
+	UIText_UpdateSummary                   string
+	UIText_UpdateSummaryContainer          string
+	UIText_UpdateNoneAvailable             string
+	UIText_UpdateManagedByDocker           string
+	UIText_UpdateInstallingVersion         string
+	Version                                string
+	Branch                                 string
+	SSUIIdentifier                         string
+	UIText_StartButton                     string
+	UIText_StopButton                      string
+	UIText_Settings                        string
+	UIText_Update_SteamCMD                 string
+	UIText_Console                         string
+	UIText_Detection_Events                string
+	UIText_Backend_Log                     string
+	UIText_Backup_Manager                  string
+	UIText_Connected_PlayersHeader         string
+	UIText_GameServer                      string
+	UIText_Uptime                          string
+	UIText_PlayersOnline                   string
+	UIText_LatestBackup                    string
+	UIText_ServerOutput                    string
+	UIText_ServerActivity                  string
+	UIText_StreamConnected                 string
+	UIText_StreamConnecting                string
+	UIText_StreamReconnecting              string
+	UIText_StreamPaused                    string
+	UIText_Pause                           string
+	UIText_Resume                          string
+	UIText_Clear                           string
+	UIText_NoPlayers                       string
+	UIText_PlayersUnavailable              string
+	UIText_RecentBackups                   string
+	UIText_BackupHistory                   string
+	UIText_BackupCreated                   string
+	UIText_BackupDaysPlayed                string
+	UIText_BackupThings                    string
+	UIText_BackupAtmospheres               string
+	UIText_BackupRooms                     string
+	UIText_BackupPipeNetworks              string
+	UIText_BackupCableNetworks             string
+	UIText_BackupPlayers                   string
+	UIText_BackupPlayersAlive              string
+	UIText_BackupPlayersUnconscious        string
+	UIText_BackupFurnaces                  string
+	UIText_BackupDestroyedFurnaces         string
+	UIText_BackupExpand                    string
+	UIText_BackupCollapse                  string
+	UIText_BackupAnalysisLoading           string
+	UIText_BackupAnalysisFailed            string
+	UIText_BackupRetry                     string
+	UIText_BackupWorld                     string
+	UIText_BackupGameVersion               string
+	UIText_BackupArchiveSize               string
+	UIText_ViewAllBackups                  string
+	UIText_ShowRecentBackups               string
+	UIText_Refresh                         string
+	UIText_Close                           string
+	UIText_StateUncertain                  string
+	UIText_StateStopped                    string
+	UIText_StateStarting                   string
+	UIText_StateLoadingMap                 string
+	UIText_StateHostingSession             string
+	UIText_StateRunning                    string
+	UIText_StateStopping                   string
+	UIText_ConnectivityNotice              string
+	UIText_ConnectivityAllCrisp            string
+	UIText_ConnectivityChecking            string
+	UIText_ConnectivityReachable           string
+	UIText_ConnectivityPartial             string
+	UIText_ConnectivityUnreachable         string
+	UIText_ConnectivityBindFailed          string
+	UIText_ConnectivityConfigError         string
+	UIText_ConnectivityServiceError        string
+	UIText_ConnectivityDefault             string
+	UIText_ConnectivityMessageChecking     string
+	UIText_ConnectivityMessageReachable    string
+	UIText_ConnectivityMessagePartial      string
+	UIText_ConnectivityMessageUnreachable  string
+	UIText_ConnectivityMessageBindFailed   string
+	UIText_ConnectivityMessageConfigError  string
+	UIText_ConnectivityMessageServiceError string
+	UIText_ConnectivityRetry               string
+	UIText_ConnectivityDismiss             string
+	UIText_ConnectivityReceived            string
+	UIText_ConnectivityLost                string
+	UIText_ConnectivityBytes               string
+	UIText_ConnectivityPermission          string
+	UIText_ConnectivityFooterPrefix        string
+	UIText_ConnectivityFooterLink          string
+	UIText_ConnectivityFooterSuffix        string
+	UIText_Discord_Info                    string
+	UIText_API_Info                        string
+	UIText_Copyright1                      string
+	UIText_Copyright2                      string
 }
 
 // ConfigTemplateData holds data for the config page template
 type ConfigTemplateData struct {
+	Permissions         string
+	CanViewSettings     bool
+	CanManageSettings   bool
+	CanManageSLP        bool
+	CanManageDetections bool
+
 	// Config values
 	DiscordToken                            string
-	ControlChannelID                        string
+	DiscordAdminRoleID                      string
 	EventLogChannelID                       string
 	StatusPanelChannelID                    string
 	LogChannelID                            string
-	ControlPanelChannelID                   string
 	BlackListFilePath                       string
 	IsDiscordEnabled                        string
 	IsDiscordEnabledTrueSelected            string
@@ -75,6 +141,17 @@ type ConfigTemplateData struct {
 	RotateServerPassword                    string
 	RotateServerPasswordTrueSelected        string
 	RotateServerPasswordFalseSelected       string
+	DiscordRestartVoteEnabledTrueSelected   string
+	DiscordRestartVoteEnabledFalseSelected  string
+	DiscordRestoreVoteEnabledTrueSelected   string
+	DiscordRestoreVoteEnabledFalseSelected  string
+	DiscordVoteDurationMinutes              string
+	DiscordRestartVoteThreshold             string
+	DiscordRestartVoteMinimum               string
+	DiscordRestartVoteCooldownMinutes       string
+	DiscordRestoreVoteThreshold             string
+	DiscordRestoreVoteMinimum               string
+	DiscordRestoreVoteCooldownMinutes       string
 	GameBranch                              string
 	Difficulty                              string
 	StartCondition                          string
@@ -118,6 +195,9 @@ type ConfigTemplateData struct {
 	AutoStartServerOnStartup                string
 	AutoStartServerOnStartupTrueSelected    string
 	AutoStartServerOnStartupFalseSelected   string
+	ConnectivityCheckEnabled                string
+	ConnectivityCheckEnabledTrueSelected    string
+	ConnectivityCheckEnabledFalseSelected   string
 	AllowAutoGameServerUpdates              string
 	AllowAutoGameServerUpdatesTrueSelected  string
 	AllowAutoGameServerUpdatesFalseSelected string
@@ -128,20 +208,47 @@ type ConfigTemplateData struct {
 	CreateGameServerLogFileTrueSelected     string
 	CreateGameServerLogFileFalseSelected    string
 
-	UIText_ConfigHeadline       string
-	UIText_ServerConfig         string
-	UIText_BackToDashboard      string
-	UIText_DiscordIntegration   string
-	UIText_SLPModIntegration    string
-	UIText_DetectionManager     string
-	UIText_ConfigurationWizard  string
-	UIText_PleaseSelectSection  string
-	UIText_UseWizardAlternative string
-	UIText_BasicSettings        string
-	UIText_NetworkSettings      string
-	UIText_AdvancedSettings     string
-	UIText_TerrainSettings      string
-	UIText_BasicServerSettings  string
+	UIText_ConfigHeadline            string
+	UIText_ServerConfig              string
+	UIText_BackToDashboard           string
+	UIText_DiscordIntegration        string
+	UIText_SLPModIntegration         string
+	UIText_DetectionManager          string
+	UIText_ConfigurationWizard       string
+	UIText_PleaseSelectSection       string
+	UIText_UseWizardAlternative      string
+	UIText_BasicSettings             string
+	UIText_NetworkSettings           string
+	UIText_AdvancedSettings          string
+	UIText_TerrainSettings           string
+	UIText_ConfigSaving              string
+	UIText_ConfigSaveSuccess         string
+	UIText_ConfigSaveFailed          string
+	UIText_SaveConfiguration         string
+	UIText_BackupRetention           string
+	UIText_BackupRetentionTitle      string
+	UIText_BackupRetentionIntro      string
+	UIText_BackupCleanupEnabled      string
+	UIText_BackupCleanupInfo         string
+	UIText_BackupKeepNewest          string
+	UIText_BackupKeepNewestInfo      string
+	UIText_BackupKeepDaily           string
+	UIText_BackupKeepDailyInfo       string
+	UIText_BackupKeepWeekly          string
+	UIText_BackupKeepWeeklyInfo      string
+	UIText_BackupKeepMonthly         string
+	UIText_BackupKeepMonthlyInfo     string
+	UIText_BackupCleanupInterval     string
+	UIText_BackupCleanupIntervalInfo string
+	UIText_BackupHours               string
+	UIText_BackupDays                string
+	UIText_BackupWeeks               string
+	UIText_BackupMonths              string
+	UIText_BackupFiles               string
+	UIText_BackupWarningTitle        string
+	UIText_BackupWarning             string
+	UIText_BackupCopyDelayInfo       string
+	UIText_BasicServerSettings       string
 
 	UIText_ServerName                     string
 	UIText_ServerNameInfo                 string
@@ -187,6 +294,28 @@ type ConfigTemplateData struct {
 	UIText_AdvertiserDNS                  string
 	UIText_AdvertiserAddress              string
 	UIText_AdvertiserRestartWarning       string
+	UIText_AdvertiserKicker               string
+	UIText_AdvertiserRestartRequired      string
+	UIText_DebugMode                      string
+	UIText_DebugModeInfo                  string
+	UIText_LogLevel                       string
+	UIText_LogLevelInfo                   string
+	UIText_LogClutterToConsole            string
+	UIText_LogClutterToConsoleInfo        string
+	UIText_SSUIWebPort                    string
+	UIText_SSUIWebPortInfo                string
+	UIText_ConsoleEnabled                 string
+	UIText_ConsoleEnabledInfo             string
+	UIText_SSCMEnabled                    string
+	UIText_SSCMEnabledInfo                string
+	UIText_UpdateEnabled                  string
+	UIText_UpdateEnabledInfo              string
+	UIText_AllowPrereleaseUpdates         string
+	UIText_AllowPrereleaseUpdatesInfo     string
+	UIText_AllowMajorUpdates              string
+	UIText_AllowMajorUpdatesInfo          string
+	UIText_SLPAutoUpdates                 string
+	UIText_SLPAutoUpdatesInfo             string
 	UIText_AdvertiserSaveRestart          string
 	UIText_AdvertiserRestarting           string
 	UIText_Cancel                         string
@@ -212,6 +341,8 @@ type ConfigTemplateData struct {
 	UIText_AdditionalParamsInfo           string
 	UIText_ShowExpertSettings             string
 	UIText_ShowExpertSettingsInfo         string
+	UIText_ExpertSettings                 string
+	UIText_ExpertSettingsWarning          string
 	UIText_AutoRestartServerTimer         string
 	UIText_AutoRestartServerTimerInfo     string
 	UIText_AutoRestartCountdown           string
@@ -231,6 +362,8 @@ type ConfigTemplateData struct {
 	UIText_TerrainSettingsFillHint        string
 	UIText_AutoStartServerOnStartup       string
 	UIText_AutoStartServerOnStartupInfo   string
+	UIText_ConnectivityCheck              string
+	UIText_ConnectivityCheckInfo          string
 	UIText_AllowAutoGameServerUpdates     string
 	UIText_AllowAutoGameServerUpdatesInfo string
 	UIText_CreateSSUILogFile              string
@@ -242,10 +375,8 @@ type ConfigTemplateData struct {
 	UIText_DiscordBotToken            string
 	UIText_DiscordBotTokenInfo        string
 	UIText_ChannelConfiguration       string
-	UIText_AdminCommandChannel        string
-	UIText_AdminCommandChannelInfo    string
-	UIText_ControlPanelChannel        string
-	UIText_ControlPanelChannelInfo    string
+	UIText_DiscordAdminRole           string
+	UIText_DiscordAdminRoleInfo       string
 	UIText_RotateServerPassword       string
 	UIText_RotateServerPasswordInfo   string
 	UIText_EventLogChannel            string
@@ -263,6 +394,14 @@ type ConfigTemplateData struct {
 	UIText_DiscordBenefit4            string
 	UIText_DiscordBenefit5            string
 	UIText_DiscordSetupInstructions   string
+	UIText_DiscordVotingTitle         string
+	UIText_DiscordVotingInfo          string
+	UIText_DiscordRestartVoteEnabled  string
+	UIText_DiscordRestoreVoteEnabled  string
+	UIText_DiscordVoteDuration        string
+	UIText_DiscordVoteThreshold       string
+	UIText_DiscordVoteMinimum         string
+	UIText_DiscordVoteCooldown        string
 
 	UIText_Copyright        string
 	UIText_CopyrightConfig1 string
@@ -287,6 +426,246 @@ type ConfigTemplateData struct {
 	UIText_SLP_UpdateWorkshopModsDesc string
 	UIText_SLP_UpdateButton           string
 	UIText_SLP_InstalledMods          string
+
+	UIText_DM_Intro                  string
+	UIText_DM_Routines               string
+	UIText_DM_NoRoutines             string
+	UIText_DM_NewRoutine             string
+	UIText_DM_Name                   string
+	UIText_DM_NamePlaceholder        string
+	UIText_DM_When                   string
+	UIText_DM_Then                   string
+	UIText_DM_ModeKeyword            string
+	UIText_DM_ModeRegex              string
+	UIText_DM_ModeEvent              string
+	UIText_DM_KeywordPlaceholder     string
+	UIText_DM_EventPlayerReady       string
+	UIText_DM_EventPlayerConnecting  string
+	UIText_DM_EventPlayerDisconnect  string
+	UIText_DM_EventWorldSaved        string
+	UIText_DM_EventSessionRegistered string
+	UIText_DM_EventServerRunning     string
+	UIText_DM_EventException         string
+	UIText_DM_EventSettingsChanged   string
+	UIText_DM_EventNewGameStarted    string
+	UIText_DM_HintKeyword            string
+	UIText_DM_HintRegex              string
+	UIText_DM_HintEvent              string
+	UIText_DM_AddAction              string
+	UIText_DM_Cooldown               string
+	UIText_DM_CooldownHint           string
+	UIText_DM_SaveRoutine            string
+	UIText_DM_NoPermission           string
+	UIText_DM_GroupMessages          string
+	UIText_DM_GroupInGame            string
+	UIText_DM_GroupFlow              string
+	UIText_DM_GroupServer            string
+	UIText_DM_ActionEventlog         string
+	UIText_DM_ActionDiscordHub       string
+	UIText_DM_ActionAnnounce         string
+	UIText_DM_ActionCommand          string
+	UIText_DM_ActionSave             string
+	UIText_DM_ActionWait             string
+	UIText_DM_ActionWebhook          string
+	UIText_DM_ActionRestart          string
+	UIText_DM_ActionStop             string
+	UIText_DM_ActionStart            string
+	UIText_DM_ActionRestore          string
+	UIText_DM_PlaceholderEventlog    string
+	UIText_DM_PlaceholderDiscord     string
+	UIText_DM_PlaceholderAnnounce    string
+	UIText_DM_WebhookMessage         string
+	UIText_DM_Seconds                string
+	UIText_DM_NoSettings             string
+	UIText_DM_MoveUp                 string
+	UIText_DM_MoveDown               string
+	UIText_DM_Remove                 string
+	UIText_DM_Delete                 string
+	UIText_DM_Untitled               string
+	UIText_DM_CooldownMeta           string
+	UIText_DM_WaitSummary            string
+	UIText_DM_BadgeKeyword           string
+	UIText_DM_BadgeRegex             string
+	UIText_DM_BadgeEvent             string
+
+	UIText_WS_Kicker              string
+	UIText_WS_Title               string
+	UIText_WS_Description         string
+	UIText_WS_Info                string
+	UIText_WS_Install             string
+	UIText_SUP_Title              string
+	UIText_SUP_DownloadPackage    string
+	UIText_SUP_StartRecording     string
+	UIText_SUP_StopRecording      string
+	UIText_SUP_RecordingFull      string
+	UIText_SUP_DownloadRecording  string
+	UIText_SUP_PackageInfo        string
+	UIText_SUP_Running            string
+	UIText_SUP_AllGood            string
+	UIText_SUP_Intro              string
+	UIText_SUP_PackageTitle       string
+	UIText_SUP_Refresh            string
+	UIText_SUP_LinkTitle          string
+	UIText_SUP_LinkInfo           string
+	UIText_SUP_LinkDuration       string
+	UIText_SUP_Link30             string
+	UIText_SUP_Link60             string
+	UIText_SUP_Link120            string
+	UIText_SUP_LinkOpen           string
+	UIText_SUP_LinkClose          string
+	UIText_SUP_LinkCode           string
+	UIText_SUP_LinkCopy           string
+	UIText_SUP_LinkWaiting        string
+	UIText_SUP_LinkClaimed        string
+	UIText_SUP_LinkOffline        string
+	UIText_SUP_LinkExpires        string
+	UIText_SUP_LinkActivity       string
+	UIText_SUP_LinkNoActivity     string
+	UIText_AC_Tab                 string
+	UIText_AC_Kicker              string
+	UIText_AC_Intro               string
+	UIText_AC_LoadingAccount      string
+	UIText_AC_NavAccount          string
+	UIText_AC_NavPeople           string
+	UIText_AC_NavGroups           string
+	UIText_AC_NavAPI              string
+	UIText_AC_AccountKicker       string
+	UIText_AC_ChangeMyPassword    string
+	UIText_AC_ChangePasswordInfo  string
+	UIText_AC_CurrentPassword     string
+	UIText_AC_NewPassword         string
+	UIText_AC_RepeatPassword      string
+	UIText_AC_ChangePassword      string
+	UIText_AC_DevicesKicker       string
+	UIText_AC_Sessions            string
+	UIText_AC_LoadingSessions     string
+	UIText_AC_NoUsersPermission   string
+	UIText_AC_NewAccountKicker    string
+	UIText_AC_AddUser             string
+	UIText_AC_Username            string
+	UIText_AC_TempPassword        string
+	UIText_AC_AccessGroup         string
+	UIText_AC_NoAccessGroup       string
+	UIText_AC_AccountsKicker      string
+	UIText_AC_Users               string
+	UIText_AC_LoadingUsers        string
+	UIText_AC_NoGroupsPermission  string
+	UIText_AC_RolesKicker         string
+	UIText_AC_Group               string
+	UIText_AC_CreateGroup         string
+	UIText_AC_Preset              string
+	UIText_AC_PresetCustom        string
+	UIText_AC_PresetViewer        string
+	UIText_AC_PresetOperator      string
+	UIText_AC_PresetBackups       string
+	UIText_AC_PresetAdministrator string
+	UIText_AC_Name                string
+	UIText_AC_Description         string
+	UIText_AC_FineTuneKicker      string
+	UIText_AC_Permissions         string
+	UIText_AC_ClearAll            string
+	UIText_AC_SaveGroup           string
+	UIText_AC_DeleteGroup         string
+	UIText_AC_NoTokensPermission  string
+	UIText_AC_TokensKicker        string
+	UIText_AC_CreateTokenTitle    string
+	UIText_AC_TokenInfo           string
+	UIText_AC_Expires             string
+	UIText_AC_Days30              string
+	UIText_AC_Days90              string
+	UIText_AC_Year1               string
+	UIText_AC_Never               string
+	UIText_AC_CreateToken         string
+	UIText_AC_CopyTokenNow        string
+	UIText_AC_Copy                string
+	UIText_AC_IssuedKicker        string
+	UIText_AC_ApiTokens           string
+	UIText_AC_LoadingTokens       string
+	UIText_AC_NoSessions          string
+	UIText_AC_ThisSession         string
+	UIText_AC_LastUsed            string
+	UIText_AC_SignOut             string
+	UIText_AC_Unknown             string
+	UIText_AC_SystemGroup         string
+	UIText_AC_Enabled             string
+	UIText_AC_Disabled            string
+	UIText_AC_Manage              string
+	UIText_AC_Close               string
+	UIText_AC_Status              string
+	UIText_AC_AccountEnabled      string
+	UIText_AC_AccountEnabledInfo  string
+	UIText_AC_ResetPassword       string
+	UIText_AC_KeepPassword        string
+	UIText_AC_SaveUser            string
+	UIText_AC_DeleteUser          string
+	UIText_AC_GroupLocked         string
+	UIText_AC_NoGrantableGroups   string
+	UIText_AC_ExpiresOn           string
+	UIText_AC_NeverExpires        string
+	UIText_AC_Revoke              string
+	UIText_AC_NoTokens            string
+	UIText_TH_Tab                 string
+	UIText_TH_Presets             string
+	UIText_TH_GroupCoreColors     string
+	UIText_TH_GroupTextColors     string
+	UIText_TH_GroupSurfaces       string
+	UIText_TH_GroupControlPanel   string
+	UIText_TH_GroupConsoleColors  string
+	UIText_TH_LivePreview         string
+	UIText_TH_Actions             string
+	UIText_TH_SaveTheme           string
+	UIText_TH_ResetDefaults       string
+	UIText_TH_ExportTheme         string
+	UIText_TH_ImportTheme         string
+	UIText_TH_ImportPlaceholder   string
+	UIText_TH_ApplyImport         string
+	UIText_TH_Cancel              string
+	UIText_TH_CopyClipboard       string
+	UIText_TH_Close               string
+	UIText_TH_PrimaryLabel        string
+	UIText_TH_PrimaryDesc         string
+	UIText_TH_BgDarkLabel         string
+	UIText_TH_BgDarkDesc          string
+	UIText_TH_BgPanelLabel        string
+	UIText_TH_BgPanelDesc         string
+	UIText_TH_AccentLabel         string
+	UIText_TH_AccentDesc          string
+	UIText_TH_DangerLabel         string
+	UIText_TH_DangerDesc          string
+	UIText_TH_SuccessLabel        string
+	UIText_TH_SuccessDesc         string
+	UIText_TH_WarningLabel        string
+	UIText_TH_WarningDesc         string
+	UIText_TH_TextHeaderLabel     string
+	UIText_TH_TextHeaderDesc      string
+	UIText_TH_TextBrightLabel     string
+	UIText_TH_TextBrightDesc      string
+	UIText_TH_TextDimLabel        string
+	UIText_TH_TextDimDesc         string
+	UIText_TH_TextMutedLabel      string
+	UIText_TH_TextMutedDesc       string
+	UIText_TH_SurfaceDarkLabel    string
+	UIText_TH_SurfaceDarkDesc     string
+	UIText_TH_SurfaceHoverLabel   string
+	UIText_TH_SurfaceHoverDesc    string
+	UIText_TH_SurfaceOverlayLabel string
+	UIText_TH_SurfaceOverlayDesc  string
+	UIText_TH_PanelFrameLabel     string
+	UIText_TH_PanelFrameDesc      string
+	UIText_TH_PanelSurfaceLabel   string
+	UIText_TH_PanelSurfaceDesc    string
+	UIText_TH_PanelInsetLabel     string
+	UIText_TH_PanelInsetDesc      string
+	UIText_TH_PanelLampLabel      string
+	UIText_TH_PanelLampDesc       string
+	UIText_TH_ConsoleInfoLabel    string
+	UIText_TH_ConsoleInfoDesc     string
+	UIText_TH_ConsoleWarningLabel string
+	UIText_TH_ConsoleWarningDesc  string
+	UIText_TH_ConsoleErrorLabel   string
+	UIText_TH_ConsoleErrorDesc    string
+	UIText_TH_ConsoleSuccessLabel string
+	UIText_TH_ConsoleSuccessDesc  string
 
 	IsStationeersLaunchPadEnabled string
 
@@ -319,20 +698,15 @@ type ConfigTemplateData struct {
 	AllowMajorUpdates                                     string
 	AllowMajorUpdatesTrueSelected                         string
 	AllowMajorUpdatesFalseSelected                        string
-	AuthEnabled                                           string
-	AuthEnabledTrueSelected                               string
-	AuthEnabledFalseSelected                              string
-	AuthTokenLifetime                                     string
 	DiscordCharBufferSize                                 string
-	BackupKeepLastN                                       string
-	IsCleanupEnabled                                      string
-	IsCleanupEnabledTrueSelected                          string
-	IsCleanupEnabledFalseSelected                         string
-	BackupKeepDailyFor                                    string
-	BackupKeepWeeklyFor                                   string
-	BackupKeepMonthlyFor                                  string
-	BackupCleanupInterval                                 string
-	BackupWaitTime                                        string
+	BackupKeepNewestCount                                 string
+	BackupRetentionEnabled                                string
+	BackupRetentionEnabledTrueSelected                    string
+	BackupRetentionEnabledFalseSelected                   string
+	BackupDailyRetentionDays                              string
+	BackupWeeklyRetentionWeeks                            string
+	BackupMonthlyRetentionMonths                          string
+	BackupCleanupIntervalHours                            string
 	AdvertiserOverride                                    string
 	IsStationeersLaunchPadAutoUpdatesEnabled              string
 	IsStationeersLaunchPadAutoUpdatesEnabledTrueSelected  string

@@ -3,21 +3,29 @@ package loader
 import (
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/managers/gamemgr"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/connectivity"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/diagnostics"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/managers/gamemgr"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/setup"
 )
 
 func AfterStartComplete() {
 	config.SetSaveConfig() // Save config after startup through setters
-	err := setup.CleanUpOldUIModFolderFiles()
+	err := setup.CleanUpOldSSUIFolderFiles()
 	if err != nil {
 		logger.Core.Error("AfterStartComplete: Failed to clean up old pre-v5.5 UI mod folder files: " + err.Error())
 	}
 	err = setup.CleanUpOldExecutables()
 	if err != nil {
 		logger.Core.Error("AfterStartComplete: Failed to clean up old executables: " + err.Error())
+	}
+	connectivity.RunStartupCheck()
+	for _, finding := range diagnostics.Run().Findings {
+		if finding.Status == diagnostics.StatusFail || finding.Status == diagnostics.StatusWarn {
+			logger.Core.Warn(finding.Code + ": " + finding.Summary + " " + finding.Fix)
+		}
 	}
 	if config.GetAutoStartServerOnStartup() {
 		logger.Core.Info("AutoStartServerOnStartup is enabled, starting server...")

@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/ssestream"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/core/ssestream"
 )
 
 // Logger instances
@@ -165,8 +165,10 @@ func (l *Logger) Cleanf(format string, args ...any) {
 
 // log sends the log entry to the global channel
 func (l *Logger) log(entry logEntry) {
+	recording := supportRecording.Load() != nil
 	l.mu.Lock()
-	if !l.shouldLog(entry.severity) {
+	visible := l.shouldLog(entry.severity)
+	if !visible && !recording {
 		l.mu.Unlock()
 		return
 	}
@@ -189,6 +191,16 @@ func (l *Logger) log(entry logEntry) {
 		entry.fileLine = fmt.Sprintf("%s [%s/%s] %s\n", timestamp, l.suffix, entry.suffix, entry.message)
 	}
 	l.mu.Unlock()
+
+	if visible {
+		recentSSUI.add(entry.fileLine)
+	}
+	if recording {
+		recordSupportLine(entry.fileLine, false)
+	}
+	if !visible {
+		return
+	}
 
 	// Send to global log channel (non-blocking unless channel is full)
 	select {
@@ -221,12 +233,6 @@ func processLogs() {
 		// File output if enabled
 		if config.GetCreateSSUILogFile() {
 			entry.logger.writeToFile(entry.fileLine, entry.logger.suffix)
-		}
-
-		// Check if dashboard is active - if so, capture logs for dashboard display and suppress console output
-		if isDashboardActive() {
-			captureDashboardLog(entry.fileLine)
-			continue // Skip stdout console output while dashboard is running
 		}
 
 		// Send to global console channel
@@ -263,45 +269,4 @@ func (l *Logger) shouldLog(severity int) bool {
 		}
 	}
 	return severity >= config.GetLogLevel()
-}
-
-// AI figured below part out, but it works great. Import cycles are my villain here,
-// and this seems like a neat way to allow the dashboard to capture logs without importing the dashboard package
-// into the logger. This avoids circular dependencies.
-
-// Dashboard integration hooks - these allow the dashboard to intercept console output
-var (
-	dashboardHooksMutex  sync.Mutex
-	dashboardActiveFunc  func() bool
-	dashboardCaptureFunc func(string)
-)
-
-// RegisterDashboardHooks allows the dashboard package to register its functions
-// for checking active state and capturing logs. This avoids import cycles.
-func RegisterDashboardHooks(activeFunc func() bool, captureFunc func(string)) {
-	dashboardHooksMutex.Lock()
-	dashboardActiveFunc = activeFunc
-	dashboardCaptureFunc = captureFunc
-	dashboardHooksMutex.Unlock()
-}
-
-// isDashboardActive checks if the dashboard is currently running
-func isDashboardActive() bool {
-	dashboardHooksMutex.Lock()
-	fn := dashboardActiveFunc
-	dashboardHooksMutex.Unlock()
-	if fn == nil {
-		return false
-	}
-	return fn()
-}
-
-// captureDashboardLog sends a log line to the dashboard for display
-func captureDashboardLog(line string) {
-	dashboardHooksMutex.Lock()
-	fn := dashboardCaptureFunc
-	dashboardHooksMutex.Unlock()
-	if fn != nil {
-		fn(line)
-	}
 }

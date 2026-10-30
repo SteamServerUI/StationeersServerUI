@@ -6,8 +6,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
 )
 
 // translations stores language code to key-value pairs
@@ -32,7 +32,7 @@ func loadTranslations() {
 	// Clear existing translations
 	translations = make(map[string]map[string]string)
 
-	virtFS, err := fs.Sub(config.V1UIFS, "UIMod/onboard_bundled/localization")
+	virtFS, err := fs.Sub(config.V1UIFS, "SSUI/onboard_bundled/localization")
 	if err != nil {
 		logger.Localization.Error("Failed to access virtual filesystem: " + err.Error())
 		return

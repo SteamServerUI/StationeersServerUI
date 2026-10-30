@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/setup/update"
 )
 
 // InstallSLP downloads the latest StationeersLaunchPad-server zip from GitHub
@@ -119,7 +119,7 @@ func InstallSLP() (string, error) {
 	}
 
 	logger.Install.Info(fmt.Sprintf("✅ Stationeers Launch Pad %s installed to %s", selectedRelease.TagName, slpDir))
-	logger.Install.Info("💡 SLP contains its own auto-updater — future updates should happen automatically.")
+	logger.Install.Info("💡 SLP contains its own auto-updater - future updates should happen automatically.")
 	config.SetIsStationeersLaunchPadEnabled(true)
 
 	return selectedRelease.TagName, nil

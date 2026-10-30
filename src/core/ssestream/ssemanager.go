@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
 )
 
 // The SSE blocking issue is NOT related to the backend; the API handles 200 clients per channel fine.
@@ -209,6 +209,18 @@ func (m *SSEManager) AddInternalSubscriber() chan string {
 	}
 	m.clients[client] = true
 	return client.messages
+}
+
+func (m *SSEManager) RemoveInternalSubscriber(messages chan string) {
+	m.clientsMu.Lock()
+	defer m.clientsMu.Unlock()
+	for client := range m.clients {
+		if client.messages == messages {
+			delete(m.clients, client)
+			close(client.messages)
+			return
+		}
+	}
 }
 
 // removeClient safely removes a client from the manager

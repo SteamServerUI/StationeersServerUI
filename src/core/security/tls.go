@@ -13,8 +13,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
 )
 
 // EnsureTLSCerts ensures TLS certificates exist and are valid at config.GetTLSCertPath() and config.GetTLSKeyPath(), generating self-signed ones if needed.
@@ -31,7 +31,7 @@ func EnsureTLSCerts() error {
 	keyExists := fileExists(keyPath)
 	logger.Security.Debug(fmt.Sprintf("Cert exists: %t, Key exists: %t", certExists, keyExists))
 
-	tlsDir := config.GetUIModFolder() + "tls/"
+	tlsDir := config.GetSSUIFolder() + "tls/"
 
 	if _, err := os.Stat(tlsDir); os.IsNotExist(err) {
 		logger.Security.Debug("TLS directory doesn't exist, creating...")

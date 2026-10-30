@@ -6,11 +6,11 @@ import (
 	"io/fs"
 	"net/http"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
 )
 
 func ServeDetectionManager(w http.ResponseWriter, r *http.Request) {
-	detectionmanagerFS, err := fs.Sub(config.V1UIFS, "UIMod/onboard_bundled/detectionmanager")
+	detectionmanagerFS, err := fs.Sub(config.V1UIFS, "SSUI/onboard_bundled/detectionmanager")
 	if err != nil {
 		http.Error(w, "Error accessing Virt FS: "+err.Error(), http.StatusInternalServerError)
 		return

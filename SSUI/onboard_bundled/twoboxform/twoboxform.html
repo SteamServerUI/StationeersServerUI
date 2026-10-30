@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/twoboxform/twoboxform.css?v=7">
+    <link rel="stylesheet" href="/static/css/flags.css">
+</head>
+<body class="two-box-form-page {{.Mode}}-page">
+    <div class="form-background" aria-hidden="true"></div>
+    <div class="breakout-container"></div>
+
+    <div id="preloader">
+        <div class="preloader-content">
+            <h2>{{if eq .Mode "login"}}Loading SSUI...{{else}}Preparing...{{end}}</h2>
+            <div class="preloader-spinner"></div>
+            <p>{{if eq .Mode "login"}}Preparing your station{{else}}Preparing {{.Title}}{{end}}</p>
+        </div>
+    </div>
+    {{if and (eq .Mode "setup") (ne .Step "welcome")}}
+    <div id="language-flags">
+        <img src="/static/flags/en.webp" alt="English" data-lang="en-US" title="English">
+        <img src="/static/flags/de.webp" alt="German" data-lang="de-DE" title="German">
+        <img src="/static/flags/sv.webp" alt="Swedish" data-lang="sv-SE" title="Swedish">
+    </div>
+    {{end}}
+    <main class="two-box-form-container">
+        {{if and (eq .Mode "setup") (ne .Step "welcome")}}
+        <div id="exit-button-container" alt="Exit Setup" title="Exit Setup" onclick="window.location.href = '/'">❌</div>
+        {{end}}
+        <header>
+            <h1>{{.Title}}</h1>
+            <br/>
+            <h2>{{.HeaderTitle}}</h2>
+        </header>
+        
+        <div class="form-container">
+            {{if .StepMessage}}
+            <p class="step-message">{{.StepMessage}}</p>
+            {{end}}
+            
+
+            {{if eq .Step "finalize"}}
+            <div class="config-summary">
+                <div id="config-details">
+                    <!-- Summary will be populated via JS -->
+                </div>
+                <button type="button" id="finalize-btn" class="finalize-btn">{{.FinalizeSubmitButtonText}}</button>
+            </div>
+            {{end}}
+            
+            <form id="two-box-form">
+                {{if ne .PrimaryLabel ""}}
+                <div class="form-group">
+                    <label for="primary-field">{{.PrimaryLabel}}</label>
+                    <input 
+                        type="text"
+                        id="primary-field" 
+                        name="primary-field" 
+                        placeholder="{{.PrimaryPlaceholderText}}"
+                        required
+                    >
+                </div>
+                {{end}}
+
+                {{if ne .SecondaryLabel ""}}
+                <div class="form-group">
+                    <label for="secondary-field">{{.SecondaryLabel}}</label>
+                    {{if eq .SecondaryLabelType "dropdown"}}
+                    <select id="secondary-field" name="secondary-field" required>
+                        <option value="">{{.SecondaryPlaceholderText}}</option>
+                        {{range .SecondaryOptions}}
+                        <option value="{{.Value}}">{{.Display}}</option>
+                        {{end}}
+                    </select>
+                    {{else}}
+                    <input 
+                           type="{{.SecondaryLabelType}}" 
+                           id="secondary-field" 
+                           name="secondary-field" 
+                           placeholder="{{.SecondaryPlaceholderText}}" 
+                           required
+                        >
+                    {{end}}
+                </div>
+                {{end}}
+
+                <div class="form-actions">
+                    <input 
+                        type="submit" 
+                        value="{{.SubmitButtonText}}" 
+                        class="two-box-form-button"
+                    >
+                    
+                    {{if .ShowExtraButtons}}
+                    <button type="button" id="skip-btn" class="skip-btn">
+                        {{.SkipButtonText}}
+                    </button>
+                    {{end}}
+                </div>
+                <input type="hidden" id="mode" value="{{.Mode}}">
+                <input type="hidden" id="step" value="{{.Step}}">
+                <input type="hidden" id="config-field" value="{{.ConfigField}}">
+                <input type="hidden" id="next-step" value="{{.NextStep}}">
+            </form>
+
+            {{if eq .Step "welcome"}}
+            <div id="welcome-flags">
+                <img src="/static/flags/en.webp" alt="English" data-lang="en-US" title="English">
+                <img src="/static/flags/de.webp" alt="German" data-lang="de-DE" title="German">
+                <img src="/static/flags/sv.webp" alt="Swedish" data-lang="sv-SE" title="Swedish">
+            </div>
+            {{end}}
+
+        </div>
+
+        <footer>
+            {{if eq .Path "/setup"}}
+            <p>{{.FooterTextInfo}}</p>
+            <br>
+            {{end}}
+            <p>{{.FooterText}}</p>
+        </footer>
+    </main>
+
+    {{if and (eq .Mode "setup") (ne .Step "welcome")}}
+        <div id="progress-bar-container">
+            <div class="progress-bar">
+                {{range .Steps}}
+            <div class="progress-step {{if eq $.Step .ID}}active{{end}}">
+                <a href="/setup?step={{.ID}}" class="progress-circle"></a>
+                <span class="progress-label">{{.HeaderTitle}}</span>
+            </div>
+            {{end}}
+        </div>
+    {{end}}
+    
+    <script src="/static/js/api-client.js"></script>
+    <script src="/twoboxform/twoboxform.js?v=7"></script>
+</body>
+</html>

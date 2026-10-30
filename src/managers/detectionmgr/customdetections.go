@@ -4,14 +4,20 @@ package detectionmgr
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sync"
+	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
 )
+
+var ErrDetectionNotFound = errors.New("detection not found")
+
+var customDetectionsManager *CustomDetectionsManager
 
 /*
 Custom Detection Pattern Management System
@@ -31,11 +37,14 @@ type CustomDetectionsManager struct {
 
 // CustomDetection defines a user-defined detection pattern
 type CustomDetection struct {
-	ID        string `json:"id"`
-	Type      string `json:"type"` // "regex" or "keyword"
-	Pattern   string `json:"pattern"`
-	EventType string `json:"eventType"`
-	Message   string `json:"message"`
+	ID              string          `json:"id"`
+	Name            string          `json:"name,omitempty"`
+	Type            string          `json:"type"`
+	Pattern         string          `json:"pattern"`
+	EventType       string          `json:"eventType,omitempty"`
+	Message         string          `json:"message,omitempty"`
+	Actions         []RoutineAction `json:"actions"`
+	CooldownSeconds int             `json:"cooldownSeconds,omitempty"`
 }
 
 // NewCustomDetectionsManager creates a new manager and loads existing detections
@@ -46,6 +55,31 @@ func NewCustomDetectionsManager(detector *Detector) *CustomDetectionsManager {
 	}
 	manager.LoadDetections()
 	return manager
+}
+
+func InitCustomDetectionsManager(detector *Detector) {
+	customDetectionsManager = NewCustomDetectionsManager(detector)
+}
+
+func GetCustomDetections() []CustomDetection {
+	if customDetectionsManager == nil {
+		return []CustomDetection{}
+	}
+	return customDetectionsManager.GetDetections()
+}
+
+func AddCustomDetection(detection CustomDetection) error {
+	if customDetectionsManager == nil {
+		return errors.New("custom detections manager is not initialized")
+	}
+	return customDetectionsManager.AddDetection(detection)
+}
+
+func RemoveCustomDetection(id string) error {
+	if customDetectionsManager == nil {
+		return errors.New("custom detections manager is not initialized")
+	}
+	return customDetectionsManager.DeleteDetection(id)
 }
 
 // LoadDetections loads custom detections from file
@@ -94,12 +128,8 @@ func (m *CustomDetectionsManager) AddDetection(detection CustomDetection) error 
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
-	// Validate pattern
-	if detection.Type == "regex" {
-		_, err := regexp.Compile(detection.Pattern)
-		if err != nil {
-			return fmt.Errorf("invalid regex pattern: %w", err)
-		}
+	if err := ValidateDetection(detection); err != nil {
+		return err
 	}
 
 	// Add detection
@@ -155,7 +185,7 @@ func (m *CustomDetectionsManager) DeleteDetection(id string) error {
 		}
 	}
 
-	return fmt.Errorf("detection not found")
+	return ErrDetectionNotFound
 }
 
 // GetDetections returns all custom detections
@@ -173,25 +203,32 @@ func (m *CustomDetectionsManager) GetDetections() []CustomDetection {
 func (m *CustomDetectionsManager) updateDetector() {
 	customPatterns := []CustomPattern{}
 
-	for _, cd := range m.Detections {
-		if cd.Type == "regex" {
-			re, err := regexp.Compile(cd.Pattern)
-			if err == nil {
-				customPatterns = append(customPatterns, CustomPattern{
-					Pattern:     re,
-					EventType:   EventType(cd.EventType),
-					MessageTmpl: cd.Message,
-					IsRegex:     true,
-				})
-			}
-		} else {
-			customPatterns = append(customPatterns, CustomPattern{
-				Keyword:     cd.Pattern,
-				EventType:   EventType(cd.EventType),
-				MessageTmpl: cd.Message,
-				IsRegex:     false,
-			})
+	for i, cd := range m.Detections {
+		if len(cd.Actions) == 0 && cd.Message != "" {
+			cd.Actions = []RoutineAction{{Type: "eventlog", Value: cd.Message}}
+			cd.Message, cd.EventType = "", ""
+			m.Detections[i] = cd
 		}
+		pattern := CustomPattern{
+			ID: cd.ID, Name: cd.Name, Actions: cd.Actions,
+			Cooldown: time.Duration(cd.CooldownSeconds) * time.Second,
+		}
+		if pattern.Name == "" {
+			pattern.Name = cd.Pattern
+		}
+		switch cd.Type {
+		case "regex":
+			re, err := regexp.Compile(cd.Pattern)
+			if err != nil {
+				continue
+			}
+			pattern.Pattern, pattern.IsRegex = re, true
+		case "event":
+			pattern.Trigger = EventType(cd.Pattern)
+		default:
+			pattern.Keyword = cd.Pattern
+		}
+		customPatterns = append(customPatterns, pattern)
 	}
 
 	m.detector.SetCustomPatterns(customPatterns)

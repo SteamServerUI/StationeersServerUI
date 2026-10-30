@@ -1,14 +1,14 @@
 package web
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/setup/update"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/api"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/setup/update"
 )
 
-type UpdateTriggerRequest struct {
+type updateRequest struct {
 	Action            string `json:"action"`
 	Version           string `json:"version"`
 	ConfirmMajor      bool   `json:"confirmMajor"`
@@ -16,56 +16,48 @@ type UpdateTriggerRequest struct {
 }
 
 func CheckUpdateHandler(w http.ResponseWriter, _ *http.Request) {
-	writeUpdateJSON(w, http.StatusOK, update.StatusSnapshot())
+	api.WriteData(w, http.StatusOK, update.StatusSnapshot())
 }
 
 func TriggerUpdateHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		writeUpdateJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
-		return
-	}
-	var request UpdateTriggerRequest
-	decoder := json.NewDecoder(http.MaxBytesReader(w, r.Body, 1<<20))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&request); err != nil {
-		writeUpdateJSON(w, http.StatusBadRequest, map[string]string{"error": "Invalid update request"})
+	var request updateRequest
+	if err := api.DecodeJSON(w, r, &request); err != nil {
+		api.WriteError(w, http.StatusBadRequest, "invalid_request", err.Error())
 		return
 	}
 	if request.Action == "check" {
 		status, err := update.RefreshStatus(r.Context(), true)
 		if errors.Is(err, update.ErrUpdateBusy) {
-			writeUpdateJSON(w, http.StatusConflict, map[string]string{"error": err.Error()})
+			api.WriteError(w, http.StatusConflict, "update_busy", err.Error())
 			return
 		}
 		if err != nil {
-			writeUpdateJSON(w, http.StatusBadGateway, map[string]string{"error": err.Error()})
+			api.WriteError(w, http.StatusBadGateway, "update_check_failed", err.Error())
 			return
 		}
-		writeUpdateJSON(w, http.StatusOK, status)
+		api.WriteData(w, http.StatusOK, status)
 		return
 	}
 	if request.Action != "install" {
-		writeUpdateJSON(w, http.StatusBadRequest, map[string]string{"error": "Choose check or install"})
+		api.WriteError(w, http.StatusBadRequest, "invalid_action", "Choose check or install")
 		return
 	}
-	err := update.QueueInstall(update.InstallRequest{
+	installRequest := update.InstallRequest{
 		Version:           request.Version,
 		ConfirmMajor:      request.ConfirmMajor,
 		ConfirmPrerelease: request.ConfirmPrerelease,
-	})
-	if err != nil {
-		status := http.StatusBadRequest
+	}
+	if err := update.QueueInstall(installRequest); err != nil {
 		if errors.Is(err, update.ErrUpdateBusy) {
-			status = http.StatusConflict
+			api.WriteError(w, http.StatusConflict, "update_busy", err.Error())
+			return
 		}
-		writeUpdateJSON(w, status, map[string]string{"error": err.Error()})
+		if errors.Is(err, update.ErrContainerManaged) {
+			api.WriteError(w, http.StatusConflict, "container_managed", err.Error())
+			return
+		}
+		api.WriteError(w, http.StatusBadRequest, "update_rejected", err.Error())
 		return
 	}
-	writeUpdateJSON(w, http.StatusAccepted, map[string]string{"status": "installing", "version": request.Version})
-}
-
-func writeUpdateJSON(w http.ResponseWriter, status int, value any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(value)
+	api.WriteData(w, http.StatusAccepted, map[string]string{"status": "installing", "version": request.Version})
 }

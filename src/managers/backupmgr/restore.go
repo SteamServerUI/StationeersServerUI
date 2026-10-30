@@ -10,26 +10,25 @@ import (
 	"strings"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
 )
 
-// RestoreBackup restores a backup with the given index
-func (m *BackupManager) RestoreBackup(index int) error {
+// RestoreBackup restores a named archive from the current inventory.
+func (m *BackupManager) RestoreBackup(name string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	logger.Backup.Infof("Restoring backup with index %d", index)
-
-	saves, err := m.getBackupSaveFiles()
+	path, err := backupFilePath(m, name)
 	if err != nil {
-		return fmt.Errorf("failed to get backup groups: %w", err)
+		return err
 	}
+	logger.Backup.Infof("Restoring backup %s", name)
+	return m.restoreBackupSave(path)
+}
 
-	var targetSave = saves[index]
+func (m *BackupManager) restoreBackupSave(backupFile string) error {
 
 	restoredFiles := make(map[string]string)
 
-	// .save file case
-	backupFile := targetSave.SaveFile
 	destFile := filepath.Join("./saves/"+m.config.WorldName, m.config.WorldName+".save")
 
 	// This check was disabled since it was relatively unnecessary and didnt bring much benefit

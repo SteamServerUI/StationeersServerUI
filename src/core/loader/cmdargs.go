@@ -1,14 +1,17 @@
 package loader
 
 import (
+	"errors"
 	"flag"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/core/security"
-	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/logger"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/core/security"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/diagnostics"
+	"github.com/SteamServerUI/StationeersServerUI/v6/src/logger"
 )
 
 // Define flags matching the config variable names
@@ -23,6 +26,7 @@ var devModeFlag bool
 var skipSteamCMDFlag bool
 var sanityCheckFlag bool
 var advertiserOverrideFlag string
+var diagnoseFlag bool
 
 // ParseFlags parses command-line arguments ONCE at startup (called from func main)
 func ParseFlags() {
@@ -42,6 +46,7 @@ func ParseFlags() {
 	flag.BoolVar(&createSSUILogFileFlag, "lf", false, "(Alias) Create log files for SSUI")
 	flag.BoolVar(&skipSteamCMDFlag, "NoSteamCMD", false, "Skips SteamCMD installation")
 	flag.BoolVar(&sanityCheckFlag, "NoSanityCheck", false, "Skips the sanity check. Not recommended.")
+	flag.BoolVar(&diagnoseFlag, "Diagnose", false, "Prints a diagnosis of this SSUI installation and exits without starting SSUI")
 	flag.StringVar(&advertiserOverrideFlag, "AdvertiserOverride", "", "Override the advertised server IP. For this, the ServerVisible setting must be set to false. Use \"auto\" for automatic public IP detection, an IPv4 address, or a DNS hostname (to allow server advertisement if you are behind a reverse proxy)")
 
 	// Parse command-line flags
@@ -55,9 +60,8 @@ func HandleFlags() {
 	if devModeFlag {
 		config.SetAuthEnabled(true)
 		config.SetIsFirstTimeSetup(false)
-		config.SetUsers(map[string]string{"admin": "$2a$10$7QQhPkNAfT.MXhJhnnodXOyn3KKE/1eu7nYb0y2O1UBoAWc0Y/fda"}) // admin:admin
 		config.SetIsConsoleEnabled(true)
-		logger.Main.Info("Dev mode enabled: Auth enabled, admin user set to admin:admin:superadmin, console enabled")
+		logger.Main.Info("Dev mode enabled: console enabled; development owner will be configured after identity startup")
 	}
 
 	if skipSteamCMDFlag {
@@ -79,21 +83,6 @@ func HandleFlags() {
 		oldBranch := config.GetGameBranch()
 		config.SetGameBranch(gameBranchFlag)
 		logger.Main.Info(fmt.Sprintf("Overriding GameBranch from command line: Before=%s, Now=%s", oldBranch, gameBranchFlag))
-	}
-
-	if recoveryPasswordFlag != "" {
-		recoveryPasswordFlag = strings.TrimSpace(recoveryPasswordFlag)
-		if recoveryPasswordFlag == "" {
-			logger.Main.Error("Recovery flag provided but password is empty. Skipping recovery user creation.")
-		} else {
-			hashedPassword, err := security.HashPassword(recoveryPasswordFlag)
-			if err != nil {
-				logger.Main.Error(fmt.Sprintf("Failed to hash recovery password: %v", err))
-				return
-			}
-			config.SetUsers(map[string]string{"recovery": hashedPassword})
-			logger.Main.Warn(fmt.Sprintf("Recovery user added with access level superadmin. Login with username 'recovery' and password '%s'", recoveryPasswordFlag))
-		}
 	}
 
 	if logLevelFlag != 0 {
@@ -125,6 +114,61 @@ func HandleFlags() {
 		config.SetCreateSSUILogFile(true)
 		logger.Main.Info(fmt.Sprintf("Overriding CreateSSUILogFile from command line: Before=%t, Now=true", oldCreateSSUILogFile))
 	}
+}
+
+// HandleIdentityFlags runs after the identity store has been initialized.
+func HandleIdentityFlags() {
+	password := strings.TrimSpace(recoveryPasswordFlag)
+	if devModeFlag {
+		if _, err := security.EnableDevelopmentOwner(time.Now()); err != nil {
+			logger.Security.Error(fmt.Sprintf("Failed to configure development owner: %v", err))
+		} else {
+			logger.Security.Warn("Development owner enabled: admin:admin with full access. For development only.")
+		}
+	}
+	if recoveryPasswordFlag == "" {
+		removed, err := security.RemoveRecoveryOwner(time.Now())
+		if errors.Is(err, security.ErrRecoveryOwnerStillRequired) {
+			logger.Security.Warn("Temporary recovery account is still the only owner. Create another owner before restarting SSUI.")
+		} else if err != nil {
+			logger.Security.Error(fmt.Sprintf("Failed to remove temporary recovery account: %v", err))
+		} else if removed {
+			logger.Security.Info("Removed temporary recovery account.")
+		}
+		return
+	}
+	if password == "" {
+		logger.Security.Error("Recovery flag provided but password is empty. Skipping owner recovery.")
+		return
+	}
+	if _, err := security.RecoverOwner("recovery", password, time.Now()); err != nil {
+		logger.Security.Error(fmt.Sprintf("Failed to recover owner account: %v", err))
+		return
+	}
+	logger.Security.Warn("Recovered owner account 'recovery'. Existing sessions and API tokens were revoked.")
+}
+
+// HandleDiagnoseFlag prints the diagnosis and exits before anything else starts or writes files.
+func HandleDiagnoseFlag() {
+	if !diagnoseFlag {
+		return
+	}
+	detectContainer()
+	if err := moveToExecutableDir(); err != nil {
+		fmt.Fprintln(os.Stderr, "Could not switch to the SSUI folder: "+err.Error())
+	}
+	if err := config.LoadConfigWithoutSaving(); err != nil {
+		fmt.Fprintln(os.Stderr, "Could not read the config: "+err.Error())
+	}
+	report := diagnostics.RunFull()
+	report.RecheckSpacecat()
+	if err := diagnostics.WriteText(os.Stdout, report); err != nil {
+		os.Exit(2)
+	}
+	if report.Overall == "failed" {
+		os.Exit(1)
+	}
+	os.Exit(0)
 }
 
 // HandleSanityCheckFlag has special handling to allow usage directly at startup before other systems are initialized.

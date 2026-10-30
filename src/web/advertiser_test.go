@@ -41,7 +41,7 @@ func TestNormalizeAdvertiserOverride(t *testing.T) {
 }
 
 func TestAdvertiserOverrideRejectsWrongMethod(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/api/v2/advertiser/override", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/v3/advertiser/override", nil)
 	response := httptest.NewRecorder()
 	SaveAdvertiserOverrideHandler(response, request)
 	if response.Code != http.StatusMethodNotAllowed {
@@ -50,7 +50,7 @@ func TestAdvertiserOverrideRejectsWrongMethod(t *testing.T) {
 }
 
 func TestConfigTemplateParses(t *testing.T) {
-	if _, err := template.ParseFiles("../../UIMod/onboard_bundled/ui/config.html"); err != nil {
+	if _, err := template.ParseFiles("../../SSUI/onboard_bundled/ui/config.html"); err != nil {
 		t.Fatalf("config template failed to parse: %v", err)
 	}
 }

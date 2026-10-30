@@ -2,7 +2,15 @@ package config
 
 import (
 	"time"
+
+	"github.com/bwmarrin/discordgo"
 )
+
+func GetDiscordSession() *discordgo.Session {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return DiscordSession
+}
 
 func GetDiscordToken() string {
 	ConfigMu.RLock()
@@ -10,10 +18,10 @@ func GetDiscordToken() string {
 	return DiscordToken
 }
 
-func GetControlChannelID() string {
+func GetDiscordAdminRoleID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return ControlChannelID
+	return DiscordAdminRoleID
 }
 
 func GetEventLogChannelID() string {
@@ -32,12 +40,6 @@ func GetLogChannelID() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return LogChannelID
-}
-
-func GetControlPanelChannelID() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return ControlPanelChannelID
 }
 
 func GetDiscordCharBufferSize() int {
@@ -64,36 +66,80 @@ func GetRotateServerPassword() bool {
 	return RotateServerPassword
 }
 
-func GetBackupKeepLastN() int {
+func GetDiscordRestartVoteEnabled() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return BackupKeepLastN
+	return DiscordRestartVoteEnabled
+}
+func GetDiscordRestoreVoteEnabled() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return DiscordRestoreVoteEnabled
+}
+func GetDiscordVoteDurationMinutes() int {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return DiscordVoteDurationMinutes
+}
+func GetDiscordRestartVoteThreshold() int {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return DiscordRestartVoteThreshold
+}
+func GetDiscordRestartVoteMinimum() int {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return DiscordRestartVoteMinimum
+}
+func GetDiscordRestartVoteCooldownMinutes() int {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return DiscordRestartVoteCooldownMinutes
+}
+func GetDiscordRestoreVoteThreshold() int {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return DiscordRestoreVoteThreshold
+}
+func GetDiscordRestoreVoteMinimum() int {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return DiscordRestoreVoteMinimum
+}
+func GetDiscordRestoreVoteCooldownMinutes() int {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return DiscordRestoreVoteCooldownMinutes
 }
 
-func GetIsCleanupEnabled() bool {
+func GetBackupKeepNewestCount() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return IsCleanupEnabled
+	return BackupKeepNewestCount
 }
 
-// GetBackupKeepDailyFor returns the retention period for daily backups in hours.
-func GetBackupKeepDailyFor() time.Duration {
+func GetBackupRetentionEnabled() bool {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return BackupKeepDailyFor
+	return BackupRetentionEnabled
 }
 
-func GetBackupKeepWeeklyFor() time.Duration {
+func GetBackupDailyRetentionDays() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return BackupKeepWeeklyFor
+	return BackupDailyRetentionDays
 }
 
-// GetBackupKeepMonthlyFor returns the retention period for monthly backups in hours.
-func GetBackupKeepMonthlyFor() time.Duration {
+func GetBackupWeeklyRetentionWeeks() int {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return BackupKeepMonthlyFor
+	return BackupWeeklyRetentionWeeks
+}
+
+func GetBackupMonthlyRetentionMonths() int {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return BackupMonthlyRetentionMonths
 }
 
 // GetBackupCleanupInterval returns the cleanup interval in hours.
@@ -101,13 +147,6 @@ func GetBackupCleanupInterval() time.Duration {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return BackupCleanupInterval
-}
-
-// GetBackupWaitTime returns the backup wait time in seconds.
-func GetBackupWaitTime() time.Duration {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return BackupWaitTime
 }
 
 func GetIsNewTerrainAndSaveSystem() bool {
@@ -388,12 +427,6 @@ func GetIsConsoleEnabled() bool {
 	return IsConsoleEnabled
 }
 
-func GetIsCLIDashboardEnabled() bool {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return IsCLIDashboardEnabled
-}
-
 func GetLanguageSetting() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
@@ -461,10 +494,10 @@ func GetTLSKeyPath() string {
 	return TLSKeyPath
 }
 
-func GetUIModFolder() string {
+func GetSSUIFolder() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
-	return UIModFolder
+	return SSUIFolder
 }
 
 func GetMaxSSEConnections() int {
@@ -554,6 +587,12 @@ func GetAdvertiserOverride() string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()
 	return AdvertiserOverride
+}
+
+func GetConnectivityCheckEnabled() bool {
+	ConfigMu.RLock()
+	defer ConfigMu.RUnlock()
+	return ConnectivityCheckEnabled
 }
 
 func GetStationeersServerPingEndpoint() string {

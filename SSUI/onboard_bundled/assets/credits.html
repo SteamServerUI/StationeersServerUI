@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StationeersServerUI Credits</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0e27;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+        .nebula {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(240, 147, 251, 0.08) 0%, transparent 60%);
+            animation: nebula-drift 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes nebula-drift {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        .star.bright {
+            box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.6);
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.8), transparent);
+            opacity: 0;
+            animation: shoot 4s linear infinite;
+        }
+
+        @keyframes shoot {
+            0% { transform: translateX(0) translateY(0); opacity: 0; }
+            5% { opacity: 1; }
+            20% { transform: translateX(300px) translateY(150px); opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .credits-container {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            perspective: 400px;
+        }
+
+        .credits-scroll {
+            position: absolute;
+            width: 80%;
+            max-width: 900px;
+            left: 50%;
+            top: 100%;
+            transform: translateX(-50%);
+            text-align: center;
+            will-change: transform;
+            transition: none;
+        }
+
+        .credits-scroll.animating {
+            animation: scroll-up 90s linear forwards;
+        }
+
+        .credits-scroll.paused {
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll-up {
+            from {
+                top: 100%;
+            }
+            to {
+                top: -100%;
+            }
+        }
+
+        .title {
+            font-size: 3.5em;
+            font-weight: bold;
+            margin-bottom: 2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 5s ease infinite;
+            filter: drop-shadow(0 0 30px rgba(102, 126, 234, 0.5));
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .section {
+            margin: 4em 0;
+            padding: 2em;
+            transition: all 0.4s ease;
+        }
+
+        .section:hover {
+            transform: scale(1.02);
+        }
+
+        .role {
+            font-size: 1.8em;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 0.5em;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            position: relative;
+        }
+
+        .role::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            margin: 0.5em auto;
+            border-radius: 2px;
+        }
+
+        .name {
+            font-size: 2.5em;
+            font-weight: 600;
+            margin: 0.3em 0;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #a0aec0;
+            margin: 0.5em 0;
+            line-height: 1.6;
+        }
+
+        .link {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 1em;
+            transition: all 0.3s;
+            padding: 0.3em 1em;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .link:hover {
+            color: #93c5fd;
+            background: rgba(96, 165, 250, 0.1);
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
+        }
+
+        .description {
+            font-size: 1.1em;
+            color: #cbd5e0;
+            line-height: 1.8;
+            margin: 1em auto;
+            max-width: 700px;
+            padding: 0 2em;
+        }
+
+        .special-thanks {
+            font-size: 2em;
+            color: #48bb78;
+            margin: 3em 0 1em 0;
+            text-shadow: 0 0 20px rgba(72, 187, 120, 0.6);
+        }
+        
+        .donors {
+            font-size: 2em;
+            color: #008cff;
+            margin: 3em 0 1em 0;
+            text-shadow: 0 0 20px rgba(0, 140, 255, 0.6);
+        }
+
+        .tech-stack {
+            font-size: 1.5em;
+            color: #ed8936;
+            margin-top: 4em;
+        }
+
+        .final-message {
+            font-size: 1.8em;
+            margin: 4em 0;
+            color: #e2e8f0;
+            font-style: italic;
+        }
+
+        .heart {
+            color: #f56565;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .glow {
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        /* Scroll hint indicator */
+        .scroll-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9em;
+            text-align: center;
+            z-index: 100;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .scroll-hint .mouse-icon {
+            width: 26px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 13px;
+            margin: 0 auto 10px;
+            position: relative;
+        }
+
+        .scroll-hint .wheel {
+            width: 4px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 2px;
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: scroll-wheel 2s infinite;
+        }
+
+        @keyframes scroll-wheel {
+            0%, 100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+            50% { transform: translateX(-50%) translateY(10px); opacity: 0.3; }
+        }
+
+        /* Control buttons */
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .control-btn.active {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: rgba(102, 126, 234, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="nebula"></div>
+    <div class="stars" id="stars"></div>
+    
+    <!-- Controls -->
+    <div class="controls">
+        <button class="control-btn active" id="playPauseBtn" title="Play/Pause auto-scroll">▶ Auto</button>
+        <button class="control-btn" id="resetBtn" title="Reset to beginning">↺ Reset</button>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="scroll-hint" id="scrollHint">
+        <div class="mouse-icon">
+            <div class="wheel"></div>
+        </div>
+        <span>Scroll to navigate</span>
+    </div>
+    
+    <div class="credits-container" id="creditsContainer">
+        <div class="credits-scroll animating" id="creditsScroll">
+            <div class="title">StationeersServerUI</div>
+
+            <div class="section">
+                <div class="role">Project Lead & Creator</div>
+                <div class="name">JacksonTheMaster</div>
+                <div class="subtitle">J. Langisch</div>
+                <div class="description">
+                    Inventor, initial and main developer, "sheephearder" - the main Author of StationeersServerUI
+                </div>
+                <a href="https://github.com/JacksonTheMaster" class="link" target="_blank">github.com/JacksonTheMaster</a>
+            </div>
+
+            <div class="section">
+                <div class="role">Executive Coordinator & Co-Author</div>
+                <div class="name">Seb</div>
+                <div class="subtitle">Sebastian Meier zu Biesen</div>
+                <div class="description">
+                    Added oil to the fire - leading to the initial SteamServerUI idea ("if it runs Stationeers, why can't we run other games"), 
+                    made StationeersServerUI run on Linux & added initial Docker implementation. 
+                    Without you, the project wouldn't be where it is today! <span class="heart">❤️</span>
+                </div>
+                <a href="https://github.com/mitoskalandiel" class="link" target="_blank">github.com/mitoskalandiel</a>
+            </div>
+
+            <div class="section">
+                <div class="role">Backend & Security Expert</div>
+                <div class="name">MensRea</div>
+                <div class="description">
+                    Backend improver & the security guy - ask him, get great ideas for optimization and backend design choices back.
+                </div>
+                <a href="https://github.com/akirilov" class="link" target="_blank">github.com/akirilov</a>
+            </div>
+
+            <div class="section">
+                <div class="role">Community Ambassador & Feature Visionary</div>
+                <div class="name">NAM - NonActionMan</div>
+                <div class="description">
+                    Our first SSUI pioneer - a true SSUI poweruser and die-hard fan! Supporter & advertiser of the project.
+                </div>
+                <a href="https://steamcommunity.com/profiles/76561197995322389/" class="link" target="_blank">Steam Profile</a>
+            </div>
+
+            <div class="section">
+                <div class="role">Community Ambassador</div>
+                <div class="name">Fudd79</div>
+                <div class="description">
+                    SSUI pioneer - another true SSUI poweruser!
+                </div>
+                <a href="https://github.com/SnorreSelmer" class="link" target="_blank">github.com/SnorreSelmer</a>
+            </div>
+
+            <div class="section">
+                <div class="role">Docker Integration</div>
+                <div class="name">1Solon</div>
+                <a href="https://github.com/1Solon" class="link" target="_blank">github.com/1Solon</a>
+            </div>
+
+            <div class="section">
+                <div class="role">Localization</div>
+                <div class="name">Locxion</div>
+                <div class="subtitle">Markus Bender</div>
+                <div class="description">
+                    Parts of the German translation
+                </div>
+                <a href="https://github.com/Locxion" class="link" target="_blank">github.com/Locxion</a>
+            </div>
+
+            <div class="section">
+                <div class="special-thanks">Special Thanks</div>
+                <div class="name">semoro</div>
+                <div class="description">
+                    Fixed Race Condition in SSE Handling: Identified and resolved a hard backend crash when SSE connections closed during message formatting.
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="donors">Donors</div>
+                <div class="name">Musashi</div>
+                <div class="name">Stealthbob</div>
+                <div class="name">Sumisukyo</div>
+                <div class="name">neilius</div>
+                <div class="name">Windsinger</div>
+                <div class="name">doom2286</div>
+                <div class="name">Hakisak</div>
+                <div class="name">DopeGhoti</div>
+                <div class="name">David aka Kalcode</div>
+            </div>
+
+            <div class="section">
+                <div class="special-thanks">Created for the game "Stationeers" which is made by</div>
+                <div class="name">RocketWerkz, Dean Hall, New Zealand</div>
+                <div class="description">
+                    The best game developers we could ever imagine
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="tech-stack glow">Built With</div>
+                <div class="name">Go</div>
+                <div class="description">
+                    Built with the Go programming language
+                </div>
+            </div>
+
+            <div class="final-message">
+                Thank you for using StationeersServerUI
+            </div>
+
+            <div style="height: 300px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Create stars
+        const starsContainer = document.getElementById('stars');
+        const numStars = 200;
+
+        for (let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star' + (Math.random() > 0.9 ? ' bright' : '');
+            const size = Math.random() * 2 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Create shooting stars
+        for (let i = 0; i < 3; i++) {
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            shootingStar.style.top = Math.random() * 50 + '%';
+            shootingStar.style.left = Math.random() * 50 + '%';
+            shootingStar.style.animationDelay = (i * 6 + Math.random() * 4) + 's';
+            shootingStar.style.transform = `rotate(${30 + Math.random() * 30}deg)`;
+            starsContainer.appendChild(shootingStar);
+        }
+
+        // Credits scroll handling
+        const creditsScroll = document.getElementById('creditsScroll');
+        const creditsContainer = document.getElementById('creditsContainer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const scrollHint = document.getElementById('scrollHint');
+        
+        let isAutoScrolling = true;
+        let currentPosition = window.innerHeight; // Start from bottom
+        let animationId = null;
+        let scrollSpeed = 0.8; // pixels per frame
+        let userScrollTimeout = null;
+        
+        // Get the total height needed for scrolling
+        function getTotalHeight() {
+            return creditsScroll.offsetHeight + window.innerHeight;
+        }
+        
+        // Update position via transform for smooth performance
+        function updatePosition() {
+            creditsScroll.style.top = currentPosition + 'px';
+        }
+        
+        // Stop CSS animation and switch to JS control
+        function initManualControl() {
+            creditsScroll.classList.remove('animating');
+            creditsScroll.style.animation = 'none';
+            currentPosition = window.innerHeight;
+            updatePosition();
+        }
+        
+        // Auto scroll animation loop
+        function autoScroll() {
+            if (!isAutoScrolling) return;
+            
+            currentPosition -= scrollSpeed;
+            
+            // Reset when scrolled past content
+            if (currentPosition < -creditsScroll.offsetHeight) {
+                currentPosition = window.innerHeight;
+            }
+            
+            updatePosition();
+            animationId = requestAnimationFrame(autoScroll);
+        }
+        
+        // Start auto scrolling
+        function startAutoScroll() {
+            isAutoScrolling = true;
+            playPauseBtn.textContent = '⏸ Pause';
+            playPauseBtn.classList.add('active');
+            autoScroll();
+        }
+        
+        // Stop auto scrolling
+        function stopAutoScroll() {
+            isAutoScrolling = false;
+            playPauseBtn.textContent = '▶ Auto';
+            playPauseBtn.classList.remove('active');
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+        
+        // Toggle auto scroll
+        playPauseBtn.addEventListener('click', () => {
+            if (isAutoScrolling) {
+                stopAutoScroll();
+            } else {
+                startAutoScroll();
+            }
+        });
+        
+        // Reset credits
+        resetBtn.addEventListener('click', () => {
+            currentPosition = window.innerHeight;
+            updatePosition();
+            if (!isAutoScrolling) {
+                startAutoScroll();
+            }
+        });
+        
+        // Handle mouse wheel scrolling
+        creditsContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            
+            // Pause auto-scroll when user scrolls
+            if (isAutoScrolling) {
+                stopAutoScroll();
+            }
+            
+            // Scroll the credits
+            currentPosition -= e.deltaY * 0.5;
+            
+            // Clamp position
+            const minPos = -creditsScroll.offsetHeight + 100;
+            const maxPos = window.innerHeight - 100;
+            currentPosition = Math.max(minPos, Math.min(maxPos, currentPosition));
+            
+            updatePosition();
+            
+            // Hide scroll hint after first interaction
+            scrollHint.style.opacity = '0';
+            
+            // Resume auto-scroll after 5 seconds of inactivity
+            clearTimeout(userScrollTimeout);
+            userScrollTimeout = setTimeout(() => {
+                startAutoScroll();
+                scrollHint.style.opacity = '0.5';
+            }, 5000);
+        }, { passive: false });
+        
+        // Touch support for mobile
+        let touchStartY = 0;
+        let touchCurrentY = 0;
+        
+        creditsContainer.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+            if (isAutoScrolling) {
+                stopAutoScroll();
+            }
+        }, { passive: true });
+        
+        creditsContainer.addEventListener('touchmove', (e) => {
+            touchCurrentY = e.touches[0].clientY;
+            const deltaY = touchStartY - touchCurrentY;
+            touchStartY = touchCurrentY;
+            
+            currentPosition -= deltaY;
+            
+            const minPos = -creditsScroll.offsetHeight + 100;
+            const maxPos = window.innerHeight - 100;
+            currentPosition = Math.max(minPos, Math.min(maxPos, currentPosition));
+            
+            updatePosition();
+            scrollHint.style.opacity = '0';
+        }, { passive: true });
+        
+        creditsContainer.addEventListener('touchend', () => {
+            clearTimeout(userScrollTimeout);
+            userScrollTimeout = setTimeout(() => {
+                startAutoScroll();
+            }, 5000);
+        });
+        
+        // Initialize: stop CSS animation and start JS-controlled scrolling
+        setTimeout(() => {
+            initManualControl();
+            startAutoScroll();
+        }, 100);
+        
+        // Hide scroll hint after a while
+        setTimeout(() => {
+            scrollHint.style.opacity = '0';
+        }, 8000);
+    </script>
+</body>
+</html>

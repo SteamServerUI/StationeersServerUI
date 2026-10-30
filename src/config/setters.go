@@ -430,83 +430,72 @@ func SetNextAutoRestartTime(value time.Time) error {
 }
 
 // Backup Settings
-func SetBackupKeepLastN(value int) error {
+func SetBackupKeepNewestCount(value int) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
 	if value < 0 {
-		return fmt.Errorf("backup keep last N cannot be negative")
+		return fmt.Errorf("backup keep newest count cannot be negative")
 	}
 
-	BackupKeepLastN = value
+	BackupKeepNewestCount = value
 	return safeSaveConfig()
 }
 
-func SetIsCleanupEnabled(value bool) error {
+func SetBackupRetentionEnabled(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	IsCleanupEnabled = value
+	BackupRetentionEnabled = value
 	return safeSaveConfig()
 }
 
-func SetBackupKeepDailyFor(value int) error {
+func SetBackupDailyRetentionDays(value int) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
 	if value < 0 {
-		return fmt.Errorf("backup keep daily for cannot be negative")
+		return fmt.Errorf("backup daily retention days cannot be negative")
 	}
 
-	BackupKeepDailyFor = time.Duration(value) * time.Hour
+	BackupDailyRetentionDays = value
 	return safeSaveConfig()
 }
 
-func SetBackupKeepWeeklyFor(value int) error {
+func SetBackupWeeklyRetentionWeeks(value int) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
 	if value < 0 {
-		return fmt.Errorf("backup keep weekly for cannot be negative")
+		return fmt.Errorf("backup weekly retention weeks cannot be negative")
 	}
 
-	BackupKeepWeeklyFor = time.Duration(value) * time.Hour
+	BackupWeeklyRetentionWeeks = value
 	return safeSaveConfig()
 }
 
-func SetBackupKeepMonthlyFor(value int) error {
+func SetBackupMonthlyRetentionMonths(value int) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
 	if value < 0 {
-		return fmt.Errorf("backup keep monthly for cannot be negative")
+		return fmt.Errorf("backup monthly retention months cannot be negative")
 	}
 
-	BackupKeepMonthlyFor = time.Duration(value) * time.Hour
+	BackupMonthlyRetentionMonths = value
 	return safeSaveConfig()
 }
 
-func SetBackupCleanupInterval(value int) error {
+func SetBackupCleanupIntervalHours(value int) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	if value <= 0 {
-		return fmt.Errorf("backup cleanup interval must be positive")
+	maxCleanupIntervalHours := int64((1<<63 - 1) / int64(time.Hour))
+	if value <= 0 || int64(value) > maxCleanupIntervalHours {
+		return fmt.Errorf("backup cleanup interval must produce a positive valid duration")
 	}
 
 	BackupCleanupInterval = time.Duration(value) * time.Hour
-	return safeSaveConfig()
-}
-
-func SetBackupWaitTime(value int) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	if value < 0 {
-		return fmt.Errorf("backup wait time cannot be negative")
-	}
-
-	BackupWaitTime = time.Duration(value) * time.Second
 	return safeSaveConfig()
 }
 
@@ -527,11 +516,11 @@ func SetDiscordToken(value string) error {
 	return safeSaveConfig()
 }
 
-func SetControlChannelID(value string) error {
+func SetDiscordAdminRoleID(value string) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
 
-	ControlChannelID = value
+	DiscordAdminRoleID = value
 	return safeSaveConfig()
 }
 
@@ -559,15 +548,6 @@ func SetStatusPanelChannelID(value string) error {
 	defer ConfigMu.Unlock()
 
 	StatusPanelChannelID = value
-	return safeSaveConfig()
-}
-
-// SetControlPanelChannelID sets the ControlPanelChannelID
-func SetControlPanelChannelID(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	ControlPanelChannelID = value
 	return safeSaveConfig()
 }
 
@@ -693,14 +673,6 @@ func SetIsConsoleEnabled(value bool) error {
 	return safeSaveConfig()
 }
 
-func SetIsCLIDashboardEnabled(value bool) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	IsCLIDashboardEnabled = value
-	return safeSaveConfig()
-}
-
 func SetAllowAutoGameServerUpdates(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()
@@ -714,6 +686,14 @@ func SetAdvertiserOverride(value string) error {
 	defer ConfigMu.Unlock()
 
 	AdvertiserOverride = value
+	return safeSaveConfig()
+}
+
+func SetConnectivityCheckEnabled(value bool) error {
+	ConfigMu.Lock()
+	defer ConfigMu.Unlock()
+
+	ConnectivityCheckEnabled = value
 	return safeSaveConfig()
 }
 
