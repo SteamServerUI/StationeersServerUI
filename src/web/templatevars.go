@@ -502,6 +502,9 @@ type ConfigTemplateData struct {
 	UIText_SUP_PackageInfo        string
 	UIText_SUP_Running            string
 	UIText_SUP_AllGood            string
+	UIText_SUP_Intro              string
+	UIText_SUP_PackageTitle       string
+	UIText_SUP_Refresh            string
 	UIText_SUP_LinkTitle          string
 	UIText_SUP_LinkInfo           string
 	UIText_SUP_LinkDuration       string

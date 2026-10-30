@@ -1,10 +1,11 @@
 (function () {
-    const panel = document.getElementById('support-panel');
+    const panel = document.getElementById('support-config-tab');
     if (!panel) return;
     const overall = document.getElementById('support-overall');
     const findings = document.getElementById('support-findings');
     const recordButton = document.getElementById('support-record');
     const recordingButton = document.getElementById('support-recording-package');
+    const refreshButton = document.getElementById('support-refresh');
     const canControl = window.SSUIAccess.can('server.control');
     const text = panel.dataset;
     let recording = null;
@@ -24,19 +25,26 @@
     }
 
     async function loadDiagnostics() {
+        refreshButton.disabled = true;
         overall.textContent = text.running || 'Running diagnostics...';
+        delete overall.dataset.overall;
         try {
             const report = await request('/api/v3/support/diagnostics');
-            overall.textContent = `SSUI ${report.system.version} (${report.system.branch}) · ${report.overall}`;
+            document.getElementById('support-version').textContent = `SSUI ${report.system.version} (${report.system.branch})`;
+            overall.textContent = report.overall;
             overall.dataset.overall = report.overall;
             findings.innerHTML = report.findings.length ? report.findings.map(finding => `
-                <div class="access-list-item support-finding is-${escapeHTML(finding.status)}">
-                    <div><strong>${escapeHTML(finding.code)}</strong> ${escapeHTML(finding.summary)}
-                        ${finding.fix ? `<small>${escapeHTML(finding.fix)}</small>` : ''}</div>
-                </div>`).join('') : `<p class="access-empty">${escapeHTML(text.allGood || 'Nothing needs attention.')}</p>`;
+                <div class="support-finding is-${escapeHTML(finding.status)}">
+                    <strong>${escapeHTML(finding.code)}</strong>
+                    <p>${escapeHTML(finding.summary)}</p>
+                    ${finding.fix ? `<small>${escapeHTML(finding.fix)}</small>` : ''}
+                </div>`).join('') : `<div class="support-finding is-ok"><p>${escapeHTML(text.allGood || 'Nothing needs attention.')}</p></div>`;
         } catch (error) {
             overall.textContent = error.message;
+            overall.dataset.overall = 'failed';
             findings.innerHTML = '';
+        } finally {
+            refreshButton.disabled = false;
         }
     }
 
@@ -49,7 +57,7 @@
             : text.startRecording || 'Start recording';
         recordingButton.hidden = active || !recording?.stoppedAt;
         window.clearTimeout(pollTimer);
-        if (active && panel.open) pollTimer = window.setTimeout(loadRecording, 5000);
+        if (active && isOpen()) pollTimer = window.setTimeout(loadRecording, 5000);
     }
 
     async function loadRecording() {
@@ -107,19 +115,19 @@
         if (!active) return;
 
         const expires = status.expiresAt ? new Date(status.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-        const state = !status.connected ? linkText.offline : status.claimed ? linkText.claimed : linkText.waiting;
+        const state = status.connected ? (status.claimed ? linkText.claimed : linkText.waiting) : status.error ? linkText.offline : linkText.waiting;
         document.getElementById('support-link-state').textContent = `${state} · ${(linkText.expires || 'Ends at {time}').replace('{time}', expires)}`;
         document.getElementById('support-link-code-box').hidden = !status.claimCode;
         document.getElementById('support-link-code').textContent = status.claimCode || '';
         const activity = status.activity || [];
         document.getElementById('support-link-activity').innerHTML = activity.length
             ? activity.slice().reverse().map(entry => `
-                <div class="access-list-item support-finding${entry.ok ? ' is-ok' : ' is-fail'}">
-                    <div><strong>${escapeHTML(entry.command)}</strong>
-                        <small>${escapeHTML(new Date(entry.at).toLocaleTimeString())}</small></div>
+                <div class="support-activity-item${entry.ok ? ' is-ok' : ' is-fail'}">
+                    <span>${escapeHTML(entry.command)}</span>
+                    <time>${escapeHTML(new Date(entry.at).toLocaleTimeString())}</time>
                 </div>`).join('')
-            : `<p class="access-empty">${escapeHTML(linkText.noActivity || 'No requests yet.')}</p>`;
-        if (panel.open) linkTimer = window.setTimeout(loadLink, 5000);
+            : `<p class="support-empty">${escapeHTML(linkText.noActivity || 'No requests yet.')}</p>`;
+        if (isOpen()) linkTimer = window.setTimeout(loadLink, status.connected || status.error ? 5000 : 1000);
     }
 
     async function loadLink() {
@@ -162,15 +170,23 @@
         download(event.currentTarget, '/api/v3/support/package'));
     recordingButton.addEventListener('click', () => download(recordingButton, '/api/v3/support/recording/package'));
     recordButton.addEventListener('click', toggleRecording);
-    panel.addEventListener('toggle', () => {
-        if (!panel.open) {
-            window.clearTimeout(linkTimer);
-            return window.clearTimeout(pollTimer);
-        }
+    refreshButton.addEventListener('click', loadDiagnostics);
+
+    function isOpen() {
+        return panel.classList.contains('active');
+    }
+
+    function open() {
+        window.clearTimeout(linkTimer);
+        window.clearTimeout(pollTimer);
+        if (!isOpen()) return;
         loadDiagnostics();
         if (canControl) {
             loadRecording();
             loadLink();
         }
-    });
+    }
+
+    document.addEventListener('config-tab', open);
+    open();
 })();

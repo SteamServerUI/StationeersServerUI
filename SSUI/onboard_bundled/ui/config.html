@@ -130,33 +130,37 @@
 
         <div class="sliding-tabs-container">
             <div class="sliding-tabs">
-                <button class="sliding-tab-button" onclick="window.location.href = '/'">
+                <button class="sliding-tab-button" title="{{.UIText_BackToDashboard}}" aria-label="{{.UIText_BackToDashboard}}" onclick="window.location.href = '/'">
                     <span class="icon back-icon"></span>
                     <span class="tab-text">{{.UIText_BackToDashboard}}</span>
                 </button>
-                <button class="sliding-tab-button active" data-tab="server-config-tab">
+                <button class="sliding-tab-button active" title="{{.UIText_ServerConfig}}" aria-label="{{.UIText_ServerConfig}}" data-tab="server-config-tab">
                     <span class="icon server-icon"></span>
                     <span class="tab-text">{{.UIText_ServerConfig}}</span>
                 </button>
-                <button class="sliding-tab-button" data-tab="discord-config-tab">
+                <button class="sliding-tab-button" title="{{.UIText_DiscordIntegration}}" aria-label="{{.UIText_DiscordIntegration}}" data-tab="discord-config-tab">
                     <span class="icon discord-icon"></span>
                     <span class="tab-text">{{.UIText_DiscordIntegration}}</span>
                 </button>
-                <button class="sliding-tab-button" data-tab="slp-config-tab">
+                <button class="sliding-tab-button" title="{{.UIText_SLPModIntegration}}" aria-label="{{.UIText_SLPModIntegration}}" data-tab="slp-config-tab">
                     <span class="icon slp-icon"></span>
                     <span class="tab-text">{{.UIText_SLPModIntegration}}</span>
                 </button>
-                <button class="sliding-tab-button" data-tab="detectionmanager-config-tab">
+                <button class="sliding-tab-button" title="{{.UIText_DetectionManager}}" aria-label="{{.UIText_DetectionManager}}" data-tab="detectionmanager-config-tab">
                     <span class="icon detection-icon"></span>
                     <span class="tab-text">{{.UIText_DetectionManager}}</span>
                 </button>
-                <button class="sliding-tab-button" data-tab="access-config-tab">
+                <button class="sliding-tab-button" title="{{.UIText_AC_Tab}}" aria-label="{{.UIText_AC_Tab}}" data-tab="access-config-tab">
                     <span class="icon access-icon"></span>
                     <span class="tab-text">{{.UIText_AC_Tab}}</span>
                 </button>
-                <button class="sliding-tab-button" data-tab="theme-config-tab">
+                <button class="sliding-tab-button" title="{{.UIText_TH_Tab}}" aria-label="{{.UIText_TH_Tab}}" data-tab="theme-config-tab">
                     <span class="icon" style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-1 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: center;"></span>
                     <span class="tab-text">{{.UIText_TH_Tab}}</span>
+                </button>
+                <button class="sliding-tab-button" title="{{.UIText_SUP_Title}}" aria-label="{{.UIText_SUP_Title}}" data-tab="support-config-tab">
+                    <span class="icon support-icon"></span>
+                    <span class="tab-text">{{.UIText_SUP_Title}}</span>
                 </button>
             </div>
         </div>
@@ -1317,51 +1321,65 @@
                 data-console-success-desc="{{.UIText_TH_ConsoleSuccessDesc}}"></div>
         </div>
 
-        <details id="support-panel" class="access-card support-panel"
+        <div id="support-config-tab" class="tab-content config-tab-stack support-panel"
             data-running="{{.UIText_SUP_Running}}"
             data-all-good="{{.UIText_SUP_AllGood}}"
             data-start-recording="{{.UIText_SUP_StartRecording}}"
             data-stop-recording="{{.UIText_SUP_StopRecording}}"
             data-recording-full="{{.UIText_SUP_RecordingFull}}">
-            <summary><span aria-hidden="true">🧰</span> {{.UIText_SUP_Title}}</summary>
-            <p id="support-overall" class="support-overall" role="status" aria-live="polite"></p>
-            <div id="support-findings" class="access-list"></div>
-            <div id="support-actions" class="support-actions">
-                <button id="support-package" class="panel-button" type="button">{{.UIText_SUP_DownloadPackage}}</button>
-                <button id="support-record" class="panel-button" type="button">{{.UIText_SUP_StartRecording}}</button>
-                <button id="support-recording-package" class="panel-button" type="button" hidden>{{.UIText_SUP_DownloadRecording}}</button>
-                <p>{{.UIText_SUP_PackageInfo}}</p>
+            <div class="access-intro support-intro">
+                <div>
+                    <span id="support-version" class="panel-kicker">SSUI</span>
+                    <h2>{{.UIText_SUP_Title}}</h2>
+                    <p>{{.UIText_SUP_Intro}}</p>
+                </div>
+                <div class="support-status">
+                    <span id="support-overall" class="support-overall" role="status" aria-live="polite">{{.UIText_SUP_Running}}</span>
+                    <button id="support-refresh" class="support-button" type="button">{{.UIText_SUP_Refresh}}</button>
+                </div>
             </div>
-            <section id="support-link" class="support-link" hidden
-                data-waiting="{{.UIText_SUP_LinkWaiting}}"
-                data-claimed="{{.UIText_SUP_LinkClaimed}}"
-                data-offline="{{.UIText_SUP_LinkOffline}}"
-                data-expires="{{.UIText_SUP_LinkExpires}}"
-                data-no-activity="{{.UIText_SUP_LinkNoActivity}}">
-                <h4>{{.UIText_SUP_LinkTitle}}</h4>
-                <p>{{.UIText_SUP_LinkInfo}}</p>
-                <div id="support-link-idle" class="support-link-row">
-                    <label>{{.UIText_SUP_LinkDuration}}
-                        <select id="support-link-minutes">
-                            <option value="30">{{.UIText_SUP_Link30}}</option>
-                            <option value="60" selected>{{.UIText_SUP_Link60}}</option>
-                            <option value="120">{{.UIText_SUP_Link120}}</option>
-                        </select>
-                    </label>
-                    <button id="support-link-open" class="panel-button" type="button">{{.UIText_SUP_LinkOpen}}</button>
-                </div>
-                <div id="support-link-active" hidden>
-                    <p id="support-link-state" class="support-link-state" role="status" aria-live="polite"></p>
-                    <div id="support-link-code-box" class="support-link-code" hidden>
-                        <span>{{.UIText_SUP_LinkCode}}</span>
-                        <div><code id="support-link-code"></code><button id="support-link-copy" type="button">{{.UIText_SUP_LinkCopy}}</button></div>
+            <div id="support-findings" class="support-findings"></div>
+            <div class="support-grid">
+                <section id="support-actions" class="access-card support-card">
+                    <h3>{{.UIText_SUP_PackageTitle}}</h3>
+                    <p>{{.UIText_SUP_PackageInfo}}</p>
+                    <div class="support-buttons">
+                        <button id="support-package" class="support-button support-primary" type="button">{{.UIText_SUP_DownloadPackage}}</button>
+                        <button id="support-record" class="support-button" type="button">{{.UIText_SUP_StartRecording}}</button>
+                        <button id="support-recording-package" class="support-button support-primary" type="button" hidden>{{.UIText_SUP_DownloadRecording}}</button>
                     </div>
-                    <span class="panel-kicker">{{.UIText_SUP_LinkActivity}}</span>
-                    <div id="support-link-activity" class="access-list"></div>
-                    <button id="support-link-close" class="panel-button access-danger-button" type="button">{{.UIText_SUP_LinkClose}}</button>
-                </div>
-            </section>
-        </details>
+                </section>
+                <section id="support-link" class="access-card support-card support-link" hidden
+                    data-waiting="{{.UIText_SUP_LinkWaiting}}"
+                    data-claimed="{{.UIText_SUP_LinkClaimed}}"
+                    data-offline="{{.UIText_SUP_LinkOffline}}"
+                    data-expires="{{.UIText_SUP_LinkExpires}}"
+                    data-no-activity="{{.UIText_SUP_LinkNoActivity}}">
+                    <h3>{{.UIText_SUP_LinkTitle}}</h3>
+                    <p>{{.UIText_SUP_LinkInfo}}</p>
+                    <div id="support-link-idle" class="support-buttons">
+                        <label class="support-duration">{{.UIText_SUP_LinkDuration}}
+                            <select id="support-link-minutes">
+                                <option value="30">{{.UIText_SUP_Link30}}</option>
+                                <option value="60" selected>{{.UIText_SUP_Link60}}</option>
+                                <option value="120">{{.UIText_SUP_Link120}}</option>
+                            </select>
+                        </label>
+                        <button id="support-link-open" class="support-button support-primary" type="button">{{.UIText_SUP_LinkOpen}}</button>
+                    </div>
+                    <div id="support-link-active" hidden>
+                        <p id="support-link-state" class="support-link-state" role="status" aria-live="polite"></p>
+                        <div id="support-link-code-box" class="support-link-code" hidden>
+                            <span>{{.UIText_SUP_LinkCode}}</span>
+                            <div><code id="support-link-code"></code><button id="support-link-copy" class="support-button" type="button">{{.UIText_SUP_LinkCopy}}</button></div>
+                        </div>
+                        <span class="panel-kicker">{{.UIText_SUP_LinkActivity}}</span>
+                        <div id="support-link-activity" class="support-activity"></div>
+                        <button id="support-link-close" class="support-button access-danger-button" type="button">{{.UIText_SUP_LinkClose}}</button>
+                    </div>
+                </section>
+            </div>
+        </div>
 
     </main>
     <footer>
@@ -1544,7 +1562,8 @@
             slp: 'slp-config-tab',
             dmgr: 'detectionmanager-config-tab',
             access: 'access-config-tab',
-            theme: 'theme-config-tab'
+            theme: 'theme-config-tab',
+            support: 'support-config-tab'
         };
 
         function showConfigTab(tabId, updateUrl = true) {
@@ -1566,6 +1585,8 @@
             if (button) {
                 button.classList.add('active');
             }
+
+            document.dispatchEvent(new CustomEvent('config-tab', { detail: tabId }));
 
             if (updateUrl) {
                 const tabName = Object.keys(configTabs).find(name => configTabs[name] === tabId) || 'settings';
