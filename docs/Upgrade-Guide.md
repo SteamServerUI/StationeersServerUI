@@ -7,6 +7,8 @@ SSUI v6 keeps the familiar WebUI and the Stationeers focus, but it changes some 
 
 ## What changes in v6
 
+The table covers what matters for an upgrade. Every change is listed in the [v6 changelog](Changelog-v6.md).
+
 | Area | v5 behavior | v6 behavior |
 |---|---|---|
 | Managed runtime data | `UIMod` | `SSUI` |
