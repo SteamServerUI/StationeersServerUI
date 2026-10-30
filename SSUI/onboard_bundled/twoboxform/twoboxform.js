@@ -83,13 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
         let nextStep = document.getElementById('next-step').value;
 
         if (step === "welcome" || step === "pls_read") {
-            window.location.href = `/setup?step=${nextStep}`;
+            window.location.href = `/setup?step=${encodeURIComponent(nextStep)}`;
             return;
         }
 
         if (step === "finalize") {
             // Return to first setup step
-            window.location.href = `/setup?step=${nextStep}`;
+            window.location.href = `/setup?step=${encodeURIComponent(nextStep)}`;
             return;
         }
 
@@ -111,11 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // No need to save this choice to config
             if (nextStep === 'admin_account') {
                 // Skip directly without saving
-                window.location.href = `/setup?step=${nextStep}`;
+                window.location.href = `/setup?step=${encodeURIComponent(nextStep)}`;
                 return;
             } else if (nextStep === 'game_port') {
                 // Also skip without saving but go to game port config
-                window.location.href = `/setup?step=${nextStep}`;
+                window.location.href = `/setup?step=${encodeURIComponent(nextStep)}`;
                 return;
             }
         }
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // If we're on a step that doesn't need to save data
             if (!url) {
                 hidePreloader();
-                window.location.href = `/setup?step=${nextStep}`;
+                window.location.href = `/setup?step=${encodeURIComponent(nextStep)}`;
                 return;
             }
 
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Wait for backend response to complete before redirecting
                     try { await response.json(); } catch (e) {} // Ensure backend response is fully processed
                     setTimeout(() => {
-                        window.location.href = `/setup?step=${nextStep}`;
+                        window.location.href = `/setup?step=${encodeURIComponent(nextStep)}`;
                     }, 1000);
                 } else if (mode === 'login') {
                     showNotification('Login Successful!', 'success');
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextStep = "admin_account"; // Skip all network config
             }
             
-            window.location.href = `/setup?step=${nextStep}`;
+            window.location.href = `/setup?step=${encodeURIComponent(nextStep)}`;
         });
     }
 
