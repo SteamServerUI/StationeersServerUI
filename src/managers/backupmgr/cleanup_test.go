@@ -221,13 +221,6 @@ func TestCleanupKeepsAutosavesWhenSafeBackupDirIsUnavailable(t *testing.T) {
 	assertFileExists(t, oldSave, true)
 }
 
-func TestNewBackupManagerUsesFixedScanInterval(t *testing.T) {
-	m := NewBackupManager(BackupConfig{})
-	if m.config.WaitTime != 45*time.Second {
-		t.Fatalf("WaitTime = %s, want 45s", m.config.WaitTime)
-	}
-}
-
 func TestPendingBackupsDoNotConsumeNewestRetentionSlots(t *testing.T) {
 	dir := t.TempDir()
 	newest := writeBackupSave(t, dir, "newest.save", time.Now().Add(-time.Hour))

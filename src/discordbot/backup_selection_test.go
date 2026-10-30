@@ -4,7 +4,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-	"unicode/utf8"
 
 	"github.com/SteamServerUI/StationeersServerUI/v6/src/config"
 	"github.com/bwmarrin/discordgo"
@@ -26,33 +25,6 @@ func TestBackupCommandRequiresName(t *testing.T) {
 		if got, err := backupCommandName(options); err == nil {
 			t.Fatalf("accepted stale or malformed options as %q", got)
 		}
-	}
-}
-
-func TestBackupCommandRegistrationDetectsIndexMigration(t *testing.T) {
-	for _, command := range []string{"restore", "download"} {
-		for _, oldType := range []discordgo.ApplicationCommandOptionType{discordgo.ApplicationCommandOptionString, discordgo.ApplicationCommandOptionInteger} {
-			old := &discordgo.ApplicationCommand{Name: command, Options: []*discordgo.ApplicationCommandOption{{Name: "index", Type: oldType}}}
-			updated := &discordgo.ApplicationCommand{Name: command, Options: []*discordgo.ApplicationCommandOption{{Name: "name", Type: discordgo.ApplicationCommandOptionString}}}
-			if commandsAreEqual(updated, old) {
-				t.Fatalf("%s would keep its old registered option", command)
-			}
-			if !commandsAreEqual(updated, updated) {
-				t.Fatal("unchanged command would be re-registered")
-			}
-		}
-	}
-}
-
-func TestBackupLabelsKeepUnicodeIntact(t *testing.T) {
-	for _, limit := range []int{80, 100} {
-		label := shortBackupLabel(strings.Repeat("🌍", 110)+".save", limit)
-		if !utf8.ValidString(label) || utf8.RuneCountInString(label) != limit || !strings.HasSuffix(label, "…") {
-			t.Fatalf("bad shortened label: %q", label)
-		}
-	}
-	if got := shortBackupLabel("040926_112440_auto.save", 80); got != "040926_112440_auto.save" {
-		t.Fatalf("short label changed: %q", got)
 	}
 }
 

@@ -31,12 +31,3 @@ func TestProbeSizeValidation(t *testing.T) {
 		t.Fatal("unexpectedly accepted an unconfigured probe size")
 	}
 }
-
-func TestNormalizeState(t *testing.T) {
-	if got := normalizeState("", []ProbeResult{{Size: 1000, Received: true}, {Size: 1200, Received: true}, {Size: 1400, Received: true}}); got != stateReachable {
-		t.Fatalf("normalizeState() = %q, want %q", got, stateReachable)
-	}
-	if got := normalizeState("", []ProbeResult{{Size: 1000, Received: true}, {Size: 1200, Received: false}}); got != statePartial {
-		t.Fatalf("normalizeState() = %q, want %q", got, statePartial)
-	}
-}

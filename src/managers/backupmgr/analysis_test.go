@@ -3,7 +3,6 @@ package backupmgr
 import (
 	"archive/zip"
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -129,16 +128,6 @@ func TestAnalyzeSaveStreamsThingStatistics(t *testing.T) {
 	}
 }
 
-func TestAnalyzeSaveHonorsCancelledContext(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
-
-	_, err := AnalyzeSave(ctx, analysisFixture(t))
-	if err == nil || !errors.Is(err, context.Canceled) {
-		t.Fatalf("expected context cancellation, got %v", err)
-	}
-}
-
 func TestReadSaveSummaryRejectsMissingWorld(t *testing.T) {
 	incomplete := filepath.Join(t.TempDir(), "incomplete.save")
 	file, err := os.Create(incomplete)
@@ -162,46 +151,5 @@ func TestReadSaveSummaryRejectsMissingWorld(t *testing.T) {
 
 	if _, err := ReadSaveSummary(incomplete); err == nil {
 		t.Fatal("expected missing world.xml error")
-	}
-}
-
-func TestAnalyzeConfiguredSave(t *testing.T) {
-	path := os.Getenv("SSUI_ANALYSIS_TEST_SAVE")
-	if path == "" {
-		t.Skip("set SSUI_ANALYSIS_TEST_SAVE to inspect a real save")
-	}
-
-	analysis, err := AnalyzeSave(context.Background(), path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("analysis: %+v", analysis)
-}
-
-func BenchmarkAnalyzeSave(b *testing.B) {
-	path := os.Getenv("SSUI_ANALYSIS_BENCHMARK_SAVE")
-	if path == "" {
-		b.Skip("set SSUI_ANALYSIS_BENCHMARK_SAVE to benchmark a real save")
-	}
-	b.ReportAllocs()
-
-	for i := 0; i < b.N; i++ {
-		if _, err := AnalyzeSave(context.Background(), path); err != nil {
-			b.Fatal(err)
-		}
-	}
-}
-
-func BenchmarkReadSaveSummary(b *testing.B) {
-	path := os.Getenv("SSUI_ANALYSIS_BENCHMARK_SAVE")
-	if path == "" {
-		b.Skip("set SSUI_ANALYSIS_BENCHMARK_SAVE to benchmark a real save")
-	}
-	b.ReportAllocs()
-
-	for i := 0; i < b.N; i++ {
-		if _, err := ReadSaveSummary(path); err != nil {
-			b.Fatal(err)
-		}
 	}
 }

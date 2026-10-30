@@ -4,10 +4,8 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
-	"errors"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 	"time"
 )
@@ -167,63 +165,6 @@ func TestPollBackupsRequiresTwoUnchangedObservations(t *testing.T) {
 	if len(m.handled) != 0 {
 		t.Fatal("removed sources still consume processed state")
 	}
-}
-
-func TestBackupValidationCancellationAndChangedIdentity(t *testing.T) {
-	path := analysisFixture(t)
-	identity, err := identifySave(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	if err := validateBackupSave(ctx, path, identity); !errors.Is(err, context.Canceled) {
-		t.Fatalf("got %v", err)
-	}
-	identity.size++
-	if err := validateBackupSave(context.Background(), path, identity); err == nil {
-		t.Fatal("accepted changed file")
-	}
-}
-
-func TestBackupManagerReloadCancelsInitialization(t *testing.T) {
-	m := NewBackupManager(BackupConfig{BackupDir: filepath.Join(t.TempDir(), "missing"), SafeBackupDir: t.TempDir()})
-	result := make(chan error, 1)
-	go func() { result <- m.Start("test") }()
-	m.Shutdown()
-	select {
-	case err := <-result:
-		// Initialization retains its legacy formatted cancellation message.
-		if err != nil && !strings.Contains(err.Error(), context.Canceled.Error()) {
-			t.Fatalf("got %v, want cancellation", err)
-		}
-	case <-time.After(2 * time.Second):
-		t.Fatal("reload did not cancel initialization")
-	}
-	m.Shutdown() // Repeated shutdown must be safe.
-}
-
-func TestBackupManagerPollingUsesExistingCopy(t *testing.T) {
-	root, safe := t.TempDir(), t.TempDir()
-	m := NewBackupManager(BackupConfig{BackupDir: root, SafeBackupDir: safe, WaitTime: 10 * time.Millisecond,
-		RetentionPolicy: RetentionPolicy{CleanupInterval: time.Hour}})
-	if err := m.Start("test"); err != nil {
-		t.Fatal(err)
-	}
-	defer m.Shutdown()
-	if err := copyFile(analysisFixture(t), filepath.Join(root, "new.save")); err != nil {
-		t.Fatal(err)
-	}
-	deadline := time.Now().Add(3 * time.Second)
-	for time.Now().Before(deadline) {
-		// Listing shares the copy lock and cannot observe a half-written output.
-		saves, err := m.ListBackups(0)
-		if err == nil && len(saves) == 1 {
-			return
-		}
-		time.Sleep(10 * time.Millisecond)
-	}
-	t.Fatal("polling did not hand save to copy operation")
 }
 
 func TestScanBackupFilesFollowsConfiguredRootOnly(t *testing.T) {

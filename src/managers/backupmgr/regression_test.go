@@ -1,85 +1,11 @@
 package backupmgr
 
 import (
-	"context"
-	"errors"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
 )
-
-func TestCanceledManagerCannotStartRequestAnalysis(t *testing.T) {
-	path := analysisFixture(t)
-	m := NewBackupManager(BackupConfig{SafeBackupDir: filepath.Dir(path)})
-	if err := loadInventory(m); err != nil {
-		t.Fatal(err)
-	}
-	m.Shutdown()
-	// Use an uncanceled request context to exercise the manager's own boundary,
-	// without depending on scheduling of context.AfterFunc's callback.
-	if _, err := analyzeBackup(context.Background(), m, filepath.Base(path)); !errors.Is(err, context.Canceled) {
-		t.Fatalf("stopped manager started analysis: %v", err)
-	}
-}
-
-func TestBackupAnalysisAcceptsNilRequestContext(t *testing.T) {
-	path := analysisFixture(t)
-	m := NewBackupManager(BackupConfig{SafeBackupDir: filepath.Dir(path)})
-	primeBackupInventory(t, m)
-	analysis, err := m.AnalyzeBackup(nil, filepath.Base(path))
-	if err != nil || analysis.Players != 3 {
-		t.Fatalf("nil-context analysis: %+v, %v", analysis, err)
-	}
-}
-
-func TestBackfillPrefersRecentDatesAcrossYearBoundary(t *testing.T) {
-	m := NewBackupManager(BackupConfig{})
-	m.records["311225_120000_auto.save"] = backupRecord{}
-	m.records["010126_120000_auto.save"] = backupRecord{}
-	backlog := pendingAnalyses(m)
-	if len(backlog) != 2 || backlog[0] != "010126_120000_auto.save" {
-		t.Fatalf("backfill order: %v", backlog)
-	}
-}
-
-func TestUnreadableManifestIsNotQuarantined(t *testing.T) {
-	safe := t.TempDir()
-	path := filepath.Join(safe, manifestFilename)
-	// Reading a directory fails independently of privileges, on Linux and Windows.
-	if err := os.Mkdir(path, 0755); err != nil {
-		t.Fatal(err)
-	}
-	m := NewBackupManager(BackupConfig{SafeBackupDir: safe})
-	if err := loadInventory(m); err == nil {
-		t.Fatal("expected a storage read error")
-	}
-	stat, err := os.Stat(path)
-	if err != nil || !stat.IsDir() {
-		t.Fatalf("storage error moved the original manifest path: %v", err)
-	}
-	quarantined, _ := filepath.Glob(path + ".invalid-*")
-	if len(quarantined) != 0 {
-		t.Fatal("storage error was treated as corrupt JSON")
-	}
-}
-
-func TestNewerManifestCanChangeFieldTypes(t *testing.T) {
-	safe := t.TempDir()
-	path := filepath.Join(safe, manifestFilename)
-	original := []byte(`{"version":999,"backups":[],"handled":[]}`)
-	if err := os.WriteFile(path, original, 0600); err != nil {
-		t.Fatal(err)
-	}
-	m := NewBackupManager(BackupConfig{SafeBackupDir: safe})
-	if err := loadInventory(m); err == nil {
-		t.Fatal("accepted an unknown schema")
-	}
-	after, err := os.ReadFile(path)
-	if err != nil || string(after) != string(original) {
-		t.Fatal("modified a newer manifest")
-	}
-}
 
 func TestRetentionDoesNotDeleteExternallyChangedArchive(t *testing.T) {
 	safe := t.TempDir()

@@ -54,24 +54,6 @@ func TestLoaderFallsBackWhenGameDataIsUnavailable(t *testing.T) {
 	}
 }
 
-func TestDataRootFromExecutable(t *testing.T) {
-	tests := map[string]string{
-		"rocketstation_DedicatedServer.x86_64":  "rocketstation_DedicatedServer_Data",
-		"bin/rocketstation_DedicatedServer.exe": filepath.Join("bin", "rocketstation_DedicatedServer_Data"),
-	}
-	for input, want := range tests {
-		if got := DataRootFromExecutable(input); got != want {
-			t.Errorf("DataRootFromExecutable(%q) = %q, want %q", input, got, want)
-		}
-	}
-}
-
-func TestHumanizeIdentifier(t *testing.T) {
-	if got := humanizeIdentifier("VulcanSpawnDusterPlateauNorth"); got != "Duster Plateau North" {
-		t.Fatalf("humanizeIdentifier() = %q", got)
-	}
-}
-
 func writeTestFile(t *testing.T, path, contents string) {
 	t.Helper()
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {

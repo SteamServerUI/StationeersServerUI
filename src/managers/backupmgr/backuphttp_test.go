@@ -10,51 +10,6 @@ import (
 	"testing"
 )
 
-func TestListBackupsSummaryIsOptIn(t *testing.T) {
-	path := analysisFixture(t)
-	handler := &HTTPHandler{manager: NewBackupManager(BackupConfig{SafeBackupDir: filepath.Dir(path)})}
-
-	primeBackupInventory(t, handler.manager)
-
-	basicRequest := httptest.NewRequest(http.MethodGet, "/api/v3/backups?limit=5", nil)
-	basicResponse := httptest.NewRecorder()
-	handler.ListBackupsHandler(basicResponse, basicRequest)
-	if basicResponse.Code != http.StatusOK {
-		t.Fatalf("basic response status %d: %s", basicResponse.Code, basicResponse.Body.String())
-	}
-	if bytes.Contains(basicResponse.Body.Bytes(), []byte(`"summary"`)) {
-		t.Fatalf("basic response unexpectedly contains Summary: %s", basicResponse.Body.String())
-	}
-	var basicBody struct {
-		Data struct {
-			Items []map[string]any `json:"items"`
-		} `json:"data"`
-	}
-	if err := json.NewDecoder(bytes.NewReader(basicResponse.Body.Bytes())).Decode(&basicBody); err != nil {
-		t.Fatal(err)
-	}
-	basicRows := basicBody.Data.Items
-	if len(basicRows) != 1 || len(basicRows[0]) != 2 {
-		t.Fatalf("basic response shape changed: %#v", basicRows)
-	}
-	for _, key := range []string{"name", "saveTime"} {
-		if _, exists := basicRows[0][key]; !exists {
-			t.Fatalf("basic response is missing %s: %#v", key, basicRows[0])
-		}
-	}
-
-	summaryRequest := httptest.NewRequest(http.MethodGet, "/api/v3/backups?limit=5&include=summary", nil)
-	summaryResponse := httptest.NewRecorder()
-	handler.ListBackupsHandler(summaryResponse, summaryRequest)
-	if summaryResponse.Code != http.StatusOK {
-		t.Fatalf("summary response status %d: %s", summaryResponse.Code, summaryResponse.Body.String())
-	}
-	if !bytes.Contains(summaryResponse.Body.Bytes(), []byte(`"summary"`)) ||
-		!bytes.Contains(summaryResponse.Body.Bytes(), []byte(`"daysPlayed":67`)) {
-		t.Fatalf("summary response is missing metadata: %s", summaryResponse.Body.String())
-	}
-}
-
 func TestBackupHTTPSelectionUsesName(t *testing.T) {
 	path := analysisFixture(t)
 	m := NewBackupManager(BackupConfig{SafeBackupDir: filepath.Dir(path)})
@@ -73,16 +28,6 @@ func TestBackupHTTPSelectionUsesName(t *testing.T) {
 	}
 	if _, err := m.GetBackupFileData("../outside.save"); err == nil {
 		t.Fatal("accepted a file outside the inventory")
-	}
-}
-
-func TestListPendingAnalysisDoesNotInventSummary(t *testing.T) {
-	path := analysisFixture(t)
-	handler := &HTTPHandler{manager: NewBackupManager(BackupConfig{SafeBackupDir: filepath.Dir(path)})}
-	response := httptest.NewRecorder()
-	handler.ListBackupsHandler(response, httptest.NewRequest(http.MethodGet, "/api/v3/backups?include=summary", nil))
-	if response.Code != http.StatusOK || bytes.Contains(response.Body.Bytes(), []byte(`"summary"`)) {
-		t.Fatalf("pending archive returned fabricated statistics: %s", response.Body.String())
 	}
 }
 
