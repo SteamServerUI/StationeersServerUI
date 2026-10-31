@@ -2,7 +2,7 @@
 
 SSUI v6 is the biggest update StationeersServerUI has had so far. The core stays the same: game server management, configuration and the loader work as they did in v5. Around that core, a lot has grown. The backup manager now polls for autosaves and never misses one, the Discord bot became a server hub with community votes, SSUI has real user accounts with permission groups, and custom detections grew into routines that can announce, call webhooks and even restart your server. On top of that come a connectivity check for your game port, built-in diagnostics, an opt-in support connection to the SSUI team, a cleaner API, new backgrounds and a fully localized config page.
 
-If you only read one thing before upgrading, read the [upgrade guide](Upgrade-Guide.md): the API moved to v3, runtime data moved from `UIMod` to `SSUI` and Docker now uses a single mount. Everything below is the full developer changelog from v5.14.1 to v6.0.0, grouped by area.
+If you only read one thing before upgrading, read the [upgrade guide](Upgrade-Guide.md): the API moved to v3, runtime data moved from `UIMod` to `SSUI` and Docker now uses a single mount. For a readable tour of the highlights, see [What's new in v6](Whats-New-v6.md). Everything below is the full developer changelog from v5.14.1 to v6.0.0, grouped by area.
 
 ---
 
