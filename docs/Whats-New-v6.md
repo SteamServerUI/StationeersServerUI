@@ -30,6 +30,8 @@ The old Discord control panel has been replaced by the Server Hub: one live mess
 
 Authentication is now mandatory. SSUI v6 adds proper users, permission groups, sessions and scoped personal API tokens. Permissions are enforced throughout the WebUI and API, with clear feedback when an action is unavailable.
 
+![Editing a user in People & Access](assets/whats-new-people.webp)
+
 Every user can change their password and sign out individual sessions. Administrators manage people, access groups with presets and fine-tuned permissions, and API tokens from one place. Existing v5 users are migrated automatically; everyone signs in once more after the upgrade, and old API keys need to be replaced with new tokens. [Access and HTTPS](Security-Considerations.md)
 
 ## Detection Manager routines
@@ -74,6 +76,8 @@ The old `/api/v2` routes are gone. The new `/api/v3` uses a common response and 
 ![Dashboard with the celestial background](assets/whats-new-dashboard.webp)
 
 SSUI now ships with Stationeers panoramas and a new celestial background that shows the world you play on. Use the celestial background. It is much cooler anyway. Backgrounds pause when the page loses focus and offer reduced motion, and the background menu now has tabs and switches.
+
+![The background menu](assets/whats-new-background-menu.webp)
 
 The config page, People & Access, the Detection Manager, Themes, Support & Diagnostics and the update dialog are fully available in **English, German and Swedish**. And yes, there are seasonal planets for Halloween and Christmas, with a 30 day opt-out per season. [Web interface](Web-Interface.md)
 
