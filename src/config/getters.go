@@ -256,12 +256,6 @@ func GetExePath() string {
 	return ExePath
 }
 
-func GetAdditionalParams() string {
-	ConfigMu.RLock()
-	defer ConfigMu.RUnlock()
-	return AdditionalParams
-}
-
 func GetUsers() map[string]string {
 	ConfigMu.RLock()
 	defer ConfigMu.RUnlock()

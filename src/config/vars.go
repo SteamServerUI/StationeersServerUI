@@ -29,7 +29,6 @@ var (
 	LocalIpAddress   string
 	ServerVisible    bool
 	UseSteamP2P      bool
-	AdditionalParams string
 	UPNPEnabled      bool
 	StartLocalHost   bool
 	SaveInfo         string // deprecated, replaced by SaveName and WorldID

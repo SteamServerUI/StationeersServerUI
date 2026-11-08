@@ -64,7 +64,6 @@ func PrintConfigDetails(logLevel ...string) {
 		"ServerVisible":             fmt.Sprintf("%v", config.GetServerVisible()),
 		"UseSteamP2P":               fmt.Sprintf("%v", config.GetUseSteamP2P()),
 		"ExePath":                   config.GetExePath(),
-		"AdditionalParams":          config.GetAdditionalParams(),
 		"GameServerAppID":           config.GetGameServerAppID(),
 		"Difficulty":                config.GetDifficulty(),
 		"StartCondition":            config.GetStartCondition(),

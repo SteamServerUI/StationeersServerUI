@@ -381,22 +381,6 @@ func SetUseSteamP2P(value bool) error {
 	return safeSaveConfig()
 }
 
-func SetExePath(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	ExePath = value
-	return safeSaveConfig()
-}
-
-func SetAdditionalParams(value string) error {
-	ConfigMu.Lock()
-	defer ConfigMu.Unlock()
-
-	AdditionalParams = value
-	return safeSaveConfig()
-}
-
 func SetAutoStartServerOnStartup(value bool) error {
 	ConfigMu.Lock()
 	defer ConfigMu.Unlock()

@@ -3,7 +3,6 @@ package gamemgr
 import (
 	"runtime"
 	"strconv"
-	"strings"
 
 	"github.com/JacksonTheMaster/StationeersServerUI/v5/src/config"
 )
@@ -67,10 +66,6 @@ func buildCommandArgs() []string {
 		if arg.Value != "" {
 			args = append(args, arg.Value)
 		}
-	}
-
-	if config.GetAdditionalParams() != "" {
-		args = append(args, strings.Fields(config.GetAdditionalParams())...)
 	}
 
 	if config.GetLocalIpAddress() != "" {
