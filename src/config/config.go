@@ -48,7 +48,6 @@ type JsonConfig struct {
 	StartLocalHost   *bool  `json:"StartLocalHost"`
 	ServerVisible    *bool  `json:"ServerVisible"`
 	UseSteamP2P      *bool  `json:"UseSteamP2P"`
-	AdditionalParams string `json:"AdditionalParams"`
 	Difficulty       string `json:"Difficulty"`
 	StartCondition   string `json:"StartCondition"`
 	StartLocation    string `json:"StartLocation"`
@@ -70,7 +69,6 @@ type JsonConfig struct {
 
 	// SSUI Settings
 	IsNewTerrainAndSaveSystem *bool  `json:"IsNewTerrainAndSaveSystem"` // Use new terrain and save system
-	ExePath                   string `json:"ExePath"`
 	LogClutterToConsole       *bool  `json:"LogClutterToConsole"`
 	IsSSCMEnabled             *bool  `json:"IsSSCMEnabled"`
 	AutoRestartServerTimer    string `json:"AutoRestartServerTimer"`
@@ -327,8 +325,9 @@ func applyConfig(cfg *JsonConfig) {
 	UseSteamP2P = useSteamP2PVal
 	cfg.UseSteamP2P = &useSteamP2PVal
 
-	ExePath = getString(cfg.ExePath, "EXE_PATH", getDefaultExePath())
-	AdditionalParams = getString(cfg.AdditionalParams, "ADDITIONAL_PARAMS", "")
+	// The game server executable is not configurable (GHSA-f79f-2c9q-2jpv).
+	// Any ExePath stored in config.json or set via EXE_PATH is ignored.
+	ExePath = getDefaultExePath()
 	Users = getUsers(cfg.Users, "SSUI_USERS", map[string]string{})
 
 	authEnabledVal := getBool(cfg.AuthEnabled, "SSUI_AUTH_ENABLED", false)
@@ -539,8 +538,6 @@ func snapshotConfig() JsonConfig {
 		StartLocalHost:                           &StartLocalHost,
 		ServerVisible:                            &ServerVisible,
 		UseSteamP2P:                              &UseSteamP2P,
-		ExePath:                                  ExePath,
-		AdditionalParams:                         AdditionalParams,
 		Users:                                    Users,
 		AuthEnabled:                              &AuthEnabled,
 		JwtKey:                                   JwtKey,
