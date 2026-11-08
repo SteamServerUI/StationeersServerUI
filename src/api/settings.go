@@ -21,7 +21,6 @@ type SettingsPatch struct {
 	StartLocalHost   *bool   `json:"startLocalHost,omitempty"`
 	ServerVisible    *bool   `json:"serverVisible,omitempty"`
 	UseSteamP2P      *bool   `json:"useSteamP2P,omitempty"`
-	AdditionalParams *string `json:"additionalParams,omitempty"`
 	Difficulty       *string `json:"difficulty,omitempty"`
 	StartCondition   *string `json:"startCondition,omitempty"`
 	StartLocation    *string `json:"startLocation,omitempty"`
@@ -32,7 +31,6 @@ type SettingsPatch struct {
 	LogLevel                 *int  `json:"logLevel,omitempty"`
 	ConnectivityCheckEnabled *bool `json:"connectivityCheckEnabled,omitempty"`
 
-	ExePath                  *string `json:"exePath,omitempty"`
 	LogClutterToConsole      *bool   `json:"logClutterToConsole,omitempty"`
 	IsSSCMEnabled            *bool   `json:"sscmEnabled,omitempty"`
 	AutoRestartServerTimer   *string `json:"autoRestartServerTimer,omitempty"`

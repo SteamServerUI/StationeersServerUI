@@ -185,8 +185,6 @@ type ConfigTemplateData struct {
 	UseSteamP2P                             string
 	UseSteamP2PTrueSelected                 string
 	UseSteamP2PFalseSelected                string
-	ExePath                                 string
-	AdditionalParams                        string
 	AutoRestartServerTimer                  string
 	AutoRestartCountdown                    string
 	IsNewTerrainAndSaveSystem               string
@@ -334,11 +332,6 @@ type ConfigTemplateData struct {
 	UIText_TLSRestarting                  string
 	UIText_ServerAuthSecret               string
 	UIText_ServerAuthSecretInfo           string
-	UIText_ServerExePath                  string
-	UIText_ServerExePathInfo              string
-	UIText_ServerExePathInfo2             string
-	UIText_AdditionalParams               string
-	UIText_AdditionalParamsInfo           string
 	UIText_ShowExpertSettings             string
 	UIText_ShowExpertSettingsInfo         string
 	UIText_ExpertSettings                 string

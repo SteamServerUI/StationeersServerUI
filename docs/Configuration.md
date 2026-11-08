@@ -55,7 +55,6 @@ Do not edit `config.json` while SSUI is simultaneously writing settings. Stop SS
 | `AutoSave` | `AUTO_SAVE` | `true` | Enable Stationeers automatic saves. |
 | `SaveInterval` | `SAVE_INTERVAL` | `300` | Seconds between automatic saves. |
 | `AutoPauseServer` | `AUTO_PAUSE_SERVER` | `true` | Pause simulation while no players are connected. |
-| `AdditionalParams` | `ADDITIONAL_PARAMS` | empty | Extra Stationeers launch arguments for advanced use. |
 
 `SaveInfo` (`SAVE_INFO`) is a deprecated compatibility field. Older values are migrated into `SaveName` and `WorldID`; new configuration should use the separate fields.
 
@@ -86,7 +85,6 @@ Manual router/firewall configuration is more predictable than UPNP. Each SSUI/ga
 | JSON field | Environment variable | Default | Description |
 |---|---|---:|---|
 | `SSUIWebPort` | `SSUI_WEB_PORT` | `8443` | HTTPS port for Web UI and API. |
-| `ExePath` | `EXE_PATH` | platform-specific | Stationeers dedicated-server executable path. |
 | `IsSSCMEnabled` | `IS_SSCM_ENABLED` | `true` | Enable Stationeers Server Command Manager integration. |
 | `AutoRestartServerTimer` | `AUTO_RESTART_SERVER_TIMER` | `0` | `0`, interval in minutes, or daily `HH:MM`/`HH:MMPM` time. |
 | `AutoRestartCountdown` | `AUTO_RESTART_COUNTDOWN` | `65` | Seconds of in-game warning before scheduled restart. |

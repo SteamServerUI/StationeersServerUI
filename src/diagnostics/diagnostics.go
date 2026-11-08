@@ -251,7 +251,7 @@ func (report *Report) checkSystem() {
 }
 
 func (report *Report) checkGame(cfg config.JsonConfig) {
-	exe := strings.TrimSpace(cfg.ExePath)
+	exe := config.GetExePath()
 	info, err := os.Stat(exe)
 	switch {
 	case exe == "":
